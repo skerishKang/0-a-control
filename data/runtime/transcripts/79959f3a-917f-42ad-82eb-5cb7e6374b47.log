@@ -1,0 +1,4 @@
+Script started on 2026-03-08 21:31:55+09:00 [COMMAND="/bin/echo hello transcript" <not executed on terminal>]
+hello transcript
+
+Script done on 2026-03-08 21:31:55+09:00 [COMMAND_EXIT_CODE="0"]

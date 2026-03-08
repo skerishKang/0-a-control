@@ -1,0 +1,10 @@
+{
+  "quest_id": "16161e10-b254-4183-8613-09777c97eccc",
+  "quest_title": "0-myplan 포함 우선 검토 후보 5개 좁히기",
+  "completion_criteria": "프로젝트 후보 5개와 선정 이유 1줄씩 정리",
+  "work_summary": "Tested the new file-based pipeline",
+  "remaining_work": "None, it's just a test",
+  "blocker": "No blocker",
+  "self_assessment": "done",
+  "session_id": ""
+}

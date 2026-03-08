@@ -1,0 +1,32 @@
+{
+  "report_id": "20260308T180440Z-16161e10-b254-4183-8613-09777c97eccc-_",
+  "quest_id": "16161e10-b254-4183-8613-09777c97eccc",
+  "session_id": "_",
+  "generated_at": "2026-03-08T18:04:40.722411+00:00",
+  "timezone": "Asia/Seoul",
+  "agent_name": "control-tower-ui",
+  "schema_version": "1.0",
+  "correlation": {
+    "quest_id": "16161e10-b254-4183-8613-09777c97eccc",
+    "plan_item_id": "05df98fa-b05b-44fa-b4be-09ef8109dae7",
+    "plan_bucket": "today",
+    "session_id": "_",
+    "report_id": "20260308T180440Z-16161e10-b254-4183-8613-09777c97eccc-_"
+  },
+  "report": {
+    "quest_id": "16161e10-b254-4183-8613-09777c97eccc",
+    "quest_title": "0-myplan 포함 우선 검토 후보 5개 좁히기",
+    "completion_criteria": "프로젝트 후보 5개와 선정 이유 1줄씩 정리",
+    "work_summary": "후보 5개를 다시 검토했고 기준을 정리했다",
+    "remaining_work": "선정 이유 문장을 더 다듬어야 함",
+    "blocker": "없음",
+    "self_assessment": "partial",
+    "plan_links": [
+      {
+        "bucket": "today",
+        "plan_item_id": "05df98fa-b05b-44fa-b4be-09ef8109dae7"
+      }
+    ],
+    "attachments": []
+  }
+}

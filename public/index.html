@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Control Tower</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/panels.css" />
+</head>
+
+<body>
+  <main class="layout">
+    <section class="hero-card">
+      <p class="section-label alert-label">오늘의 주 임무</p>
+      <div class="mission-head">
+        <h2 id="mainMissionTitle">불러오는 중...</h2>
+        <div id="mainMissionStatus"></div>
+      </div>
+      <p id="mainMissionReason" class="mission-reason"></p>
+      <div class="mission-progress">
+        <div class="progress-track compact" aria-label="오늘 주 임무 상태">
+          <div id="mainMissionProgressFill" class="progress-track-fill" style="width: 0%"></div>
+        </div>
+        <p id="mainMissionProgressText" class="mission-progress-text"></p>
+      </div>
+      <p id="mainMissionRisk" class="mission-risk"></p>
+      <div class="mission-grid">
+        <div class="criteria-box accent">
+          <p class="box-label alert-label">지금 할 작은 행동 1개</p>
+          <p id="currentQuestTitle"></p>
+        </div>
+        <div class="criteria-box">
+          <p class="box-label">완료 기준</p>
+          <p id="mainMissionCriteria"></p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button id="openReportPanelBtn" type="button" class="primary-btn">지금 퀘스트 완료 보고하기</button>
+      </div>
+    </section>
+
+    <section class="midday-grid">
+      <article class="panel panel-step-2">
+        <p class="section-label">STEP 1. AI 판정</p>
+        <h3>최근 판정</h3>
+        <details id="verdictDetails" class="verdict-card">
+          <summary id="recentVerdict" class="verdict-summary"></summary>
+          <div id="verdictDetailBody" class="detail-body"></div>
+        </details>
+      </article>
+      <article class="panel panel-step-3 next-quest-panel">
+        <p class="section-label">STEP 2. 다음 행동</p>
+        <h3>다음 퀘스트</h3>
+        <div id="nextQuestHint" class="list"></div>
+      </article>
+    </section>
+
+    <section class="support-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h3>기한 임박</h3><span id="dueSoonCount" class="count-badge"></span>
+        </div>
+        <div id="dueSoonList" class="list"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h3>어제 미완료 / 현재 미완료</h3><span id="unfinishedCount" class="count-badge"></span>
+        </div>
+        <div id="unfinishedList" class="list"></div>
+      </article>
+      <article class="panel panel-wide panel-tall panel-order-candidates">
+        <div class="panel-head">
+          <h3>우선 검토 후보</h3><span id="priorityCandidateCount" class="count-badge"></span>
+        </div>
+        <div id="priorityCandidateList" class="list"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h3>단기 플랜</h3><span id="shortTermCount" class="count-badge"></span>
+        </div>
+        <div id="shortTermList" class="list"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h3>장기 플랜</h3><span id="longTermCount" class="count-badge"></span>
+        </div>
+        <div id="longTermList" class="list"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h3>반복 플랜</h3><span id="recurringCount" class="count-badge"></span>
+        </div>
+        <div id="recurringList" class="list"></div>
+      </article>
+      <article class="panel panel-wide panel-tall panel-order-sessions">
+        <div class="panel-head">
+          <h3>최근 세션</h3><span id="recentSessionCount" class="count-badge"></span>
+        </div>
+        <div id="sessionAgentFilter" class="filter-chip-row"></div>
+        <div id="recentSessionList" class="list"></div>
+      </article>
+      <article class="panel panel-muted panel-order-briefs">
+        <details class="panel-collapse">
+          <summary><span>최근 브리프</span><span id="briefCount" class="count-badge"></span></summary>
+          <div id="briefList" class="list"></div>
+        </details>
+      </article>
+      <article class="panel panel-muted panel-order-workdiary">
+        <details class="panel-collapse">
+          <summary><span>workdiary 상위 폴더</span><span id="workdiaryCount" class="count-badge"></span></summary>
+          <div id="workdiaryList" class="list"></div>
+        </details>
+      </article>
+    </section>
+
+    <section class="endday-grid">
+      <article class="progress-card">
+        <p class="section-label">오늘 진행 상황</p>
+        <div id="progressSummary" class="progress-summary"></div>
+      </article>
+      <article class="panel">
+        <h3>오늘 판단 / 남은 핵심</h3>
+        <div id="planChangeSummary" class="list"></div>
+      </article>
+    </section>
+  </main>
+
+  <div id="panelBackdrop" class="panel-backdrop" hidden></div>
+  <aside id="reportPanel" class="side-panel" aria-hidden="true" hidden>
+    <div class="side-panel-header">
+      <div>
+        <p class="section-label">퀘스트 보고</p>
+        <h3>작업 결과 입력</h3>
+      </div>
+      <button id="closeReportPanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
+    </div>
+    <form id="questEvalForm" class="quest-form side-panel-form">
+      <label class="field">
+        <span>어디까지 했는지</span>
+        <textarea id="questWorkSummary" rows="4" placeholder="이번 퀘스트에서 실제로 한 일"></textarea>
+      </label>
+      <label class="field">
+        <span>남은 일</span>
+        <textarea id="questRemainingWork" rows="4" placeholder="아직 남아 있는 핵심"></textarea>
+      </label>
+      <label class="field">
+        <span>막힌 점</span>
+        <input id="questBlocker" type="text" placeholder="왜 멈췄는지 또는 막힌 점" />
+      </label>
+      <label class="field">
+        <span>내 느낌상 상태</span>
+        <select id="questSelfAssessment" required>
+          <option value="partial" selected>부분완료 같음</option>
+          <option value="done">거의 완료 같음</option>
+          <option value="hold">지금은 보류 같음</option>
+        </select>
+      </label>
+      <button type="submit" class="primary-btn">AI 판정 생성</button>
+    </form>
+  </aside>
+
+  <aside id="sessionPanel" class="side-panel" aria-hidden="true" hidden>
+    <div class="side-panel-header">
+      <div>
+        <p class="section-label">세션 보기</p>
+        <h3 id="sessionPanelTitle">최근 세션</h3>
+      </div>
+      <button id="closeSessionPanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
+    </div>
+    <div class="session-panel-body">
+      <div class="detail-section">
+        <strong>기본 정보</strong>
+        <p id="sessionPanelMeta" class="muted"></p>
+      </div>
+      <div class="session-panel-highlight-grid">
+        <div class="detail-section highlight-box">
+          <strong>핵심 판단</strong>
+          <p id="sessionPanelDecision" class="muted"></p>
+        </div>
+        <div class="detail-section highlight-box">
+          <strong>다음 액션</strong>
+          <p id="sessionPanelNextAction" class="muted"></p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <strong>요약</strong>
+        <p id="sessionPanelSummary" class="muted"></p>
+      </div>
+      <div class="session-panel-highlight-grid">
+        <div class="detail-section highlight-box">
+          <strong>최근 퀘스트 보고</strong>
+          <p id="sessionPanelQuestReport" class="muted"></p>
+        </div>
+        <div class="detail-section highlight-box">
+          <strong>최근 AI 판정</strong>
+          <p id="sessionPanelQuestVerdict" class="muted"></p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <strong>대화 기록</strong>
+        <div id="sessionRecordFilter" class="filter-chip-row compact"></div>
+        <div id="sessionPanelRecords" class="list session-record-list"></div>
+      </div>
+    </div>
+  </aside>
+
+  <aside id="detailPanel" class="side-panel" aria-hidden="true" hidden>
+    <div class="side-panel-header">
+      <div>
+        <p id="detailPanelLabel" class="section-label">상세 보기</p>
+        <h3 id="detailPanelTitle">상세 정보</h3>
+      </div>
+      <button id="closeDetailPanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
+    </div>
+    <div id="detailPanelBody" class="side-panel-body">
+      <!-- Content will be injected here -->
+    </div>
+  </aside>
+
+  <script src="/app-utils.js"></script>
+  <script src="/app-sessions.js"></script>
+  <script src="/app-renderers.js"></script>
+  <script src="/app.js"></script>
+</body>
+
+</html>

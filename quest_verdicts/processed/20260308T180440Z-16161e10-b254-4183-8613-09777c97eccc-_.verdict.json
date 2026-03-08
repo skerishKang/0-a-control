@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "report_ref": "20260308T180440Z-16161e10-b254-4183-8613-09777c97eccc-_",
+  "session_id": "",
+  "judge": {
+    "provider": "test_external",
+    "model": "manual-test",
+    "confidence": 0.81,
+    "prompt_hash": "sha256:testhash"
+  },
+  "verdict": {
+    "status": "partial",
+    "reason": "후보를 다시 좁혔지만 선정 이유 문장을 더 다듬어야 합니다.",
+    "restart_point": "선정 이유 1줄씩 다시 다듬기",
+    "next_hint": "후보 5개 각각의 선정 이유를 한 문장으로 정리",
+    "plan_impact": {
+      "today": "오늘 퀘스트는 부분완료로 유지",
+      "short_term": "후보 정리 후 다음 단계 검토 가능",
+      "long_term": "--",
+      "recurring": "--",
+      "dated": "--"
+    },
+    "ai_tags": [
+      "quest",
+      "review"
+    ],
+    "verdict_seq": 2,
+    "confidence": 0.81
+  },
+  "correlation": {
+    "quest_id": "16161e10-b254-4183-8613-09777c97eccc",
+    "report_id": "20260308T180440Z-16161e10-b254-4183-8613-09777c97eccc-_"
+  }
+}

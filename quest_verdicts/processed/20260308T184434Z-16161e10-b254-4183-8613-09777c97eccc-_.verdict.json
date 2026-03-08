@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "report_ref": "20260308T184434Z-16161e10-b254-4183-8613-09777c97eccc-_",
+  "verdict": {
+    "status": "partial",
+    "reason": "자동루프 테스트를 통한 partial 검증. 흐름 통과.",
+    "restart_point": "다음 스테이지 검증",
+    "next_hint": "DB 리셋 후 테스트",
+    "plan_impact": {
+      "today": "유지",
+      "short_term": "--",
+      "long_term": "--",
+      "recurring": "--",
+      "dated": "--"
+    },
+    "ai_tags": [
+      "test",
+      "e2e"
+    ],
+    "confidence": 0.99
+  },
+  "judge": {
+    "provider": "e2e-tester",
+    "model": "auto-script",
+    "prompt_hash": "sha256:dummy",
+    "latency_ms": 100
+  }
+}
