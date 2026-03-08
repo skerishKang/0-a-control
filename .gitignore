@@ -1,16 +1,49 @@
+# Python
 __pycache__/
 *.py[cod]
-*.pyc
-*.pyo
-*.pyd
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# SQLite
 *.sqlite3
 *.db
+!data/*.db # Keep main DB if intended, but usually ignored. 
+# Based on current .gitignore, they were ignored. I will keep it consistent.
+
+# Environments
 .env
 .env.*
+
+# Logs & Runtime
 *.log
+data/runtime/current_session.json
 .DS_Store
 Thumbs.db
+
+# Project Specific - Transient Data
+quest_reports/*.json
+quest_verdicts/*.json
+processed/**/*.json
+!**/ .gitkeep
+
+# IDEs
 .idea/
 .vscode/
-__pycache__/
-data/runtime/current_session.json
+*.swp
+*.swo

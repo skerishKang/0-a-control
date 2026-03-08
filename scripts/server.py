@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import mimetypes
+import os
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -28,7 +30,7 @@ from db import (
 
 
 PUBLIC_DIR = ROOT_DIR / "public"
-HOST = "0.0.0.0"
+HOST = os.getenv("HOST", "127.0.0.1")
 PORT = 4310
 RUNTIME_DIR = ROOT_DIR / "data" / "runtime"
 CURRENT_SESSION_FILE = RUNTIME_DIR / "current_session.json"
@@ -135,10 +137,14 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         except ValueError as exc:
             self.send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
             return
+        except Exception as exc:
+            logging.error(f"POST API error: {exc}", exc_info=True)
+            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            return
 
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
-    def handle_api_get(self, path: str, query: dict[str, list[str]]) -> None:
+    def handle_api_get_dispatch(self, path: str, query: dict[str, list[str]]) -> None:
         if path == "/api/current-state":
             self.send_json({"current_state": get_current_state()})
             return
@@ -149,11 +155,11 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             self.send_json({"quests": get_quests()})
             return
         if path == "/api/briefs/latest":
-            limit = int(query.get("limit", ["10"])[0])
+            limit = min(200, int(query.get("limit", ["10"])[0]))
             self.send_json({"briefs": get_latest_briefs(limit)})
             return
         if path == "/api/sessions/recent":
-            limit = int(query.get("limit", ["10"])[0])
+            limit = min(200, int(query.get("limit", ["10"])[0]))
             self.send_json({"sessions": get_recent_sessions(limit)})
             return
         if path == "/api/sessions/active":
@@ -161,22 +167,29 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/sessions/records":
             session_id = query.get("session_id", [""])[0]
-            limit = int(query.get("limit", ["200"])[0])
+            limit = min(200, int(query.get("limit", ["200"])[0]))
             self.send_json({"records": get_source_records(session_id, limit)})
             return
 
         if path == "/api/workdiary/top-level":
-            limit = int(query.get("limit", ["30"])[0])
+            limit = min(200, int(query.get("limit", ["30"])[0]))
             self.send_json({"items": get_workdiary_top_level(limit)})
             return
         if path == "/api/workdiary/priority-candidates":
-            limit = int(query.get("limit", ["8"])[0])
+            limit = min(200, int(query.get("limit", ["8"])[0]))
             self.send_json({"items": get_workdiary_priority_candidates(limit)})
             return
         if path == "/api/health":
             self.send_json({"ok": True})
             return
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
+
+    def handle_api_get(self, path: str, query: dict[str, list[str]]) -> None:
+        try:
+            self.handle_api_get_dispatch(path, query)
+        except Exception as exc:
+            logging.error(f"GET API error: {exc}", exc_info=True)
+            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def handle_static(self, path: str) -> None:
         if path in {"", "/"}:
@@ -204,10 +217,15 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def log_message(self, format: str, *args) -> None:
-        return
+        if os.getenv("DEBUG"):
+            super().log_message(format, *args)
+
+    def log_error(self, format: str, *args) -> None:
+        logging.error(f"{self.address_string()} - {format % args}")
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
     create_sample_data_if_empty()
     server = ThreadingHTTPServer((HOST, PORT), ControlTowerHandler)
     print(f"Control tower server running at http://localhost:{PORT}")
