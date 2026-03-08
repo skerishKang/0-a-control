@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+__pycache__/
+data/runtime/current_session.json
