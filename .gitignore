@@ -1,49 +1,40 @@
-# Python
+# Python 기본
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
+
+# 가상환경/패키지 산출물
+.venv/
+venv/
 env/
+.python-version
+.Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 *.egg-info/
-.installed.cfg
-*.egg
 
-# SQLite
-*.sqlite3
-*.db
-!data/*.db # Keep main DB if intended, but usually ignored. 
-# Based on current .gitignore, they were ignored. I will keep it consistent.
-
-# Environments
+# 환경 설정
 .env
 .env.*
 
-# Logs & Runtime
+# 런타임 파일
 *.log
-data/runtime/current_session.json
-.DS_Store
-Thumbs.db
+data/runtime/
 
-# Project Specific - Transient Data
+# 파일 기반 파이프라인 산출물
 quest_reports/*.json
 quest_verdicts/*.json
 processed/**/*.json
-!**/ .gitkeep
+failed/**/*.json
+duplicates/**/*.json
 
-# IDEs
+# OS/IDE
+.DS_Store
+Thumbs.db
 .idea/
 .vscode/
 *.swp
 *.swo
+
+# 유지용 깃킵은 추적
+!**/.gitkeep

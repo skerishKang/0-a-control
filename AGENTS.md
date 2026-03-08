@@ -85,6 +85,13 @@ Every evaluation must also include:
 - where to restart
 - what plan changes are proposed
 
+## Operational Tools (CLI)
+The system uses a unified CLI entry point for work sessions:
+
+- `scripts/agent-work.sh`: The core runner that manages session lifecycle, log capture, and state sync.
+- `scripts/[agent]-work.sh`: Minimal wrapper scripts (e.g., `windsurf-work.sh`, `gemini-work.sh`) that pre-set the agent name for convenience.
+- `scripts/queue_worker.py`: Background process that monitors the file-based pipeline for AI verdicts.
+
 ## Daily Operating Loop
 ### Morning
 - produce a briefing like a short morning operations meeting
