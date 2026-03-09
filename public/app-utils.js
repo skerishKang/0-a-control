@@ -1,3 +1,22 @@
+const state = {
+  currentState: null,
+  plans: [],
+  briefs: [],
+  quests: [],
+  sessions: [],
+  workdiaryItems: [],
+  priorityCandidates: [],
+  sessionAgentFilter: "all",
+  sessionRecordFilter: "all",
+  sessionPanelRecords: [],
+  activeSession: null,
+  selectedDate: new Date().toISOString().split('T')[0],
+};
+
+const sessionAgentOptions = [{ value: "all", label: "전체" }, { value: "codex", label: "codex" }, { value: "gemini-cli", label: "gemini-cli" }, { value: "antigravity", label: "antigravity" }, { value: "windsurf", label: "windsurf" }, { value: "kilo", label: "kilo" }, { value: "opencode", label: "opencode" }];
+const visibleSessionAgents = new Set(sessionAgentOptions.filter((option) => option.value !== "all").map((option) => option.value));
+const sessionRecordOptions = [{ value: "all", label: "전체" }, { value: "user", label: "사용자" }, { value: "assistant", label: "모델" }, { value: "tool", label: "도구" }];
+
 async function fetchJson(url, options) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`Request failed: ${response.status}`);

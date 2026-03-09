@@ -13,8 +13,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("queue_worker")
 
-BASE_SLEEP_SECONDS = 5
-MAX_SLEEP_SECONDS = 60
+BASE_SLEEP_SECONDS = 2
+MAX_SLEEP_SECONDS = 10
 
 
 def main() -> None:

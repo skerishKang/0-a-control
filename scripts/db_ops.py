@@ -318,7 +318,8 @@ def evaluate_quest(
             ),
         )
         refresh_current_state(conn)
-        return row_to_dict(conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone())
+        row = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
+        return row_to_dict(row) if row else {}
 
 
 def report_quest_progress(

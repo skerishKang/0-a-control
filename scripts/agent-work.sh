@@ -6,6 +6,26 @@ WORKDIARY_ROOT="$(cd "$ROOT_DIR/.." && pwd)"
 RUNTIME_DIR="$ROOT_DIR/data/runtime"
 TRANSCRIPT_DIR="$RUNTIME_DIR/transcripts"
 
+resolve_python() {
+  if command -v python >/dev/null 2>&1; then
+    echo python
+    return
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    echo python3
+    return
+  fi
+  if command -v py >/dev/null 2>&1; then
+    echo "py -3"
+    return
+  fi
+  echo "Python interpreter not found in PATH." >&2
+  exit 1
+}
+
+PYTHON_CMD="$(resolve_python)"
+RESUME_MODE="${CONTROL_TOWER_RESUME_MODE:-resume}"
+
 if [[ $# -lt 3 ]]; then
   echo "Usage: bash scripts/agent-work.sh <tool> <project-or-path> <title> [model] [-- tool args...]" >&2
   exit 1
@@ -48,7 +68,7 @@ if [[ ! -d "$WORKSPACE" ]]; then
 fi
 
 TOOL="$(
-  PYTHONPATH="$ROOT_DIR/scripts" python3 - <<'PY' "$AGENT_NAME"
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD - <<'PY' "$AGENT_NAME"
 from agent_registry import canonical_agent_name, resolve_executable
 import sys
 name = canonical_agent_name(sys.argv[1])
@@ -57,7 +77,7 @@ PY
 )"
 
 CANONICAL_AGENT="$(
-  PYTHONPATH="$ROOT_DIR/scripts" python3 - <<'PY' "$AGENT_NAME"
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD - <<'PY' "$AGENT_NAME"
 from agent_registry import canonical_agent_name
 import sys
 print(canonical_agent_name(sys.argv[1]))
@@ -66,18 +86,46 @@ PY
 
 cd "$WORKSPACE"
 
-START_OUTPUT="$("$ROOT_DIR/scripts/workon.sh" "$CANONICAL_AGENT" "cmd" "$PROJECT_KEY" "$TITLE" "$MODEL")"
-echo "$START_OUTPUT"
-
-SESSION_ID="$(python3 - <<'PY' "$RUNTIME_DIR/current_session.json"
-import json, sys
-from pathlib import Path
-payload = json.loads(Path(sys.argv[1]).read_text())
-print(payload["id"])
+META_JSON="$(
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD - <<'PY' "$CANONICAL_AGENT" "$TOOL"
+import sys, json, os
+print(json.dumps({
+    "agent_name": sys.argv[1],
+    "executable": sys.argv[2],
+    "argv": sys.argv,
+    "env_cwd": os.getcwd()
+}))
 PY
 )"
 
-PYTHONPATH="$ROOT_DIR/scripts" python3 "$ROOT_DIR/scripts/session_cli.py" log \
+START_OUTPUT="$("$ROOT_DIR/scripts/workon.sh" "$CANONICAL_AGENT" "cmd" "$PROJECT_KEY" "$TITLE" "$MODEL" "$META_JSON")"
+echo "$START_OUTPUT"
+
+SESSION_ID="$(echo "$START_OUTPUT" | grep "^started: " | cut -d' ' -f2 | tr -d '\r')"
+export CONTROL_TOWER_SESSION_ID="$SESSION_ID"
+
+if [[ -z "$SESSION_ID" ]]; then
+  echo "Failed to start session or parse session ID." >&2
+  exit 1
+fi
+
+SESSION_FILE="$RUNTIME_DIR/sessions/${SESSION_ID}.json"
+
+RESUME_PROMPT="$($PYTHON_CMD - <<'PY' "$SESSION_FILE" | tr -d '\r'
+import json, sys
+from pathlib import Path
+payload = json.loads(Path(sys.argv[1]).read_text())
+resume = payload.get("resume_context") or {}
+print(resume.get("prompt", ""))
+PY
+)"
+RESUME_PROMPT="${RESUME_PROMPT% }" # Trim the space
+
+if [[ "$RESUME_MODE" == "fresh" ]]; then
+  RESUME_PROMPT=""
+fi
+
+PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" log \
   --session-id "$SESSION_ID" \
   --source-name "$CANONICAL_AGENT" \
   --source-type "cmd" \
@@ -85,6 +133,17 @@ PYTHONPATH="$ROOT_DIR/scripts" python3 "$ROOT_DIR/scripts/session_cli.py" log \
   --project "$PROJECT_KEY" \
   --cwd "$WORKSPACE" \
   --content "$TITLE" >/dev/null 2>&1 || true
+
+if [[ -n "$RESUME_PROMPT" ]]; then
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" log \
+    --session-id "$SESSION_ID" \
+    --source-name "$CANONICAL_AGENT" \
+    --source-type "session_resume" \
+    --role "system" \
+    --project "$PROJECT_KEY" \
+    --cwd "$WORKSPACE" \
+    --content "$RESUME_PROMPT" >/dev/null 2>&1 || true
+fi
 
 mkdir -p "$TRANSCRIPT_DIR"
 TRANSCRIPT_FILE="$TRANSCRIPT_DIR/${SESSION_ID}.log"
@@ -96,18 +155,21 @@ cleanup() {
     summary="${CANONICAL_AGENT} wrapper session exited with code ${exit_code}"
   fi
   if [[ -f "$TRANSCRIPT_FILE" ]]; then
-    PYTHONPATH="$ROOT_DIR/scripts" python3 "$ROOT_DIR/scripts/import_transcript.py" \
+    PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_transcript.py" \
       --session-id "$SESSION_ID" \
       --source-name "$CANONICAL_AGENT" \
       --project "$PROJECT_KEY" \
       --cwd "$WORKSPACE" \
       --file "$TRANSCRIPT_FILE" >/dev/null 2>&1 || true
   fi
-  PYTHONPATH="$ROOT_DIR/scripts" python3 "$ROOT_DIR/scripts/session_cli.py" end \
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" end \
     --session-id "$SESSION_ID" \
     --summary "$summary" >/dev/null 2>&1 || true
+
+  rm -f "$RUNTIME_DIR/sessions/${SESSION_ID}.json"
+
   if [[ -f "$RUNTIME_DIR/current_session.json" ]]; then
-    ACTIVE_ID="$(python3 - <<'PY' "$RUNTIME_DIR/current_session.json"
+    ACTIVE_ID="$($PYTHON_CMD - <<'PY' "$RUNTIME_DIR/current_session.json"
 import json, sys
 from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text())
@@ -123,5 +185,26 @@ PY
 
 trap cleanup EXIT
 
-printf -v TOOL_CMD '%q ' "$TOOL" "$@"
-script -q -f -e -c "${TOOL_CMD% }" "$TRANSCRIPT_FILE"
+TOOL_ARGS=("$TOOL")
+if [[ "$TOOL" == *.cmd || "$TOOL" == *.bat ]]; then
+  WIN_TOOL="$TOOL"
+  if command -v wslpath >/dev/null 2>&1; then
+    WIN_TOOL="$(wslpath -w "$TOOL")"
+  fi
+  TOOL_ARGS=("cmd.exe" "/c" "$WIN_TOOL")
+fi
+if [[ "$CANONICAL_AGENT" == "codex" && -n "$RESUME_PROMPT" && $# -eq 0 ]]; then
+  TOOL_ARGS+=("$RESUME_PROMPT")
+fi
+if [[ $# -gt 0 ]]; then
+  TOOL_ARGS+=("$@")
+fi
+
+printf -v TOOL_CMD '%q ' "${TOOL_ARGS[@]}"
+
+if command -v script >/dev/null 2>&1; then
+  script -q -f -e -c "${TOOL_CMD% }" "$TRANSCRIPT_FILE"
+else
+  # Fallback for environments without 'script' (like Windows Git Bash)
+  eval "${TOOL_CMD% }" 2>&1 | tee "$TRANSCRIPT_FILE"
+fi

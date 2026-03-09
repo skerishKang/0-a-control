@@ -4,7 +4,7 @@ import argparse
 import json
 import os
 
-from db import append_source_record, end_session, get_source_records, start_session
+from db import append_source_record, end_session, get_resume_context, get_source_records, start_session
 
 
 def parse_args() -> argparse.Namespace:
@@ -18,6 +18,10 @@ def parse_args() -> argparse.Namespace:
     start.add_argument("--project", default="")
     start.add_argument("--cwd", default="")
     start.add_argument("--title", default="")
+    start.add_argument("--metadata-json", default="")
+    start.add_argument("--with-resume-context", action="store_true")
+    start.add_argument("--resume-session-limit", type=int, default=3)
+    start.add_argument("--resume-turn-limit", type=int, default=6)
 
     log = sub.add_parser("log")
     log.add_argument("--session-id", required=True)
@@ -38,6 +42,14 @@ def parse_args() -> argparse.Namespace:
     show = sub.add_parser("show")
     show.add_argument("--session-id", required=True)
     show.add_argument("--limit", type=int, default=50)
+
+    resume = sub.add_parser("resume")
+    resume.add_argument("--project", default="")
+    resume.add_argument("--cwd", default="")
+    resume.add_argument("--title", default="")
+    resume.add_argument("--session-id", default="")
+    resume.add_argument("--session-limit", type=int, default=3)
+    resume.add_argument("--turn-limit", type=int, default=6)
     return parser.parse_args()
 
 
@@ -45,6 +57,13 @@ def main() -> None:
     args = parse_args()
     cwd = getattr(args, "cwd", "") or os.getcwd()
     if args.command == "start":
+        meta = None
+        if args.metadata_json:
+            try:
+                meta = json.loads(args.metadata_json)
+            except Exception as e:
+                meta = {"raw_metadata": args.metadata_json, "parse_error": str(e)}
+
         result = start_session(
             agent_name=args.agent,
             source_type=args.source_type,
@@ -52,6 +71,10 @@ def main() -> None:
             project_key=args.project,
             working_dir=cwd,
             title=args.title,
+            metadata=meta,
+            include_resume_context=args.with_resume_context,
+            resume_session_limit=args.resume_session_limit,
+            resume_turn_limit=args.resume_turn_limit,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return
@@ -79,6 +102,17 @@ def main() -> None:
         return
     if args.command == "show":
         result = get_source_records(args.session_id, args.limit)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return
+    if args.command == "resume":
+        result = get_resume_context(
+            project_key=args.project,
+            working_dir=cwd,
+            title=args.title,
+            session_id=args.session_id,
+            session_limit=args.session_limit,
+            turn_limit=args.turn_limit,
+        )
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

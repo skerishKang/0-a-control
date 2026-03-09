@@ -24,9 +24,23 @@ resolve_python() {
 }
 
 PYTHON_CMD="$(resolve_python)"
+SOURCE_NAME="${1:-}"
+TRANSCRIPT_FILE="${2:-}"
+SESSION_ID_ARG="${3:-}"
+
+if [[ -z "$SOURCE_NAME" ]]; then
+  echo "Usage: bash scripts/import-current-transcript.sh <source-name> [transcript-file] [session-id]" >&2
+  exit 1
+fi
 
 SESSION_FILE=""
-if [[ -n "${CONTROL_TOWER_SESSION_ID:-}" ]]; then
+if [[ -n "$SESSION_ID_ARG" && "$SESSION_ID_ARG" =~ ^[0-9a-f-]{36}$ ]]; then
+    if [[ -f "$SESSIONS_DIR/${SESSION_ID_ARG}.json" ]]; then
+        SESSION_FILE="$SESSIONS_DIR/${SESSION_ID_ARG}.json"
+    fi
+fi
+
+if [[ -z "$SESSION_FILE" && -n "${CONTROL_TOWER_SESSION_ID:-}" ]]; then
     if [[ -f "$SESSIONS_DIR/${CONTROL_TOWER_SESSION_ID}.json" ]]; then
         SESSION_FILE="$SESSIONS_DIR/${CONTROL_TOWER_SESSION_ID}.json"
     fi
@@ -37,20 +51,7 @@ if [[ -z "$SESSION_FILE" && -f "$DEFAULT_SESSION_FILE" ]]; then
 fi
 
 if [[ -z "$SESSION_FILE" ]]; then
-  echo "No active session. Start one with: bash scripts/workon.sh ..." >&2
-  exit 1
-fi
-
-ROLE="${1:-user}"
-shift || true
-CONTENT="${*:-}"
-
-if [[ -z "$CONTENT" ]]; then
-  CONTENT="$(cat)"
-fi
-
-if [[ -z "$CONTENT" ]]; then
-  echo "Usage: bash scripts/worklog.sh [role] <content>" >&2
+  echo "No active session file found." >&2
   exit 1
 fi
 
@@ -59,26 +60,29 @@ import json, sys
 from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text())
 print(payload["id"])
-print(payload["agent_name"])
-print(payload.get("source_type") or "cmd")
 print(payload.get("project_key") or "")
 print(payload.get("working_dir") or "")
 PY
 )
 
 SESSION_ID="${SESSION_META[0]}"
-SOURCE_NAME="${SESSION_META[1]}"
-SOURCE_TYPE="${SESSION_META[2]}"
-PROJECT="${SESSION_META[3]}"
-CWD_VALUE="${SESSION_META[4]}"
+PROJECT_KEY="${SESSION_META[1]}"
+WORKING_DIR="${SESSION_META[2]}"
 
-PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" log \
+if [[ -z "$TRANSCRIPT_FILE" ]]; then
+  TRANSCRIPT_FILE="$RUNTIME_DIR/transcripts/${SESSION_ID}.log"
+fi
+
+TRANSCRIPT_FILE="${TRANSCRIPT_FILE//\\//}"
+
+if [[ ! -f "$TRANSCRIPT_FILE" ]]; then
+  echo "Transcript file not found: $TRANSCRIPT_FILE" >&2
+  exit 1
+fi
+
+PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_transcript.py" \
   --session-id "$SESSION_ID" \
   --source-name "$SOURCE_NAME" \
-  --source-type "$SOURCE_TYPE" \
-  --role "$ROLE" \
-  --project "$PROJECT" \
-  --cwd "$CWD_VALUE" \
-  --content "$CONTENT" >/dev/null
-
-echo "logged: $ROLE -> $CONTENT"
+  --project "$PROJECT_KEY" \
+  --cwd "$WORKING_DIR" \
+  --file "$TRANSCRIPT_FILE"

@@ -7,6 +7,7 @@
   <title>Control Tower</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/panels.css" />
+  <link rel="stylesheet" href="/sessions.css" />
 </head>
 
 <body>
@@ -14,17 +15,10 @@
     <section class="hero-card">
       <p class="section-label alert-label">오늘의 주 임무</p>
       <div class="mission-head">
-        <h2 id="mainMissionTitle">불러오는 중...</h2>
+        <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
         <div id="mainMissionStatus"></div>
       </div>
       <p id="mainMissionReason" class="mission-reason"></p>
-      <div class="mission-progress">
-        <div class="progress-track compact" aria-label="오늘 주 임무 상태">
-          <div id="mainMissionProgressFill" class="progress-track-fill" style="width: 0%"></div>
-        </div>
-        <p id="mainMissionProgressText" class="mission-progress-text"></p>
-      </div>
-      <p id="mainMissionRisk" class="mission-risk"></p>
       <div class="mission-grid">
         <div class="criteria-box accent">
           <p class="box-label alert-label">지금 할 작은 행동 1개</p>
@@ -34,25 +28,27 @@
           <p class="box-label">완료 기준</p>
           <p id="mainMissionCriteria"></p>
         </div>
-      </div>
-      <div class="hero-actions">
-        <button id="openReportPanelBtn" type="button" class="primary-btn">지금 퀘스트 완료 보고하기</button>
+        <div class="hero-actions">
+          <button id="openReportPanelBtn" type="button" class="primary-btn">지금 퀘스트 완료 보고하기</button>
+        </div>
       </div>
     </section>
 
     <section class="midday-grid">
-      <article class="panel panel-step-2">
-        <p class="section-label">STEP 1. AI 판정</p>
-        <h3>최근 판정</h3>
-        <details id="verdictDetails" class="verdict-card">
-          <summary id="recentVerdict" class="verdict-summary"></summary>
-          <div id="verdictDetailBody" class="detail-body"></div>
-        </details>
+      <article class="panel panel-step-1">
+        <p class="section-label">STEP 1. 재시작 포인트</p>
+        <h3>어디서 다시 잡을지</h3>
+        <div id="restartPointHint" class="list action-focus-list"></div>
       </article>
       <article class="panel panel-step-3 next-quest-panel">
         <p class="section-label">STEP 2. 다음 행동</p>
         <h3>다음 퀘스트</h3>
-        <div id="nextQuestHint" class="list"></div>
+        <div id="nextQuestHint" class="list action-focus-list"></div>
+      </article>
+      <article class="panel panel-step-2">
+        <p class="section-label">STEP 3. 막힘 / 주의점</p>
+        <h3>지금 놓치면 밀리는 것</h3>
+        <div id="cautionHint" class="list action-focus-list"></div>
       </article>
     </section>
 
@@ -101,27 +97,41 @@
         <div id="recentSessionList" class="list"></div>
       </article>
       <article class="panel panel-muted panel-order-briefs">
-        <details class="panel-collapse">
-          <summary><span>최근 브리프</span><span id="briefCount" class="count-badge"></span></summary>
-          <div id="briefList" class="list"></div>
-        </details>
+        <div class="panel-head">
+          <h3>최근 브리프</h3><span id="briefCount" class="count-badge"></span>
+        </div>
+        <div id="briefList" class="list"></div>
       </article>
       <article class="panel panel-muted panel-order-workdiary">
-        <details class="panel-collapse">
-          <summary><span>workdiary 상위 폴더</span><span id="workdiaryCount" class="count-badge"></span></summary>
-          <div id="workdiaryList" class="list"></div>
-        </details>
+        <div class="panel-head">
+          <h3>workdiary 상위 폴더</h3><span id="workdiaryCount" class="count-badge"></span>
+        </div>
+        <div id="workdiaryList" class="list"></div>
       </article>
     </section>
 
     <section class="endday-grid">
-      <article class="progress-card">
-        <p class="section-label">오늘 진행 상황</p>
-        <div id="progressSummary" class="progress-summary"></div>
+      <article class="panel">
+        <div class="panel-head">
+          <h3>최근 판정</h3>
+        </div>
+        <div id="verdictDetails" class="verdict-card open">
+          <div id="recentVerdict" class="verdict-summary no-summary"></div>
+          <div id="verdictDetailBody" class="detail-body"></div>
+        </div>
       </article>
       <article class="panel">
-        <h3>오늘 판단 / 남은 핵심</h3>
+        <div class="panel-head">
+          <h3>오늘 판단 / 남은 핵심</h3>
+        </div>
         <div id="planChangeSummary" class="list"></div>
+      </article>
+      <article class="panel panel-calendar">
+        <div class="panel-head">
+          <h3>계획 달력</h3>
+        </div>
+        <div id="calendarContainer" class="calendar-container"></div>
+        <div id="calendarDetail" class="calendar-detail list"></div>
       </article>
     </section>
   </main>
@@ -219,8 +229,11 @@
   </aside>
 
   <script src="/app-utils.js"></script>
-  <script src="/app-sessions.js"></script>
   <script src="/app-renderers.js"></script>
+  <script src="/app-sessions.js"></script>
+  <script src="/app-hero.js"></script>
+  <script src="/app-support.js"></script>
+  <script src="/app-cards.js"></script>
   <script src="/app.js"></script>
 </body>
 

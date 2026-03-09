@@ -31,16 +31,25 @@ from db import (
 
 PUBLIC_DIR = ROOT_DIR / "public"
 HOST = os.getenv("HOST", "127.0.0.1")
-PORT = 4310
+PORT = int(os.getenv("PORT", "4310"))
 RUNTIME_DIR = ROOT_DIR / "data" / "runtime"
+SESSIONS_DIR = RUNTIME_DIR / "sessions"
 CURRENT_SESSION_FILE = RUNTIME_DIR / "current_session.json"
 
 
-def get_active_session_runtime() -> dict:
-    if not CURRENT_SESSION_FILE.exists():
+def get_active_session_runtime(session_id: str | None = None) -> dict:
+    target_file = CURRENT_SESSION_FILE
+    if session_id:
+        target_file = SESSIONS_DIR / f"{session_id}.json"
+    
+    if not target_file.exists():
+        if session_id: # Fallback to current if requested session not found? 
+                       # Or just return empty. Better return empty.
+            return {}
         return {}
+
     try:
-        return json.loads(CURRENT_SESSION_FILE.read_text(encoding="utf-8"))
+        return json.loads(target_file.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {}
 
@@ -54,6 +63,71 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             self.handle_api_get(parsed.path, parse_qs(parsed.query))
             return
         self.handle_static(parsed.path)
+
+    def handle_api_post_dispatch(self, path: str, body: dict) -> None:
+        if path == "/api/quests/evaluate":
+            result = evaluate_quest(
+                quest_id=body["quest_id"],
+                verdict=body["verdict"],
+                reason=body.get("reason", ""),
+                restart_point=body.get("restart_point", ""),
+                next_quest_hint=body.get("next_quest_hint", ""),
+                plan_impact=body.get("plan_impact", ""),
+            )
+            self.send_json({"ok": True, "quest": result, "current_state": get_current_state()})
+            return
+        if path == "/api/current-state/refresh":
+            result = refresh_current_state()
+            self.send_json({"ok": True, "state": result})
+            return
+        if path == "/api/quests/report":
+            result = report_quest_progress(
+                quest_id=body["quest_id"],
+                work_summary=body.get("work_summary", ""),
+                remaining_work=body.get("remaining_work", ""),
+                blocker=body.get("blocker", ""),
+                self_assessment=body.get("self_assessment", ""),
+                session_id=body.get("session_id", ""),
+            )
+            self.send_json({"ok": True, "quest": result, "current_state": get_current_state()})
+            return
+        if path == "/api/sessions/start":
+            result = start_session(
+                agent_name=body["agent_name"],
+                source_type=body["source_type"],
+                model_name=body.get("model_name", ""),
+                project_key=body.get("project_key", ""),
+                working_dir=body.get("working_dir", ""),
+                title=body.get("title", ""),
+                metadata=body.get("metadata"),
+            )
+            self.send_json({"ok": True, "session": result})
+            return
+        if path == "/api/sessions/log":
+            result = append_source_record(
+                session_id=body["session_id"],
+                source_name=body["source_name"],
+                source_type=body["source_type"],
+                content=body["content"],
+                role=body.get("role", "user"),
+                project_key=body.get("project_key", ""),
+                working_dir=body.get("working_dir", ""),
+                metadata=body.get("metadata"),
+            )
+            self.send_json({"ok": True, "record": result})
+            return
+        if path == "/api/sessions/end":
+            result = end_session(
+                session_id=body["session_id"],
+                summary_md=body.get("summary_md", ""),
+                status=body.get("status", "closed"),
+                files_touched=body.get("files_touched"),
+                actions=body.get("actions"),
+                metadata=body.get("metadata"),
+            )
+            self.send_json({"ok": True, "session": result})
+            return
+        self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
@@ -69,68 +143,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             return
 
         try:
-            if parsed.path == "/api/quests/evaluate":
-                result = evaluate_quest(
-                    quest_id=body["quest_id"],
-                    verdict=body["verdict"],
-                    reason=body.get("reason", ""),
-                    restart_point=body.get("restart_point", ""),
-                    next_quest_hint=body.get("next_quest_hint", ""),
-                    plan_impact=body.get("plan_impact", ""),
-                )
-                self.send_json({"ok": True, "quest": result, "current_state": get_current_state()})
-                return
-            if parsed.path == "/api/current-state/refresh":
-                result = refresh_current_state()
-                self.send_json({"ok": True, "state": result})
-                return
-            if parsed.path == "/api/quests/report":
-                result = report_quest_progress(
-                    quest_id=body["quest_id"],
-                    work_summary=body.get("work_summary", ""),
-                    remaining_work=body.get("remaining_work", ""),
-                    blocker=body.get("blocker", ""),
-                    self_assessment=body.get("self_assessment", ""),
-                    session_id=body.get("session_id", ""),
-                )
-                self.send_json({"ok": True, "quest": result, "current_state": get_current_state()})
-                return
-            if parsed.path == "/api/sessions/start":
-                result = start_session(
-                    agent_name=body["agent_name"],
-                    source_type=body["source_type"],
-                    model_name=body.get("model_name", ""),
-                    project_key=body.get("project_key", ""),
-                    working_dir=body.get("working_dir", ""),
-                    title=body.get("title", ""),
-                    metadata=body.get("metadata"),
-                )
-                self.send_json({"ok": True, "session": result})
-                return
-            if parsed.path == "/api/sessions/log":
-                result = append_source_record(
-                    session_id=body["session_id"],
-                    source_name=body["source_name"],
-                    source_type=body["source_type"],
-                    content=body["content"],
-                    role=body.get("role", "user"),
-                    project_key=body.get("project_key", ""),
-                    working_dir=body.get("working_dir", ""),
-                    metadata=body.get("metadata"),
-                )
-                self.send_json({"ok": True, "record": result})
-                return
-            if parsed.path == "/api/sessions/end":
-                result = end_session(
-                    session_id=body["session_id"],
-                    summary_md=body.get("summary_md", ""),
-                    status=body.get("status", "closed"),
-                    files_touched=body.get("files_touched"),
-                    actions=body.get("actions"),
-                    metadata=body.get("metadata"),
-                )
-                self.send_json({"ok": True, "session": result})
-                return
+            self.handle_api_post_dispatch(parsed.path, body)
         except KeyError as exc:
             self.send_json({"error": f"missing field: {exc.args[0]}"}, status=HTTPStatus.BAD_REQUEST)
             return
@@ -141,8 +154,6 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             logging.error(f"POST API error: {exc}", exc_info=True)
             self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
             return
-
-        self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def handle_api_get_dispatch(self, path: str, query: dict[str, list[str]]) -> None:
         if path == "/api/current-state":
@@ -163,7 +174,8 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             self.send_json({"sessions": get_recent_sessions(limit)})
             return
         if path == "/api/sessions/active":
-            self.send_json({"session": get_active_session_runtime()})
+            session_id = query.get("session_id", [None])[0]
+            self.send_json({"session": get_active_session_runtime(session_id)})
             return
         if path == "/api/sessions/records":
             session_id = query.get("session_id", [""])[0]

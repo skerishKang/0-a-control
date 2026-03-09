@@ -28,13 +28,16 @@ def summarize_transcript(content: str, title: str = "", project_key: str = "") -
 
     unique_lines: list[str] = []
     seen = set()
-    for line in lines:
-        if line in seen:
+    for line in reversed(lines):
+        if line in seen or len(line) < 4:
             continue
         seen.add(line)
-        unique_lines.append(line)
+        unique_lines.insert(0, line)
         if len(unique_lines) >= 3:
             break
+
+    if not unique_lines and lines:
+        unique_lines = lines[-1:]
 
     summary = " / ".join(unique_lines)
     if len(summary) > 220:

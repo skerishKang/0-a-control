@@ -1,56 +1,47 @@
-# 0-a-Control: Local-First Control Tower
+# 0-a-Control: 로컬-퍼스트 개인 컨트롤 타워
 
-이 프로젝트는 로컬 개발 및 업무 흐름을 관리하는 **로컬 우선 컨트롤 타워** 시스템입니다. SQLite를 중심 저장소로 하며, CMD 기반의 세션 관리와 UI 기반의 상황판을 제공합니다.
+로컬 SQLite와 파일 기반 파이프라인을 통해 개인 작업의 전략적 continuity를 유지하는 컨트롤 타워입니다. 체크리스트 앱이 아닌, 전략적 의사결정을 돕는 Aide를 지향합니다.
 
-## 🚀 철학
-- **CMD 본체, UI 보조**: 실제 작업과 실행은 터미널(CMD/Shell)에서 이루어지며, UI는 현재 상태와 우선순위를 한눈에 파악하는 상황판 역할을 합니다.
-- **파일 기반 파이프라인**: 퀘스트 보고 및 AI 판정은 파일 시스템(`quest_reports/`, `quest_verdicts/`)을 통해 외부 에이전트와 유기적으로 연동됩니다.
-- **로컬 우선**: 모든 데이터는 로컬 SQLite DB에 저장되어 독립적으로 동작합니다.
+## 핵심 기능
 
-## 🛠️ 주요 구성
-- **scripts/server.py**: 대시보드 UI를 위한 백엔드 API 서버 (기본 포트: **4310**)
-- **scripts/queue_worker.py**: `quest_verdicts/`를 감시해 판정 JSON을 ingest하고 SQLite 상태를 갱신하는 워커
-- **scripts/agent-work.sh**: 다양한 에이전트 환경(Windsurf, Gemini-CLI 등)을 통합 관리하는 래퍼 스크립트
-- **AGENTS.md**: 주 임무/퀘스트 운영 원칙과 역할 정의를 담은 헌장
-- **public/**: 상태 가시화를 위한 대시보드 UI 소스
+*   **CMD 기반 작업**: `scripts/` 내 래퍼 스크립트를 통한 세션 로그 기록
+*   **파일 기반 파이프라인**: `report` 생성 → 외부 에이전트 `verdict` 생성 → 서버 `ingest` 및 DB 갱신
+*   **상황판 UI**: 현재 주 임무와 퀘스트 상태 실시간 확인
+*   **전략적 Aide**: `AGENTS.md`의 운영 원칙에 따라 주 임무와 퀘스트 관리
 
-## 🏃 실행 방법
+## 빠른 시작
 
-### 1. 컨트롤 타워 시작
-루트 폴더에서 환경에 맞는 실행 파일을 실행하여 서버와 워커를 동시에 가동합니다.
+1.  **환경 설정**:
+    ```bash
+    git clone <repository_url>
+    cd 0-a-control
+    pip install -r requirements.txt
+    ```
 
-**Windows:**
-- `start-control-tower.bat` 실행
+2.  **실행**:
+    *   **Windows**: `start-control-tower.bat` 실행 (서버 및 큐 워커 자동 구동)
+    *   **macOS/Linux**: `start-control-tower.sh` 실행
 
-**macOS / Linux:**
-```bash
-chmod +x start-control-tower.sh
-./start-control-tower.sh
-```
+3.  **접속**: 브라우저에서 `http://localhost:4310` 접속
 
-*(참고: 수동 기동이 필요한 경우, 각각의 터미널에서 `python scripts/queue_worker.py`와 `python scripts/server.py`를 실행하십시오.)*
+## 운영 구조 (핵심)
 
-### 2. 업무 세션 시작 (CLI)
-작업할 프로젝트 폴더로 이동하여 래퍼 스크립트를 통해 세션을 엽니다.
-```bash
-# 예: windsurf 에이전트 사용
-./scripts/windsurf-work.sh [프로젝트명]
-```
+*   **AGENTS.md**: 역할(User, Head Agent, Background Agents) 및 운영 원칙
+*   **docs/08-file-verdict-pipeline.md**: 파일 기반 퀘스트 판정 파이프라인 상세
+*   **docs/00-startup-routine.md**: 일일 시작 및 종료 루틴
 
-### 3. 대시보드 확인
-브라우저에서 `http://localhost:4310`에 접속하여 주 임무, 진행률, AI 판정 결과를 확인합니다.
+## 테스트 및 검증
 
-### 4. 테스트 (tests/)
-`tests/` 폴더에 파일 기반 점검 스크립트가 배치되어 있으나, 정식 테스트 실행 절차는 아직 확정되지 않았습니다. 현재는 필요한 스크립트를 직접 `python tests/<파일명>.py` 형태로 실행해 수동 검증합니다.
+기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다.
 
-## 📂 저장소 구조
-- `data/`: SQLite DB 및 로컬 데이터
-- `docs/`: 시스템 설계 및 규약 문서
-- `docs/00-startup-routine.md`: 일일 기동 루틴 및 start-control-tower.bat 동작 설명
-- `quest_reports/`: UI/CLI에서 생성된 퀘스트 보고서 (JSON)
-- `quest_verdicts/`: 외부 에이전트가 작성한 판정 결과 (JSON)
-- `scripts/`: 서버, DB 관리, 에이전트 연동 로직
-- `public/`: 대시보드 웹 UI
+*   `python tests/test_01_pipeline_flow.py`: 전체 파이프라인 검증
+*   `python tests/test_02_quests_basic.py`: DB 데이터 정합성 검증
 
-## 📝 라이선스
-개인 업무 자동화 및 제어 시스템으로 자유롭게 확장하여 사용 가능합니다.
+## 저장소 구조 요약
+
+*   `data/`: 데이터베이스 및 런타임 상태
+*   `docs/`: 운영/설계 문서
+*   `public/`: 웹 프론트엔드 자산
+*   `quest_reports/`, `quest_verdicts/`: 파일 기반 파이프라인 통로
+*   `scripts/`: 주요 운영 스크립트 및 CLI 래퍼
+*   `tests/`: 테스트 스크립트

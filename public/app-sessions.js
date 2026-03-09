@@ -1,7 +1,7 @@
 function deriveSessionDecision(session, records) {
   if (session.summary_md) return session.summary_md;
   const modelRecord = records.find((record) => record.role === "assistant" || record.role === "tool");
-  return modelRecord?.content || "아직 핵심 판단이 정리되지 않았습니다.";
+  return modelRecord?.content || "세션 종료 시 에이전트의 대화와 작업 결과를 바탕으로 핵심 판단이 요약됩니다.";
 }
 
 function deriveSessionNextAction(session, records) {
@@ -10,11 +10,19 @@ function deriveSessionNextAction(session, records) {
   }
   const lastUserRecord = [...records].reverse().find((record) => record.role === "user");
   if (lastUserRecord?.content) return lastUserRecord.content;
-  return "다음 액션이 아직 기록되지 않았습니다.";
+  return "세션 맥락을 분석하여 다음 단계에 필요한 구체적인 행동이 여기에 도출됩니다.";
 }
 
 function findLatestRecordBySourceType(records, sourceType) {
   return [...records].reverse().find((record) => record.source_type === sourceType);
+}
+
+function getAgentBadgeClass(agentName) {
+  const name = (agentName || "").toLowerCase();
+  if (name.includes("codex")) return "agent-codex";
+  if (name.includes("gemini")) return "agent-gemini-cli";
+  if (name.includes("windsurf")) return "agent-windsurf";
+  return "agent-generic";
 }
 
 function renderSessionFilters() {
@@ -79,9 +87,29 @@ function renderSessionRecords() {
     if (state.sessionRecordFilter === "all") return true;
     return normalizeRecordRole(record) === state.sessionRecordFilter;
   });
-  renderList("sessionPanelRecords", filteredRecords, (record) =>
-    formatItem(`[${record.role || "record"}] ${record.content}`, formatDateTime(record.created_at))
-  );
+
+  const target = document.getElementById("sessionPanelRecords");
+  if (!target) return;
+
+  if (!filteredRecords.length) {
+    target.innerHTML = `<div class="list-item empty">대화 기록이 없습니다.</div>`;
+    return;
+  }
+
+  target.innerHTML = `
+    <div class="transcript-container">
+      ${filteredRecords.map((record) => {
+    const role = normalizeRecordRole(record);
+    const time = formatDateTime(record.created_at).slice(11, 16);
+    return `
+          <div class="chat-bubble ${role}">
+            <span class="chat-meta">${escapeHtml(role.toUpperCase())} · ${time}</span>
+            <div class="chat-content">${escapeHtml(record.content)}</div>
+          </div>
+        `;
+  }).join("")}
+    </div>
+  `;
 }
 
 function renderSessions() {
@@ -95,24 +123,30 @@ function renderSessions() {
 
   const target = document.getElementById("recentSessionList");
   if (!filteredSessions.length) {
-    target.innerHTML = `<div class="list-item empty">작업을 시작하면 여기에 세션이 쌓입니다.</div>`;
+    target.innerHTML = `<div class="list-item empty">아직 세션 기록이 없습니다. 에이전트를 실행하여 통제 타워에 첫 발자국을 남기세요.</div>`;
     return;
   }
 
   const renderSessionCard = (item) => {
-    const agent = [item.agent_name, item.model_name].filter(Boolean).join(" / ");
+    const agentLabel = [item.agent_name, item.model_name].filter(Boolean).join(" / ");
     const summary = item.summary_md || "아직 세션 요약이 없습니다.";
     const verdictBadge = item.has_quest_verdict
-      ? renderVerdictBadge(item.quest_verdict_status) || `<span class="session-badge">AI 판정</span>`
+      ? renderVerdictBadge(item.quest_verdict_status)
       : "";
+    const agentBadge = `<span class="agent-badge ${getAgentBadgeClass(item.agent_name)}">${escapeHtml(item.agent_name)}</span>`;
+    const agentClass = getAgentBadgeClass(item.agent_name);
+
     return `
-      <button type="button" class="list-item session-link" data-session-id="${escapeHtml(item.id)}">
+      <button type="button" class="list-item session-link ${agentClass}" data-session-id="${escapeHtml(item.id)}">
         <div class="session-link-head">
-          <strong>${escapeHtml(item.title || item.project_key || "세션")}</strong>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            ${agentBadge}
+            <strong>${escapeHtml(item.title || item.project_key || "세션")}</strong>
+          </div>
           ${verdictBadge}
         </div>
         <span class="session-link-summary">${escapeHtml(summary)}</span>
-        <span>${escapeHtml(`${agent} / ${formatRecentLabel(item.ended_at || item.started_at)}`)}</span>
+        <span>${escapeHtml(`${agentLabel} / ${formatRecentLabel(item.ended_at || item.started_at)}`)}</span>
       </button>
     `;
   };
@@ -144,17 +178,28 @@ function renderSessions() {
         session?.agent_name,
         session?.model_name,
         session?.project_key,
-        formatDateTime(session?.started_at),
+        formatRecentLabel(session?.started_at),
       ]
         .filter(Boolean)
         .join(" / ");
-      document.getElementById("sessionPanelSummary").textContent = session?.summary_md || "아직 세션 요약이 없습니다.";
-      document.getElementById("sessionPanelDecision").textContent = deriveSessionDecision(session || {}, payload.records || []);
+
+      const sessionSummary = session?.summary_md || "아직 세션 요약이 없습니다.";
+      const sessionDecision = deriveSessionDecision(session || {}, payload.records || []);
+
+      const summaryTarget = document.getElementById("sessionPanelSummary");
+      if (sessionSummary.trim() === sessionDecision.trim()) {
+        summaryTarget.closest('.detail-section').hidden = true;
+      } else {
+        summaryTarget.closest('.detail-section').hidden = false;
+        summaryTarget.textContent = sessionSummary;
+      }
+
+      document.getElementById("sessionPanelDecision").textContent = sessionDecision;
       document.getElementById("sessionPanelNextAction").textContent = deriveSessionNextAction(session || {}, payload.records || []);
       document.getElementById("sessionPanelQuestReport").textContent =
-        findLatestRecordBySourceType(payload.records || [], "quest_report")?.content || "아직 퀘스트 보고가 없습니다.";
+        findLatestRecordBySourceType(payload.records || [], "quest_report")?.content || "이 세션에서 공식적으로 보고된 퀘스트 작업 결과가 없습니다.";
       document.getElementById("sessionPanelQuestVerdict").textContent =
-        findLatestRecordBySourceType(payload.records || [], "quest_verdict")?.content || "아직 AI 판정 기록이 없습니다.";
+        findLatestRecordBySourceType(payload.records || [], "quest_verdict")?.content || "이 세션에서 생성된 AI 작업 판정 기록이 없습니다.";
       renderSessionRecords();
       openSessionPanel();
     });

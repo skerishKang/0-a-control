@@ -46,13 +46,17 @@ digraph G {
 ```
 - 자세한 상태 전이는 `docs/09-json-contracts.md` 참고.
 
-## 6. 실패 및 재처리 전략
-| 케이스 | 감지 포인트 | 대응 |
+## 6. 실패 및 재처리 전략 (운영 시나리오)
+
+현재 `0-a-control`의 파이프라인은 아래와 같이 파일 상태와 워커 사이의 장애 모듈을 격리하며 무중단으로 동작합니다. 
+
+| 케이스 | 감지 포인트 및 워커 처리 | 잔여 리스크 및 대응 (DB/UI) |
 | --- | --- | --- |
-| verdict 없음 (타임아웃) | report 생성 후 `VERDICT_TIMEOUT_MIN` 초 경과 | 서버가 alert 로그 남기고 동일 report를 `pending` 큐로 재등록. 외부 에이전트는 `quest_reports/pending/` 우선 처리 |
-| JSON 파손 | ingest 시 `json.loads` 실패 | 해당 verdict 파일을 `quest_verdicts/failed/`로 이동, 오류 상세를 `session_exports/` 로그에 기록. Report는 그대로 유지해 재판정 가능 |
-| 중복 처리 | 동일 `report_id`로 여러 verdict 감지 | 최초 성공 verdict만 적용. 이후 파일은 `processed/duplicates/` 이동 및 로그 남김 |
-| 동일 report 재판정 | 사용자가 명시적으로 재판정 요청해 새 verdict가 들어온 경우 | `verdict_seq` 증가 값을 확인해 최근 판정만 활성화. 이전 verdict는 `archive/revisions/`에 보관 |
+| **JSON 파손 (Malformed)** | `json.loads` 실패 또는 필수 필드 누락 발생. 워커는 해당 파일을 `quest_verdicts/failed/`로 즉시 격리 | 퀘스트 상태는 여전히 `pending`으로 남아 있습니다. 사용자가 수동으로 원본 report를 지우고 UI에서 재보고하거나 에이전트를 수동 재호출해야 합니다. |
+| **중복 처리 (Duplicate)** | 동일 `report_ref`, 같은 판정 결과, 동일한 `verdict_seq` 감지. 워커가 `DuplicateVerdict` 예외를 내고 `processed/duplicates/`로 파일 이동 | DB 변화 없이 조용히 무시되며 추가 리스크는 없습니다. |
+| **과거 판정 유입 (Stale)** | `report_ref`는 같으나 현재 DB보다 `verdict_seq`가 낮음. 워커가 이 또한 `code="stale_revision"`으로 분류해 `archive/revisions/`로 안전 보관 | 늦게 도착한 과거 판정이 최신 상태를 덮어쓰는 것을 원천 방어합니다. 조용히 무시됩니다. |
+| **판정 파일 미수신 (Timeout)** | 퀘스트를 보고했으나 폴링 디렉토리에 `.verdict.json`이 오지 않음 | **[자동화되지 않은 운영 리스크]** 시스템이 자동으로 timeout을 감지해 재발동해주지 **않습니다.** 퀘스트는 무기한 `pending`으로 고립되므로, 사용자가 에이전트 구동 여부를 직접 확인해야 합니다. |
+| **워커가 꺼져있을 때** | `scripts/queue_worker.py` 프로세스가 다운되거나 PC가 꺼져 있는 상태 | 외부 에이전트가 생성한 `.verdict.json` 파일들은 파일시스템 디렉토리에 고스란히 쌓여있습니다. 유실되지 않으며, 다음 번 `.bat` 부팅 시 즉시 순차적으로 전부 흡수(Ingest)하여 DB를 최신화합니다. |
 
 ## 7. 기존 문서 연결
 - 데이터베이스 반영 규칙은 `docs/05-data-schema.md`의 `quests`, `plan_items`, `decision_records` 스키마를 따른다.

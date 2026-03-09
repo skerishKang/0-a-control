@@ -4,8 +4,8 @@
 이 문서는 매일 아침 `0-a-control` 시스템을 켜고, 활용하고, 안전하게 종료하기 위한 최소 실행 루프를 정의합니다.
 
 ## 1. 시스템 시작하기
-1. Windows 탐색기에서 프로젝트 폴더로 이동합니다. (`G:\Ddrive\BatangD\task\workdiary\0-a-control`)
-2. **`start-control-tower.bat`** 파일을 더블 클릭하여 실행합니다.
+1. Windows 탐색기에서 저장소 루트(예: `0-a-control/`)로 이동합니다.
+2. **`start-control-tower.bat`** 파일을 더블 클릭하거나 터미널에서 실행합니다.
 
 **실행 시 발생하는 일:**
 - **메인 서버 창**: `.bat` 파일을 실행한 원본 콘솔 창은 웹 서버 구동을 담당합니다.

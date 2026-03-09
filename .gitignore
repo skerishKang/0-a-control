@@ -12,6 +12,7 @@ env/
 build/
 dist/
 *.egg-info/
+.pytest_cache/
 
 # 환경 설정
 .env
@@ -27,6 +28,9 @@ quest_verdicts/*.json
 processed/**/*.json
 failed/**/*.json
 duplicates/**/*.json
+archive/**/*.json
+revisions/**/*.json
+session_exports/*.md
 
 # OS/IDE
 .DS_Store

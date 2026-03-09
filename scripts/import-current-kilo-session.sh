@@ -30,16 +30,8 @@ PYTHON_CMD="$(resolve_python)"
 # 2. Environment variable
 # 3. Default session file
 SESSION_ID_ARG="${1:-}"
-if [[ -n "$SESSION_ID_ARG" && "$SESSION_ID_ARG" != "session closed" ]]; then
-    # Session ID can be a UUID or starts with ses_
-    if [[ "$SESSION_ID_ARG" =~ ^[0-9a-f-]{36}$ || "$SESSION_ID_ARG" == ses_* ]]; then
-        SESSION_ID="$SESSION_ID_ARG"
-        shift
-    fi
-fi
-
-if [[ -z "${SESSION_ID:-}" ]]; then
-    SESSION_ID="${CONTROL_TOWER_SESSION_ID:-}"
+if [[ -n "$SESSION_ID_ARG" && "$SESSION_ID_ARG" =~ ^[0-9a-f-]{36}$ ]]; then
+    SESSION_ID="$SESSION_ID_ARG"
 fi
 
 SESSION_FILE=""
@@ -49,20 +41,19 @@ if [[ -n "${SESSION_ID:-}" ]]; then
     fi
 fi
 
+if [[ -z "$SESSION_FILE" && -n "${CONTROL_TOWER_SESSION_ID:-}" ]]; then
+    if [[ -f "$SESSIONS_DIR/${CONTROL_TOWER_SESSION_ID}.json" ]]; then
+        SESSION_FILE="$SESSIONS_DIR/${CONTROL_TOWER_SESSION_ID}.json"
+    fi
+fi
+
 if [[ -z "$SESSION_FILE" && -f "$DEFAULT_SESSION_FILE" ]]; then
     SESSION_FILE="$DEFAULT_SESSION_FILE"
 fi
 
 if [[ -z "$SESSION_FILE" ]]; then
-  echo "No active session to close." >&2
+  echo "No active session file found." >&2
   exit 1
-fi
-
-SUMMARY="${1:-}"
-shift || true
-
-if [[ -z "$SUMMARY" ]]; then
-  SUMMARY="session closed"
 fi
 
 readarray -t SESSION_META < <($PYTHON_CMD - <<'PY' "$SESSION_FILE" | tr -d '\r'
@@ -70,34 +61,17 @@ import json, sys
 from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text())
 print(payload["id"])
-print(payload.get("title") or "")
+print(payload.get("project_key") or "")
+print(payload.get("working_dir") or "")
 PY
 )
 
 SESSION_ID="${SESSION_META[0]}"
+PROJECT_KEY="${SESSION_META[1]}"
+WORKING_DIR="${SESSION_META[2]}"
 
-PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" end \
+PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_kilo_session.py" \
   --session-id "$SESSION_ID" \
-  --summary "$SUMMARY" >/dev/null
-
-# Cleanup session-specific file
-rm -f "$SESSIONS_DIR/${SESSION_ID}.json"
-
-# Cleanup current pointer ONLY if it matches this session
-if [[ -f "$DEFAULT_SESSION_FILE" ]]; then
-    ACTIVE_ID="$($PYTHON_CMD - <<'PY' "$DEFAULT_SESSION_FILE" | tr -d '\r'
-import json, sys
-from pathlib import Path
-try:
-    payload = json.loads(Path(sys.argv[1]).read_text())
-    print(payload.get("id", ""))
-except:
-    pass
-PY
-)"
-    if [[ "$ACTIVE_ID" == "$SESSION_ID" ]]; then
-        rm -f "$DEFAULT_SESSION_FILE"
-    fi
-fi
-
-echo "ended: $SESSION_ID"
+  --source-name "kilo" \
+  --project "$PROJECT_KEY" \
+  --cwd "$WORKING_DIR"
