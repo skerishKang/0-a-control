@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 import uuid
+from typing import Optional
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 from scripts.ai_verdict import generate_verdict
 from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
@@ -15,6 +20,66 @@ class DuplicateVerdict(Exception):
     def __init__(self, message: str, code: str = "duplicate") -> None:
         super().__init__(message)
         self.code = code
+
+
+def _update_quest_status_with_decision(
+    conn,
+    quest_id: str,
+    quest: dict,
+    verdict: str,
+    reason: str,
+    restart_point: str,
+    next_hint: str,
+    plan_impact: str,
+    session_id: str = "",
+    metadata_json: Optional[str] = None,
+) -> None:
+    """
+    Common helper to update quest status, plan_item status, and create decision_record.
+    Used by both evaluate_quest() and apply_verdict().
+    """
+    updated_at = now_iso()
+    
+    # Update quest status
+    conn.execute(
+        """
+        UPDATE quests
+        SET status = ?, verdict_reason = ?, restart_point = ?, next_quest_hint = ?, updated_at = ?, metadata_json = ?
+        WHERE id = ?
+        """,
+        (verdict, reason, restart_point, next_hint, updated_at, metadata_json, quest_id),
+    )
+    
+    # Update plan_item status if exists
+    if quest["plan_item_id"]:
+        conn.execute(
+            "UPDATE plan_items SET status = ?, updated_at = ? WHERE id = ?",
+            ("done" if verdict == "done" else verdict, updated_at, quest["plan_item_id"]),
+        )
+    
+    # Insert decision record
+    conn.execute(
+        """
+        INSERT INTO decision_records (
+            id, decision_type, title, reason, impact_summary,
+            related_plan_item_id, related_quest_id, related_session_id, created_at, metadata_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            str(uuid.uuid4()),
+            "quest_verdict",
+            f"Quest verdict: {quest['title']}",
+            reason,
+            plan_impact,
+            quest["plan_item_id"],
+            quest_id,
+            session_id or None,
+            updated_at,
+            None,
+        ),
+    )
+    
+    refresh_current_state(conn)
 
 
 VERDICT_STATUS_RE = re.compile(r"^AI 판정:\s*(done|partial|hold|pending)\b", re.MULTILINE)
@@ -345,41 +410,19 @@ def evaluate_quest(
         if quest is None:
             raise ValueError("quest not found")
 
-        updated_at = now_iso()
-        conn.execute(
-            """
-            UPDATE quests
-            SET status = ?, verdict_reason = ?, restart_point = ?, next_quest_hint = ?, updated_at = ?
-            WHERE id = ?
-            """,
-            (verdict, reason, restart_point, next_quest_hint, updated_at, quest_id),
+        _update_quest_status_with_decision(
+            conn=conn,
+            quest_id=quest_id,
+            quest=dict(quest),
+            verdict=verdict,
+            reason=reason,
+            restart_point=restart_point,
+            next_hint=next_quest_hint,
+            plan_impact=plan_impact,
+            session_id="",
+            metadata_json=None,
         )
-        if quest["plan_item_id"]:
-            conn.execute(
-                "UPDATE plan_items SET status = ?, updated_at = ? WHERE id = ?",
-                ("done" if verdict == "done" else verdict, updated_at, quest["plan_item_id"]),
-            )
-        conn.execute(
-            """
-            INSERT INTO decision_records (
-                id, decision_type, title, reason, impact_summary,
-                related_plan_item_id, related_quest_id, related_session_id, created_at, metadata_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                str(uuid.uuid4()),
-                "quest_verdict",
-                f"Quest verdict: {quest['title']}",
-                reason,
-                plan_impact,
-                quest["plan_item_id"],
-                quest_id,
-                None,
-                updated_at,
-                None,
-            ),
-        )
-        refresh_current_state(conn)
+        
         row = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
         return row_to_dict(row) if row else {}
 
@@ -411,7 +454,7 @@ def report_quest_progress(
                 session_id=session_id,
             )
         except Exception as e:
-            print(f"Failed to export report: {e}")
+            logger.warning("Failed to export report: %s", e, exc_info=True)
 
         # 2. Heuristic fallback (temporary)
         verdict_data = generate_verdict(

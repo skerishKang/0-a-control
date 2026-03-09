@@ -59,7 +59,15 @@ digraph G {
 - 워커가 꺼져 있는 동안 들어온 verdict 파일은 `data/queue/verdicts/`에 남아 있고, 워커 재시작 뒤 다시 스캔 대상이 된다.
 - 퀘스트가 `pending` 상태로 오래 머물면 `current_state.quest_status_summary.is_stale`와 경고 문구가 계산된다.
 
-## 7. 현재 비보장 범위
+## 7. 검증 및 테스트 도구
+
+이 파이프라인의 무결성을 검증하기 위해 다음 도구들을 사용한다.
+
+- **자동 단위 테스트**: `tests/test_01_pipeline_flow.py` 등. `tempfile` 기반 환경에서 파일 큐-워커-DB 반영 흐름을 자동 검증한다. (CI 범위)
+- **수동 파이프라인 시뮬레이션**: `tests/manual/run_pipeline_test.sh`. 로컬 환경에서 전체 흐름을 수동으로 재현한다.
+- **DB 상태 직접 확인**: `tests/manual/db_verify/` 아래 스크립트들. ingestion 후 실제 DB 반영 내역을 수동으로 검사할 때 사용한다.
+
+## 8. 현재 비보장 범위
 
 아래 항목은 아직 구현되지 않았거나, 수동 운영에 의존한다.
 

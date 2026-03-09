@@ -12,6 +12,8 @@ if str(ROOT_DIR) not in sys.path:
 
 def _import_modules():
     global connect, init_db, get_current_state, report_quest_progress, refresh_current_state, REPORTS_DIR, VERDICTS_DIR, import_verdicts
+    global db_base, db_state, file_queue, report_export, verdict_import
+    from scripts import db_base, db_state, file_queue, report_export, verdict_import
     from scripts.db_base import connect, init_db
     from scripts.db_ops import get_current_state, report_quest_progress
     from scripts.db_state import refresh_current_state

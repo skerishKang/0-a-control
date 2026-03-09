@@ -33,12 +33,20 @@
 
 ## 테스트 및 검증
 
-기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다. 주요 `unittest` 케이스(예: `test_01_pipeline_flow.py`)는 `tempfile` 기반의 임시 DB/큐/작업 디렉터리를 생성하여 운영 데이터와 분리된 환경에서 실행됩니다.
+이 프로젝트는 자동화된 단위 테스트와 수동 검증 스크립트를 구분하여 관리합니다. 자세한 내용은 `tests/README.md`를 참고하십시오.
 
-*   **로컬 실행**: `python -m unittest discover -s tests -p "test_*.py"` 명령으로 전체 테스트 스위트를 실행합니다. 최초 실행 시 `data/` 디렉터리에 데이터베이스가 자동으로 생성됩니다.
-*   **CI 실행**: GitHub Actions(Ubuntu 환경)를 통해 push/PR 발생 시 자동으로 테스트가 수행됩니다 (`.github/workflows/ci.yml`). CI 환경에서는 `pip install -r requirements.txt` 후에 전체 테스트를 실행하여 코드의 무결성을 검증합니다.
+### 자동 테스트 (CI 범위)
+GitHub Actions(Ubuntu)에서 푸시/PR 시 자동으로 실행되는 테스트입니다.
+*   **실행**: `python -m unittest discover -s tests -p "test_*.py"`
+*   **특징**: `tempfile` 기반의 임시 환경을 사용하여 운영 데이터와 격리된 상태에서 수행됩니다.
 
-> **참고**: `data/control_tower.db`는 운영 데이터 파일로 Git 저장소에서 제외되어 있습니다. 최초 실행 시 시스템이 이를 자동으로 생성합니다.
+### 수동 검증 및 시드 (로컬 범위)
+로컬 개발 및 운영 중 상태 확인을 위해 사용하는 스크립트입니다. CI에서는 실행되지 않습니다.
+*   **데이터 시드**: `tests/seed/` 내의 스크립트로 샘플 데이터를 생성합니다. (예: `python tests/seed/seed_dummy_inbox.py`)
+*   **파이프라인 검증**: `tests/manual/run_pipeline_test.sh`를 통해 전체 파일 큐 흐름을 수동으로 확인할 수 있습니다.
+*   **DB 무결성 확인**: `tests/manual/db_verify/`의 스크립트를 사용하여 DB 상태를 직접 점검합니다.
+
+> **주의**: CI 환경은 현재 Ubuntu Linux 기반이며, `launchers/` 내의 일부 Windows 전용 기능이나 복잡한 에이전트 연동 시나리오는 자동 테스트 범위에 포함되지 않을 수 있습니다.
 
 ## 현재 한계와 다음 문서
 
