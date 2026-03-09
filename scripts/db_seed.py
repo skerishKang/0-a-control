@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+# Enable both `python scripts/foo.py` and `python -m scripts.foo`
+import sys
+from pathlib import Path
+_root = str(Path(__file__).resolve().parents[1])
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+
 import json
 import uuid
 from datetime import datetime
 
-from db_base import UTC, connect, init_db, now_iso
-from db_state import get_workdiary_priority_candidates
-from db_state import refresh_current_state
+from scripts.db_base import UTC, connect, init_db, now_iso
+from scripts.db_state import get_workdiary_priority_candidates
+from scripts.db_state import refresh_current_state
 
 
 def create_sample_data_if_empty() -> None:

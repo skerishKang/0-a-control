@@ -1,6 +1,6 @@
 # 0-a-Control: 로컬-퍼스트 개인 컨트롤 타워
 
-로컬 SQLite와 파일 기반 파이프라인을 통해 개인 작업의 전략적 continuity를 유지하는 컨트롤 타워입니다. 체크리스트 앱이 아닌, 전략적 의사결정을 돕는 Aide를 지향합니다.
+로컬 SQLite와 파일 기반 파이프라인을 통해 개인 작업의 전략적 continuity를 유지하는 컨트롤 타워입니다. 현재 시스템은 로컬 운영을 위한 프로토타입 상태이며, 일부 파이프라인 기능은 테스트 검증 단계를 거치고 있습니다.
 
 ## 핵심 기능
 
@@ -30,11 +30,9 @@
 
 ## 테스트 및 검증
 
-기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다.
+기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다. 주요 `unittest` 케이스는 테스트마다 임시 DB/큐/작업 디렉터리를 만들어 운영 데이터와 분리하며, 셸 스크립트나 수동 검증 절차는 별도 환경 구성이 필요할 수 있습니다.
 
-*   `python tests/test_01_pipeline_flow.py`: 전체 파이프라인 검증
-*   `python tests/test_02_quests_basic.py`: DB 데이터 정합성 검증
-*   `python tests/test_session_resume.py`: 세션 연속성 및 상태 복원 검증
+*   `python -m unittest discover -s tests -p "test_*.py"`: 전체 테스트 스위트 실행.
 
 ## 저장소 구조 요약
 

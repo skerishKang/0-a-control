@@ -4,10 +4,12 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import os
 import tempfile
 import unittest
 
 import scripts.db_base as db_base
+import scripts.db_state as db_state
 from scripts.db_sessions import append_source_record, end_session, start_session, update_session_summary
 from scripts.db_state import refresh_current_state
 
@@ -15,10 +17,28 @@ from scripts.db_state import refresh_current_state
 class SessionResumeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp_dir.name)
+        self.data_dir = self.root / "data"
+        self.workdiary_dir = self.root / "workdiary"
+        (self.workdiary_dir / "demo-project").mkdir(parents=True, exist_ok=True)
+
+        self.orig_env = {
+            "CONTROL_TOWER_DATA_DIR": os.environ.get("CONTROL_TOWER_DATA_DIR"),
+            "CONTROL_TOWER_DB_PATH": os.environ.get("CONTROL_TOWER_DB_PATH"),
+            "CONTROL_TOWER_WORKDIARY_DIR": os.environ.get("CONTROL_TOWER_WORKDIARY_DIR"),
+        }
+        os.environ["CONTROL_TOWER_DATA_DIR"] = str(self.data_dir)
+        os.environ["CONTROL_TOWER_DB_PATH"] = str(self.data_dir / "control_tower.db")
+        os.environ["CONTROL_TOWER_WORKDIARY_DIR"] = str(self.workdiary_dir)
+
         self.orig_data_dir = db_base.DATA_DIR
         self.orig_db_path = db_base.DB_PATH
-        db_base.DATA_DIR = Path(self.temp_dir.name)
-        db_base.DB_PATH = db_base.DATA_DIR / "control_tower.db"
+        self.orig_workdiary_dir = db_base.WORKDIARY_DIR
+        self.orig_state_workdiary_dir = db_state.WORKDIARY_DIR
+        db_base.DATA_DIR = self.data_dir
+        db_base.DB_PATH = self.data_dir / "control_tower.db"
+        db_base.WORKDIARY_DIR = self.workdiary_dir
+        db_state.WORKDIARY_DIR = self.workdiary_dir
         db_base.init_db()
 
         now = db_base.now_iso()
@@ -77,6 +97,13 @@ class SessionResumeTests(unittest.TestCase):
     def tearDown(self) -> None:
         db_base.DATA_DIR = self.orig_data_dir
         db_base.DB_PATH = self.orig_db_path
+        db_base.WORKDIARY_DIR = self.orig_workdiary_dir
+        db_state.WORKDIARY_DIR = self.orig_state_workdiary_dir
+        for key, value in self.orig_env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
         self.temp_dir.cleanup()
 
     def test_start_session_includes_resume_payload_from_previous_session(self) -> None:

@@ -3,8 +3,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
+from pathlib import Path
 
-from db import append_source_record, end_session, get_resume_context, get_source_records, start_session
+if __package__ is None:
+    project_root = Path(__file__).resolve().parents[1]
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    from scripts.db import append_source_record, end_session, get_resume_context, get_source_records, start_session
+else:
+    from .db import append_source_record, end_session, get_resume_context, get_source_records, start_session
 
 
 def parse_args() -> argparse.Namespace:

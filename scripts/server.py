@@ -1,5 +1,18 @@
 from __future__ import annotations
 
+# Enable both `python scripts/foo.py` and `python -m scripts.foo`
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[1]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+if __package__ in (None, ""):
+    from scripts import db as _db
+else:
+    from . import db as _db
+
 import json
 import logging
 import mimetypes
@@ -11,7 +24,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
-from db import (
+from _db import (
     ROOT_DIR,
     append_source_record,
     create_sample_data_if_empty,

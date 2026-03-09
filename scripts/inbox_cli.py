@@ -1,3 +1,10 @@
+# Enable both `python scripts/foo.py` and `python -m scripts.foo`
+import sys
+from pathlib import Path
+_root = str(Path(__file__).resolve().parents[1])
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+
 """
 Actual implementation of the CLI for interacting with the external_inbox.
 """
@@ -5,15 +12,10 @@ import argparse
 import json
 import re
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
-import sys
 
-# Ensure the parent directory is in sys.path so we can import from scripts/
-sys.path.append(str(Path(__file__).resolve().parent))
-
-from .db_base import connect, rows_to_dicts, ROOT_DIR
-from . import db_ops
-from .inbox_parse import parse_time_range, resolve_source_aliases
+from scripts.db_base import connect, rows_to_dicts, ROOT_DIR
+from scripts import db_ops
+from scripts.inbox_parse import parse_time_range, resolve_source_aliases
 
 CANDIDATES_CACHE_FILE = ROOT_DIR / "data" / "runtime" / "last_inbox_candidates.json"
 

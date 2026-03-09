@@ -1,10 +1,16 @@
+# Enable both `python scripts/foo.py` and `python -m scripts.foo`
+import sys
+from pathlib import Path
+_root = str(Path(__file__).resolve().parents[1])
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+
 import sqlite3
 import requests
 import json
 import argparse
-from pathlib import Path
 from datetime import datetime, timezone
-from .telegram_db import init_db
+from scripts.telegram_db import init_db
 
 DB_PATH = Path(__file__).resolve().parents[1] / "data" / "control_tower.db"
 BASE_URL = "http://localhost:4300"

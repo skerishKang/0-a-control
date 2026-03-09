@@ -3,11 +3,12 @@ from __future__ import annotations
 import json
 import uuid
 import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-QUEUE_DIR = ROOT_DIR / "data" / "queue"
+QUEUE_DIR = Path(os.getenv("CONTROL_TOWER_QUEUE_DIR", str(ROOT_DIR / "data" / "queue")))
 REPORTS_DIR = QUEUE_DIR / "reports"
 VERDICTS_DIR = QUEUE_DIR / "verdicts"
 PROCESSED_DIR = QUEUE_DIR / "processed"
@@ -51,19 +52,19 @@ def save_json(directory: Path, filename: str, data: dict) -> Path:
 def move_to_processed(file_path: Path):
     target_dir = PROCESSED_DIR / file_path.parent.name
     target_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(target_dir / file_path.name)
+    shutil.move(str(file_path), str(target_dir / file_path.name))
 
 
 def move_to_failed(file_path: Path):
     target_dir = QUEUE_DIR / "failed" / file_path.parent.name
     target_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(target_dir / file_path.name)
+    shutil.move(str(file_path), str(target_dir / file_path.name))
 
 
 def move_to_duplicate(file_path: Path):
     target_dir = PROCESSED_DIR / "duplicates" / file_path.parent.name
     target_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(target_dir / file_path.name)
+    shutil.move(str(file_path), str(target_dir / file_path.name))
 
 
 def move_to_archive_revision(file_path: Path):
@@ -71,5 +72,4 @@ def move_to_archive_revision(file_path: Path):
     target_dir.mkdir(parents=True, exist_ok=True)
     # Append UUID to prevent overwriting existing revisions of the same report_id
     new_name = f"{file_path.stem}.{str(uuid.uuid4())[:8]}{file_path.suffix}"
-    file_path.rename(target_dir / new_name)
-
+    shutil.move(str(file_path), str(target_dir / new_name))

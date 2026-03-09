@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+# Enable both `python scripts/foo.py` and `python -m scripts.foo`
+import sys
+from pathlib import Path
+_root = str(Path(__file__).resolve().parents[1])
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+
 import argparse
 import json
 
-from .db_ops import get_current_state
-from .db_base import connect
+from scripts.db_ops import get_current_state
+from scripts.db_base import connect
 
 
 PHASE_GUIDE = {

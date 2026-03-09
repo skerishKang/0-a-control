@@ -48,7 +48,7 @@ digraph G {
 
 ## 6. 실패 및 재처리 전략 (운영 시나리오)
 
-현재 `0-a-control`의 파이프라인은 아래와 같이 파일 상태와 워커 사이의 장애 모듈을 격리하며 무중단으로 동작합니다. 
+현재 `0-a-control`의 파이프라인은 파일 기반 큐를 통해 장애 지점을 분리합니다. 워커 프로세스가 중단되어도 파일은 보존되며, 워커 재시작 시 디렉토리에 남은 파일들을 순차적으로 읽어 들입니다. 이는 고가용성(High-Availability)이나 자동 복구를 보장하는 구조는 아닙니다.
 
 | 케이스 | 감지 포인트 및 워커 처리 | 잔여 리스크 및 대응 (DB/UI) |
 | --- | --- | --- |
@@ -56,7 +56,7 @@ digraph G {
 | **중복 처리 (Duplicate)** | 동일 `report_ref`, 같은 판정 결과, 동일한 `verdict_seq` 감지. 워커가 `DuplicateVerdict` 예외를 내고 `data/queue/processed/duplicates/`로 파일 이동 | DB 변화 없이 조용히 무시되며 추가 리스크는 없습니다. |
 | **과거 판정 유입 (Stale)** | `report_ref`는 같으나 현재 DB보다 `verdict_seq`가 낮음. 워커가 이 또한 `code="stale_revision"`으로 분류해 `archive/revisions/`로 안전 보관 | 늦게 도착한 과거 판정이 최신 상태를 덮어쓰는 것을 원천 방어합니다. 조용히 무시됩니다. |
 | **판정 파일 미수신 (Timeout)** | 퀘스트를 보고했으나 폴링 디렉토리에 `.verdict.json`이 오지 않음 | **[운영 리스크 완화]** 10분 이상 지연 시 UI의 `quest_status_summary` 필드에 `is_stale=True` 및 경고 메시지가 표시됩니다. 사용자는 이를 통해 에이전트 프로세스(queue_worker 등)의 구동 여부를 즉시 인지할 수 있습니다. |
-| **워커가 꺼져있을 때** | `scripts/queue_worker.py` 프로세스가 다운되거나 PC가 꺼져 있는 상태 | 외부 에이전트가 생성한 `.verdict.json` 파일들은 파일시스템 디렉토리에 고스란히 쌓여있습니다. 유실되지 않으며, 다음 번 `.bat` 부팅 시 즉시 순차적으로 전부 흡수(Ingest)하여 DB를 최신화합니다. |
+| **워커가 꺼져있을 때** | `scripts/queue_worker.py` 프로세스가 중단된 상태 | 외부 에이전트가 생성한 `.verdict.json` 파일들은 디렉토리에 유지됩니다. 이후 워커가 다시 구동될 때 해당 파일들을 스캔하여 DB에 반영을 시도합니다. |
 
 ## 7. 기존 문서 연결
 - 데이터베이스 반영 규칙은 `docs/05-data-schema.md`의 `quests`, `plan_items`, `decision_records` 스키마를 따른다.
