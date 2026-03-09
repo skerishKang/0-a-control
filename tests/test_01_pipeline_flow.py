@@ -1,7 +1,7 @@
-import json
 import os
 import sys
 import tempfile
+import json
 import unittest
 from pathlib import Path
 
@@ -9,19 +9,49 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-import scripts.db_base as db_base
-import scripts.db_state as db_state
-import scripts.file_queue as file_queue
-import scripts.report_export as report_export
-import scripts.verdict_import as verdict_import
-from scripts.db_ops import get_current_state, report_quest_progress
-from scripts.db_state import refresh_current_state
-from scripts.verdict_import import import_verdicts
+
+def _import_modules():
+    global connect, init_db, get_current_state, report_quest_progress, refresh_current_state, REPORTS_DIR, VERDICTS_DIR, import_verdicts
+    from scripts.db_base import connect, init_db
+    from scripts.db_ops import get_current_state, report_quest_progress
+    from scripts.db_state import refresh_current_state
+    from scripts.file_queue import REPORTS_DIR, VERDICTS_DIR
+    from scripts.verdict_import import import_verdicts
+
+
+def _set_env_for_tests(temp_dir: str) -> dict[str, str | None]:
+    overrides = {
+        "CONTROL_TOWER_DATA_DIR": Path(temp_dir) / "data",
+        "CONTROL_TOWER_DB_PATH": Path(temp_dir) / "data" / "control_tower.db",
+        "CONTROL_TOWER_QUEUE_DIR": Path(temp_dir) / "data" / "queue",
+    }
+    previous = {}
+    for key, path in overrides.items():
+        previous[key] = os.environ.get(key)
+        os.environ[key] = str(path)
+    (Path(os.environ["CONTROL_TOWER_QUEUE_DIR"]) / "reports").mkdir(parents=True, exist_ok=True)
+    (Path(os.environ["CONTROL_TOWER_QUEUE_DIR"]) / "verdicts").mkdir(parents=True, exist_ok=True)
+    return previous
 
 
 class PipelineFlowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = tempfile.TemporaryDirectory()
+        cls.previous_env = _set_env_for_tests(cls.temp_dir.name)
+        _import_modules()
+        init_db()
+
+    @classmethod
+    def tearDownClass(cls):
+        for key, value in cls.previous_env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+        cls.temp_dir.cleanup()
+
     def setUp(self) -> None:
-        self.temp_dir = tempfile.TemporaryDirectory()
         self.root = Path(self.temp_dir.name)
         self.data_dir = self.root / "data"
         self.db_path = self.data_dir / "control_tower.db"
@@ -39,9 +69,6 @@ class PipelineFlowTests(unittest.TestCase):
                 "CONTROL_TOWER_WORKDIARY_DIR",
             )
         }
-        os.environ["CONTROL_TOWER_DATA_DIR"] = str(self.data_dir)
-        os.environ["CONTROL_TOWER_DB_PATH"] = str(self.db_path)
-        os.environ["CONTROL_TOWER_QUEUE_DIR"] = str(self.queue_dir)
         os.environ["CONTROL_TOWER_WORKDIARY_DIR"] = str(self.workdiary_dir)
 
         self.original_paths = {
@@ -70,11 +97,7 @@ class PipelineFlowTests(unittest.TestCase):
         verdict_import.REPORTS_DIR = file_queue.REPORTS_DIR
         verdict_import.VERDICTS_DIR = file_queue.VERDICTS_DIR
 
-        db_base.init_db()
-        file_queue.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        file_queue.VERDICTS_DIR.mkdir(parents=True, exist_ok=True)
-
-        with db_base.connect() as conn:
+        with connect() as conn:
             refresh_current_state(conn)
             conn.execute(
                 """
@@ -118,8 +141,6 @@ class PipelineFlowTests(unittest.TestCase):
                 os.environ.pop(key, None)
             else:
                 os.environ[key] = value
-
-        self.temp_dir.cleanup()
 
     def test_full_pipeline_flow(self) -> None:
         report_quest_progress(
