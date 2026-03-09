@@ -1,5 +1,5 @@
-from db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
-from db_ops import (
+from scripts.db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
+from scripts.db_ops import (
     evaluate_quest,
     get_current_state,
     get_latest_briefs,
@@ -8,7 +8,7 @@ from db_ops import (
     get_recent_sessions,
     report_quest_progress,
 )
-from db_sessions import (
+from scripts.db_sessions import (
     append_source_record,
     end_session,
     get_resume_context,
@@ -16,8 +16,8 @@ from db_sessions import (
     start_session,
     update_session_summary,
 )
-from db_seed import create_sample_data_if_empty
-from db_state import get_workdiary_priority_candidates, get_workdiary_top_level, refresh_current_state
+from scripts.db_seed import create_sample_data_if_empty
+from scripts.db_state import get_workdiary_priority_candidates, get_workdiary_top_level, refresh_current_state
 
 __all__ = [
     "append_source_record",

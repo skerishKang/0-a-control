@@ -10,5 +10,4 @@ if not "%~1"=="" (
   set "TITLE=%*"
 )
 
-bash scripts/codex-work.sh "%PROJECT%" "%TITLE%"
-pause
+call "%~dp0codex-wsl-launch.bat" "%PROJECT%" "%TITLE%" "fresh"

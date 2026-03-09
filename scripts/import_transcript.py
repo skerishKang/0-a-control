@@ -8,7 +8,8 @@ from pathlib import Path
 from db_sessions import append_source_record, update_session_summary
 from session_summary import summarize_transcript
 
-ANSI_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+ANSI_CSI_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+ANSI_OSC_RE = re.compile(r"\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)")
 
 # Common Prompts for heuristic splitting
 USER_RE = re.compile(r"^(?:> |\? |(?:You|User|Human):\s*)", re.IGNORECASE)
@@ -16,7 +17,8 @@ ASSISTANT_RE = re.compile(r"^(?:(?:Codex|Gemini|Assistant|AI|Response|Bot):\s*)"
 TOOL_RE = re.compile(r"^(?:(?:Tool|System|Executing|Error|Warning|Info):\s*|\$\s+|\[\d{4}-\d{2}-\d{2})", re.IGNORECASE)
 
 def strip_ansi(text: str) -> str:
-    return ANSI_RE.sub("", text)
+    text = ANSI_OSC_RE.sub("", text)
+    return ANSI_CSI_RE.sub("", text)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Import terminal transcript into source_records")

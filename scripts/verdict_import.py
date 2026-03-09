@@ -5,8 +5,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from db_ops import apply_verdict, DuplicateVerdict
-from file_queue import (
+from .db_ops import apply_verdict, DuplicateVerdict
+from .file_queue import (
     REPORTS_DIR,
     VERDICTS_DIR,
     move_to_processed,

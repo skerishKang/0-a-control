@@ -47,12 +47,16 @@ function renderHeroCard(current) {
 
   // 4. Mission Risk / Caution Hint Calculation
   const nextCore = unfinished.find((item) => item.title !== current.main_mission_title) || null;
-  const cautionText = missionRiskText({
+  let cautionText = missionRiskText({
     missionStatus,
     nextCore,
     currentQuestTitle: current.current_quest_title,
   });
   
+  if (statusSummary.is_stale && statusSummary.stale_reason) {
+    cautionText = `${statusSummary.stale_reason} ${cautionText}`;
+  }
+
   const mainMissionRisk = document.getElementById("mainMissionRisk");
   if (mainMissionRisk) {
     mainMissionRisk.textContent = cautionText;

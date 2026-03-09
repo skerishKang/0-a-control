@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 import uuid
 
-from agent_registry import canonical_agent_name
-from db_base import connect, now_iso, row_to_dict, rows_to_dicts
-from db_state import refresh_current_state
+from scripts.agent_registry import canonical_agent_name
+from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
+from scripts.db_state import refresh_current_state
 
 
 def start_session(

@@ -11,9 +11,9 @@ import sys
 # Ensure the parent directory is in sys.path so we can import from scripts/
 sys.path.append(str(Path(__file__).resolve().parent))
 
-from db_base import connect, rows_to_dicts, ROOT_DIR
-import db_ops
-from inbox_parse import parse_time_range, resolve_source_aliases
+from .db_base import connect, rows_to_dicts, ROOT_DIR
+from . import db_ops
+from .inbox_parse import parse_time_range, resolve_source_aliases
 
 CANDIDATES_CACHE_FILE = ROOT_DIR / "data" / "runtime" / "last_inbox_candidates.json"
 

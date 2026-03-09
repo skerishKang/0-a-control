@@ -1,1 +1,3 @@
-# v1 uses Python standard library only.
+# v1 uses Python standard library for most core logic,
+# but the optional web server component uses 'requests'.
+requests

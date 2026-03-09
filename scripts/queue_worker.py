@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import time
 
-from verdict_import import import_verdicts
+from .verdict_import import import_verdicts
 
 
 logging.basicConfig(
@@ -18,7 +18,7 @@ MAX_SLEEP_SECONDS = 10
 
 
 def main() -> None:
-    logger.info("Starting queue worker... polling quest_verdicts/")
+    logger.info("Starting queue worker... polling data/queue/verdicts/")
     backoff = BASE_SLEEP_SECONDS
     try:
         while True:

@@ -68,8 +68,8 @@ Rules:
   - `opencode`
 
 ## Quest Report → External Verdict → 다음 퀘스트 흐름
-1. **퀘스트 보고**: `scripts/worklog.sh user`로 보고 내용을 남기고, `report_quest_progress`가 `quest_reports/`에 JSON을 생성하며 퀘스트 상태를 `pending`으로 전환한다.
-2. **external verdict 대기**: 외부 에이전트(예: Gemini) 워커가 report JSON을 판독해 `quest_verdicts/`에 verdict JSON을 기록한다. 이동안 CMD UI에는 동일 퀘스트 카드가 유지되지만 "판정 대기" 배지가 붙는다.
+1. **퀘스트 보고**: `scripts/worklog.sh user`로 보고 내용을 남기고, `report_quest_progress`가 `data/queue/reports/`에 JSON을 생성하며 퀘스트 상태를 `pending`으로 전환한다.
+2. **external verdict 대기**: 외부 에이전트(예: Gemini) 워커가 report JSON을 판독해 `data/queue/verdicts/`에 verdict JSON을 기록한다. 이동안 CMD UI에는 동일 퀘스트 카드가 유지되지만 "판정 대기" 배지가 붙는다.
 3. **ingest & 업데이트**: `queue_worker.py`가 verdict를 ingest해 `quests`/`plan_items` 및 `current_state`를 갱신한다. verdict 결과가 `done/partial/hold`로 반영되며 pending 배지는 제거된다.
 4. **다음 퀘스트 협의**: verdict가 완료되면 `recommended_next_quest`가 채워지고, CLI에서 다음 퀘스트를 선택하거나 새 보고를 작성한다.
 

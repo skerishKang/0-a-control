@@ -13,8 +13,6 @@
 
 1.  **환경 설정**:
     ```bash
-    git clone <repository_url>
-    cd 0-a-control
     pip install -r requirements.txt
     ```
 
@@ -36,12 +34,12 @@
 
 *   `python tests/test_01_pipeline_flow.py`: 전체 파이프라인 검증
 *   `python tests/test_02_quests_basic.py`: DB 데이터 정합성 검증
+*   `python tests/test_session_resume.py`: 세션 연속성 및 상태 복원 검증
 
 ## 저장소 구조 요약
 
-*   `data/`: 데이터베이스 및 런타임 상태
+*   `data/`: 데이터베이스, 런타임 상태 및 파일 큐 (`data/queue/`)
 *   `docs/`: 운영/설계 문서
 *   `public/`: 웹 프론트엔드 자산
-*   `quest_reports/`, `quest_verdicts/`: 파일 기반 파이프라인 통로
 *   `scripts/`: 주요 운영 스크립트 및 CLI 래퍼
 *   `tests/`: 테스트 스크립트

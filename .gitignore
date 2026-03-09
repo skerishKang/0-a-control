@@ -23,12 +23,12 @@ dist/
 data/runtime/
 
 # 파일 기반 파이프라인 산출물
-quest_reports/*.json
-quest_verdicts/*.json
-processed/**/*.json
-failed/**/*.json
-duplicates/**/*.json
-archive/**/*.json
+data/queue/reports/*.json
+data/queue/verdicts/*.json
+data/queue/processed/**/*.json
+data/queue/failed/**/*.json
+data/queue/duplicates/**/*.json
+data/queue/archive/**/*.json
 revisions/**/*.json
 session_exports/*.md
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 
-from db import get_current_state
-from db_base import connect
+from .db_ops import get_current_state
+from .db_base import connect
 
 
 PHASE_GUIDE = {

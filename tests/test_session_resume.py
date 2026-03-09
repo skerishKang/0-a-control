@@ -1,20 +1,15 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 import tempfile
 import unittest
-from pathlib import Path
-import sys
 
-ROOT_DIR = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = ROOT_DIR / "scripts"
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-
-import db_base
-from db_sessions import append_source_record, end_session, start_session, update_session_summary
-from db_state import refresh_current_state
+import scripts.db_base as db_base
+from scripts.db_sessions import append_source_record, end_session, start_session, update_session_summary
+from scripts.db_state import refresh_current_state
 
 
 class SessionResumeTests(unittest.TestCase):

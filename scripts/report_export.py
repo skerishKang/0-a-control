@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from file_queue import REPORTS_DIR, generate_report_id, generate_filename, save_json
-from db_base import connect
+from .file_queue import REPORTS_DIR, generate_report_id, generate_filename, save_json
+from .db_base import connect
 
 
 def export_quest_report(

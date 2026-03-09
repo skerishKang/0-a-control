@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import uuid
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -29,9 +30,21 @@ def generate_filename(report_id: str, suffix: str) -> str:
 
 
 def save_json(directory: Path, filename: str, data: dict) -> Path:
+    """Saves a dictionary to a JSON file atomically."""
     directory.mkdir(parents=True, exist_ok=True)
     file_path = directory / filename
-    file_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    temp_path = file_path.with_suffix(f"{file_path.suffix}.tmp_{uuid.uuid4().hex}")
+    
+    try:
+        temp_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(temp_path, file_path)
+    except Exception as e:
+        print(f"Error saving JSON to {file_path}: {e}")
+        # Clean up temp file if it exists
+        if temp_path.exists():
+            temp_path.unlink()
+        raise
+        
     return file_path
 
 
