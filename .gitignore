@@ -18,6 +18,7 @@ dist/
 .env
 .env.*
 !.env.example
+kilo.json
 
 # 런타임 파일
 *.log

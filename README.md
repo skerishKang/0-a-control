@@ -18,9 +18,9 @@
     선택 사항: `.env.example`를 참고해 환경변수를 맞출 수 있습니다.
 
 2.  **실행**:
-    *   **Windows**: `start-control-tower.bat`로 서버/큐 워커를 바로 띄울 수 있습니다. 별도의 에이전트 래퍼 실행은 일부 launcher가 WSL/bash를 전제로 합니다.
+    *   **Windows**: `start-control-tower.bat`로 서버와 큐 워커를 시작할 수 있습니다. 다만 `launchers/`와 일부 에이전트 래퍼는 WSL/bash 환경을 전제로 하므로 Windows 지원은 부분적입니다.
     *   **macOS/Linux/WSL**: `start-control-tower.sh` 실행
-    *   **에이전트 작업 래퍼**: `scripts/agent-work.sh` 가 공통 진입점이고, `scripts/codex-work.sh`, `scripts/gemini-cli-work.sh` 같은 얇은 래퍼가 이를 감쌉니다.
+    *   **에이전트 작업 래퍼**: `scripts/agent-work.sh` 가 공통 진입점이고, `scripts/agent_registry.py` 가 에이전트 이름과 실행 파일을 해석합니다. `scripts/codex-work.sh`, `scripts/gemini-cli-work.sh` 같은 얇은 래퍼는 이 진입점을 감싸는 편의 스크립트입니다.
 
 3.  **접속**: 브라우저에서 `http://localhost:4310` 접속
 
@@ -36,6 +36,14 @@
 기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다. 주요 `unittest` 케이스는 테스트마다 임시 DB/큐/작업 디렉터리를 만들어 운영 데이터와 분리하며, 셸 스크립트나 수동 검증 절차는 별도 환경 구성이 필요할 수 있습니다.
 
 *   `python -m unittest discover -s tests -p "test_*.py"`: 전체 테스트 스위트 실행.
+*   현재 로컬에서는 위 `unittest discover`가 통과합니다.
+*   하지만 저장소에는 아직 `.github/workflows/`가 없으므로 GitHub Actions 기반 CI는 연결되어 있지 않습니다.
+
+## 현재 한계와 다음 문서
+
+*   `scripts/` 아래에는 DB, 서버, 큐, Telegram, import, wrapper 스크립트가 함께 있어 역할 경계가 완전히 분리된 상태는 아닙니다.
+*   파일 기반 판정 파이프라인은 중복 판정, 손상 JSON 격리, stale revision 보관은 구현되어 있지만, 자동 재처리 정책과 운영 절차는 아직 문서/자동화가 더 필요합니다.
+*   구조 개선 과제는 [docs/11-structure-followups.md](/mnt/g/Ddrive/BatangD/task/workdiary/0-a-control/docs/11-structure-followups.md)에 따로 정리했습니다.
 
 ## 저장소 구조 요약
 
