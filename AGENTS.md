@@ -89,7 +89,8 @@ Every evaluation must also include:
 The system uses a unified CLI entry point for work sessions:
 
 - `scripts/agent-work.sh`: The core runner that manages session lifecycle, log capture, and state sync.
-- `scripts/[agent]-work.sh`: Minimal wrapper scripts (e.g., `windsurf-work.sh`, `gemini-work.sh`) that pre-set the agent name for convenience.
+- `scripts/agent_registry.py`: Resolves canonical agent names and executable mappings for the wrappers.
+- `scripts/[agent]-work.sh`: Minimal wrapper scripts (e.g., `windsurf-work.sh`, `gemini-cli-work.sh`) that pre-set the agent name for convenience. Some wrappers exist as compatibility aliases and can be consolidated later, but the wrapper structure itself is already present.
 - `scripts/queue_worker.py`: Background process that monitors the file-based pipeline for AI verdicts.
 
 ## Daily Operating Loop
@@ -164,6 +165,7 @@ Support:
 - final strategic direction remains dialog-driven
 
 ## External Integrations
-Future integrations such as Telegram, email, or OpenClaw must connect through shared contracts, not by replacing the central memory model.
+Telegram ingestion already has local scripts (`scripts/telegram_cli.py`, `scripts/telegram_db.py`) and should continue to plug into the shared memory model through common contracts.
+Future expansion such as richer Telegram automation, email, or OpenClaw must connect through shared contracts, not by replacing the central memory model.
 
 `0-a-control` remains the source of truth for planning state.
