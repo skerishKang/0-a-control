@@ -33,11 +33,12 @@
 
 ## 테스트 및 검증
 
-기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다. 주요 `unittest` 케이스는 테스트마다 임시 DB/큐/작업 디렉터리를 만들어 운영 데이터와 분리하며, 셸 스크립트나 수동 검증 절차는 별도 환경 구성이 필요할 수 있습니다.
+기능 검증을 위해 `tests/` 디렉토리의 스크립트를 활용합니다. 주요 `unittest` 케이스(예: `test_01_pipeline_flow.py`)는 `tempfile` 기반의 임시 DB/큐/작업 디렉터리를 생성하여 운영 데이터와 분리된 환경에서 실행됩니다.
 
-*   `python -m unittest discover -s tests -p "test_*.py"`: 전체 테스트 스위트 실행.
-*   현재 로컬에서는 위 `unittest discover`가 통과합니다.
-*   하지만 저장소에는 아직 `.github/workflows/`가 없으므로 GitHub Actions 기반 CI는 연결되어 있지 않습니다.
+*   **로컬 실행**: `python -m unittest discover -s tests -p "test_*.py"` 명령으로 전체 테스트 스위트를 실행합니다. 최초 실행 시 `data/` 디렉터리에 데이터베이스가 자동으로 생성됩니다.
+*   **CI 실행**: GitHub Actions(Ubuntu 환경)를 통해 push/PR 발생 시 자동으로 테스트가 수행됩니다 (`.github/workflows/ci.yml`). CI 환경에서는 `pip install -r requirements.txt` 후에 전체 테스트를 실행하여 코드의 무결성을 검증합니다.
+
+> **참고**: `data/control_tower.db`는 운영 데이터 파일로 Git 저장소에서 제외되어 있습니다. 최초 실행 시 시스템이 이를 자동으로 생성합니다.
 
 ## 현재 한계와 다음 문서
 

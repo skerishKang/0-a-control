@@ -23,6 +23,7 @@ kilo.json
 # 런타임 파일
 *.log
 data/runtime/
+data/control_tower.db
 
 # 파일 기반 파이프라인 산출물
 data/queue/reports/*.json
