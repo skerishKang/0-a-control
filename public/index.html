@@ -6,7 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Control Tower</title>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/panels.css" />
+  <link rel="stylesheet" href="/panels-base.css" />
+  <link rel="stylesheet" href="/panels-calendar.css" />
+  <link rel="stylesheet" href="/panels-detail.css" />
+  <link rel="stylesheet" href="/panels-support.css" />
   <link rel="stylesheet" href="/sessions.css" />
 </head>
 
@@ -18,6 +21,7 @@
         <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
         <div id="mainMissionStatus"></div>
       </div>
+      <p id="loadStatusMessage" class="mission-reason" hidden></p>
       <p id="mainMissionReason" class="mission-reason"></p>
       <div class="mission-grid">
         <div class="criteria-box accent">
@@ -35,17 +39,17 @@
     </section>
 
     <section class="midday-grid">
-      <article class="panel panel-step-1">
+      <article class="panel panel-static-summary panel-step-1">
         <p class="section-label">STEP 1. 재시작 포인트</p>
         <h3>어디서 다시 잡을지</h3>
         <div id="restartPointHint" class="list action-focus-list"></div>
       </article>
-      <article class="panel panel-step-3 next-quest-panel">
+      <article class="panel panel-static-summary panel-step-3 next-quest-panel">
         <p class="section-label">STEP 2. 다음 행동</p>
         <h3>다음 퀘스트</h3>
         <div id="nextQuestHint" class="list action-focus-list"></div>
       </article>
-      <article class="panel panel-step-2">
+      <article class="panel panel-static-summary panel-step-2">
         <p class="section-label">STEP 3. 막힘 / 주의점</p>
         <h3>지금 놓치면 밀리는 것</h3>
         <div id="cautionHint" class="list action-focus-list"></div>
@@ -53,13 +57,13 @@
     </section>
 
     <section class="support-grid">
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>기한 임박</h3><span id="dueSoonCount" class="count-badge"></span>
         </div>
         <div id="dueSoonList" class="list"></div>
       </article>
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>어제 미완료 / 현재 미완료</h3><span id="unfinishedCount" class="count-badge"></span>
         </div>
@@ -71,19 +75,19 @@
         </div>
         <div id="priorityCandidateList" class="list"></div>
       </article>
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>단기 플랜</h3><span id="shortTermCount" class="count-badge"></span>
         </div>
         <div id="shortTermList" class="list"></div>
       </article>
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>장기 플랜</h3><span id="longTermCount" class="count-badge"></span>
         </div>
         <div id="longTermList" class="list"></div>
       </article>
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>반복 플랜</h3><span id="recurringCount" class="count-badge"></span>
         </div>
@@ -96,13 +100,13 @@
         <div id="sessionAgentFilter" class="filter-chip-row"></div>
         <div id="recentSessionList" class="list"></div>
       </article>
-      <article class="panel panel-muted panel-order-briefs">
+      <article class="panel panel-muted panel-order-briefs panel-summary">
         <div class="panel-head">
           <h3>최근 브리프</h3><span id="briefCount" class="count-badge"></span>
         </div>
         <div id="briefList" class="list"></div>
       </article>
-      <article class="panel panel-muted panel-order-workdiary">
+      <article class="panel panel-muted panel-order-workdiary panel-summary">
         <div class="panel-head">
           <h3>workdiary 상위 폴더</h3><span id="workdiaryCount" class="count-badge"></span>
         </div>
@@ -115,12 +119,9 @@
         <div class="panel-head">
           <h3>최근 판정</h3>
         </div>
-        <div id="verdictDetails" class="verdict-card open">
-          <div id="recentVerdict" class="verdict-summary no-summary"></div>
-          <div id="verdictDetailBody" class="detail-body"></div>
-        </div>
+        <div id="recentVerdict" class="verdict-summary"></div>
       </article>
-      <article class="panel">
+      <article class="panel panel-summary">
         <div class="panel-head">
           <h3>오늘 판단 / 남은 핵심</h3>
         </div>
@@ -131,7 +132,7 @@
           <h3>계획 달력</h3>
         </div>
         <div id="calendarContainer" class="calendar-container"></div>
-        <div id="calendarDetail" class="calendar-detail list"></div>
+        <div id="calendarSummary" class="calendar-summary" hidden></div>
       </article>
     </section>
   </main>
@@ -170,51 +171,6 @@
     </form>
   </aside>
 
-  <aside id="sessionPanel" class="side-panel" aria-hidden="true" hidden>
-    <div class="side-panel-header">
-      <div>
-        <p class="section-label">세션 보기</p>
-        <h3 id="sessionPanelTitle">최근 세션</h3>
-      </div>
-      <button id="closeSessionPanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
-    </div>
-    <div class="session-panel-body">
-      <div class="detail-section">
-        <strong>기본 정보</strong>
-        <p id="sessionPanelMeta" class="muted"></p>
-      </div>
-      <div class="session-panel-highlight-grid">
-        <div class="detail-section highlight-box">
-          <strong>핵심 판단</strong>
-          <p id="sessionPanelDecision" class="muted"></p>
-        </div>
-        <div class="detail-section highlight-box">
-          <strong>다음 액션</strong>
-          <p id="sessionPanelNextAction" class="muted"></p>
-        </div>
-      </div>
-      <div class="detail-section">
-        <strong>요약</strong>
-        <p id="sessionPanelSummary" class="muted"></p>
-      </div>
-      <div class="session-panel-highlight-grid">
-        <div class="detail-section highlight-box">
-          <strong>최근 퀘스트 보고</strong>
-          <p id="sessionPanelQuestReport" class="muted"></p>
-        </div>
-        <div class="detail-section highlight-box">
-          <strong>최근 AI 판정</strong>
-          <p id="sessionPanelQuestVerdict" class="muted"></p>
-        </div>
-      </div>
-      <div class="detail-section">
-        <strong>대화 기록</strong>
-        <div id="sessionRecordFilter" class="filter-chip-row compact"></div>
-        <div id="sessionPanelRecords" class="list session-record-list"></div>
-      </div>
-    </div>
-  </aside>
-
   <aside id="detailPanel" class="side-panel" aria-hidden="true" hidden>
     <div class="side-panel-header">
       <div>
@@ -229,7 +185,6 @@
   </aside>
 
   <script src="/app-utils.js"></script>
-  <script src="/app-renderers.js"></script>
   <script src="/app-sessions.js"></script>
   <script src="/app-hero.js"></script>
   <script src="/app-support.js"></script>

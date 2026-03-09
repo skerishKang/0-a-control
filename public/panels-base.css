@@ -1,0 +1,76 @@
+.session-badge {
+  flex: 0 0 auto;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(209, 67, 67, 0.1);
+  color: var(--red);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.session-badge.verdict.done {
+  background: rgba(25, 135, 84, 0.12);
+  color: var(--green);
+}
+
+.session-badge.verdict.partial {
+  background: rgba(183, 121, 31, 0.14);
+  color: var(--yellow);
+}
+
+.session-badge.verdict.pending {
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--pending);
+  animation: pulse 3s infinite;
+}
+
+.session-badge.verdict.hold {
+  background: rgba(209, 67, 67, 0.1);
+  color: var(--red);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.75; }
+  100% { opacity: 1; }
+}
+
+.panel {
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.list {
+  display: grid;
+  gap: 0.65rem;
+  padding-right: 0.15rem;
+}
+
+.list-item {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  background: #fcfdfe;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+}
+
+.list-item span,
+.muted {
+  color: var(--muted);
+}
+
+.list-section-header {
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.15rem 0.35rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from db_base import UTC, ROOT_DIR, WORKDIARY_DIR, connect, now_iso, row_to_dict, rows_to_dicts, upsert_state
@@ -399,6 +399,56 @@ def refresh_current_state(conn: sqlite3.Connection | None = None) -> dict:
         upsert_state(conn, "latest_decision_summary", latest_decision_summary(conn))
         upsert_state(conn, "restart_point", state["restart_point"] or "")
         upsert_state(conn, "day_progress_summary", state["day_progress_summary"])
+        
+        # Enhanced heuristic for Daily Operating Loop status
+        now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
+        hour = now_kst.hour
+        
+        has_quest = bool(state["current_quest"])
+        is_pending = state["quest_status_summary"]["is_pending"]
+        
+        # Check if any progress was made today
+        # We approximate this by checking if there's a recent verdict from today
+        has_progress_today = False
+        recent_verdict = state["recent_verdict"]
+        if recent_verdict and recent_verdict.get("updated_at"):
+            try:
+                verdict_time = datetime.fromisoformat(recent_verdict["updated_at"])
+                if verdict_time.date() == datetime.now(timezone.utc).date():
+                    has_progress_today = True
+            except ValueError:
+                pass
+
+        day_phase = "morning"
+        day_phase_reason = "기본 아침 시작 상태입니다."
+
+        if has_quest:
+            if is_pending:
+                day_phase = "verdict-pending"
+                day_phase_reason = "현재 진행 중인 퀘스트의 보고가 제출되어 AI 판정을 기다리고 있습니다."
+            else:
+                day_phase = "in-progress"
+                day_phase_reason = "주 임무에 속한 퀘스트가 현재 활성화되어 진행 중입니다."
+        else:
+            if has_progress_today:
+                if hour >= 17:
+                    day_phase = "end-of-day"
+                    day_phase_reason = f"현재 시각이 늦었고({hour}시), 오늘 퀘스트를 완료한 이력이 있어 마감 루프를 권장합니다."
+                else:
+                    day_phase = "midday"
+                    day_phase_reason = "오늘 이미 퀘스트를 수행했으나 현재 활성 퀘스트가 없어 다음 행동을 재정렬할 시점입니다."
+            else:
+                if hour >= 17:
+                    # Very late but no progress... still end of day might make sense, or late start.
+                    day_phase = "midday"
+                    day_phase_reason = f"시간이 늦었지만({hour}시) 오늘 기록된 완료 퀘스트가 없어, 중간 점검으로 흐름을 잡아야 합니다."
+                else:
+                    day_phase = "morning"
+                    day_phase_reason = "오늘 진행된 퀘스트가 없고 활성 퀘스트도 없어, 하루를 계획하는 아침 상태입니다."
+            
+        upsert_state(conn, "day_phase", day_phase)
+        upsert_state(conn, "day_phase_reason", day_phase_reason)
+        
         upsert_state(conn, "workdiary_top_level", get_workdiary_top_level(12))
         upsert_state(conn, "workdiary_priority_candidates", get_workdiary_priority_candidates(8))
         upsert_state(conn, "priority_recommendation", recommendation)

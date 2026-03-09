@@ -61,3 +61,4 @@ function renderHeroCard(current) {
   // Return values for other cards to use (like Caution Card)
   return { nextCore, cautionText };
 }
+

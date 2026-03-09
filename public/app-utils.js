@@ -6,6 +6,8 @@ const state = {
   sessions: [],
   workdiaryItems: [],
   priorityCandidates: [],
+  loadErrors: [],
+  renderErrors: [],
   sessionAgentFilter: "all",
   sessionRecordFilter: "all",
   sessionPanelRecords: [],
@@ -171,4 +173,13 @@ function summarizeMissionReason(reason) {
     .replace(/^반드시\s*해야\s*하는\s*/u, "")
     .replace(/^핵심\s*/u, "")
     .trim();
+}
+
+function showDetailedList(label, title, items, formatter) {
+  const bodyHtml = `
+    <div class="list detailed-list-in-panel reading-flow">
+      ${items.map(formatter).join("")}
+    </div>
+  `;
+  openDetailPanel(label, title, bodyHtml);
 }

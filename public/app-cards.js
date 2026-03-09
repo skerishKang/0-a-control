@@ -109,42 +109,11 @@ function renderRecentVerdictCard(current) {
   const recentVerdict = current.recent_verdict || {};
   const statusSummary = current.quest_status_summary || {};
   const recentVerdictTarget = document.getElementById("recentVerdict");
+  if (!recentVerdictTarget) return;
+  recentVerdictTarget.parentElement.classList.add("panel-browsing");
 
-  if (recentVerdictTarget) {
-    if (statusSummary.is_awaiting_external_verdict) {
-      recentVerdictTarget.innerHTML = `
-        <div class="verdict-card-main">
-          <div class="signal-head">
-            <strong>${escapeHtml(current.current_quest_title || "퀘스트")}</strong>
-            <span class="session-badge verdict pending">Awaiting</span>
-          </div>
-          <span class="verdict-reason-preview muted" style="font-size: 0.85rem; opacity: 0.85;">${escapeHtml(statusSummary.preliminary_reason || "외부 에이전트의 응답을 기다리고 있습니다.")}</span>
-        </div>
-      `;
-    } else if (recentVerdict.title) {
-      const providerStr = statusSummary.latest_verdict_provider ? ` (by ${statusSummary.latest_verdict_provider})` : "";
-      recentVerdictTarget.innerHTML = `
-        <div class="verdict-card-main">
-          <div class="signal-head">
-            <strong>${escapeHtml(recentVerdict.title)}</strong>
-            ${renderVerdictBadge(recentVerdict.status)}
-          </div>
-          <span class="verdict-reason-preview">${escapeHtml(summarizeVerdictReason(recentVerdict.status, aiVerdict.reason))}</span>
-          <span>${escapeHtml(formatRecentLabel(recentVerdict.updated_at))}${escapeHtml(providerStr)}</span>
-        </div>
-      `;
-    } else {
-      const hasQuests = (quests || []).length > 0;
-      const msg = hasQuests 
-        ? "활성 퀘스트가 있습니다. 완료 보고를 하면 AI가 분석한 판정 결과가 여기에 나타납니다."
-        : "아직 기록된 퀘스트가 없습니다. 첫 작업을 시작하여 통제 타워의 기록을 채워보세요.";
-      recentVerdictTarget.innerHTML = `<div class="list-item empty">${msg}</div>`;
-    }
-  }
-
-  const detailBody = document.getElementById("verdictDetailBody");
-  if (detailBody) {
-    detailBody.innerHTML = aiVerdict.verdict
+  const renderDetail = () => {
+    const detailHtml = aiVerdict.verdict
       ? `
         <div class="detail-section"><strong>AI 판정</strong><p>${escapeHtml(labelStatus(aiVerdict.verdict))}</p></div>
         <div class="detail-section"><strong>판정 이유</strong><p>${escapeHtml(aiVerdict.reason || "-")}</p></div>
@@ -154,6 +123,43 @@ function renderRecentVerdictCard(current) {
         <div class="detail-section"><strong>사용자 보고</strong><p>${escapeHtml(report.work_summary || "-")}</p></div>
       `
       : `<p class="muted">아직 상세 판정이 없습니다.</p>`;
+    openDetailPanel("최근 판정 상세", recentVerdict.title || "판정", detailHtml);
+  };
+
+  if (statusSummary.is_awaiting_external_verdict) {
+    recentVerdictTarget.innerHTML = `
+      <div class="verdict-card-main">
+        <div class="signal-head">
+          <strong>${escapeHtml(current.current_quest_title || "퀘스트")}</strong>
+          <span class="session-badge verdict pending">Awaiting</span>
+        </div>
+        <span class="verdict-reason-preview muted" style="font-size: 0.85rem; opacity: 0.85;">${escapeHtml(statusSummary.preliminary_reason || "외부 에이전트의 응답을 기다리고 있습니다.")}</span>
+      </div>
+    `;
+    recentVerdictTarget.onclick = null;
+    recentVerdictTarget.parentElement.classList.remove("panel-browsing");
+  } else if (recentVerdict.title) {
+    const providerStr = statusSummary.latest_verdict_provider ? ` (by ${statusSummary.latest_verdict_provider})` : "";
+    recentVerdictTarget.innerHTML = `
+      <div class="verdict-card-main clickable-item">
+        <div class="signal-head">
+          <strong>${escapeHtml(recentVerdict.title)}</strong>
+          ${renderVerdictBadge(recentVerdict.status)}
+        </div>
+        <span class="verdict-reason-preview">${escapeHtml(summarizeVerdictReason(recentVerdict.status, aiVerdict.reason))}</span>
+        <span>${escapeHtml(formatRecentLabel(recentVerdict.updated_at))}${escapeHtml(providerStr)}</span>
+      </div>
+    `;
+    recentVerdictTarget.onclick = renderDetail;
+    recentVerdictTarget.parentElement.classList.add("panel-browsing");
+  } else {
+    const hasQuests = (quests || []).length > 0;
+    const msg = hasQuests 
+      ? "활성 퀘스트가 있습니다. 완료 보고를 하면 AI가 분석한 판정 결과가 여기에 나타납니다."
+      : "아직 기록된 퀘스트가 없습니다. 첫 작업을 시작하여 통제 타워의 기록을 채워보세요.";
+    recentVerdictTarget.innerHTML = `<div class="list-item empty">${msg}</div>`;
+    recentVerdictTarget.onclick = null;
+    recentVerdictTarget.parentElement.classList.remove("panel-browsing");
   }
 }
 
@@ -161,6 +167,10 @@ function renderRecentVerdictCard(current) {
  * Card 5. 오늘 판단 / 남은 핵심 카드
  */
 function renderPlanChangesCard(current) {
+  const target = document.getElementById("planChangeSummary");
+  if (!target) return;
+  target.parentElement.classList.add("panel-browsing");
+
   const entries = [];
   const latestDecision = current.latest_decision_summary || {};
   
@@ -191,13 +201,47 @@ function renderPlanChangesCard(current) {
       <span>${escapeHtml(item.secondary || "-")}</span>
     </div>
   `;
+  
+  const cappedFormatter = (item) => `<div class="clickable-item">${formatter(item)}</div>`;
+  
+  target.onclick = () => {
+    showDetailedList("오늘 판단 / 남은 핵심", "상세 내역", entries, formatter);
+  };
 
-  renderCappedList("planChangeSummary", entries, formatter, 3, "오늘 진행된 핵심 결정이나 판정 이력이 아직 없습니다. 작업을 통해 흐름을 만들어보세요.");
+  renderCappedList("planChangeSummary", entries, cappedFormatter, 3, "오늘 진행된 핵심 결정이나 판정 이력이 아직 없습니다. 작업을 통해 흐름을 만들어보세요.");
 }
 
 function selectCalendarDate(dateStr) {
   state.selectedDate = dateStr;
   renderCalendarCard(state.plans, state.selectedDate);
+
+  const summaryEl = document.getElementById("calendarSummary");
+  if (!summaryEl) return;
+
+  const datedPlans = byBucket(state.plans, "dated");
+  const selectedPlans = datedPlans.filter(p => p.due_at && p.due_at.startsWith(dateStr));
+
+  if (selectedPlans.length > 0) {
+    summaryEl.textContent = `${dateStr} 일정: ${selectedPlans.length}개 (클릭하여 상세보기)`;
+    summaryEl.classList.add("is-actionable");
+    summaryEl.onclick = () => {
+      const title = `${dateStr} 일정`;
+      const label = "계획 달력 상세";
+      showDetailedList(label, title, selectedPlans, (p) => `
+        <div class="list-item signal-item">
+          <div class="signal-head">
+            <strong>${escapeHtml(p.title)}</strong>
+            <span class="session-badge verdict ${escapeHtml(p.status || "pending")}">${escapeHtml(labelStatus(p.status))}</span>
+          </div>
+          <span class="muted" style="font-size: 0.85rem;">${escapeHtml(p.due_at)}</span>
+        </div>
+      `);
+    };
+  } else {
+    summaryEl.textContent = `${dateStr}일에는 예정된 고정 일정이 없습니다.`;
+    summaryEl.classList.remove("is-actionable");
+    summaryEl.onclick = null;
+  }
 }
 
 /**
@@ -205,8 +249,9 @@ function selectCalendarDate(dateStr) {
  */
 function renderCalendarCard(plans, selectedDate) {
   const container = document.getElementById("calendarContainer");
-  const detail = document.getElementById("calendarDetail");
-  if (!container || !detail) return;
+  const summaryEl = document.getElementById("calendarSummary");
+  if (!container) return;
+  container.parentElement.classList.add("panel-browsing");
 
   const today = new Date();
   const year = today.getFullYear();
@@ -245,7 +290,8 @@ function renderCalendarCard(plans, selectedDate) {
   for (let i = 1; i <= totalDays; i++) {
     const currentDayDate = new Date(year, month, i);
     const dateStr = currentDayDate.toISOString().split('T')[0];
-    const hasPlans = datedPlans.some(p => p.due_at && p.due_at.startsWith(dateStr));
+    const dayPlans = datedPlans.filter(p => p.due_at && p.due_at.startsWith(dateStr));
+    const hasPlans = dayPlans.length > 0;
     const isToday = dateStr === todayStr;
     const isSelected = dateStr === selectedDate;
 
@@ -253,40 +299,36 @@ function renderCalendarCard(plans, selectedDate) {
       <div class="calendar-day ${isToday ? 'is-today' : ''} ${isSelected ? 'is-selected' : ''} ${hasPlans ? 'has-plans' : ''}" 
            onclick="selectCalendarDate('${dateStr}')">
         <span>${i}</span>
-        ${hasPlans ? '<div class="plan-indicator"></div>' : ''}
+        ${hasPlans ? `<div class="plan-count-hint">${dayPlans.length}</div>` : ''}
       </div>
     `;
-  }
-
-  // Next month days
-  const remainingCells = 42 - (startDay + totalDays);
-  for (let i = 1; i <= remainingCells; i++) {
-    html += `<div class="calendar-day next-month">${i}</div>`;
   }
 
   html += `</div>`;
   container.innerHTML = html;
 
-  // Render detail
-  const selectedPlans = datedPlans.filter(p => p.due_at && p.due_at.startsWith(selectedDate));
+  if (!summaryEl) return;
+  const effectiveDate = selectedDate || todayStr;
+  const selectedPlans = datedPlans.filter((p) => p.due_at && p.due_at.startsWith(effectiveDate));
+  summaryEl.hidden = false;
+
   if (selectedPlans.length > 0) {
-    detail.innerHTML = `
-      <p class="section-label" style="margin-top: 1rem;">${selectedDate} 일정</p>
-      ${selectedPlans.map(p => `
+    summaryEl.textContent = `${effectiveDate} 일정: ${selectedPlans.length}개 (클릭하여 상세보기)`;
+    summaryEl.classList.add("is-actionable");
+    summaryEl.onclick = () => {
+      showDetailedList("계획 달력 상세", `${effectiveDate} 일정`, selectedPlans, (p) => `
         <div class="list-item signal-item">
           <div class="signal-head">
             <strong>${escapeHtml(p.title)}</strong>
             <span class="session-badge verdict ${escapeHtml(p.status || "pending")}">${escapeHtml(labelStatus(p.status))}</span>
           </div>
-          <span class="muted" style="font-size: 0.75rem;">${escapeHtml(p.due_at)}</span>
+          <span class="muted" style="font-size: 0.85rem;">${escapeHtml(p.due_at)}</span>
         </div>
-      `).join("")}
-    `;
+      `);
+    };
   } else {
-    const isToday = selectedDate === todayStr;
-    const msg = isToday 
-      ? "오늘 예정된 고정 일정은 없습니다. 유연하게 주 임무에 집중하세요."
-      : `${selectedDate}일은 예정된 고정 일정이 없습니다.`;
-    detail.innerHTML = `<p class="muted" style="margin-top: 1rem; font-size: 0.8rem;">${msg}</p>`;
+    summaryEl.textContent = `${effectiveDate} 일정: 0개`;
+    summaryEl.classList.remove("is-actionable");
+    summaryEl.onclick = null;
   }
 }

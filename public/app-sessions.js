@@ -112,96 +112,185 @@ function renderSessionRecords() {
   `;
 }
 
+async function openSessionDetailPanel(sessionId) {
+  if (!sessionId) return;
+  
+  const [session, recordsPayload] = await Promise.all([
+    Promise.resolve(state.sessions.find((item) => item.id === sessionId)),
+    fetchJson(`/api/sessions/records?session_id=${encodeURIComponent(sessionId)}&limit=100`)
+  ]);
+
+  if (!session) return;
+  
+  const records = recordsPayload.records || [];
+  const sessionDecision = deriveSessionDecision(session, records);
+  const sessionNextAction = deriveSessionNextAction(session, records);
+  const questReport = findLatestRecordBySourceType(records, "quest_report")?.content || "이 세션에서 공식적으로 보고된 퀘스트 작업 결과가 없습니다.";
+  const questVerdict = findLatestRecordBySourceType(records, "quest_verdict")?.content || "이 세션에서 생성된 AI 작업 판정 기록이 없습니다.";
+  
+  const meta = [
+    session.agent_name,
+    session.model_name,
+    session.project_key,
+    formatRecentLabel(session.started_at),
+  ].filter(Boolean).join(" / ");
+
+  const detailHtml = `
+    <div class="session-panel-body">
+      <div class="detail-section">
+        <strong>기본 정보</strong>
+        <p class="muted">${escapeHtml(meta)}</p>
+      </div>
+      <div class="session-panel-highlight-grid">
+        <div class="detail-section highlight-box">
+          <strong>핵심 판단</strong>
+          <p class="muted">${escapeHtml(sessionDecision)}</p>
+        </div>
+        <div class="detail-section highlight-box">
+          <strong>다음 액션</strong>
+          <p class="muted">${escapeHtml(sessionNextAction)}</p>
+        </div>
+      </div>
+      ${session.summary_md ? `<div class="detail-section"><strong>요약</strong><p class="muted">${escapeHtml(session.summary_md)}</p></div>` : ''}
+      <div class="session-panel-highlight-grid">
+        <div class="detail-section highlight-box">
+          <strong>최근 퀘스트 보고</strong>
+          <p class="muted">${escapeHtml(questReport)}</p>
+        </div>
+        <div class="detail-section highlight-box">
+          <strong>최근 AI 판정</strong>
+          <p class="muted">${escapeHtml(questVerdict)}</p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <strong>대화 기록</strong>
+        <div id="sessionRecordFilter" class="filter-chip-row compact"></div>
+        <div id="sessionPanelRecords" class="list session-record-list"></div>
+      </div>
+    </div>
+  `;
+
+  openDetailPanel("세션 상세", session.title || session.project_key || "세션", detailHtml);
+  
+  // Now that the panel is open, render the records
+  state.sessionPanelRecords = records;
+  state.sessionRecordFilter = "all";
+  renderSessionRecords();
+}
+
+function classifySession(session) {
+  const title = (session.title || "").toLowerCase();
+  const agent = (session.agent_name || "").toLowerCase();
+  const summary = (session.summary_md || "").trim();
+
+  // 1. Test 분류: 검증용 키워드
+  if (["test", "dev", "debug", "smoke", "meta", "dummy"].some(k => title.includes(k)) || agent === "tester") {
+    return "test";
+  }
+  // 2. Simulated 분류: 모델링/시뮬레이션용
+  if (["sim", "model", "mock"].some(k => title.includes(k))) {
+    return "simulated";
+  }
+  // 3. Operational 분류: 실제 대화/판정이 있었던 세션
+  if (session.has_quest_verdict || summary.length > 20) {
+    return "operational";
+  }
+  return "unknown";
+}
+
 function renderSessions() {
+  const targetId = 'recentSessionList';
+  const parentPanel = document.getElementById(targetId)?.parentElement;
+  if (!parentPanel) return;
+
   renderSessionFilters();
-  const filteredSessions = state.sessions.filter((item) => {
+  
+  // Apply agent filter
+  const allFilteredSessions = state.sessions.filter((item) => {
     if (!visibleSessionAgents.has(item.agent_name)) return false;
     if (state.sessionAgentFilter === "all") return true;
     return item.agent_name === state.sessionAgentFilter;
   });
-  setCountBadge("recentSessionCount", filteredSessions.length);
 
-  const target = document.getElementById("recentSessionList");
-  if (!filteredSessions.length) {
-    target.innerHTML = `<div class="list-item empty">아직 세션 기록이 없습니다. 에이전트를 실행하여 통제 타워에 첫 발자국을 남기세요.</div>`;
-    return;
-  }
+  // Main view only shows operational
+  const operationalSessions = allFilteredSessions
+    .filter((s) => classifySession(s) === 'operational')
+    .sort((a, b) => {
+      const aTime = new Date(a.ended_at || a.started_at || 0).getTime();
+      const bTime = new Date(b.ended_at || b.started_at || 0).getTime();
+      return bTime - aTime;
+    });
 
-  const renderSessionCard = (item) => {
+  setCountBadge("recentSessionCount", operationalSessions.length);
+  parentPanel.classList.add("panel-browsing");
+
+  const renderSessionCard = (item, isDetailed = false) => {
     const agentLabel = [item.agent_name, item.model_name].filter(Boolean).join(" / ");
     const summary = item.summary_md || "아직 세션 요약이 없습니다.";
+    const category = classifySession(item);
+    
     const verdictBadge = item.has_quest_verdict
       ? renderVerdictBadge(item.quest_verdict_status)
       : "";
     const agentBadge = `<span class="agent-badge ${getAgentBadgeClass(item.agent_name)}">${escapeHtml(item.agent_name)}</span>`;
-    const agentClass = getAgentBadgeClass(item.agent_name);
+    
+    // category badge for non-operational sessions
+    const categoryBadge = (isDetailed && category !== 'operational') 
+      ? `<span class="session-badge verdict ${category === 'test' ? 'hold' : 'pending'}">${category.toUpperCase()}</span>` 
+      : "";
 
     return `
-      <button type="button" class="list-item session-link ${agentClass}" data-session-id="${escapeHtml(item.id)}">
+      <div class="list-item session-link ${getAgentBadgeClass(item.agent_name)}" data-session-id="${escapeHtml(item.id)}">
         <div class="session-link-head">
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             ${agentBadge}
             <strong>${escapeHtml(item.title || item.project_key || "세션")}</strong>
+            ${categoryBadge}
           </div>
           ${verdictBadge}
         </div>
         <span class="session-link-summary">${escapeHtml(summary)}</span>
         <span>${escapeHtml(`${agentLabel} / ${formatRecentLabel(item.ended_at || item.started_at)}`)}</span>
-      </button>
+      </div>
     `;
   };
+  
+  const categoryRank = {
+    operational: 0,
+    unknown: 1,
+    test: 2,
+    simulated: 3,
+  };
 
-  const primary = filteredSessions.slice(0, 4).map(renderSessionCard).join("");
-  const rest = filteredSessions.slice(4).map(renderSessionCard).join("");
-  target.innerHTML = rest
-    ? `
-      ${primary}
-      <details class="list-more">
-        <summary>나머지 세션 보기</summary>
-        <div class="list-more-list">
-          ${rest}
-        </div>
-      </details>
-    `
-    : primary;
+  const categoryLabel = {
+    operational: "운영 세션",
+    unknown: "분류 미확정 세션",
+    test: "테스트 세션",
+    simulated: "시뮬레이션 세션",
+  };
 
-  document.querySelectorAll(".session-link").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const sessionId = button.dataset.sessionId;
-      if (!sessionId) return;
-      const payload = await fetchJson(`/api/sessions/records?session_id=${encodeURIComponent(sessionId)}&limit=100`);
-      const session = state.sessions.find((item) => item.id === sessionId);
-      state.sessionRecordFilter = "all";
-      state.sessionPanelRecords = payload.records || [];
-      document.getElementById("sessionPanelTitle").textContent = session?.title || session?.project_key || "세션";
-      document.getElementById("sessionPanelMeta").textContent = [
-        session?.agent_name,
-        session?.model_name,
-        session?.project_key,
-        formatRecentLabel(session?.started_at),
-      ]
-        .filter(Boolean)
-        .join(" / ");
-
-      const sessionSummary = session?.summary_md || "아직 세션 요약이 없습니다.";
-      const sessionDecision = deriveSessionDecision(session || {}, payload.records || []);
-
-      const summaryTarget = document.getElementById("sessionPanelSummary");
-      if (sessionSummary.trim() === sessionDecision.trim()) {
-        summaryTarget.closest('.detail-section').hidden = true;
-      } else {
-        summaryTarget.closest('.detail-section').hidden = false;
-        summaryTarget.textContent = sessionSummary;
-      }
-
-      document.getElementById("sessionPanelDecision").textContent = sessionDecision;
-      document.getElementById("sessionPanelNextAction").textContent = deriveSessionNextAction(session || {}, payload.records || []);
-      document.getElementById("sessionPanelQuestReport").textContent =
-        findLatestRecordBySourceType(payload.records || [], "quest_report")?.content || "이 세션에서 공식적으로 보고된 퀘스트 작업 결과가 없습니다.";
-      document.getElementById("sessionPanelQuestVerdict").textContent =
-        findLatestRecordBySourceType(payload.records || [], "quest_verdict")?.content || "이 세션에서 생성된 AI 작업 판정 기록이 없습니다.";
-      renderSessionRecords();
-      openSessionPanel();
+  parentPanel.onclick = () => {
+    const sortedSessions = [...allFilteredSessions].sort((a, b) => {
+      const categoryDiff = (categoryRank[classifySession(a)] ?? 99) - (categoryRank[classifySession(b)] ?? 99);
+      if (categoryDiff !== 0) return categoryDiff;
+      const aTime = new Date(a.ended_at || a.started_at || 0).getTime();
+      const bTime = new Date(b.ended_at || b.started_at || 0).getTime();
+      return bTime - aTime;
     });
-  });
+
+    let lastCategory = null;
+    const detailFormatter = (item) => {
+      const category = classifySession(item);
+      const headerHtml = category !== lastCategory
+        ? `<div class="list-section-header">${escapeHtml(categoryLabel[category] || category.toUpperCase())}</div>`
+        : "";
+      lastCategory = category;
+      const cardHtml = renderSessionCard(item, true);
+      return `${headerHtml}<div onclick="openSessionDetailPanel('${item.id}')" class="clickable-item">${cardHtml}</div>`;
+    };
+
+    showDetailedList("최근 세션", "전체 세션 목록", sortedSessions, detailFormatter);
+  };
+  
+  renderCappedList(targetId, operationalSessions, renderSessionCard, 3, "운영 세션 기록이 없습니다.");
 }

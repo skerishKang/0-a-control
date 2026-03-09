@@ -3,24 +3,78 @@
  * Responsibility: State loading and module coordination
  */
 
+function openReportPanel() {
+  const panel = document.getElementById("reportPanel");
+  const backdrop = document.getElementById("panelBackdrop");
+  closeDetailPanel();
+  if (!panel || !backdrop) return;
+  panel.hidden = false;
+  panel.classList.add("open");
+  panel.setAttribute("aria-hidden", "false");
+  backdrop.hidden = false;
+}
+
+function closeReportPanel() {
+  const panel = document.getElementById("reportPanel");
+  const backdrop = document.getElementById("panelBackdrop");
+  if (!panel || !backdrop) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  backdrop.hidden = true;
+  window.setTimeout(() => {
+    if (!panel.classList.contains("open")) {
+      panel.hidden = true;
+    }
+  }, 180);
+}
+
+function openDetailPanel(label, title, bodyHtml) {
+  const panel = document.getElementById("detailPanel");
+  const backdrop = document.getElementById("panelBackdrop");
+  closeReportPanel();
+  if (!panel || !backdrop) return;
+  document.getElementById("detailPanelLabel").textContent = label;
+  document.getElementById("detailPanelTitle").textContent = title;
+  document.getElementById("detailPanelBody").innerHTML = bodyHtml;
+  panel.hidden = false;
+  panel.classList.add("open");
+  panel.setAttribute("aria-hidden", "false");
+  backdrop.hidden = false;
+}
+
+function closeDetailPanel() {
+  const panel = document.getElementById("detailPanel");
+  const backdrop = document.getElementById("panelBackdrop");
+  if (!panel || !backdrop) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  backdrop.hidden = true;
+  window.setTimeout(() => {
+    if (!panel.classList.contains("open")) {
+      panel.hidden = true;
+    }
+  }, 180);
+}
+
 function updateQuestFormState(current) {
   const currentQuestExists = Boolean(current.current_quest_id);
   const statusSummary = current.quest_status_summary || {};
   const isAwaitingVerdict = Boolean(statusSummary.is_awaiting_external_verdict);
   const form = document.getElementById("questEvalForm");
-  
+
   if (form) {
     Array.from(form.elements).forEach((element) => {
       if ("disabled" in element) {
         element.disabled = !currentQuestExists || isAwaitingVerdict;
       }
     });
+
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
       if (!currentQuestExists) {
         submitBtn.textContent = "활성 퀘스트 없음";
       } else if (isAwaitingVerdict) {
-        submitBtn.textContent = "판정 대기 중 (수정 불가)";
+        submitBtn.textContent = "판정 대기 중(수정 불가)";
       } else {
         submitBtn.textContent = "퀘스트 완료 보고 (Ctrl+Enter)";
       }
@@ -28,53 +82,147 @@ function updateQuestFormState(current) {
   }
 }
 
+function updateLoadingStatus(loadErrors = [], renderErrors = []) {
+  const titleEl = document.getElementById("mainMissionTitle");
+  const messageEl = document.getElementById("loadStatusMessage");
+  if (!titleEl) return;
+
+  const messages = [];
+  if (loadErrors.length > 0) {
+    messages.push(`로드 실패: ${loadErrors.join(", ")}`);
+  }
+  if (renderErrors.length > 0) {
+    messages.push(`렌더 실패: ${renderErrors.join(", ")}`);
+  }
+
+  if (messageEl) {
+    if (messages.length > 0) {
+      messageEl.hidden = false;
+      messageEl.textContent = messages.join(" | ");
+      messageEl.style.color = "var(--red)";
+    } else {
+      messageEl.hidden = true;
+      messageEl.textContent = "";
+      messageEl.style.color = "";
+    }
+  }
+
+  const titleStillLoading = titleEl.textContent.includes("불러오고 있습니다");
+  if ((loadErrors.includes("current-state") || renderErrors.includes("hero")) && titleStillLoading) {
+    titleEl.textContent = "메인 미션을 불러오지 못했습니다.";
+  }
+}
+
+function applyApiResult(api, payload) {
+  switch (api.key) {
+    case "currentState":
+      state.currentState = payload?.current_state || null;
+      break;
+    case "plans":
+      state.plans = payload?.plans || [];
+      break;
+    case "briefs":
+      state.briefs = payload?.briefs || [];
+      break;
+    case "quests":
+      state.quests = payload?.quests || [];
+      break;
+    case "sessions":
+      state.sessions = payload?.sessions || [];
+      break;
+    case "activeSession":
+      state.activeSession = payload?.session || null;
+      break;
+    case "workdiaryItems":
+      state.workdiaryItems = payload?.items || [];
+      break;
+    case "priorityCandidates":
+      state.priorityCandidates = payload?.items || [];
+      break;
+    default:
+      break;
+  }
+}
+
+function recordLoadFailure(api, reason, errors) {
+  errors.push(api.label);
+  console.error(`Failed to load ${api.label}:`, reason);
+}
+
+function runRenderStep(label, renderFn, errors) {
+  try {
+    renderFn();
+  } catch (error) {
+    errors.push(label);
+    console.error(`Failed to render ${label}:`, error);
+  }
+}
+
 function renderCurrentState() {
   const current = state.currentState || {};
+  const activeQuest = state.quests.find((item) => item.id === current.current_quest_id) || {};
+  const metadata = activeQuest.metadata_json || {};
+  const aiVerdict = metadata.ai_verdict || {};
 
-  // 1. Hero Card (Main Mission & Progress)
-  const { nextCore, cautionText } = renderHeroCard(current);
+  const heroResult = renderHeroCard(current) || {};
+  const nextCore = heroResult.nextCore || null;
+  const cautionText = heroResult.cautionText || "";
 
-  // 2. Action Panels (Recent Verdict, Next Quest, Restart Point, Cautions)
-  renderRecentVerdictCard(current);
+  renderRecentVerdictCard(current, state.quests, aiVerdict, metadata.report || {});
   renderNextQuestCard(current);
-  renderRestartPointCard(current);
+  renderRestartPointCard(current, aiVerdict);
   renderCautionCard(current, nextCore, cautionText);
-
-  // 3. UI States
   updateQuestFormState(current);
 }
 
 async function loadAll() {
-  try {
-    const [currentPayload, plansPayload, briefsPayload, questsPayload, sessionsPayload, activeSessionPayload, workdiaryPayload, priorityPayload] = await Promise.all([
-      fetchJson("/api/current-state"),
-      fetchJson("/api/plans"),
-      fetchJson("/api/briefs/latest"),
-      fetchJson("/api/quests"),
-      fetchJson("/api/sessions/recent?limit=8"),
-      fetchJson("/api/sessions/active"),
-      fetchJson("/api/workdiary/top-level"),
-      fetchJson("/api/workdiary/priority-candidates"),
-    ]);
+  const apis = [
+    { key: "currentState", label: "current-state", url: "/api/current-state" },
+    { key: "plans", label: "plans", url: "/api/plans" },
+    { key: "briefs", label: "briefs", url: "/api/briefs/latest" },
+    { key: "quests", label: "quests", url: "/api/quests" },
+    { key: "sessions", label: "sessions", url: "/api/sessions/recent?limit=8" },
+    { key: "activeSession", label: "active-session", url: "/api/sessions/active" },
+    { key: "workdiaryItems", label: "workdiary", url: "/api/workdiary/top-level" },
+    { key: "priorityCandidates", label: "priority-candidates", url: "/api/workdiary/priority-candidates" },
+  ];
 
-    state.currentState = currentPayload.current_state;
-    state.plans = plansPayload.plans;
-    state.briefs = briefsPayload.briefs;
-    state.quests = questsPayload.quests;
-    state.sessions = sessionsPayload.sessions;
-    state.activeSession = activeSessionPayload.session || null;
-    state.workdiaryItems = workdiaryPayload.items;
-    state.priorityCandidates = priorityPayload.items;
+  const loadErrors = [];
+  const renderErrors = [];
+  const results = await Promise.allSettled(
+    apis.map(async (api) => {
+      try {
+        const payload = await fetchJson(api.url);
+        return { api, payload };
+      } catch (error) {
+        recordLoadFailure(api, error, loadErrors);
+        return { api, payload: null };
+      }
+    })
+  );
 
-    // Orchestrate rendering across modules
-    renderCurrentState();
-    renderSupportGrid(state);
-    renderPlanChangesCard(state.currentState);
-    renderCalendarCard(state.plans, state.selectedDate);
-  } catch (error) {
-    console.error("Failed to load dashboard data:", error);
-    // alert("상태를 불러오지 못했습니다.");
-  }
+  results.forEach((result, index) => {
+    const api = apis[index];
+
+    if (result.status === "fulfilled") {
+      applyApiResult(api, result.value.payload);
+      return;
+    }
+
+    recordLoadFailure(api, result.reason, loadErrors);
+    applyApiResult(api, null);
+  });
+
+  state.loadErrors = [...new Set(loadErrors)];
+  state.renderErrors = [];
+
+  runRenderStep("hero", () => renderCurrentState(), renderErrors);
+  runRenderStep("support-grid", () => renderSupportGrid(state), renderErrors);
+  runRenderStep("plan-changes", () => renderPlanChangesCard(state.currentState || {}), renderErrors);
+  runRenderStep("calendar", () => renderCalendarCard(state.plans || [], state.selectedDate), renderErrors);
+
+  state.renderErrors = [...new Set(renderErrors)];
+  updateLoadingStatus(state.loadErrors, state.renderErrors);
 }
 
 async function handleQuestEvaluation(event) {
@@ -106,14 +254,11 @@ async function handleQuestEvaluation(event) {
   await loadAll();
 }
 
-// Global Event Listeners
 document.getElementById("openReportPanelBtn").addEventListener("click", openReportPanel);
 document.getElementById("closeReportPanelBtn").addEventListener("click", closeReportPanel);
-document.getElementById("closeSessionPanelBtn").addEventListener("click", closeSessionPanel);
 document.getElementById("closeDetailPanelBtn").addEventListener("click", closeDetailPanel);
 document.getElementById("panelBackdrop").addEventListener("click", () => {
   closeReportPanel();
-  closeSessionPanel();
   closeDetailPanel();
   document.getElementById("panelBackdrop").hidden = true;
 });
@@ -123,10 +268,14 @@ if (evalForm) {
   evalForm.addEventListener("submit", (event) => {
     handleQuestEvaluation(event).catch((error) => {
       console.error(error);
-      alert("퀘스트 판정을 반영하지 못했습니다.");
+      alert("퀘스트 판정 반영에 실패했습니다.");
     });
   });
 }
 
-// Initial Load
-loadAll();
+loadAll().catch((error) => {
+  console.error("Initial load failed:", error);
+  state.loadErrors = ["loadAll"];
+  state.renderErrors = [];
+  updateLoadingStatus(state.loadErrors, state.renderErrors);
+});

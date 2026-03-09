@@ -9,6 +9,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+import requests
+
 from db import (
     ROOT_DIR,
     append_source_record,
@@ -194,6 +196,23 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         if path == "/api/health":
             self.send_json({"ok": True})
             return
+        
+        if path == "/api/telegram/messages":
+            chat_id = query.get("chat_id", [""])[0]
+            if not chat_id:
+                self.send_json({"error": "chat_id is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            
+            # This proxies the request to the 0-command-center service
+            try:
+                command_center_url = f"http://localhost:4300/api/telegram/messages?chat_id={chat_id}"
+                resp = requests.get(command_center_url, timeout=15)
+                resp.raise_for_status()
+                self.send_json(resp.json())
+            except requests.RequestException as e:
+                self.send_json({"error": f"Failed to fetch from command-center: {e}"}, status=HTTPStatus.SERVICE_UNAVAILABLE)
+            return
+
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def handle_api_get(self, path: str, query: dict[str, list[str]]) -> None:

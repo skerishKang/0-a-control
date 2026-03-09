@@ -6,8 +6,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-REPORTS_DIR = ROOT_DIR / "quest_reports"
-VERDICTS_DIR = ROOT_DIR / "quest_verdicts"
+QUEUE_DIR = ROOT_DIR / "data" / "queue"
+REPORTS_DIR = QUEUE_DIR / "reports"
+VERDICTS_DIR = QUEUE_DIR / "verdicts"
+PROCESSED_DIR = QUEUE_DIR / "processed"
 
 
 def get_iso8601_basic(dt: datetime) -> str:
@@ -34,26 +36,27 @@ def save_json(directory: Path, filename: str, data: dict) -> Path:
 
 
 def move_to_processed(file_path: Path):
-    processed_dir = file_path.parent / "processed"
-    processed_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(processed_dir / file_path.name)
+    target_dir = PROCESSED_DIR / file_path.parent.name
+    target_dir.mkdir(parents=True, exist_ok=True)
+    file_path.rename(target_dir / file_path.name)
 
 
 def move_to_failed(file_path: Path):
-    failed_dir = file_path.parent / "failed"
-    failed_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(failed_dir / file_path.name)
+    target_dir = QUEUE_DIR / "failed" / file_path.parent.name
+    target_dir.mkdir(parents=True, exist_ok=True)
+    file_path.rename(target_dir / file_path.name)
 
 
 def move_to_duplicate(file_path: Path):
-    dup_dir = file_path.parent.parent / "processed" / "duplicates"
-    dup_dir.mkdir(parents=True, exist_ok=True)
-    file_path.rename(dup_dir / file_path.name)
+    target_dir = PROCESSED_DIR / "duplicates" / file_path.parent.name
+    target_dir.mkdir(parents=True, exist_ok=True)
+    file_path.rename(target_dir / file_path.name)
 
 
 def move_to_archive_revision(file_path: Path):
-    rev_dir = file_path.parent.parent / "archive" / "revisions"
-    rev_dir.mkdir(parents=True, exist_ok=True)
+    target_dir = QUEUE_DIR / "archive" / "revisions"
+    target_dir.mkdir(parents=True, exist_ok=True)
     # Append UUID to prevent overwriting existing revisions of the same report_id
     new_name = f"{file_path.stem}.{str(uuid.uuid4())[:8]}{file_path.suffix}"
-    file_path.rename(rev_dir / new_name)
+    file_path.rename(target_dir / new_name)
+

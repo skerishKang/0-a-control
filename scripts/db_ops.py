@@ -62,6 +62,68 @@ def get_quests() -> list[dict]:
         return rows_to_dicts(conn.execute("SELECT * FROM quests ORDER BY updated_at DESC").fetchall())
 
 
+def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> list[dict]:
+    """
+    Takes a list of plan candidates (from AI summary) and creates plan_items in the database.
+    Each candidate should have: 'title', 'bucket', and optionally 'description', 'priority_score', 'related_source_id'.
+    """
+    created_items = []
+    updated_at = now_iso()
+    
+    with connect() as conn:
+        for cand in candidates:
+            item_id = str(uuid.uuid4())
+            bucket = cand.get("bucket", "short_term")
+            title = cand.get("title", "Untitled Plan")
+            description = cand.get("description", "")
+            status = "pending"
+            priority_score = cand.get("priority_score", 50)
+            related_source_id = cand.get("related_source_id")
+            
+            conn.execute(
+                """
+                INSERT INTO plan_items (
+                    id, bucket, title, description, status, 
+                    priority_score, related_session_id, related_source_id,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    item_id, bucket, title, description, status,
+                    priority_score, session_id or None, related_source_id,
+                    updated_at, updated_at
+                )
+            )
+            
+            # If related to an inbox item, mark it as accepted
+            if related_source_id:
+                conn.execute(
+                    "UPDATE external_inbox SET status = 'accepted', processed_at = ? WHERE id = ?",
+                    (updated_at, related_source_id)
+                )
+            
+            row = conn.execute("SELECT * FROM plan_items WHERE id = ?", (item_id,)).fetchone()
+            created_items.append(row_to_dict(row))
+
+        if session_id:
+            # Log the action to the session
+            log_lines = [f"Approved {len(created_items)} plan items:"]
+            for item in created_items:
+                log_lines.append(f"- [{item['bucket']}] {item['title']}")
+            
+            append_source_record(
+                session_id=session_id,
+                source_name="inbox_cli",
+                source_type="plan_update",
+                content="\n".join(log_lines),
+                role="system"
+            )
+            
+        refresh_current_state(conn)
+        
+    return created_items
+
+
 def get_latest_briefs(limit: int = 10) -> list[dict]:
     with connect() as conn:
         rows = conn.execute(
