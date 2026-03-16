@@ -266,12 +266,25 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
         if path == "/api/suggestions":
             suggestions_path = ROOT_DIR / "data" / "runtime" / "quest_suggestions.json"
-            if suggestions_path.exists():
+            limit = 3
+            try:
+                raw_limit = query.get("limit", [None])[0]
+                if raw_limit is not None:
+                    limit = min(20, max(1, int(raw_limit)))
+            except (ValueError, TypeError):
+                pass
+
+            if not suggestions_path.exists():
+                self.send_json({"suggestions": []})
+                return
+
+            try:
                 with open(suggestions_path, encoding="utf-8") as f:
                     data = json.load(f)
-                    suggestions = data.get("suggestions", [])[:3]
+                    suggestions = data.get("suggestions", [])[:limit]
                     self.send_json({"suggestions": suggestions})
-            else:
+            except json.JSONDecodeError as exc:
+                logging.warning("quest_suggestions.json is corrupted, returning empty: %s", exc)
                 self.send_json({"suggestions": []})
             return
 

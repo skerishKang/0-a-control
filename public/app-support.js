@@ -10,7 +10,7 @@ function renderSupportGrid(state) {
   renderWorkdiarySection(state);
   renderPriorityCandidatesSection(state);
   renderExternalContextPanel(state);
-  renderDerivedSuggestionsSection();
+  renderDerivedSuggestionsSection().catch(() => {});
 }
 
 const externalContextStatusOptions = [
@@ -763,14 +763,17 @@ async function renderDerivedSuggestionsSection() {
       return;
     }
 
-    container.innerHTML = suggestions.map(s => `
-      <div class="list-item">
-        <div class="candidate-head">
-          <strong>[${escapeHtml(s.source_project)}] ${escapeHtml(s.title)}</strong>
+    container.innerHTML = suggestions.map(s => {
+      const source = s.source_project || "unknown";
+      return `
+        <div class="list-item">
+          <div class="candidate-head">
+            <strong>[${escapeHtml(source)}] ${escapeHtml(s.title)}</strong>
+          </div>
+          <span class="candidate-reason">${escapeHtml(s.why_now || "-")}</span>
         </div>
-        <span class="candidate-reason">${escapeHtml(s.why_now || "-")}</span>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   } catch (e) {
     container.innerHTML = `<div class="empty-state">추천 퀘스트를 불러올 수 없습니다.</div>`;
   }
