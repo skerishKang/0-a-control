@@ -10,6 +10,7 @@ function renderSupportGrid(state) {
   renderWorkdiarySection(state);
   renderPriorityCandidatesSection(state);
   renderExternalContextPanel(state);
+  renderDerivedSuggestionsSection();
 }
 
 const externalContextStatusOptions = [
@@ -743,4 +744,34 @@ function renderPriorityCandidatesSection(state) {
       </div>
     `);
   };
+}
+
+async function renderDerivedSuggestionsSection() {
+  const targetId = "derivedSuggestionList";
+  const container = document.getElementById(targetId);
+  if (!container) return;
+
+  try {
+    const response = await fetch("/api/suggestions");
+    const data = await response.json();
+    const suggestions = data.suggestions || [];
+    
+    setCountBadge("derivedSuggestionCount", suggestions.length);
+
+    if (suggestions.length === 0) {
+      container.innerHTML = `<div class="empty-state">추천 퀘스트가 없습니다. CLI에서 --refresh로 새로고침하세요.</div>`;
+      return;
+    }
+
+    container.innerHTML = suggestions.map(s => `
+      <div class="list-item">
+        <div class="candidate-head">
+          <strong>[${escapeHtml(s.source_project)}] ${escapeHtml(s.title)}</strong>
+        </div>
+        <span class="candidate-reason">${escapeHtml(s.why_now || "-")}</span>
+      </div>
+    `).join("");
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state">추천 퀘스트를 불러올 수 없습니다.</div>`;
+  }
 }

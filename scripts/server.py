@@ -21,6 +21,7 @@ import json
 import logging
 import mimetypes
 import os
+import socket
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -68,6 +69,15 @@ def get_active_session_runtime(session_id: str | None = None) -> dict:
         return json.loads(target_file.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {}
+
+
+def is_client_disconnect_error(exc: BaseException) -> bool:
+    if isinstance(exc, (BrokenPipeError, ConnectionAbortedError, ConnectionResetError)):
+        return True
+    if isinstance(exc, socket.error):
+        win_error = getattr(exc, "winerror", None)
+        return win_error in {10053, 10054}
+    return False
 
 
 class ControlTowerHandler(BaseHTTPRequestHandler):
@@ -254,14 +264,34 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             self.send_json({"status": "ok", "chat_id": chat_id, "messages": fetch_messages(chat_id, limit=limit)})
             return
 
+        if path == "/api/suggestions":
+            suggestions_path = ROOT_DIR / "data" / "runtime" / "quest_suggestions.json"
+            if suggestions_path.exists():
+                with open(suggestions_path, encoding="utf-8") as f:
+                    data = json.load(f)
+                    suggestions = data.get("suggestions", [])[:3]
+                    self.send_json({"suggestions": suggestions})
+            else:
+                self.send_json({"suggestions": []})
+            return
+
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def handle_api_get(self, path: str, query: dict[str, list[str]]) -> None:
         try:
             self.handle_api_get_dispatch(path, query)
         except Exception as exc:
+            if is_client_disconnect_error(exc):
+                logging.info("GET request aborted by client: %s", path)
+                return
             logging.error(f"GET API error: {exc}", exc_info=True)
-            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            try:
+                self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            except Exception as send_exc:
+                if is_client_disconnect_error(send_exc):
+                    logging.info("GET error response aborted by client: %s", path)
+                    return
+                raise
 
     def handle_static(self, path: str) -> None:
         if path in {"", "/"}:
@@ -278,7 +308,13 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         self.send_header("Pragma", "no-cache")
         self.send_header("Expires", "0")
         self.end_headers()
-        self.wfile.write(candidate.read_bytes())
+        try:
+            self.wfile.write(candidate.read_bytes())
+        except Exception as exc:
+            if is_client_disconnect_error(exc):
+                logging.info("Static response aborted by client: %s", path)
+                return
+            raise
 
     def send_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK) -> None:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -286,7 +322,12 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
-        self.wfile.write(data)
+        try:
+            self.wfile.write(data)
+        except Exception as exc:
+            if is_client_disconnect_error(exc):
+                return
+            raise
 
     def log_message(self, format: str, *args) -> None:
         if os.getenv("DEBUG"):
