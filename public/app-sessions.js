@@ -120,7 +120,10 @@ async function openSessionDetailPanel(sessionId) {
     fetchJson(`/api/sessions/records?session_id=${encodeURIComponent(sessionId)}&limit=100`)
   ]);
 
-  if (!session) return;
+  if (!session) {
+    console.warn(`Session not found: ${sessionId}`);
+    return;
+  }
   
   const records = recordsPayload.records || [];
   const sessionDecision = deriveSessionDecision(session, records);

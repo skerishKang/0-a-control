@@ -157,7 +157,7 @@ async function loadAll() {
     { key: "workdiaryItems", label: "workdiary", url: "/api/workdiary/top-level" },
     { key: "priorityCandidates", label: "priority-candidates", url: "/api/workdiary/priority-candidates" },
     { key: "externalInbox", label: "external-inbox", url: "/api/external-inbox?limit=500" },
-    { key: "externalInboxPanel", label: "external-inbox-panel", url: `/api/external-inbox?limit=1000&status=${encodeURIComponent(state.externalContextStatus || "reviewing")}` },
+    { key: "externalInboxPanel", label: "external-inbox-panel", url: `/api/external-inbox?limit=1000&status=${encodeURIComponent(state.externalContextStatus || "new")}` },
     { key: "telegramSyncStatus", label: "telegram-sync-status", url: "/api/telegram/sync-status", optional: true },
     { key: "telegramStatus", label: "telegram-status", url: "/api/telegram/status", optional: true },
   ];
@@ -201,7 +201,7 @@ async function loadAll() {
 }
 
 async function refreshExternalContextPanelData() {
-  const status = state.externalContextStatus || "reviewing";
+  const status = state.externalContextStatus || "new";
   const category = state.externalContextSource && state.externalContextSource !== "all"
     ? `&category=${encodeURIComponent(
         state.externalContextSource === "core" ? "핵심4개" :
@@ -331,11 +331,16 @@ async function handleQuestEvaluation(event) {
     session_id: state.activeSession?.id || "",
   };
 
-  await fetchJson("/api/quests/report", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    await fetchJson("/api/quests/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    alert(e.message || "보고 실패");
+    return;
+  }
 
   event.target.reset();
   document.getElementById("questSelfAssessment").value = "partial";

@@ -436,9 +436,10 @@ def report_quest_progress(
     session_id: str = "",
 ) -> dict:
     with connect() as conn:
-        quest = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
-        if quest is None:
+        quest_row = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
+        if quest_row is None:
             raise ValueError("quest not found")
+        quest = dict(quest_row)
 
         # 1. Export report to file
         report_path = None
