@@ -70,8 +70,28 @@ SESSION_ID="${SESSION_META[0]}"
 PROJECT_KEY="${SESSION_META[1]}"
 WORKING_DIR="${SESSION_META[2]}"
 
-PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_kilo_session.py" \
-  --session-id "$SESSION_ID" \
-  --source-name "kilo" \
-  --project "$PROJECT_KEY" \
-  --cwd "$WORKING_DIR"
+set +e
+IMPORT_OUTPUT="$(
+  PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_kilo_session.py" \
+    --session-id "$SESSION_ID" \
+    --source-name "kilo" \
+    --project "$PROJECT_KEY" \
+    --cwd "$WORKING_DIR" 2>&1
+)"
+IMPORT_EXIT=$?
+set -e
+
+if [[ $IMPORT_EXIT -eq 0 ]]; then
+  if [[ -n "$IMPORT_OUTPUT" ]]; then
+    printf '%s\n' "$IMPORT_OUTPUT"
+  fi
+  exit 0
+fi
+
+if [[ "$IMPORT_OUTPUT" == *"no matching kilo session found"* ]]; then
+  echo "kilo session import skipped: no matching session found"
+  exit 0
+fi
+
+printf '%s\n' "$IMPORT_OUTPUT" >&2
+exit "$IMPORT_EXIT"

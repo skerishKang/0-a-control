@@ -1,10 +1,17 @@
-import sqlite3
+import os
 from pathlib import Path
+import sqlite3
 import json
 from datetime import datetime, timezone
 
-DB_PATH = Path(__file__).resolve().parents[1] / "data" / "control_tower.db"
+# Respect environment variables if present
+ROOT_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = Path(os.getenv("CONTROL_TOWER_DATA_DIR", str(ROOT_DIR / "data")))
+DB_PATH = Path(os.getenv("CONTROL_TOWER_DB_PATH", str(DATA_DIR / "control_tower.db")))
 
+# `external_inbox` stays as the canonical cross-source reference table for now.
+# Telegram backfill/attachment expansion is intentionally planned in docs first:
+# see docs/12-telegram-external-storage-design.md
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS telegram_sources (
     source_id TEXT PRIMARY KEY,
@@ -39,8 +46,13 @@ CREATE TABLE IF NOT EXISTS external_inbox (
 );
 """
 
+def get_db_path() -> Path:
+    return Path(os.getenv("CONTROL_TOWER_DB_PATH", str(DATA_DIR / "control_tower.db")))
+
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
+    path = get_db_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     return conn
 

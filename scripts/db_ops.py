@@ -506,6 +506,11 @@ def report_quest_progress(
                 quest_id,
             ),
         )
+        if quest["plan_item_id"]:
+            conn.execute(
+                "UPDATE plan_items SET status = ?, updated_at = ? WHERE id = ?",
+                ("pending", updated_at, quest["plan_item_id"]),
+            )
         refresh_current_state(conn)
         updated_quest = row_to_dict(conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone())
 

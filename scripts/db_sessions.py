@@ -3,9 +3,14 @@ from __future__ import annotations
 import json
 import uuid
 
-from scripts.agent_registry import canonical_agent_name
-from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
-from scripts.db_state import refresh_current_state
+try:
+    from scripts.agent_registry import canonical_agent_name
+    from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
+    from scripts.db_state import refresh_current_state
+except ModuleNotFoundError:
+    from agent_registry import canonical_agent_name
+    from db_base import connect, now_iso, row_to_dict, rows_to_dicts
+    from db_state import refresh_current_state
 
 
 def start_session(
@@ -203,12 +208,55 @@ def _compact_text(content: str, limit: int = 300) -> str:
     return text[: limit - 3].rstrip() + "..."
 
 
+def _load_transcript_excerpt(conn, session_id: str, limit: int = 8) -> list[str]:
+    row = conn.execute(
+        """
+        SELECT content
+        FROM source_records
+        WHERE session_id = ?
+          AND source_type = 'terminal_transcript'
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (session_id,),
+    ).fetchone()
+    if row is None or not row["content"]:
+        return []
+
+    lines: list[str] = []
+    for raw_line in row["content"].splitlines():
+        line = " ".join((raw_line or "").split()).strip()
+        if not line:
+            continue
+        if line.startswith("Script started on"):
+            continue
+        if line.startswith("Script done on"):
+            continue
+        if line.startswith("Windows PowerShell 기록"):
+            continue
+        if line in {"Working", "Explored"}:
+            continue
+        if len(line) >= 20 and set(line) <= {"─", "│", "╭", "╮", "╰", "╯", " "}:
+            continue
+        if line.startswith("│ directory:"):
+            continue
+        if line.startswith("│ model:"):
+            continue
+        if "OpenAI Codex" in line and "directory:" in line:
+            continue
+        lines.append(_compact_text(line, 220))
+        if len(lines) >= limit:
+            break
+    return lines
+
+
 def _format_resume_prompt(
     project_key: str,
     title: str,
     state: dict,
     previous_sessions: list[dict],
     recent_turns: list[dict],
+    compact: bool = False,
 ) -> str:
     lines = [
         f"Resume work in project `{project_key or 'unknown-project'}`.",
@@ -224,7 +272,17 @@ def _format_resume_prompt(
         f"- Recommended next quest: {state.get('recommended_next_quest') or '-'}",
     ]
 
-    if previous_sessions:
+    if compact and previous_sessions:
+        latest = previous_sessions[0]
+        lines.extend(
+            [
+                "",
+                "Latest prior session:",
+                f"- {latest.get('started_at') or '-'} | {latest.get('agent_name') or '-'} | {latest.get('title') or '(untitled)'}",
+                f"- Summary: {latest.get('summary_md') or '-'}",
+            ]
+        )
+    elif previous_sessions:
         lines.extend(["", "Recent sessions:"])
         for session in previous_sessions:
             lines.append(
@@ -232,10 +290,14 @@ def _format_resume_prompt(
             )
             lines.append(f"  summary: {session.get('summary_md') or '-'}")
 
-    if recent_turns:
+    if recent_turns and not compact:
         lines.extend(["", "Recent key turns from the latest prior session:"])
         for turn in recent_turns:
             lines.append(f"- {turn['role']}: {turn['content']}")
+    elif state.get("_transcript_excerpt"):
+        lines.extend(["", "Recent transcript excerpt from the latest prior session:"])
+        for line in state["_transcript_excerpt"]:
+            lines.append(f"- {line}")
 
     lines.extend(
         [
@@ -306,6 +368,8 @@ def get_resume_context(
                 }
                 for row in reversed(turn_rows)
             ]
+            if not recent_turns:
+                state["_transcript_excerpt"] = _load_transcript_excerpt(conn, source_session_id)
 
         prompt = _format_resume_prompt(
             project_key=project_key,
@@ -313,6 +377,14 @@ def get_resume_context(
             state=state,
             previous_sessions=previous_sessions,
             recent_turns=recent_turns,
+        )
+        compact_prompt = _format_resume_prompt(
+            project_key=project_key,
+            title=title,
+            state=state,
+            previous_sessions=previous_sessions,
+            recent_turns=recent_turns,
+            compact=True,
         )
         return {
             "generated_at": now_iso(),
@@ -339,4 +411,5 @@ def get_resume_context(
             ],
             "recent_turns": recent_turns,
             "prompt": prompt,
+            "compact_prompt": compact_prompt,
         }

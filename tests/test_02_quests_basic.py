@@ -68,6 +68,44 @@ class QuestsBasicTests(unittest.TestCase):
         self.assertIsNotNone(row)
         self.assertEqual(row["count"], 0)
 
+    def test_refresh_current_state_keeps_today_mission_when_pending_quest_exists(self) -> None:
+        with db_base.connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO plan_items (id, bucket, title, status, priority_score, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    "today-plan-1",
+                    "today",
+                    "오늘 플랜",
+                    "done",
+                    100,
+                    "2026-03-10T00:00:00+00:00",
+                    "2026-03-10T00:00:00+00:00",
+                ),
+            )
+            conn.execute(
+                """
+                INSERT INTO quests (id, title, status, plan_item_id, completion_criteria, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    "quest-1",
+                    "보류 중이 아닌 판정 대기 퀘스트",
+                    "pending",
+                    "today-plan-1",
+                    "완료 기준",
+                    "2026-03-10T00:00:00+00:00",
+                    "2026-03-10T00:00:00+00:00",
+                ),
+            )
+
+            state = db_state.refresh_current_state(conn)
+
+        self.assertEqual(state["main_mission"]["id"], "today-plan-1")
+        self.assertEqual(state["current_quest"]["id"], "quest-1")
+
 
 if __name__ == "__main__":
     unittest.main()

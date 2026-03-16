@@ -12,13 +12,13 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [0-a-control] Starting external Queue Worker...
-start "0-a-control Queue Worker" cmd /k "python scripts\queue_worker.py"
-
 echo [0-a-control] Starting local server...
 echo.
 echo Browser URL:
 echo   http://localhost:4310
+echo.
+echo Telegram:
+echo   If TELEGRAM_API_ID / TELEGRAM_API_HASH are configured, sync works directly in 0-a-control.
 echo.
 
 python scripts\server.py

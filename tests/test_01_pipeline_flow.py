@@ -123,6 +123,7 @@ class PipelineFlowTests(unittest.TestCase):
                     "2026-03-09T00:00:00Z",
                 ),
             )
+        self.plan_id = "test-plan-id"
         self.quest_id = "test-quest-id"
 
     def tearDown(self) -> None:
@@ -159,6 +160,12 @@ class PipelineFlowTests(unittest.TestCase):
             state_pending.get("quest_status_summary", {}).get("is_pending"),
             "Quest should be in pending state after report",
         )
+        with db_base.connect() as conn:
+            plan_status = conn.execute(
+                "SELECT status FROM plan_items WHERE id = ?",
+                (self.plan_id,),
+            ).fetchone()["status"]
+        self.assertEqual(plan_status, "pending", "Parent plan should return to pending while verdict is outstanding")
 
         reports = sorted(file_queue.REPORTS_DIR.glob("*.report.json"))
         self.assertTrue(reports, "Report file should have been created")
@@ -200,7 +207,9 @@ class PipelineFlowTests(unittest.TestCase):
 
         with db_base.connect() as conn:
             q_status = conn.execute("SELECT status FROM quests WHERE id = ?", (self.quest_id,)).fetchone()["status"]
+            plan_status = conn.execute("SELECT status FROM plan_items WHERE id = ?", (self.plan_id,)).fetchone()["status"]
         self.assertEqual(q_status, "done", "Quest should be marked as done in DB")
+        self.assertEqual(plan_status, "done", "Parent plan should return to done after verdict application")
         self.assertFalse(list(file_queue.VERDICTS_DIR.glob("*.json")), "Verdict queue should be drained")
 
 

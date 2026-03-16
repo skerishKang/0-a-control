@@ -156,6 +156,8 @@ class SessionResumeTests(unittest.TestCase):
         self.assertIn("Added session logging", context["prompt"])
         self.assertIn("Need automatic resume context", context["prompt"])
         self.assertIn("resume quest", context["prompt"])
+        self.assertIn("Added session logging", context["compact_prompt"])
+        self.assertNotIn("Need automatic resume context", context["compact_prompt"])
         self.assertEqual(sorted(turn["role"] for turn in context["recent_turns"]), ["assistant", "user"])
 
 

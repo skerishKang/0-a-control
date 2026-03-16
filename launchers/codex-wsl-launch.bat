@@ -10,16 +10,17 @@ set "TITLE=%~2"
 set "RESUME_MODE=%~3"
 set "EXIT_CODE=1"
 
-for /f "delims=" %%i in ('wsl wslpath "%CD%"') do set "WSL_ROOT=%%i"
-if not defined WSL_ROOT (
-  echo Failed to resolve WSL path for %CD%.
+for /f "delims=" %%i in ('wsl wslpath "%CD%\scripts\codex-work.sh"') do set "WSL_CODEX_WORK=%%i"
+if not defined WSL_CODEX_WORK (
+  echo Failed to resolve codex-work.sh path.
   goto end
 )
 
-set "WSL_PREFIX="
-if defined RESUME_MODE set "WSL_PREFIX=export CONTROL_TOWER_RESUME_MODE=%RESUME_MODE%; "
-
-wsl bash -lc "%WSL_PREFIX%cd \"$1\" && bash scripts/codex-work.sh \"$2\" \"$3\"" -- "%WSL_ROOT%" "%PROJECT%" "%TITLE%"
+if defined RESUME_MODE (
+  wsl env CONTROL_TOWER_RESUME_MODE=%RESUME_MODE% bash "%WSL_CODEX_WORK%" "%PROJECT%" "%TITLE%"
+) else (
+  wsl bash "%WSL_CODEX_WORK%" "%PROJECT%" "%TITLE%"
+)
 set "EXIT_CODE=%ERRORLEVEL%"
 goto end
 

@@ -31,7 +31,11 @@ def summarize_inbox(args):
     limit = args.limit
     
     with connect() as conn:
-        query = "SELECT * FROM external_inbox WHERE imported_at >= ? AND imported_at <= ?"
+        query = (
+            "SELECT * FROM external_inbox "
+            "WHERE COALESCE(NULLIF(item_timestamp, ''), imported_at) >= ? "
+            "AND COALESCE(NULLIF(item_timestamp, ''), imported_at) <= ?"
+        )
         params = [start_time.isoformat(), end_time.isoformat()]
         
         if sources:
@@ -43,7 +47,7 @@ def summarize_inbox(args):
             query += " AND status = ?"
             params.append(status.lower())
             
-        query += " ORDER BY imported_at ASC"
+        query += " ORDER BY COALESCE(NULLIF(item_timestamp, ''), imported_at) ASC, imported_at ASC, id ASC"
         
         if limit:
             query += " LIMIT ?"
@@ -96,7 +100,11 @@ def generate_digest(args):
     sources = resolve_source_aliases(args.sources) if args.sources else None
     
     with connect() as conn:
-        query = "SELECT * FROM external_inbox WHERE imported_at >= ? AND imported_at <= ?"
+        query = (
+            "SELECT * FROM external_inbox "
+            "WHERE COALESCE(NULLIF(item_timestamp, ''), imported_at) >= ? "
+            "AND COALESCE(NULLIF(item_timestamp, ''), imported_at) <= ?"
+        )
         params = [start_time.isoformat(), end_time.isoformat()]
         
         if sources:
@@ -104,7 +112,7 @@ def generate_digest(args):
             query += f" AND source_id IN ({placeholders})"
             params.extend(sources)
             
-        query += " ORDER BY imported_at ASC"
+        query += " ORDER BY COALESCE(NULLIF(item_timestamp, ''), imported_at) ASC, imported_at ASC, id ASC"
         items = rows_to_dicts(conn.execute(query, params).fetchall())
 
     if not items:
@@ -291,7 +299,11 @@ def fetch_inbox(args):
     sources = resolve_source_aliases(args.sources) if args.sources else None
     
     with connect() as conn:
-        query = "SELECT * FROM external_inbox WHERE imported_at >= ? AND imported_at <= ?"
+        query = (
+            "SELECT * FROM external_inbox "
+            "WHERE COALESCE(NULLIF(item_timestamp, ''), imported_at) >= ? "
+            "AND COALESCE(NULLIF(item_timestamp, ''), imported_at) <= ?"
+        )
         params = [start_time.isoformat(), end_time.isoformat()]
         
         if sources:
@@ -303,7 +315,7 @@ def fetch_inbox(args):
             query += " AND status = ?"
             params.append(args.status.lower())
             
-        query += " ORDER BY imported_at ASC"
+        query += " ORDER BY COALESCE(NULLIF(item_timestamp, ''), imported_at) ASC, imported_at ASC, id ASC"
         
         if args.limit:
             query += " LIMIT ?"

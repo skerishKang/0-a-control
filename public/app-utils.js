@@ -6,8 +6,17 @@ const state = {
   sessions: [],
   workdiaryItems: [],
   priorityCandidates: [],
+  externalInbox: { items: [], summary: {} },
+  externalInboxPanel: { items: [] },
+  externalContextThread: null,
+  telegramSyncStatus: { sources: [] },
+  telegramStatus: null,
   loadErrors: [],
   renderErrors: [],
+  externalContextStatus: "new",
+  externalContextSource: "all",
+  lastTelegramSyncRun: null,
+  telegramSyncRunning: false,
   sessionAgentFilter: "all",
   sessionRecordFilter: "all",
   sessionPanelRecords: [],
@@ -123,6 +132,10 @@ function formatRecentLabel(value) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${month}-${day} ${hh}:${mm}`;
+}
+
+function getInboxDisplayTimestamp(item) {
+  return item?.item_timestamp || item?.imported_at || "";
 }
 
 function formatShortDateTime(value) {

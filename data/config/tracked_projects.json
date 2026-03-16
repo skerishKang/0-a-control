@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "ipu-security",
+      "name": "IPU AI Security Filter",
+      "path": "G:/Ddrive/BatangD/task/workdiary/24-1-ipu-ai-security-filter",
+      "enabled": true,
+      "scan_rules": {
+        "recent_days": 7,
+        "max_recent_files": 10,
+        "ignore_patterns": ["node_modules/", ".git/", "__pycache__/", "*.log", "*.pyc", ".venv/"]
+      },
+      "entry_points": {
+        "session_file": ".session/current.md",
+        "todo_file": "TODO.md",
+        "state_marker": ".workstate.json"
+      }
+    }
+  ]
+}

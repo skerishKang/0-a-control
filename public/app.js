@@ -87,12 +87,35 @@ function applyApiResult(api, payload) {
     case "priorityCandidates":
       state.priorityCandidates = payload?.items || [];
       break;
+    case "externalInbox":
+      state.externalInbox = {
+        items: payload?.items || [],
+        summary: payload?.summary || {},
+      };
+      break;
+    case "externalInboxPanel":
+      state.externalInboxPanel = {
+        items: payload?.items || [],
+      };
+      break;
+    case "telegramSyncStatus":
+      state.telegramSyncStatus = {
+        sources: payload?.sources || [],
+      };
+      break;
+    case "telegramStatus":
+      state.telegramStatus = payload || null;
+      break;
     default:
       break;
   }
 }
 
 function recordLoadFailure(api, reason, errors) {
+  if (api.optional) {
+    console.warn(`Optional load failed: ${api.label}`, reason);
+    return;
+  }
   errors.push(api.label);
   console.error(`Failed to load ${api.label}:`, reason);
 }
@@ -133,6 +156,10 @@ async function loadAll() {
     { key: "activeSession", label: "active-session", url: "/api/sessions/active" },
     { key: "workdiaryItems", label: "workdiary", url: "/api/workdiary/top-level" },
     { key: "priorityCandidates", label: "priority-candidates", url: "/api/workdiary/priority-candidates" },
+    { key: "externalInbox", label: "external-inbox", url: "/api/external-inbox?limit=500" },
+    { key: "externalInboxPanel", label: "external-inbox-panel", url: `/api/external-inbox?limit=1000&status=${encodeURIComponent(state.externalContextStatus || "reviewing")}` },
+    { key: "telegramSyncStatus", label: "telegram-sync-status", url: "/api/telegram/sync-status", optional: true },
+    { key: "telegramStatus", label: "telegram-status", url: "/api/telegram/status", optional: true },
   ];
 
   const loadErrors = [];
@@ -173,6 +200,120 @@ async function loadAll() {
   updateLoadingStatus(state.loadErrors, state.renderErrors);
 }
 
+async function refreshExternalContextPanelData() {
+  const status = state.externalContextStatus || "reviewing";
+  const category = state.externalContextSource && state.externalContextSource !== "all"
+    ? `&category=${encodeURIComponent(
+        state.externalContextSource === "core" ? "핵심4개" :
+        state.externalContextSource === "stock" ? "주식큐레이터" :
+        state.externalContextSource === "news" ? "뉴스" :
+        state.externalContextSource === "general" ? "일반대화" : state.externalContextSource
+      )}`
+    : "";
+
+  try {
+    const payload = await fetchJson(`/api/external-inbox?limit=1000&status=${encodeURIComponent(status)}${category}`);
+    state.externalInboxPanel = {
+      items: payload?.items || [],
+    };
+    renderExternalContextPanel(state);
+  } catch (error) {
+    console.error("Failed to refresh external context panel:", error);
+  }
+}
+
+window.refreshExternalContextPanelData = refreshExternalContextPanelData;
+
+function mergeExternalContextThread(existingThread, payload) {
+  if (!payload) return null;
+  if (!existingThread || existingThread.source_id !== payload.source_id) {
+    return {
+      ...payload,
+      loaded_days: Array.isArray(payload.loaded_days) ? payload.loaded_days : (payload.day ? [payload.day] : []),
+      loadingOlder: false,
+    };
+  }
+
+  const mergedMessages = [...(payload.messages || []), ...(existingThread.messages || [])];
+  const dedupedMessages = Array.from(
+    new Map(
+      mergedMessages.map((message) => [
+        `${message.id || ""}:${message.external_message_id || ""}:${message.display_timestamp || message.imported_at || ""}`,
+        message,
+      ])
+    ).values()
+  );
+  dedupedMessages.sort((a, b) =>
+    String(a.display_timestamp || a.item_timestamp || a.imported_at || "").localeCompare(
+      String(b.display_timestamp || b.item_timestamp || b.imported_at || "")
+    )
+  );
+
+  const loadedDays = Array.from(new Set([...(payload.loaded_days || []), ...(existingThread.loaded_days || [])])).sort();
+  return {
+    ...existingThread,
+    ...payload,
+    messages: dedupedMessages,
+    loaded_days: loadedDays,
+    loadingOlder: false,
+  };
+}
+
+async function refreshExternalContextThread(sourceId) {
+  if (!sourceId) {
+    state.externalContextThread = null;
+    renderExternalContextPanel(state);
+    return;
+  }
+
+  try {
+    const payload = await fetchJson(`/api/external-inbox/source?source_id=${encodeURIComponent(sourceId)}&day=today&limit=500`);
+    state.externalContextThread = mergeExternalContextThread(null, payload);
+    renderExternalContextPanel(state);
+  } catch (error) {
+    console.error("Failed to refresh external context thread:", error);
+  }
+}
+
+window.refreshExternalContextThread = refreshExternalContextThread;
+
+async function loadOlderExternalContextDay() {
+  const thread = state.externalContextThread;
+  if (!thread?.source_id || !thread.previous_day || thread.loadingOlder) {
+    return;
+  }
+
+  const detail = document.getElementById("externalContextDetail");
+  const previousHeight = detail ? detail.scrollHeight : 0;
+  const previousTop = detail ? detail.scrollTop : 0;
+  thread.loadingOlder = true;
+  renderExternalContextPanel(state);
+
+  try {
+    const payload = await fetchJson(
+      `/api/external-inbox/source?source_id=${encodeURIComponent(thread.source_id)}&before=${encodeURIComponent(thread.day)}&limit=500`
+    );
+    state.externalContextThread = mergeExternalContextThread(thread, payload);
+    renderExternalContextPanel(state);
+
+    if (detail) {
+      requestAnimationFrame(() => {
+        const currentDetail = document.getElementById("externalContextDetail");
+        if (!currentDetail) return;
+        currentDetail.scrollTop = currentDetail.scrollHeight - previousHeight + previousTop;
+      });
+    }
+  } catch (error) {
+    console.error("Failed to load older external context day:", error);
+    if (state.externalContextThread) {
+      state.externalContextThread.loadingOlder = false;
+    }
+    renderExternalContextPanel(state);
+  }
+}
+
+window.loadOlderExternalContextDay = loadOlderExternalContextDay;
+
 async function handleQuestEvaluation(event) {
   event.preventDefault();
   const current = state.currentState || {};
@@ -202,12 +343,54 @@ async function handleQuestEvaluation(event) {
   await loadAll();
 }
 
+async function handleTelegramSync() {
+  const btn = document.getElementById("syncTelegramBtn");
+  const banner = document.getElementById("syncStatusBanner");
+  if (!btn) return;
+
+  state.telegramSyncRunning = true;
+  btn.disabled = true;
+  btn.textContent = "동기화 중...";
+  renderTelegramSyncStatus();
+  if (banner) banner.style.opacity = "0.65";
+
+  try {
+    const res = await fetchJson("/api/telegram/sync-core", { method: "POST" });
+    if (!res.ok) throw new Error(res.error || "동기화 실패");
+    state.lastTelegramSyncRun = {
+      ...res,
+      executed_at: new Date().toISOString(),
+    };
+    // Refresh data
+    await loadAll();
+    await refreshExternalContextPanelData();
+  } catch (error) {
+    console.error("Telegram sync failed:", error);
+    state.lastTelegramSyncRun = {
+      ok: false,
+      error: error.message,
+      failed_at: new Date().toISOString(),
+    };
+    renderTelegramSyncStatus();
+    alert(`Telegram 동기화 실패: ${error.message}`);
+  } finally {
+    state.telegramSyncRunning = false;
+    btn.disabled = false;
+    btn.textContent = "지금 동기화";
+    if (banner) banner.style.opacity = "1";
+    renderTelegramSyncStatus();
+  }
+}
+
 document.getElementById("openReportPanelBtn").addEventListener("click", openReportPanel);
+document.getElementById("openExternalContextPanelBtn").addEventListener("click", openExternalContextPanel);
+document.getElementById("syncTelegramBtn").addEventListener("click", handleTelegramSync);
 document.getElementById("closeReportPanelBtn").addEventListener("click", closeReportPanel);
 document.getElementById("closeDetailPanelBtn").addEventListener("click", closeDetailPanel);
 document.getElementById("panelBackdrop").addEventListener("click", () => {
   closeReportPanel();
   closeDetailPanel();
+  closeExternalContextPanel();
   document.getElementById("panelBackdrop").hidden = true;
 });
 

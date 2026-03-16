@@ -9,7 +9,8 @@
 
 **실행 시 발생하는 일:**
 - **메인 서버 창**: `.bat` 파일을 실행한 원본 콘솔 창은 웹 서버 구동을 담당합니다.
-- **큐 워커(Queue Worker) 창**: `0-a-control Queue Worker`라는 제목의 두 번째 콘솔 창이 자동으로 열립니다. 이 창은 백그라운드에서 `.verdict.json` 파일이 들어오는 것을 감시하다가 발견 즉시 DB로 반영(ingest)합니다. 에러가 나더라도 `cmd /k` 덕분에 창이 닫히지 않고 로그를 남깁니다.
+- **대시보드 서버 창**: `localhost:4310` 웹 UI를 제공하는 로컬 서버가 시작됩니다.
+- **Telegram 연결**: 텔레그램 동기화는 `0-a-control` 내부 서비스가 직접 처리합니다. `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`를 먼저 설정해야 하며, 첫 연결 전에는 세션 파일이 아직 없을 수 있습니다. 기본 세션 파일 경로는 `data/runtime/telegram_userbot.session`이고, 첫 인증이 성공하면 이 위치에 생성됩니다. 상태 확인은 UI 배너 또는 `python scripts/telegram_cli.py telegram-status`로 할 수 있습니다.
 
 ## 2. 인터페이스 접속
 메인 서버 창에 시작 안내 문구가 표시되면, 브라우저를 열고 다음 주소로 접속합니다:

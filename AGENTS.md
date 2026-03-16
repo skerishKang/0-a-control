@@ -168,4 +168,7 @@ Support:
 Telegram ingestion already has local scripts (`scripts/telegram_cli.py`, `scripts/telegram_db.py`) and should continue to plug into the shared memory model through common contracts.
 Future expansion such as richer Telegram automation, email, or OpenClaw must connect through shared contracts, not by replacing the central memory model.
 
+Telegram 저장 규칙과 첨부 경로 규칙은 `docs/13-telegram-storage-rules.md`를 따른다.
+특히 `item_timestamp` / `imported_at` 역할 구분, 첨부파일 경로 규칙, 백필과 일상 sync의 책임 분리는 이 문서를 기준으로 유지한다.
+
 `0-a-control` remains the source of truth for planning state.

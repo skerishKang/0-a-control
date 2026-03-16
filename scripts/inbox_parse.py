@@ -52,7 +52,8 @@ def resolve_source_aliases(aliases: list[str]) -> list[str]:
         "강혜림": "kang_hyerim_chat", "강혜림 대화": "kang_hyerim_chat",
         "kilo": "kilo_chat", "로컬챗": "local_chat",
         "주식큐레이터": "stock_curator_channel",
-        "뉴스": "news_channel"
+        "뉴스": "news_channel",
+        "일반대화": "general_chat"
     }
     core_four = ['local_chat', 'kilo_chat', 'self_chat', 'kang_hyerim_chat']
     
@@ -60,6 +61,8 @@ def resolve_source_aliases(aliases: list[str]) -> list[str]:
     for alias in (aliases or []):
         if alias == "핵심4개":
             resolved.extend(core_four)
+        elif alias == "전체":
+            continue # Let the caller handle 'all'
         elif alias in mapping:
             resolved.append(mapping[alias])
         else:

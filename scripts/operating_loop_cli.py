@@ -13,6 +13,27 @@ import json
 from scripts.db_ops import get_current_state
 from scripts.db_base import connect
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+SUGGESTIONS_PATH = ROOT_DIR / "data" / "runtime" / "quest_suggestions.json"
+
+
+def _load_suggestions() -> dict:
+    if not SUGGESTIONS_PATH.exists():
+        return {"suggestions": [], "generated_at": None}
+    with open(SUGGESTIONS_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _add_suggestions_to_snapshot(snapshot: dict) -> dict:
+    suggestions = _load_suggestions()
+    suggestion_list = suggestions.get("suggestions", [])[:3]
+    snapshot["derived_suggestions"] = [
+        {"title": s["title"], "why_now": s["why_now"], "source_project": s["source_project"]}
+        for s in suggestion_list
+    ]
+    snapshot["suggestions_count"] = len(suggestions.get("suggestions", []))
+    return snapshot
+
 
 PHASE_GUIDE = {
     "morning": {
@@ -99,6 +120,7 @@ def print_status(explicit_phase: str | None, as_json: bool) -> None:
     state = get_current_state()
     phase = _infer_phase(state, explicit_phase)
     snapshot = _build_snapshot(state, phase)
+    snapshot = _add_suggestions_to_snapshot(snapshot)
 
     if as_json:
         print(json.dumps(snapshot, ensure_ascii=False, indent=2))
@@ -130,6 +152,21 @@ def print_status(explicit_phase: str | None, as_json: bool) -> None:
         f"new={inbox['new']}, reviewing={inbox['reviewing']}, "
         f"accepted={inbox['accepted']}, archived={inbox['archived']}"
     )
+
+    derived = snapshot.get("derived_suggestions", [])
+    if derived:
+        print()
+        print(f"=== Derived Quest Suggestions ({snapshot.get('suggestions_count', 0)}개) ===")
+        for s in derived:
+            print(f"- [{s['source_project']}] {s['title']}")
+            why = s["why_now"]
+            if len(why) > 80:
+                why = why[:80] + "..."
+            print(f"  이유: {why}")
+    else:
+        print()
+        print("suggestions: 없음 (python scripts/operating_loop_cli.py suggestions --refresh)")
+
     print()
     print("지금 이렇게 말하면 됩니다:")
     print(snapshot["prompt"])
@@ -164,6 +201,10 @@ def parse_args() -> argparse.Namespace:
         choices=sorted(PHASE_GUIDE.keys()),
         help="Override inferred phase",
     )
+
+    suggestions = sub.add_parser("suggestions", help="Show derived quest suggestions")
+    suggestions.add_argument("--json", action="store_true", help="Output as JSON")
+    suggestions.add_argument("--refresh", action="store_true", help="Refresh suggestions before showing")
     return parser.parse_args()
 
 
@@ -181,6 +222,27 @@ def main() -> None:
     if args.command == "checklist":
         for item in PHASE_GUIDE[phase]["checklist"]:
             print(f"- {item}")
+        return
+    if args.command == "suggestions":
+        if getattr(args, "refresh", False):
+            import subprocess
+            subprocess.run([sys.executable, str(ROOT_DIR / "scripts" / "project_reader.py")], check=True)
+            subprocess.run([sys.executable, str(ROOT_DIR / "scripts" / "quest_deriver.py")], check=True)
+        suggestions = _load_suggestions()
+        if args.json:
+            print(json.dumps(suggestions, ensure_ascii=False, indent=2))
+            return
+        suggestion_list = suggestions.get("suggestions", [])
+        if not suggestion_list:
+            print("No suggestions yet.")
+            print("Run: python scripts/operating_loop_cli.py suggestions --refresh")
+            return
+        print(f"=== Derived Quest Suggestions ({len(suggestion_list)}개) ===")
+        for s in suggestion_list:
+            print(f"\n[{s['id']}] {s['title']}")
+            print(f"  이유: {s['why_now']}")
+            print(f"  완료 기준: {s['completion_criteria']}")
+        return
 
 
 if __name__ == "__main__":

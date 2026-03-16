@@ -10,8 +10,12 @@ if str(project_root) not in sys.path:
 
 if __package__ in (None, ""):
     from scripts import db as _db
+    from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
+    from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
 else:
     from . import db as _db
+    from .telegram_cli import get_core_sources_sync_status, run_sync_core
+    from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
 
 import json
 import logging
@@ -21,27 +25,24 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
-
-import requests
-
-from _db import (
-    ROOT_DIR,
-    append_source_record,
-    create_sample_data_if_empty,
-    end_session,
-    evaluate_quest,
-    get_current_state,
-    get_latest_briefs,
-    get_plans,
-    get_quests,
-    get_recent_sessions,
-    get_source_records,
-    get_workdiary_priority_candidates,
-    get_workdiary_top_level,
-    report_quest_progress,
-    refresh_current_state,
-    start_session,
-)
+ROOT_DIR = _db.ROOT_DIR
+append_source_record = _db.append_source_record
+create_sample_data_if_empty = _db.create_sample_data_if_empty
+end_session = _db.end_session
+evaluate_quest = _db.evaluate_quest
+get_external_inbox_overview = _db.get_external_inbox_overview
+get_external_inbox_source_messages = _db.get_external_inbox_source_messages
+get_current_state = _db.get_current_state
+get_latest_briefs = _db.get_latest_briefs
+get_plans = _db.get_plans
+get_quests = _db.get_quests
+get_recent_sessions = _db.get_recent_sessions
+get_source_records = _db.get_source_records
+get_workdiary_priority_candidates = _db.get_workdiary_priority_candidates
+get_workdiary_top_level = _db.get_workdiary_top_level
+report_quest_progress = _db.report_quest_progress
+refresh_current_state = _db.refresh_current_state
+start_session = _db.start_session
 
 
 PUBLIC_DIR = ROOT_DIR / "public"
@@ -142,6 +143,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             )
             self.send_json({"ok": True, "session": result})
             return
+        if path == "/api/telegram/sync-core":
+            result = run_sync_core()
+            self.send_json(result)
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def do_POST(self) -> None:
@@ -206,24 +211,47 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             limit = min(200, int(query.get("limit", ["8"])[0]))
             self.send_json({"items": get_workdiary_priority_candidates(limit)})
             return
+        if path == "/api/external-inbox":
+            limit = min(1000, int(query.get("limit", ["8"])[0]))
+            status = query.get("status", [None])[0]
+            category = query.get("category", [None])[0]
+            self.send_json(get_external_inbox_overview(limit, status, category))
+            return
+        if path == "/api/external-inbox/source":
+            source_id = query.get("source_id", [""])[0]
+            if not source_id:
+                self.send_json({"error": "source_id is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            day = query.get("day", ["today"])[0]
+            before = query.get("before", [None])[0]
+            limit = min(1000, int(query.get("limit", ["500"])[0]))
+            self.send_json(get_external_inbox_source_messages(source_id, day, limit, before))
+            return
         if path == "/api/health":
             self.send_json({"ok": True})
             return
         
+        if path == "/api/telegram/sync-status":
+            self.send_json({"sources": get_core_sources_sync_status()})
+            return
+
+        if path == "/api/telegram/status":
+            self.send_json(get_telegram_status())
+            return
+
+        if path == "/api/telegram/chats":
+            limit = min(200, int(query.get("limit", ["50"])[0]))
+            self.send_json({"status": "ok", "chats": fetch_chats(limit=limit)})
+            return
+
         if path == "/api/telegram/messages":
             chat_id = query.get("chat_id", [""])[0]
             if not chat_id:
                 self.send_json({"error": "chat_id is required"}, status=HTTPStatus.BAD_REQUEST)
                 return
-            
-            # This proxies the request to the 0-command-center service
-            try:
-                command_center_url = f"http://localhost:4300/api/telegram/messages?chat_id={chat_id}"
-                resp = requests.get(command_center_url, timeout=15)
-                resp.raise_for_status()
-                self.send_json(resp.json())
-            except requests.RequestException as e:
-                self.send_json({"error": f"Failed to fetch from command-center: {e}"}, status=HTTPStatus.SERVICE_UNAVAILABLE)
+
+            limit = min(500, int(query.get("limit", ["200"])[0]))
+            self.send_json({"status": "ok", "chat_id": chat_id, "messages": fetch_messages(chat_id, limit=limit)})
             return
 
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")

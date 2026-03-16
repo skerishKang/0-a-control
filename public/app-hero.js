@@ -8,27 +8,27 @@ function renderHeroCard(current) {
   
   // 1. Titles & Texts
   document.getElementById("mainMissionTitle").textContent = current.main_mission_title || "주 임무가 없습니다.";
-  document.getElementById("mainMissionReason").textContent = summarizeMissionReason(current.main_mission_reason);
+  
+  // Store reason for the button
+  const reason = current.main_mission_reason || "추천 이유가 없습니다.";
+  const reasonBtn = document.getElementById("openMissionReasonBtn");
+  if (reasonBtn) {
+    reasonBtn.onclick = () => {
+      openDetailPanel("추천 이유", current.main_mission_title, `<div class="detail-content"><p>${reason.replace(/\n/g, '<br>')}</p></div>`);
+    };
+  }
+
   document.getElementById("mainMissionCriteria").textContent =
     current.main_mission_completion_criteria || "완료 기준이 아직 없습니다.";
   document.getElementById("currentQuestTitle").textContent =
     current.current_quest_title || "현재 퀘스트가 없습니다.";
 
-  // 2. Mission Status Badge
+  // 2. Mission Status (Calculated but not rendered as a badge in hero anymore as per request)
   const unfinished = current.top_unfinished_summary || [];
   const recentVerdict = current.recent_verdict || {};
   const latestVerdictStatus = recentVerdict.verdict || "";
   const missionSummary = unfinished.find((item) => item.title === current.main_mission_title) || unfinished[0] || null;
   const missionStatus = missionSummary?.status || latestVerdictStatus || "pending";
-  
-  const mainMissionStatus = document.getElementById("mainMissionStatus");
-  if (mainMissionStatus) {
-    let badges = renderVerdictBadge(missionStatus);
-    if (statusSummary.is_pending && missionStatus !== 'pending') {
-      badges += renderVerdictBadge("pending");
-    }
-    mainMissionStatus.innerHTML = badges;
-  }
 
   // 3. Progress Fill & Text
   // Note: Hero card progress elements are now expected in index.html (mainMissionProgressFill, etc.)
@@ -65,4 +65,3 @@ function renderHeroCard(current) {
   // Return values for other cards to use (like Caution Card)
   return { nextCore, cautionText };
 }
-

@@ -11,21 +11,16 @@ fi
 
 PYTHON_CMD=$(command -v python3 || command -v python)
 
-echo "[0-a-control] Starting external Queue Worker in background..."
-$PYTHON_CMD scripts/queue_worker.py &
-WORKER_PID=$!
-
 echo "[0-a-control] Starting local server..."
 echo ""
 echo "Browser URL:"
 echo "  http://localhost:4310"
 echo ""
-
-# Handle cleanup
-trap "kill $WORKER_PID; echo '[0-a-control] Stopped worker'; exit" INT TERM
+echo "Telegram:"
+echo "  If TELEGRAM_API_ID / TELEGRAM_API_HASH are configured, sync works directly in 0-a-control."
+echo ""
 
 $PYTHON_CMD scripts/server.py
 
 echo ""
 echo "[0-a-control] Server stopped."
-kill $WORKER_PID

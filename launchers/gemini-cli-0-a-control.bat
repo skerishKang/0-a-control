@@ -5,5 +5,5 @@ cd /d "%~dp0.."
 set "PROJECT=0-a-control"
 set "TITLE=0-a-control session"
 
-bash scripts/gemini-cli-work.sh "%PROJECT%" "%TITLE%"
-pause
+call "%~dp0agent-direct-launch.bat" gemini "%CD%" "%TITLE%"
+exit /b %ERRORLEVEL%

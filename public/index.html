@@ -16,13 +16,17 @@
 <body>
   <main class="layout">
     <section class="hero-card">
-      <p class="section-label alert-label">오늘의 주 임무</p>
-      <div class="mission-head">
-        <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
-        <div id="mainMissionStatus"></div>
+      <div class="hero-header">
+        <div class="title-group">
+          <p class="section-label alert-label">오늘의 주 임무</p>
+          <div class="mission-head">
+            <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
+            <button id="openMissionReasonBtn" type="button" class="secondary-btn compact-btn">이유</button>
+            <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일 보기</button>
+          </div>
+        </div>
       </div>
       <p id="loadStatusMessage" class="mission-reason" hidden></p>
-      <p id="mainMissionReason" class="mission-reason"></p>
       <div class="mission-grid">
         <div class="criteria-box accent">
           <p class="box-label alert-label">지금 할 작은 행동 1개</p>
@@ -106,6 +110,12 @@
         </div>
         <div id="briefList" class="list"></div>
       </article>
+      <article class="panel panel-muted panel-summary">
+        <div class="panel-head">
+          <h3>외부 입력</h3><span id="externalInboxCount" class="count-badge"></span>
+        </div>
+        <div id="externalInboxList" class="list"></div>
+      </article>
       <article class="panel panel-muted panel-order-workdiary panel-summary">
         <div class="panel-head">
           <h3>workdiary 상위 폴더</h3><span id="workdiaryCount" class="count-badge"></span>
@@ -181,6 +191,49 @@
     </div>
     <div id="detailPanelBody" class="side-panel-body">
       <!-- Content will be injected here -->
+    </div>
+  </aside>
+
+  <aside id="externalContextPanel" class="side-panel external-context-panel" aria-hidden="true" hidden>
+    <div class="side-panel-header">
+      <div class="external-panel-title">
+        <h3>텔레그램 / 이메일</h3>
+      </div>
+      <div class="header-actions">
+        <button id="syncTelegramBtn" type="button" class="telegram-sync-btn">지금 동기화</button>
+      </div>
+    </div>
+    <div class="side-panel-body external-context-body">
+      <div id="syncStatusBanner" class="sync-status-banner">
+        <span class="sync-status-text">동기화 상태를 불러오고 있습니다...</span>
+      </div>
+      <div id="telegramSourceStatus" class="telegram-source-status"></div>
+      <div id="telegramSetupHint" class="telegram-setup-hint">
+        동기화 전 준비: Telegram API ID/API HASH 설정, 로그인 세션 생성, 핵심 소스 지정이 필요합니다.
+      </div>
+      <div class="filter-section">
+        <div class="filter-group">
+          <div id="externalContextStatusTabs" class="filter-chip-row compact"></div>
+        </div>
+        <div class="filter-group">
+          <div id="externalContextSourceTabs" class="filter-chip-row compact"></div>
+        </div>
+      </div>
+      
+      <div class="external-context-layout">
+        <section class="panel panel-inline external-context-list-panel">
+          <div class="panel-head">
+            <h3>목록</h3><span id="externalContextPanelCount" class="count-badge"></span>
+          </div>
+          <div id="externalContextList" class="list"></div>
+        </section>
+        
+        <section class="panel panel-inline external-context-detail-panel">
+          <div id="externalContextDetail" class="detail-view">
+            <div class="empty-state">왼쪽 목록에서 채팅을 고르면 오늘 대화를 여기서 바로 볼 수 있습니다.</div>
+          </div>
+        </section>
+      </div>
     </div>
   </aside>
 

@@ -6,6 +6,45 @@ WORKDIARY_ROOT="$(cd "$ROOT_DIR/.." && pwd)"
 RUNTIME_DIR="$ROOT_DIR/data/runtime"
 TRANSCRIPT_DIR="$RUNTIME_DIR/transcripts"
 
+build_workspace_prompt() {
+  local agent_name="$1"
+  local workspace="$2"
+  local workspace_name
+  workspace_name="$(basename "$workspace")"
+
+  case "$agent_name" in
+    codex|gemini-cli|kilo|opencode) ;;
+    *) return ;;
+  esac
+
+  if [[ "$workspace_name" != "0-a-control" ]]; then
+    return
+  fi
+
+  local agents_file="$workspace/AGENTS.md"
+  local readme_file="$workspace/README.md"
+  local prompt=""
+
+  prompt+="You are starting inside the 0-a-control workspace."$'\n'
+  prompt+="Read and follow these local project rules first before broader exploration."$'\n'
+
+  if [[ -f "$agents_file" ]]; then
+    prompt+=$'\n'"[AGENTS.md]"$'\n'
+    prompt+="$(sed -n '1,220p' "$agents_file")"$'\n'
+  fi
+
+  if [[ -f "$readme_file" ]]; then
+    prompt+=$'\n'"[README.md]"$'\n'
+    prompt+="$(sed -n '1,260p' "$readme_file")"$'\n'
+  fi
+
+  prompt+=$'\n'"Startup behavior for this workspace:"$'\n'
+  prompt+="- On the first turn, do not start exploring files, running commands, or proposing a plan unless the user explicitly asks."$'\n'
+  prompt+="- Reply with a short confirmation that you are in 0-a-control, that AGENTS.md/README.md were read, and that you are waiting for the next task."$'\n'
+  prompt+="- Keep that first reply to 1-3 short sentences."$'\n'
+  printf '%s' "$prompt"
+}
+
 resolve_python() {
   if command -v python >/dev/null 2>&1; then
     echo python
@@ -116,13 +155,23 @@ import json, sys
 from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text())
 resume = payload.get("resume_context") or {}
-print(resume.get("prompt", ""))
+print(resume.get("compact_prompt") or resume.get("prompt", ""))
 PY
 )"
 RESUME_PROMPT="${RESUME_PROMPT% }" # Trim the space
 
+WORKSPACE_PROMPT="$(build_workspace_prompt "$CANONICAL_AGENT" "$WORKSPACE")"
+
+if [[ -n "$WORKSPACE_PROMPT" ]]; then
+  if [[ -n "$RESUME_PROMPT" ]]; then
+    RESUME_PROMPT="$WORKSPACE_PROMPT"$'\n\n'"$RESUME_PROMPT"
+  else
+    RESUME_PROMPT="$WORKSPACE_PROMPT"
+  fi
+fi
+
 if [[ "$RESUME_MODE" == "fresh" ]]; then
-  RESUME_PROMPT=""
+  RESUME_PROMPT="$WORKSPACE_PROMPT"
 fi
 
 PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" log \
@@ -192,6 +241,10 @@ if [[ "$TOOL" == *.cmd || "$TOOL" == *.bat ]]; then
     WIN_TOOL="$(wslpath -w "$TOOL")"
   fi
   TOOL_ARGS=("cmd.exe" "/c" "$WIN_TOOL")
+fi
+if [[ "$CANONICAL_AGENT" == "codex" ]]; then
+  TOOL_ARGS+=("-C" "$WORKSPACE")
+  TOOL_ARGS+=("--no-alt-screen")
 fi
 if [[ "$CANONICAL_AGENT" == "codex" && -n "$RESUME_PROMPT" && $# -eq 0 ]]; then
   TOOL_ARGS+=("$RESUME_PROMPT")

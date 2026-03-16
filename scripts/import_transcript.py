@@ -12,13 +12,45 @@ ANSI_CSI_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
 ANSI_OSC_RE = re.compile(r"\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)")
 
 # Common Prompts for heuristic splitting
-USER_RE = re.compile(r"^(?:> |\? |(?:You|User|Human):\s*)", re.IGNORECASE)
-ASSISTANT_RE = re.compile(r"^(?:(?:Codex|Gemini|Assistant|AI|Response|Bot):\s*)", re.IGNORECASE)
-TOOL_RE = re.compile(r"^(?:(?:Tool|System|Executing|Error|Warning|Info):\s*|\$\s+|\[\d{4}-\d{2}-\d{2})", re.IGNORECASE)
+USER_RE = re.compile(r"^(?:> |› |(?:You|User|Human):\s*)", re.IGNORECASE)
+ASSISTANT_RE = re.compile(
+    r"^(?:(?:Codex|Gemini|Assistant|AI|Response|Bot):\s*|•\s|[-*]\s)",
+    re.IGNORECASE,
+)
+TOOL_RE = re.compile(
+    r"^(?:(?:Tool|System|Executing|Error|Warning|Info):\s*|\$\s+|\[\d{4}-\d{2}-\d{2}|Script started on|Windows PowerShell 기록)",
+    re.IGNORECASE,
+)
+
+NOISE_RE = re.compile(
+    r"^(?:Tip:|model:\s|directory:\s|gpt-[\w.-]+|OpenAI Codex|Windows PowerShell 기록|PSVersion:|Host Application:|호스트 응용 프로그램:)",
+    re.IGNORECASE,
+)
 
 def strip_ansi(text: str) -> str:
     text = ANSI_OSC_RE.sub("", text)
-    return ANSI_CSI_RE.sub("", text)
+    text = ANSI_CSI_RE.sub("", text)
+    text = text.replace("\r", "\n")
+    text = re.sub(r"(?<!\n)([›•])\s", r"\n\1 ", text)
+    text = re.sub(r"(?<!\n)(Script started on)", r"\n\1", text)
+    text = re.sub(r"(?<!\n)(Script done on)", r"\n\1", text)
+    return text
+
+
+def normalize_line(line: str) -> str:
+    line = line.replace("\ufeff", "").rstrip()
+    line = re.sub(r"\s+", " ", line).strip()
+    return line
+
+
+def is_noise_line(line: str) -> bool:
+    if not line:
+        return True
+    if NOISE_RE.match(line):
+        return True
+    if len(line) >= 20 and set(line) <= {"─", "│", "╭", "╮", "╰", "╯", " "}:
+        return True
+    return False
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Import terminal transcript into source_records")
@@ -34,7 +66,10 @@ def chunk_transcript(content: str) -> list[dict[str, str]]:
     current_role = "tool"  # default fallback
     current_lines = []
 
-    for line in content.splitlines():
+    for raw_line in content.splitlines():
+        line = normalize_line(raw_line)
+        if is_noise_line(line):
+            continue
         if USER_RE.match(line):
             if current_lines:
                 chunks.append({"role": current_role, "text": "\n".join(current_lines)})
@@ -58,7 +93,16 @@ def chunk_transcript(content: str) -> list[dict[str, str]]:
 
     if current_lines:
         chunks.append({"role": current_role, "text": "\n".join(current_lines)})
-    return chunks
+    # Drop low-signal chunks that are just transcript scaffolding.
+    filtered = []
+    for chunk in chunks:
+        text = chunk["text"].strip()
+        if not text:
+            continue
+        if text in {"Working", "Explored"}:
+            continue
+        filtered.append({"role": chunk["role"], "text": text})
+    return filtered
 
 def main() -> None:
     args = parse_args()
