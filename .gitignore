@@ -43,5 +43,15 @@ Thumbs.db
 *.swp
 *.swo
 
+# 로컬 임시 파일
+*.txt
+*.png
+nul
+server.pid
+*.bat
+
+# blobs
+data/blobs/
+
 # 유지용 깃킵은 추적
 !**/.gitkeep
