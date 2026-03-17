@@ -361,7 +361,6 @@ async function handleTelegramSync() {
 
   try {
     const res = await fetchJson("/api/telegram/sync-core", { method: "POST" });
-    if (!res.ok) throw new Error(res.error || "동기화 실패");
     state.lastTelegramSyncRun = {
       ...res,
       executed_at: new Date().toISOString(),
