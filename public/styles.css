@@ -31,6 +31,46 @@ body.panel-open {
   overflow: hidden;
 }
 
+/* Zone Section Wrappers */
+.zone-section {
+  margin-bottom: 2rem;
+}
+
+.zone-section:last-child {
+  margin-bottom: 0;
+}
+
+.zone-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem 0.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.zone-mission {
+  background: transparent;
+}
+
+.zone-support {
+  background: var(--panel);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(17, 34, 68, 0.04);
+}
+
+.zone-review {
+  background: var(--panel);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(17, 34, 68, 0.04);
+}
+
 .section-label,
 .box-label {
   text-transform: uppercase;
@@ -170,6 +210,7 @@ p {
 }
 
 .header-action-btn:hover {
+  cursor: pointer;
   transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(74, 163, 255, 0.24) !important;
   filter: saturate(1.03);
@@ -218,6 +259,29 @@ p {
   border-color: rgba(209, 67, 67, 0.3);
   box-shadow: 0 8px 24px rgba(209, 67, 67, 0.08);
   border-width: 2px;
+}
+
+.quest-focus-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quest-focus-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.quest-focus-risk {
+  font-size: 0.85rem;
+  color: var(--red);
+  font-weight: 500;
+  margin: 0;
+  padding-top: 0.35rem;
+  border-top: 1px dashed rgba(209, 67, 67, 0.2);
 }
 
 .mission-grid {
@@ -320,6 +384,9 @@ p {
 
 .midday-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .support-grid {

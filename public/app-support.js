@@ -3,6 +3,8 @@
  */
 
 function renderSupportGrid(state) {
+  renderTodaySummarySection(state);
+  renderUnfinishedPlansSection(state);
   renderPlansSection(state);
   renderSessionsSection(state);
   renderBriefsSection(state);
@@ -11,6 +13,94 @@ function renderSupportGrid(state) {
   renderPriorityCandidatesSection(state);
   renderExternalContextPanel(state);
   renderDerivedSuggestionsSection().catch(() => {});
+}
+
+function renderTodaySummarySection(state) {
+  const targetId = "todaySummaryList";
+  const container = document.getElementById(targetId);
+  if (!container) return;
+
+  const current = state.currentState || {};
+  const progress = current.day_progress_summary || {};
+  const verdict = current.recent_verdict || {};
+  const datedPressure = current.dated_pressure_summary || [];
+  const recommendedNext = current.recommended_next_quest || "";
+  const dayPhase = current.day_phase || "";
+
+  const items = [];
+
+  // 1. 오늘 진행 상황 (단호하게)
+  const done = progress.done || 0;
+  const partial = progress.partial || 0;
+  if (done > 0) {
+    items.push({ label: "완료", value: `${done}건`, type: "done" });
+  }
+  if (partial > 0) {
+    items.push({ label: "진행중", value: `${partial}건`, type: "partial" });
+  }
+
+  // 2. 현재 퀘스트 상태
+  const questStatus = verdict.status || "none";
+  if (questStatus === "done") {
+    items.push({ label: "퀘스트", value: "완료", type: "done" });
+  } else if (questStatus === "partial") {
+    items.push({ label: "퀘스트", value: "진행중", type: "partial" });
+  } else if (questStatus === "hold") {
+    items.push({ label: "퀘스트", value: "보류", type: "hold" });
+  }
+
+  // 3. 기한 위험 (가장 급한 것 1개)
+  if (datedPressure && datedPressure.length > 0) {
+    const urgent = datedPressure[0];
+    items.push({ label: "기한", value: urgent.title?.slice(0, 20) || "확인필요", type: "risk" });
+  }
+
+  // 4. 지금 할 것 (간단히)
+  if (recommendedNext) {
+    const short = recommendedNext.length > 25 ? recommendedNext.slice(0, 25) + "..." : recommendedNext;
+    items.push({ label: "다음", value: short, type: "action" });
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="list-item empty">오늘 아직 판단이 없습니다.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.slice(0, 4).map(item => `
+    <div class="list-item summary-item">
+      <span class="summary-label">${escapeHtml(item.label)}</span>
+      <span class="summary-value ${item.type}">${escapeHtml(item.value)}</span>
+    </div>
+  `).join("");
+}
+
+function renderUnfinishedPlansSection(state) {
+  const targetId = "unfinishedPlanList";
+  const container = document.getElementById(targetId);
+  if (!container) return;
+
+  const plans = state.plans || [];
+  const unfinished = plans.filter(p => p.status && !["done", "rejected", "archived"].includes(p.status));
+  const count = unfinished.length;
+
+  const countEl = document.getElementById("unfinishedPlanCount");
+  if (countEl) countEl.textContent = String(count);
+
+  if (count === 0) {
+    container.innerHTML = `<div class="list-item empty">미완료 플랜이 없습니다.</div>`;
+    return;
+  }
+
+  const topItems = unfinished.slice(0, 4);
+  container.innerHTML = topItems.map(plan => `
+    <div class="list-item">
+      <div class="candidate-head">
+        <strong>${escapeHtml(plan.title)}</strong>
+        <span class="session-badge verdict ${escapeHtml(plan.status || "pending")}">${escapeHtml(labelStatus(plan.status))}</span>
+      </div>
+      <span class="candidate-reason">${escapeHtml(plan.due_at || labelBucket(plan.bucket) || "-")}</span>
+    </div>
+  `).join("");
 }
 
 const externalContextStatusOptions = [
@@ -591,13 +681,11 @@ function renderPlansSection(state) {
   const markAsBrowsing = (id) => document.getElementById(id)?.parentElement.classList.add('panel-browsing');
 
   markAsBrowsing('dueSoonList');
-  markAsBrowsing('unfinishedList');
   markAsBrowsing('shortTermList');
   markAsBrowsing('longTermList');
   markAsBrowsing('recurringList');
 
   setCountBadge("dueSoonCount", byBucket(plans, "dated").length);
-  setCountBadge("unfinishedCount", (current.top_unfinished_summary || []).length);
   setCountBadge("shortTermCount", byBucket(plans, "short_term").length);
   setCountBadge("longTermCount", byBucket(plans, "long_term").length);
   setCountBadge("recurringCount", byBucket(plans, "recurring").length);
@@ -619,11 +707,6 @@ function renderPlansSection(state) {
   renderCappedList("dueSoonList", byBucket(plans, "dated"), planFormatter, 3, "이번 달 예정된 고정 기한 일정이 없습니다.");
   document.getElementById("dueSoonList")?.parentElement?.addEventListener("click", () => {
     showDetailedList("기한 임박", "기한 고정 플랜", byBucket(state.plans, "dated"), detailFormatter((i) => i.due_at));
-  }, { once: true });
-
-  renderCappedList("unfinishedList", current.top_unfinished_summary || [], planFormatter, 3, "이전 세션에서 이월된 미완료 항목이 없습니다.");
-  document.getElementById("unfinishedList")?.parentElement?.addEventListener("click", () => {
-    showDetailedList("어제 미완료", "미완료 핵심", state.currentState.top_unfinished_summary || [], detailFormatter((i) => labelStatus(i.status)));
   }, { once: true });
 
   renderCappedList("shortTermList", byBucket(plans, "short_term"), planFormatter, 3, "현재 집중해야 할 단기 계획이 비어 있습니다.");
@@ -721,20 +804,16 @@ function renderPriorityCandidatesSection(state) {
   const items = state.priorityCandidates || [];
   setCountBadge("priorityCandidateCount", items.length);
 
-  const renderCandidate = (item, rank) => `
+  const renderCandidate = (item) => `
     <div class="list-item candidate-item">
       <div class="candidate-head">
         <strong>${escapeHtml(item.name)}</strong>
-        <div class="candidate-meta">
-          <span class="candidate-rank">#${rank}</span>
-          <span class="candidate-score">${escapeHtml(String(item.priority_score ?? 0))}</span>
-        </div>
       </div>
       <span class="candidate-reason">${escapeHtml(item.priority_reason || "-")}</span>
     </div>
   `;
 
-  const formatter = (item, index) => renderCandidate(item, index + 1);
+  const formatter = (item) => renderCandidate(item);
   renderCappedList(targetId, items, formatter, 3, "우선순위를 분석할 만한 작업 데이터가 아직 충분하지 않습니다.");
   parentPanel.onclick = () => {
     showDetailedList("우선 검토 후보", "프로젝트 후보 목록", state.priorityCandidates, (i) => `

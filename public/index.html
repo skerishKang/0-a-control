@@ -15,10 +15,12 @@
 
 <body>
   <main class="layout">
-    <section class="hero-card">
+    <section class="zone-section zone-mission">
+      <p class="zone-title">지금 할 일</p>
+      <section class="hero-card">
       <div class="hero-header">
         <div class="title-group">
-          <p class="section-label alert-label">오늘의 주 임무</p>
+          <p class="section-label alert-label">지금 1개만 잡기</p>
           <div class="mission-head">
             <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
             <button id="openMissionReasonBtn" type="button" class="secondary-btn compact-btn">이유</button>
@@ -28,9 +30,10 @@
       </div>
       <p id="loadStatusMessage" class="mission-reason" hidden></p>
       <div class="mission-grid">
-        <div class="criteria-box accent">
-          <p class="box-label alert-label">지금 할 작은 행동 1개</p>
-          <p id="currentQuestTitle"></p>
+        <div class="criteria-box accent quest-focus-box">
+          <p class="box-label alert-label">지금 이것만</p>
+          <p id="currentQuestTitle" class="quest-focus-title"></p>
+          <p id="mainMissionRisk" class="quest-focus-risk"></p>
         </div>
         <div class="criteria-box">
           <p class="box-label">완료 기준</p>
@@ -59,7 +62,10 @@
         <div id="cautionHint" class="list action-focus-list"></div>
       </article>
     </section>
+    </section>
 
+    <section class="zone-section zone-support">
+      <p class="zone-title">판단과 지원</p>
     <section class="support-grid">
       <article class="panel panel-summary">
         <div class="panel-head">
@@ -69,21 +75,21 @@
       </article>
       <article class="panel panel-summary">
         <div class="panel-head">
-          <h3>어제 미완료 / 현재 미완료</h3><span id="unfinishedCount" class="count-badge"></span>
+          <h3>오늘 판단 요약</h3>
         </div>
-        <div id="unfinishedList" class="list"></div>
-      </article>
-      <article class="panel panel-wide panel-tall panel-order-candidates">
-        <div class="panel-head">
-          <h3>우선 검토 후보</h3><span id="priorityCandidateCount" class="count-badge"></span>
-        </div>
-        <div id="priorityCandidateList" class="list"></div>
+        <div id="todaySummaryList" class="list"></div>
       </article>
       <article class="panel panel-wide panel-tall panel-order-derived">
         <div class="panel-head">
           <h3>프로젝트에서 온 추천 퀘스트</h3><span id="derivedSuggestionCount" class="count-badge"></span>
         </div>
         <div id="derivedSuggestionList" class="list"></div>
+      </article>
+      <article class="panel panel-wide panel-tall panel-order-candidates">
+        <div class="panel-head">
+          <h3>우선 검토 후보</h3><span id="priorityCandidateCount" class="count-badge"></span>
+        </div>
+        <div id="priorityCandidateList" class="list"></div>
       </article>
       <article class="panel panel-summary">
         <div class="panel-head">
@@ -103,6 +109,12 @@
         </div>
         <div id="recurringList" class="list"></div>
       </article>
+      <article class="panel panel-summary">
+        <div class="panel-head">
+          <h3>미완료 플랜</h3><span id="unfinishedPlanCount" class="count-badge"></span>
+        </div>
+        <div id="unfinishedPlanList" class="list"></div>
+      </article>
       <article class="panel panel-wide panel-tall panel-order-sessions">
         <div class="panel-head">
           <h3>최근 세션</h3><span id="recentSessionCount" class="count-badge"></span>
@@ -118,7 +130,7 @@
       </article>
       <article class="panel panel-muted panel-summary">
         <div class="panel-head">
-          <h3>외부 입력</h3><span id="externalInboxCount" class="count-badge"></span>
+          <h3>텔레그램/이메일</h3><span id="externalInboxCount" class="count-badge"></span>
         </div>
         <div id="externalInboxList" class="list"></div>
       </article>
@@ -129,7 +141,10 @@
         <div id="workdiaryList" class="list"></div>
       </article>
     </section>
+    </section>
 
+    <section class="zone-section zone-review">
+      <p class="zone-title">마감과 정리</p>
     <section class="endday-grid">
       <article class="panel">
         <div class="panel-head">
@@ -150,6 +165,7 @@
         <div id="calendarContainer" class="calendar-container"></div>
         <div id="calendarSummary" class="calendar-summary" hidden></div>
       </article>
+    </section>
     </section>
   </main>
 

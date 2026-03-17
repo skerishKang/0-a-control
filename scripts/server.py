@@ -26,6 +26,21 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
+
+def parse_limit(query, key: str, default: int, maximum: int) -> int:
+    raw = query.get(key, [None])[0]
+    if raw is None or raw == "":
+        return default
+    try:
+        val = int(raw)
+        if val <= 0:
+            return default
+        return min(val, maximum)
+    except (ValueError, TypeError):
+        return default
+
+
 ROOT_DIR = _db.ROOT_DIR
 append_source_record = _db.append_source_record
 create_sample_data_if_empty = _db.create_sample_data_if_empty
@@ -196,11 +211,11 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             self.send_json({"quests": get_quests()})
             return
         if path == "/api/briefs/latest":
-            limit = min(200, int(query.get("limit", ["10"])[0]))
+            limit = parse_limit(query, "limit", 10, 200)
             self.send_json({"briefs": get_latest_briefs(limit)})
             return
         if path == "/api/sessions/recent":
-            limit = min(200, int(query.get("limit", ["10"])[0]))
+            limit = parse_limit(query, "limit", 10, 200)
             self.send_json({"sessions": get_recent_sessions(limit)})
             return
         if path == "/api/sessions/active":
@@ -209,20 +224,20 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/sessions/records":
             session_id = query.get("session_id", [""])[0]
-            limit = min(200, int(query.get("limit", ["200"])[0]))
+            limit = parse_limit(query, "limit", 200, 200)
             self.send_json({"records": get_source_records(session_id, limit)})
             return
 
         if path == "/api/workdiary/top-level":
-            limit = min(200, int(query.get("limit", ["30"])[0]))
+            limit = parse_limit(query, "limit", 30, 200)
             self.send_json({"items": get_workdiary_top_level(limit)})
             return
         if path == "/api/workdiary/priority-candidates":
-            limit = min(200, int(query.get("limit", ["8"])[0]))
+            limit = parse_limit(query, "limit", 8, 200)
             self.send_json({"items": get_workdiary_priority_candidates(limit)})
             return
         if path == "/api/external-inbox":
-            limit = min(1000, int(query.get("limit", ["8"])[0]))
+            limit = parse_limit(query, "limit", 8, 1000)
             status = query.get("status", [None])[0]
             category = query.get("category", [None])[0]
             self.send_json(get_external_inbox_overview(limit, status, category))
@@ -234,7 +249,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
                 return
             day = query.get("day", ["today"])[0]
             before = query.get("before", [None])[0]
-            limit = min(1000, int(query.get("limit", ["500"])[0]))
+            limit = parse_limit(query, "limit", 500, 1000)
             self.send_json(get_external_inbox_source_messages(source_id, day, limit, before))
             return
         if path == "/api/health":
@@ -250,7 +265,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/telegram/chats":
-            limit = min(200, int(query.get("limit", ["50"])[0]))
+            limit = parse_limit(query, "limit", 50, 200)
             self.send_json({"status": "ok", "chats": fetch_chats(limit=limit)})
             return
 
@@ -260,7 +275,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
                 self.send_json({"error": "chat_id is required"}, status=HTTPStatus.BAD_REQUEST)
                 return
 
-            limit = min(500, int(query.get("limit", ["200"])[0]))
+            limit = parse_limit(query, "limit", 200, 500)
             self.send_json({"status": "ok", "chat_id": chat_id, "messages": fetch_messages(chat_id, limit=limit)})
             return
 

@@ -32,4 +32,28 @@
 
 .panel-tall .list {
   max-height: 17rem;
+  overflow-y: auto;
+}
+
+.summary-label {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.summary-value {
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.summary-value.done { color: var(--green); }
+.summary-value.partial { color: var(--pending); }
+.summary-value.pending { color: var(--muted); }
+.summary-value.risk { color: var(--red); font-weight: 700; }
+.summary-value.action { color: var(--accent); font-weight: 600; }
+.summary-value.hold { color: var(--yellow); }
+
+#todaySummaryList .list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
