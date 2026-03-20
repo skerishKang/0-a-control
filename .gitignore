@@ -43,6 +43,11 @@ Thumbs.db
 *.swp
 *.swo
 
+# Fossil/local metadata
+.fossil-settings/
+_FOSSIL_
+*.local.fossil
+
 # 로컬 임시 파일
 *.txt
 *.png
