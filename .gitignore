@@ -46,6 +46,7 @@ Thumbs.db
 # Fossil/local metadata
 .fossil-settings/
 _FOSSIL_
+_FOSSIL_-journal
 *.local.fossil
 
 # 로컬 임시 파일
