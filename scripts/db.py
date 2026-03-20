@@ -9,6 +9,7 @@ if __package__ in (None, ""):
         sys.path.insert(0, str(project_root))
     from scripts.db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
     from scripts.db_ops import (
+        approve_plan_candidates,
         evaluate_quest,
         get_current_state,
         get_latest_briefs,

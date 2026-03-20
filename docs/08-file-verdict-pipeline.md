@@ -7,18 +7,18 @@
 - 모델 호출은 내부 서버가 아닌 외부 커맨드로 위임해 벤더 종속을 최소화한다.
 
 ## 2. 파이프라인 단계
-1. **보고 생성 (UI or CMD)**  
-   - `/api/quests/report` 호출 또는 CLI 스크립트가 `data/queue/reports/`에 JSON을 드랍한다.  
+1. **보고 생성 (UI or CMD)**
+   - `/api/quests/report` 호출 또는 CLI 스크립트가 `data/queue/reports/`에 JSON을 드랍한다.
    - 파일명: `{ts}-{questId}-{sessionId}.report.json` (sessionId 없으면 `_`).
-2. **보고 고정**  
+2. **보고 고정**
    - report 파일은 수정 금지. 필요한 보정은 새 report 생성으로 처리.
-3. **외부 에이전트 판정**  
-   - 외부 에이전트나 스크립트가 `data/queue/reports/`를 읽어 판정 JSON을 작성한다.  
+3. **외부 에이전트 판정**
+   - 외부 에이전트나 스크립트가 `data/queue/reports/`를 읽어 판정 JSON을 작성한다.
    - 읽은 report는 동일 base name으로 `data/queue/verdicts/`에 verdict JSON을 기록한다.
-4. **본체 수집 및 DB 반영**  
-   - `scripts/queue_worker.py`가 `data/queue/verdicts/`를 폴링해 새 verdict를 `quests`/`plan_items`에 반영한다.  
+4. **본체 수집 및 DB 반영**
+   - `scripts/queue_worker.py`가 `data/queue/verdicts/`를 폴링해 새 verdict를 `quests`/`plan_items`에 반영한다.
    - 성공 시 verdict 파일은 `data/queue/processed/verdicts/`로 이동한다.
-5. **세션 내보내기**  
+5. **세션 내보내기**
    - 필요한 경우 `session_exports/`에 요약 Markdown + JSON snapshot을 생성해 다른 에이전트가 재시작점을 공유한다.
 
 ## 3. 현재 디렉토리 역할
@@ -34,7 +34,7 @@
 
 ## 4. 파일 컨벤션
 - **Base name**: `{ISO8601 basic}-{questId}-{sessionIdOr_}`.
-- **확장자**: `.report.json`, `.verdict.json`, `.md` (export). 
+- **확장자**: `.report.json`, `.verdict.json`, `.md` (export).
 - **메타데이터**: JSON 내부 `quest_id`, `session_id`, `report_id`로 상호 참조.
 - **동시성**: 현재 구현에는 공용 `*.lock` 프로토콜이 없다. 다중 작성자/다중 워커 충돌 방지는 향후 과제다.
 

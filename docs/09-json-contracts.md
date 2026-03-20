@@ -116,14 +116,14 @@ pending 상태에서 verdict.status=partial
 - `session_exports/`의 Markdown Brief는 같은 `report_id`를 Front Matter에 기입하여 링크 유지.
 
 ## 6. Validation 체크리스트
-1. JSON Schema (정적)  
+1. JSON Schema (정적)
    - `schema_version` 문자열.
    - required 필드: report(`quest_id`, `quest_title`, `completion_criteria`, `work_summary`). verdict(`report_ref`, `verdict.status`, `reason`).
-2. 논리 검증 (ingest 단계)  
+2. 논리 검증 (ingest 단계)
    - `quest_id` 존재 및 active 여부.
    - `verdict.status`가 허용 값인지 확인.
-   - `plan_links`가 실제 plan_items에 존재하는지 확인. 
-3. 중복 방지  
+   - `plan_links`가 실제 plan_items에 존재하는지 확인.
+3. 중복 방지
    - `report_id`+`verdict.status` 조합으로 unique key를 만들어 최초 성공 판정만 DB 반영.
 
 ## 7. 테스트 케이스

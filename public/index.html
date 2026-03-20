@@ -25,6 +25,7 @@
             <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
             <button id="openMissionReasonBtn" type="button" class="secondary-btn compact-btn">이유</button>
             <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일 보기</button>
+            <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력</button>
           </div>
         </div>
       </div>
@@ -168,6 +169,29 @@
     </section>
     </section>
   </main>
+
+  <div id="bridgePanel" class="bridge-panel" hidden>
+    <div class="bridge-header">
+      <h3>빠른 입력 → 플랜</h3>
+      <button id="closeBridgePanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
+    </div>
+    <div class="bridge-content">
+      <textarea id="bridgeInput" class="bridge-textarea" placeholder="오늘:
+- 9시 광주시 사단법인 문의
+- 신보 카톡 확인 후 전화
+
+기한:
+- 3/20 소상공인 지원사업 준비
+
+보류:
+- 테무 보조모니터 보기"></textarea>
+      <div class="bridge-actions">
+        <button id="bridgeParseBtn" type="button" class="secondary-btn">정리하기</button>
+        <button id="bridgeCreatePlanBtn" type="button" class="primary-btn" disabled>Plan 생성</button>
+      </div>
+      <div id="bridgeResult" class="bridge-result"></div>
+    </div>
+  </div>
 
   <div id="panelBackdrop" class="panel-backdrop" hidden></div>
   <aside id="reportPanel" class="side-panel" aria-hidden="true" hidden>

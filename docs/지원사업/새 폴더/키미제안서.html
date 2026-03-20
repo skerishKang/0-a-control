@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>2026년 AI AGENT 융합·확산 지원 사업 수행계획서</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        :root {
+            --navy: #0b2d5c;
+            --cyan: #28c2d8;
+            --ink: #142234;
+            --muted: #607287;
+            --line: #b8c8d8;
+            --panel: #ffffff;
+            --soft: #f5f9fc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            color: var(--ink);
+            font-family: "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background: #e8e8e8;
+        }
+
+        main.report {
+            width: 210mm;
+            margin: 0 auto;
+        }
+
+        .sheet {
+            position: relative;
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            padding: 14mm 14mm 15mm;
+            background: var(--panel);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        .sheet:last-child {
+            page-break-after: auto;
+        }
+
+        .sheet::before, .sheet::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .sheet::before {
+            inset: 8mm;
+            border: 1px solid rgba(11, 45, 92, 0.15);
+        }
+
+        .corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-color: rgba(11, 45, 92, 0.4);
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .corner.tl { top: 8mm; left: 8mm; border-width: 2px 0 0 2px; }
+        .corner.tr { top: 8mm; right: 8mm; border-width: 2px 2px 0 0; }
+        .corner.bl { bottom: 8mm; left: 8mm; border-width: 0 0 2px 2px; }
+        .corner.br { bottom: 8mm; right: 8mm; border-width: 0 2px 2px 0; }
+
+        .sheet.cover {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, #f9fcff, #f4f9fd 45%, #ffffff);
+        }
+
+        .cover-title {
+            font-size: 26pt;
+            font-weight: 800;
+            color: var(--navy);
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            font-weight: 700;
+            color: var(--cyan);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .cover-info {
+            width: 85%;
+        }
+
+        .cover-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cover-table td {
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            text-align: left;
+            font-size: 10.5pt;
+        }
+
+        .cover-table td:first-child {
+            width: 28%;
+            background: var(--soft);
+            font-weight: 700;
+            color: var(--navy);
+            text-align: center;
+        }
+
+        .signature-area {
+            margin-top: 50px;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .signature-date {
+            margin-bottom: 20px;
+            font-size: 11pt;
+        }
+
+        .signature-line {
+            margin: 8px 0;
+            font-size: 10pt;
+        }
+
+        h1 {
+            font-size: 15pt;
+            font-weight: 800;
+            color: var(--navy);
+            margin: 0 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--navy);
+        }
+
+        h2 {
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 18px 0 10px 0;
+            padding-left: 8px;
+            border-left: 3px solid var(--cyan);
+        }
+
+        h3 {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 14px 0 8px 0;
+        }
+
+        h4 {
+            font-size: 10pt;
+            font-weight: 600;
+            color: var(--muted);
+            margin: 10px 0 6px 0;
+        }
+
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+            line-height: 1.55;
+        }
+
+        ul, ol {
+            margin: 8px 0 8px 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 9pt;
+        }
+
+        table th, table td {
+            border: 1px solid var(--line);
+            padding: 7px 9px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table th {
+            background: var(--soft);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        table td:first-child {
+            background: rgba(245, 249, 252, 0.5);
+            font-weight: 600;
+        }
+
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .bg-total { background: #e8f4f8 !important; font-weight: 700; }
+        .bg-sub { background: #f8fafc !important; }
+
+        .summary-table td:first-child {
+            width: 22%;
+            text-align: center;
+            vertical-align: middle;
+            background: var(--soft);
+            font-weight: 700;
+        }
+
+        .summary-table td {
+            text-align: left;
+            vertical-align: top;
+            padding: 10px 12px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+            border-left: 3px solid var(--cyan);
+            padding: 12px 16px;
+            margin: 14px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box strong {
+            color: var(--navy);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff8e6 0%, #fff3cd 100%);
+            border-left: 3px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 14px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .keyword {
+            background: #fff3cd;
+            padding: 1px 5px;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .note {
+            font-size: 8.5pt;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11pt;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(11, 45, 92, 0.3);
+        }
+
+        .print-btn:hover {
+            background: var(--cyan);
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            body { background: white; }
+        }
+
+        .small { font-size: 8.5pt; }
+        .muted { color: var(--muted); }
+        .text-bold { font-weight: 700; }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">PDF 출력</button>
+
+    <main class="report">
+        <!-- 표지 -->
+        <div class="sheet cover">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="cover-title">2026년 AI AGENT 융합·확산 지원 사업</div>
+            <div class="cover-subtitle">수행계획서</div>
+
+            <div class="cover-info">
+                <table class="cover-table">
+                    <tr><td>사업명</td><td>AI AGENT 융합·확산 지원 사업</td></tr>
+                    <tr><td>과제명</td><td>공공안전 분야 특화 AI AGENT 기반 범죄 예방 서비스 개발 및 실증</td></tr>
+                    <tr><td>주관기관</td><td>주식회사 파디엠</td></tr>
+                    <tr><td>사업자번호</td><td>420-88-00992</td></tr>
+                    <tr><td>주소</td><td>광주광역시 북구 첨단연신로 45, 201호</td></tr>
+                    <tr><td>홈페이지</td><td>www.padiem.net</td></tr>
+                    <tr><td>과제기간</td><td>2026. 3. 1. ~ 2026. 12. 31. (10개월)</td></tr>
+                    <tr><td>총사업비</td><td>정부지원금 70,000천원 / 민간부담금 30,000천원 (합계 100,000천원)</td></tr>
+                </table>
+            </div>
+
+            <div class="signature-area">
+                <div class="signature-date">2026년 3월 1일</div>
+                <div class="signature-line">주관기관 사업책임자: 강혜림 (인)</div>
+                <div class="signature-line">참여기관1 사업책임자: O O O (인)</div>
+                <div class="signature-line">참여기관2 사업책임자: O O O (인)</div>
+            </div>
+        </div>
+
+        <!-- 목차 -->
+  <div class="sheet">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <h1>목 차</h1>
+
+    <table style="font-size: 10pt;">
+      <tr style="background: var(--soft);">
+        <th style="width: 8%;">번호</th>
+        <th style="width: 62%;">내용</th>
+        <th style="width: 15%;">페이지</th>
+        <th style="width: 15%;">비고</th>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">-</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>표지</strong></td>
+        <td>1</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">-</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>요약서</strong></td>
+        <td>2</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Ⅰ.</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>사업 개요</strong></td>
+        <td>3</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">1. 과제명 및 기간</td>
+        <td>3</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">2. 추진 배경 및 필요성</td>
+        <td>3</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">3. 사업 범위</td>
+        <td>3</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Ⅱ.</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>산업동향 및 현황 분석</strong></td>
+        <td>4</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">1. 국내외 산업 동향</td>
+        <td>4</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">2. 관련분야 기술개발 현황</td>
+        <td>4</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">3. 기대효과</td>
+        <td>4</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Ⅲ.</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>사업 수행 계획</strong></td>
+        <td>5~8</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">1. 사업 목표 및 성과 지표</td>
+        <td>5</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">2. 추진체계</td>
+        <td>5</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">3. 사업 수행 일정</td>
+        <td>5</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">4. 투입인력 상세 계획</td>
+        <td>6</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">5. 사업비 총괄</td>
+        <td>7</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">6. 민간부담금 현물 자산 내역</td>
+        <td>8</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">7. 리스크 관리 계획</td>
+        <td>8</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: left; padding-left: 25px;">8. 지식재산권 계획</td>
+        <td>8</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Ⅳ.</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>기술 개발 계획</strong></td>
+        <td>9</td>
+        <td>신규</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Ⅴ.</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>사업화 계획</strong></td>
+        <td>10</td>
+        <td>신규</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">-</td>
+        <td style="text-align: left; padding-left: 10px;"><strong>붙임: 필수제출 서류</strong></td>
+        <td>11</td>
+        <td>-</td>
+      </tr>
+    </table>
+
+    <p class="note" style="margin-top: 20px;">※ 본 제안서는 총 11페이지(표지 포함)로 구성되어 있습니다.</p>
+  </div>
+
+  <!-- 요약서 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>요 약 서</h1>
+
+            <table class="summary-table">
+                <tr>
+                    <td><strong>과제명</strong></td>
+                    <td>
+                        <strong>국문:</strong> 공공안전 분야 특화 AI AGENT 기반 범죄 예방 서비스 개발 및 실증<br><br>
+                        <strong>영문:</strong> Development and Demonstration of Crime Prevention Service based on AI AGENT Specialized for Public Safety
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>수행기관</strong></td>
+                    <td>
+                        <strong>주관:</strong> 주식회사 파디엠 (광주)<br>
+                        <strong>참여1:</strong> 경찰대학 (춘천)<br>
+                        <strong>참여2:</strong> 전북대학교 (전주)<br>
+                        <strong>수요:</strong> 광주광역시경찰청
+                    </td>
+                </tr>
+  <tr>
+    <td><strong>총사업비</strong></td>
+    <td>
+      정부지원금 70,000천원 + 민간부담금(현금 15,000 + 현물 15,000) = <strong>100,000천원</strong><br>
+      <span class="small muted">(인건비 75,000 / 경비 15,000 / 장비비 10,000 / 현물 15,000)</span>
+    </td>
+  </tr>
+                <tr>
+                    <td><strong>과제개요</strong></td>
+                    <td>
+                        생성형 AI를 넘어 <span class="keyword">AI AGENT(에이전트)</span> 기술을 공공안전 분야에 적용하여, 사용자 의도를 이해하고 스스로 계획·추론·행동하는 범죄 예방 서비스를 개발하는 것을 목표로 합니다.
+                    </td>
+                </tr>
+            </table>
+
+            <h2>주요 성과지표</h2>
+            <table>
+                <tr>
+                    <th>구분</th>
+                    <th>성과지표</th>
+                    <th>2026년 목표</th>
+                    <th>2027년 목표</th>
+                </tr>
+                <tr>
+                    <td rowspan="3"><strong>필수</strong></td>
+                    <td>사업화 (건)</td>
+                    <td>3건</td>
+                    <td>7건</td>
+                </tr>
+                <tr>
+                    <td>고용창출 (명)</td>
+                    <td>4명</td>
+                    <td>7명</td>
+                </tr>
+                <tr>
+                    <td>만족도 (점)</td>
+                    <td>60점 이상</td>
+                    <td>72점 이상</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">정량</td>
+                    <td>MOU 체결</td>
+                    <td>2건</td>
+                    <td>4건</td>
+                </tr>
+                <tr>
+                    <td>투자유치</td>
+                    <td>-</td>
+                    <td>5억원</td>
+                </tr>
+            </table>
+
+  <h2>사업비 개요</h2>
+  <table>
+    <tr>
+      <th>비목</th>
+      <th>정부지원금</th>
+      <th>민간부담금</th>
+      <th>합계</th>
+    </tr>
+    <tr>
+      <td>인건비</td>
+      <td>52,500</td>
+      <td>22,500</td>
+      <td>75,000</td>
+    </tr>
+    <tr>
+      <td>경비</td>
+      <td>10,500</td>
+      <td>4,500</td>
+      <td>15,000</td>
+    </tr>
+    <tr>
+      <td>장비비</td>
+      <td>7,000</td>
+      <td>3,000</td>
+      <td>10,000</td>
+    </tr>
+    <tr>
+      <td>현물</td>
+      <td>0</td>
+      <td>15,000</td>
+      <td>15,000</td>
+    </tr>
+    <tr class="bg-total">
+      <td>계</td>
+      <td>70,000</td>
+      <td>30,000</td>
+      <td>100,000</td>
+    </tr>
+  </table>
+        </div>
+
+        <!-- 사업 개요 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>Ⅰ. 사업 개요</h1>
+
+            <h2>1. 과제명 및 기간</h2>
+            <table>
+                <tr><td>과제명</td><td class="text-left">공공안전 분야 특화 AI AGENT 기반 범죄 예방 서비스 개발 및 실증</td></tr>
+                <tr><td>영문</td><td class="text-left">Development and Demonstration of Crime Prevention Service based on AI AGENT Specialized for Public Safety</td></tr>
+                <tr><td>과제기간</td><td>협약체결일 ~ 2026. 12. 31. (10개월)</td></tr>
+                <tr><td>1차년도</td><td>협약체결일 ~ 2026. 12. 31.</td></tr>
+                <tr><td>2차년도</td><td>2027. 1. 1. ~ 2027. 11. 30. (예상)</td></tr>
+            </table>
+
+            <h2>2. 추진 배경 및 필요성</h2>
+            <h3>가. 기술 동향</h3>
+            <p>AI 기술은 생성형 AI를 넘어 <span class="keyword">AI AGENT(에이전트)</span> 중심으로 빠르게 진화하고 있습니다. Gartner는 2025년 주요 기술 트렌드로 AI AGENT를 선정하였으며, AI AGENT 시장은 2030년 471억 달러로 성장할 것으로 전망됩니다.</p>
+
+            <h3>나. 공공안전 분야 필요성</h3>
+            <p>공공안전 분야는 실시간 위험 감지, 예측, 대응이 생명과 직결되는 영역으로 AI AGENT 기술의 적용 가능성이 매우 높습니다. 현재까지의 범죄 예방 시스템은 CCTV 영상분석 중심이었으나, 생성형 AI 기반 AGENT를 활용하면 선제적 예방과 자동 대응이 가능합니다.</p>
+
+            <div class="highlight-box">
+                <strong>과제 수행 필요성:</strong><br>
+                ① 기존 AI 시스템 → AGENT 기반 서비스로의 기술 패러다임 전환<br>
+                ② 공공안전 분야 특화 AI AGENT 서비스의 국내 최초 실증<br>
+                ③ 광주 → 전국으로의 확산을 위한 성공 사례 창출
+            </div>
+
+  <h2>3. 사업 범위</h2>
+  <table>
+    <tr><th>지원내용</th><th>세부 내용</th></tr>
+    <tr><td>① 학습데이터 구축</td><td class="text-left">공공안전 분야 특화 AI AGENT 학습용 데이터셋 구축 (범죄 유형별 시나리오, 위험 응답 프로토콜 등)</td></tr>
+    <tr><td>② AI 모델 개발</td><td class="text-left">LLM 기반 AGENT 아키텍처 설계, 도메인 특화 파인튜닝, RAG 시스템 구축, NPU 경량화</td></tr>
+    <tr><td>③ 서비스 개발</td><td class="text-left">AI AGENT 서비스 플랫폼 개발, 실시간 위험 감지 엔진, 자동 대응 모듈, 관리자 대시보드</td></tr>
+    <tr><td>④ 서비스 고도화</td><td class="text-left">파일럿 실증 결과 기반 서비스 개선, 성능 최적화, 상용화 수준 품질 확보</td></tr>
+    <tr><td>⑤ 서비스 실증</td><td class="text-left">광주경찰청 연계 파일럿 실증, 성과 측정, 확산 전략 수립 및 MOU 체결</td></tr>
+  </table>
+
+    <h2>4. 주관기관 소개 및 보유역량</h2>
+    <h3>가. 주식회사 파디엠 개요</h3>
+    <table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td>회사명</td><td class="text-left">주식회사 파디엠 (Padiem Co., Ltd.)</td></tr>
+      <tr><td>설립일</td><td class="text-left">2018년 5월</td></tr>
+      <tr><td>대표이사</td><td class="text-left">강혜림</td></tr>
+      <tr><td>소재지</td><td class="text-left">광주광역시 북구 첨단연신로 45, 201호 (첨단비즈타워)</td></tr>
+      <tr><td>사업자등록번호</td><td class="text-left">420-88-00992</td></tr>
+      <tr><td>홈페이지</td><td class="text-left">www.padiem.net</td></tr>
+      <tr><td>주요사업</td><td class="text-left">AI 기반 범죄예방시스템 개발 및 공급, 영상분석 솔루션</td></tr>
+      <tr><td>신용등급</td><td class="text-left">B- (나이스신용평가)</td></tr>
+    </table>
+
+    <h3>나. 보유 기술 및 경쟁력</h3>
+    <table>
+      <tr>
+        <th>구분</th>
+        <th>보유 기술/능력</th>
+        <th>세부 내용</th>
+      </tr>
+      <tr>
+        <td rowspan="3">AI<br>기술</td>
+        <td class="text-left">영상분석 AI</td>
+        <td class="text-left">YOLO 기반 실시간 객체 인식, 행동 분석 알고리즘</td>
+      </tr>
+      <tr>
+        <td class="text-left">음성 AI</td>
+        <td class="text-left">위험 상황 음성 감지, 키워드 인식 기술</td>
+      </tr>
+      <tr>
+        <td class="text-left">생성형 AI</td>
+        <td class="text-left">LLM 기반 자연어 처리, 상황 보고서 자동 생성</td>
+      </tr>
+      <tr>
+        <td rowspan="2">플랫폼</td>
+        <td class="text-left">통합 관제 플랫폼</td>
+        <td class="text-left">다중 CCTV 연동, 실시간 모니터링 시스템</td>
+      </tr>
+      <tr>
+        <td class="text-left">모바일 앱</td>
+        <td class="text-left">iOS/Android 알림 연동, 위치 기반 서비스</td>
+      </tr>
+      <tr>
+        <td>도메인</td>
+        <td class="text-left">공공안전 노하우</td>
+        <td class="text-left">8년간 경찰청/지자체 프로젝트 수행 경험</td>
+      </tr>
+    </table>
+
+    <h3>다. 주요 실적</h3>
+    <table>
+      <tr>
+        <th>구분</th>
+        <th>실적 내용</th>
+        <th>연도</th>
+      </tr>
+      <tr>
+        <td>특허</td>
+        <td class="text-left">AI 기반 범죄예방시스템 및 방법 (출원)</td>
+        <td>2023~2025</td>
+      </tr>
+      <tr>
+        <td>인증</td>
+        <td class="text-left">벤처기업 인증, ISO 9001 품질경영</td>
+        <td>2020, 2022</td>
+      </tr>
+      <tr>
+        <td>수상</td>
+        <td class="text-left">광주 AI 스타트업 경진대회 대상</td>
+        <td>2024</td>
+      </tr>
+      <tr>
+        <td>사업화</td>
+        <td class="text-left">AI 범죄예방시스템 5개 경찰서 도입</td>
+        <td>2022~2025</td>
+      </tr>
+    </table>
+
+    <h3>라. 연구개발 역량</h3>
+    <div class="highlight-box">
+      <strong>R&D 조직 및 인력:</strong><br>
+      • 연구개발팀: 5명 (석박사급 3명, 개발자 2명)<br>
+      • 연간 R&D 투자: 매출액 대비 25% 이상<br>
+      • 산학협력: 전북대학교 AI연구원, 광주과학기술원(GIST) MOU 체결<br>
+      • 보유 장비: GPU 서버 3대, AI 워크스테이션 5대
+    </div>
+  </div>
+
+        <!-- 산업동향 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>Ⅱ. 산업동향 및 현황 분석</h1>
+
+  <h2>1. 국내·외 산업 동향</h2>
+  <h3>가. 글로벌 시장 동향</h3>
+  <p>AI AGENT 시장은 전 세계적으로 급성장하고 있으며, 주요 시장 동향은 다음과 같습니다:</p>
+  <table>
+    <tr><th>시점</th><th>시장 규모</th><th>성장률</th><th>비고</th></tr>
+    <tr><td>2023년</td><td>35억 달러</td><td>-</td><td>기준년도</td></tr>
+    <tr><td>2024년</td><td>51억 달러</td><td>+46%</td><td>Markets&Markets</td></tr>
+    <tr><td>2025년</td><td>79억 달러</td><td>+55%</td><td>Gartner 전망</td></tr>
+    <tr><td>2026년</td><td>99~120억 달러</td><td>+25~52%</td><td>전망치</td></tr>
+    <tr><td>2030년</td><td>471~574억 달러</td><td>CAGR 42~46%</td><td>장기 전망</td></tr>
+  </table>
+
+  <h3>나. 글로벌 주요 기업 동향 (2024~2026년)</h3>
+  <table>
+    <tr><th>기업</th><th>주요 제품/서비스</th><th>특징</th><th>공공안전 적용</th></tr>
+    <tr>
+      <td>OpenAI</td>
+      <td class="text-left">Operator → ChatGPT Agent</td>
+      <td class="text-left">Agent SDK 공개, GPT-4o/5 계열 에이전트 기능</td>
+      <td class="text-left">데이터 분석, 자동 보고서 생성</td>
+    </tr>
+    <tr>
+      <td>Google</td>
+      <td class="text-left">Gemini 2.0/3.1 Pro, Project Astra</td>
+      <td class="text-left">실시간 영상 이해 및 에이전트 기능</td>
+      <td class="text-left">CCTV 영상 실시간 분석</td>
+    </tr>
+    <tr>
+      <td>Microsoft</td>
+      <td class="text-left">Copilot Studio, Azure AI Agent</td>
+      <td class="text-left">엔터프라이즈 AGENT 구축 플랫폼, Fortune 500 기업 80% 적용</td>
+      <td class="text-left">공공기관 업무 자동화</td>
+    </tr>
+    <tr>
+      <td>Anthropic</td>
+      <td class="text-left">Claude 3.5 Sonnet, Computer Use</td>
+      <td class="text-left">책임 있는 AI 에이전트 설계, GUI 조작 가능</td>
+      <td class="text-left">정책 자문, 문서 분석</td>
+    </tr>
+    <tr>
+      <td>Palantir</td>
+      <td class="text-left">AIP (AI Platform)</td>
+      <td class="text-left">방안/공공 안전 특화, 군/정부 기관 대상</td>
+      <td class="text-left">범죄 예측, 수사 지원</td>
+    </tr>
+    <tr>
+      <td>Darktrace</td>
+      <td class="text-left">Enterprise Immune System</td>
+      <td class="text-left">자율 대응 사이버 보안, 이상 행위 자동 차단</td>
+      <td class="text-left">사이버 범죄 예방</td>
+    </tr>
+  </table>
+
+  <h3>다. 국내 AI AGENT 시장 동향</h3>
+  <table>
+    <tr><th>구분</th><th>내용</th><th>적용 분야</th></tr>
+    <tr>
+      <td>Naver</td>
+      <td class="text-left">HyperCLOVA, AI 프렌즈</td>
+      <td class="text-left">기업/개인 AI 서비스</td>
+    </tr>
+    <tr>
+      <td>Kakao</td>
+      <td class="text-left">Claude API 서비스, 카카오 AI</td>
+      <td class="text-left">기업 AI 통합</td>
+    </tr>
+    <tr>
+      <td>LG CNS/KT/SKT</td>
+      <td class="text-left">기업용 AI 에이전트 플랫폼</td>
+      <td class="text-left">기업 업무 자동화</td>
+    </tr>
+    <tr>
+      <td>정부(과기정통부)</td>
+      <td class="text-left">AI 국가 전략 (2026), AI Sandbox</td>
+      <td class="text-left">AI 생태계 조성</td>
+    </tr>
+    <tr>
+      <td>국과위</td>
+      <td class="text-left">AI 안전성 평가 기준 마련</td>
+      <td class="text-left">AI 규제</td>
+    </tr>
+  </table>
+
+  <h3>라. 국내 공공안전 분야 AI 적용 사례</h3>
+  <table>
+    <tr><th>기관</th><th>AI 적용 사례</th><th>도입 효과</th></tr>
+    <tr>
+      <td>경찰청</td>
+      <td class="text-left">'모두의 경찰관' 100억원 투입, 2026년 치안 특화 AI 파운데이션 모델 개발</td>
+      <td class="text-left">민원 3.5억건/년 처리</td>
+    </tr>
+    <tr>
+      <td>KT-경찰청</td>
+      <td class="text-left">피싱범죄 AI 실시간 차단 시스템</td>
+      <td class="text-left">피해 신고 25% 감소, 보이스피싱 44% 감소</td>
+    </tr>
+    <tr>
+      <td>서울경찰</td>
+      <td class="text-left">AI 순찰차 투입, 흉기범죄 데이터 분석</td>
+      <td class="text-left">'핵심 핫스팟' 17곳 운영</td>
+    </tr>
+    <tr>
+      <td>인천 남동구</td>
+      <td class="text-left">AI CCTV 지능형 선별관제 (1,210대)</td>
+      <td class="text-left">배회·폭력·쓰러짐 자동 감지</td>
+    </tr>
+    <tr>
+      <td>미국 NYPD</td>
+      <td class="text-left">ShotSpotter 음향감지, Predictive Policing AI</td>
+      <td class="text-left">실시간 총격 탐지, 범죄 예측</td>
+    </tr>
+    <tr>
+      <td>싱가포르</td>
+      <td class="text-left">Home Team AI 챗봇 시민 서비스</td>
+      <td class="text-left">24시간 시민 응대</td>
+    </tr>
+  </table>
+
+  <h2>2. 관련분야 기술개발 현황</h2>
+            <h3>해외 동향</h3>
+            <table>
+                <tr><th>기업/기관</th><th>제품/서비스</th><th>특징</th></tr>
+                <tr><td>OpenAI</td><td>ChatGPT + Plugins</td><td class="text-left">외부 도구 연결, 자동 실행</td></tr>
+                <tr><td>Microsoft</td><td>Copilot Studio</td><td class="text-left">엔터프라이즈 AGENT 구축 플랫폼</td></tr>
+                <tr><td>Palantir</td><td>AIP (AI Platform)</td><td class="text-left">방안/공공 안전 특화</td></tr>
+                <tr><td>Darktrace</td><td>Enterprise Immune System</td><td class="text-left">자율 대응 사이버 보안</td></tr>
+            </table>
+
+            <h3>국내 동향</h3>
+            <p>국내에서는 아직 공공안전 특화 AI AGENT 서비스는 개발되지 않았으며, 주로 CCTV 영상분석 중심의 AI 서비스가 상용화되어 있습니다. <span class="keyword">파디엠의 AI 범죄예방시스템</span>은 생성형 AI 기반 AGENT로의 전환을 준비하고 있으며, 본 사업을 통해 국내 최초 공공안전 특화 AI AGENT를 개발할 계획입니다.</p>
+
+            <h2>3. 기대효과</h2>
+            <ul>
+                <li><strong>기술적:</strong> 공공안전 분야 특화 AI AGENT 핵심 기술 확보</li>
+                <li><strong>비즈니스:</strong> 2027년까지 7건 사업화, 5억원 투자유치</li>
+                <li><strong>사회적:</strong> 신규 고용 7명 창출, 시민 안전 확보</li>
+            </ul>
+        </div>
+
+        <!-- 사업 수행 계획 1 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>Ⅲ. 사업 수행 계획</h1>
+
+            <h2>1. 사업 목표 및 성과 지표</h2>
+            <table>
+                <tr>
+                    <th rowspan="2">구분</th>
+                    <th rowspan="2">성과지표</th>
+                    <th colspan="2">목표</th>
+                </tr>
+                <tr>
+                    <th>2026년</th>
+                    <th>2027년</th>
+                </tr>
+                <tr>
+                    <td rowspan="3"><strong>필수</strong></td>
+                    <td>사업화 (건)</td>
+                    <td>3건</td>
+                    <td>7건</td>
+                </tr>
+                <tr>
+                    <td>고용창출 (명)</td>
+                    <td>4명</td>
+                    <td>7명</td>
+                </tr>
+                <tr>
+                    <td>만족도 (점)</td>
+                    <td>60점 이상</td>
+                    <td>72점 이상</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">정량</td>
+                    <td>MOU 체결</td>
+                    <td>2건</td>
+                    <td>4건</td>
+                </tr>
+                <tr>
+                    <td>투자유치</td>
+                    <td>-</td>
+                    <td>5억원</td>
+                </tr>
+                <tr>
+                    <td>정성</td>
+                    <td>서비스 만족도</td>
+                    <td>60점 이상</td>
+                    <td>72점 이상</td>
+                </tr>
+            </table>
+
+            <h2>2. 추진체계</h2>
+            <table>
+                <tr><th>구분</th><th>기관</th><th>주요 역할</th><th>투입인력</th></tr>
+                <tr><td>주관</td><td>주식회사 파디엠</td><td class="text-left">프로젝트 총괄, 서비스 개발, 사업화</td><td>2명</td></tr>
+                <tr><td>참여1</td><td>경찰대학</td><td class="text-left">공공안전 도메인 연구, 실증 기관 연계</td><td>2명</td></tr>
+                <tr><td>참여2</td><td>전북대학교</td><td class="text-left">AI 모델 개발, 기술 자문</td><td>3명</td></tr>
+                <tr><td>수요</td><td>광주광역시경찰청</td><td class="text-left">실증 장소 제공, 수요 피드백</td><td>-</td></tr>
+            </table>
+
+            <h2>3. 사업 수행 일정</h2>
+            <table>
+                <tr><th>단계</th><th>기간</th><th>주요 내용</th></tr>
+                <tr>
+                    <td>1단계</td>
+                    <td>1~3월</td>
+                    <td class="text-left">요구사항 분석, 데이터 수집/정제, 시스템 설계</td>
+                </tr>
+                <tr>
+                    <td>2단계</td>
+                    <td>4~7월</td>
+                    <td class="text-left">AI 모델 학습/파인튜닝, 서비스 플랫폼 개발, NPU 경량화</td>
+                </tr>
+                <tr>
+                    <td>3단계</td>
+                    <td>8~10월</td>
+                    <td class="text-left">파일럿 실증, 서비스 고도화, 성과 보고, 확산 전략 수립</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 투입인력 상세 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+  <h1>Ⅲ. 사업 수행 계획 (계속)</h1>
+
+    <h2>4. 투입인력 상세 계획</h2>
+    <h3>가. 주관기관 - 주식회사 파디엠</h3>
+    <table>
+      <tr>
+        <th>성명</th>
+        <th>직위</th>
+        <th>역할</th>
+        <th>투입기간</th>
+        <th>월단가(천원)</th>
+        <th>금액(천원)</th>
+      </tr>
+      <tr>
+        <td>강혜림</td>
+        <td>대표이사</td>
+        <td class="text-left">총괄책임자, 사업기획/관리, 기술전략 수립</td>
+        <td>10개월</td>
+        <td>3,000</td>
+        <td>30,000</td>
+      </tr>
+      <tr>
+        <td>강철원</td>
+        <td>이사</td>
+        <td class="text-left">실무책임자, AI 모델 개발총괄, 플랫폼 아키텍처</td>
+        <td>10개월</td>
+        <td>2,000</td>
+        <td>20,000</td>
+      </tr>
+      <tr class="bg-total">
+        <td colspan="5">소계</td>
+        <td>50,000</td>
+      </tr>
+    </table>
+
+    <h3>나. 참여기관1 - 경찰대학</h3>
+    <table>
+      <tr>
+        <th>성명</th>
+        <th>직위</th>
+        <th>역할</th>
+        <th>투입기간</th>
+        <th>월단가(천원)</th>
+        <th>금액(천원)</th>
+      </tr>
+      <tr>
+        <td>OOO</td>
+        <td>교수</td>
+        <td class="text-left">도메인책임자, 공공안전 정책 연구, 실증 기관 연계</td>
+        <td>6개월</td>
+        <td>1,500</td>
+        <td>9,000</td>
+      </tr>
+      <tr>
+        <td>OOO</td>
+        <td>연구원</td>
+        <td class="text-left">데이터 라벨링, 실증 현장 코디네이션</td>
+        <td>10개월</td>
+        <td>600</td>
+        <td>6,000</td>
+      </tr>
+      <tr class="bg-total">
+        <td colspan="5">소계</td>
+        <td>15,000</td>
+      </tr>
+    </table>
+
+    <h3>다. 참여기관2 - 전북대학교</h3>
+    <table>
+      <tr>
+        <th>성명</th>
+        <th>직위</th>
+        <th>역할</th>
+        <th>투입기간</th>
+        <th>월단가(천원)</th>
+        <th>금액(천원)</th>
+      </tr>
+      <tr>
+        <td>OOO</td>
+        <td>교수</td>
+        <td class="text-left">기술책임자, LLM 아키텍처 설계, 파인튜닝 전략 수립</td>
+        <td>6개월</td>
+        <td>1,000</td>
+        <td>6,000</td>
+      </tr>
+      <tr>
+        <td>OOO</td>
+        <td>박사과정</td>
+        <td class="text-left">LLM 파인튜닝, RAG 시스템 구축, 모델 경량화</td>
+        <td>10개월</td>
+        <td>200</td>
+        <td>2,000</td>
+      </tr>
+      <tr>
+        <td>OOO</td>
+        <td>석사과정</td>
+        <td class="text-left">데이터 엔지니어링, 전처리 파이프라인 구축</td>
+        <td>10개월</td>
+        <td>200</td>
+        <td>2,000</td>
+      </tr>
+      <tr class="bg-total">
+        <td colspan="5">소계</td>
+        <td>10,000</td>
+      </tr>
+    </table>
+
+    <h3>라. 인력 합계</h3>
+    <table>
+      <tr>
+        <th>기관</th>
+        <th>인원수</th>
+        <th>정부지원금</th>
+        <th>민간부담금</th>
+        <th>합계</th>
+      </tr>
+      <tr>
+        <td>파디엠</td>
+        <td>2명</td>
+        <td>35,000</td>
+        <td>15,000</td>
+        <td>50,000</td>
+      </tr>
+      <tr>
+        <td>경찰대학</td>
+        <td>2명</td>
+        <td>10,500</td>
+        <td>4,500</td>
+        <td>15,000</td>
+      </tr>
+      <tr>
+        <td>전북대학교</td>
+        <td>3명</td>
+        <td>7,000</td>
+        <td>3,000</td>
+        <td>10,000</td>
+      </tr>
+      <tr class="bg-total">
+        <td>계</td>
+        <td>7명</td>
+        <td>52,500</td>
+        <td>22,500</td>
+        <td>75,000</td>
+      </tr>
+    </table>
+    <p class="note">※ 고용창출 목표 7명 반영 (정규직 7명, 연구원급)</p>
+
+    <h2>5. 사업비 총괄</h2>
+    <h3>나. 기관별 사업비 분배</h3>
+    <table>
+      <tr>
+        <th>기관</th>
+        <th>정부지원금</th>
+        <th>민간부담금</th>
+        <th>합계</th>
+        <th>비율</th>
+      </tr>
+      <tr>
+        <td>주식회사 파디엠(주관)</td>
+        <td>52,500</td>
+        <td>22,500</td>
+        <td>75,000</td>
+        <td>75%</td>
+      </tr>
+      <tr>
+        <td>경찰대학(참여1)</td>
+        <td>10,500</td>
+        <td>4,500</td>
+        <td>15,000</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td>전북대학교(참여2)</td>
+        <td>7,000</td>
+        <td>3,000</td>
+        <td>10,000</td>
+        <td>10%</td>
+      </tr>
+      <tr class="bg-total">
+        <td>계</td>
+        <td>70,000</td>
+        <td>30,000</td>
+        <td>100,000</td>
+        <td>100%</td>
+      </tr>
+    </table>
+    <p class="note">※ 정부지원금 배분 비율: 주관 75%, 참여1 15%, 참여2 10%</p>
+
+    <h3>다. 연도별 사업비 집행 계획</h3>
+    <table>
+      <tr>
+        <th>구분</th>
+        <th>정부지원금</th>
+        <th>민간부담금</th>
+        <th>합계</th>
+      </tr>
+      <tr>
+        <td>2026년 (1차년도, 10개월)</td>
+        <td>70,000</td>
+        <td>30,000</td>
+        <td>100,000</td>
+      </tr>
+      <tr>
+        <td>2027년 (2차년도, 예상)</td>
+        <td>별도 신청</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+    </table>
+    <p class="note">※ 2차년도 사업비는 차년도 공모 시 별도 신청 예정</p>
+
+    <h3>라. 월별 사업비 집행 계획</h3>
+    <table>
+      <tr>
+        <th>월</th>
+        <th>주요 집행 항목</th>
+        <th>집행액(천원)</th>
+        <th>누적액(천원)</th>
+      </tr>
+      <tr>
+        <td>3월</td>
+        <td class="text-left">팀 구성, 장비 구매, 데이터 수집 시작</td>
+        <td>12,000</td>
+        <td>12,000</td>
+      </tr>
+      <tr>
+        <td>4월</td>
+        <td class="text-left">인건비, AI 모델 개발 착수</td>
+        <td>10,000</td>
+        <td>22,000</td>
+      </tr>
+      <tr>
+        <td>5월</td>
+        <td class="text-left">인건비, RAG 시스템 구축</td>
+        <td>10,000</td>
+        <td>32,000</td>
+      </tr>
+      <tr>
+        <td>6월</td>
+        <td class="text-left">인건비, 플랫폼 개발</td>
+        <td>10,000</td>
+        <td>42,000</td>
+      </tr>
+      <tr>
+        <td>7월</td>
+        <td class="text-left">인건비, NPU 경량화</td>
+        <td>10,000</td>
+        <td>52,000</td>
+      </tr>
+      <tr>
+        <td>8월</td>
+        <td class="text-left">인건비, 파일럿 실증 준비</td>
+        <td>10,000</td>
+        <td>62,000</td>
+      </tr>
+      <tr>
+        <td>9월</td>
+        <td class="text-left">인건비, 실증 진행</td>
+        <td>10,000</td>
+        <td>72,000</td>
+      </tr>
+      <tr>
+        <td>10월</td>
+        <td class="text-left">인건비, 고도화 및 마무리</td>
+        <td>10,000</td>
+        <td>82,000</td>
+      </tr>
+      <tr>
+        <td>11월</td>
+        <td class="text-left">인건비, 성과 보고</td>
+        <td>9,000</td>
+        <td>91,000</td>
+      </tr>
+      <tr>
+        <td>12월</td>
+        <td class="text-left">인건비, 최종 보고</td>
+        <td>9,000</td>
+        <td>100,000</td>
+      </tr>
+    </table>
+  </div>
+
+        <!-- 현물 자산 및 리스크 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>Ⅲ. 사업 수행 계획 (계속)</h1>
+
+            <h2>6. 민간부담금 현물 자산 내역</h2>
+            <table>
+                <tr>
+                    <th>항목</th>
+                    <th>내용</th>
+                    <th>시가(천원)</th>
+                    <th>산출근거</th>
+                </tr>
+                <tr>
+                    <td>사무실 임차료</td>
+                    <td class="text-left">첨단비즈타워 201호 (46㎡) 임차</td>
+                    <td>8,000</td>
+                    <td class="text-left">월 80만원 × 10개월</td>
+                </tr>
+                <tr>
+                    <td>기존 장비 활용</td>
+                    <td class="text-left">AI 개발 워크스테이션 2대, GPU 서버 1대</td>
+                    <td>4,000</td>
+                    <td class="text-left">시가 기준 감가상각 후 금액</td>
+                </tr>
+                <tr>
+                    <td>소프트웨어</td>
+                    <td class="text-left">기존 라이선스 활용 (Python, TensorFlow 등)</td>
+                    <td>2,000</td>
+                    <td class="text-left">연간 사용료 상당액</td>
+                </tr>
+                <tr>
+                    <td>기타</td>
+                    <td class="text-left">사무기구, 네트워크 인프라 등</td>
+                    <td>1,000</td>
+                    <td class="text-left">시가 기준</td>
+                </tr>
+                <tr class="bg-total">
+                    <td colspan="2">계</td>
+                    <td>15,000</td>
+                    <td>-</td>
+                </tr>
+            </table>
+
+            <h2>7. 리스크 관리 계획</h2>
+            <table>
+                <tr>
+                    <th>리스크 유형</th>
+                    <th>내용</th>
+                    <th>발생 가능성</th>
+                    <th>영향도</th>
+                    <th>대응 전략</th>
+                </tr>
+                <tr>
+                    <td>기술적 리스크</td>
+                    <td class="text-left">LLM 파인튜닝 실패, 정확도 미달</td>
+                    <td>중</td>
+                    <td>높음</td>
+                    <td class="text-left">전북대 산학협력단 기술 자문, 단계별 검증</td>
+                </tr>
+                <tr>
+                    <td>데이터 리스크</td>
+                    <td class="text-left">학습 데이터 부족, 품질 문제</td>
+                    <td>중</td>
+                    <td>중</td>
+                    <td class="text-left">경찰대학 데이터 제공 협약, 데이터 증강 기법 활용</td>
+                </tr>
+                <tr>
+                    <td>일정 리스크</td>
+                    <td class="text-left">AI 모델 개발 지연</td>
+                    <td>중</td>
+                    <td>중</td>
+                    <td class="text-left">오픈소스 모델 활용, 단계별 마일스톤 설정</td>
+                </tr>
+                <tr>
+                    <td>사업화 리스크</td>
+                    <td class="text-left">공공기관 도입 지연</td>
+                    <td>낮음</td>
+                    <td>중</td>
+                    <td class="text-left">광주경찰청 MOU 선체결, 시범 사례 확보</td>
+                </tr>
+                <tr>
+                    <td>규제 리스크</td>
+                    <td class="text-left">개인정보보호법, AI 관련 규제</td>
+                    <td>낮음</td>
+                    <td>높음</td>
+                    <td class="text-left">법률 자문, PIA(개인정보 영향평가) 수행</td>
+                </tr>
+            </table>
+
+            <h2>8. 지식재산권 계획</h2>
+            <table>
+                <tr>
+                    <th>구분</th>
+                    <th>출원/등록 예정 내용</th>
+                    <th>예상 시기</th>
+                </tr>
+                <tr>
+                    <td>특허</td>
+                    <td class="text-left">공공안전 특화 AI AGENT 시스템 및 방법</td>
+                    <td>2026년 하반기</td>
+                </tr>
+                <tr>
+                    <td>특허</td>
+                    <td class="text-left">실시간 위험 예측 및 자동 대응 방법</td>
+                    <td>2027년 상반기</td>
+                </tr>
+                <tr>
+                    <td>프로그램</td>
+                    <td class="text-left">범죄예방 AI AGENT 서비스 플랫폼</td>
+                    <td>2026년 하반기</td>
+                </tr>
+                <tr>
+                    <td>데이터</td>
+                    <td class="text-left">공공안전 특화 AI 학습 데이터셋</td>
+                    <td>2026년 중반</td>
+                </tr>
+            </table>
+    <p class="note">※ 특허 출원은 주관기관(파디엠) 명의로 진행하며, 참여기관과 공동 출원 협의 예정</p>
+  </div>
+
+  <!-- 기술 개발 계획 -->
+  <div class="sheet">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <h1>Ⅳ. 기술 개발 계획</h1>
+
+    <h2>1. AI AGENT 시스템 아키텍처</h2>
+    <table>
+      <tr>
+        <th>구성요소</th>
+        <th>기술 스펙</th>
+        <th>세부 내용</th>
+      </tr>
+      <tr>
+        <td rowspan="2">Perception Layer</td>
+        <td>멀티모달 입력 처리</td>
+        <td class="text-left">CCTV 영상, 음성, 텍스트(신고 내용) 통합 인식</td>
+      </tr>
+      <tr>
+        <td>위험 감지 엔진</td>
+        <td class="text-left">YOLO v8 기반 실시간 객체 인식, 음성 이벤트 감지</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Cognition Layer</td>
+        <td>LLM 코어</td>
+        <td class="text-left">Llama 3 / Mistral 기반 파인튜닝, RAG 적용</td>
+      </tr>
+      <tr>
+        <td>추론 엔진</td>
+        <td class="text-left">Chain-of-Thought 기반 다단계 추론, Tool Use 지원</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Action Layer</td>
+        <td>자동 대응 모듈</td>
+        <td class="text-left">API 연동 경찰 연계, 경보 발송, 주변 CCTV 연동</td>
+      </tr>
+      <tr>
+        <td>에이전트 오케스트레이션</td>
+        <td class="text-left">멀티 에이전트 협업, 역할 기반 분산 처리</td>
+      </tr>
+      <tr>
+        <td>Edge Layer</td>
+        <td>NPU 경량화</td>
+        <td class="text-left">ONNX 변환, 양자화(QAT), 모바일/엣지 디바이스 배포</td>
+      </tr>
+    </table>
+
+  <h2>2. 개발 방법론 및 단계별 산출물</h2>
+  <h3>가. 개발 단계별 계획</h3>
+  <table>
+    <tr>
+      <th>단계</th>
+      <th>개발 항목</th>
+      <th>성능 목표</th>
+      <th>산출물</th>
+    </tr>
+    <tr>
+      <td>1단계<br>(1~3월)</td>
+      <td class="text-left">요구사항 분석, 데이터 수집</td>
+      <td>데이터 10,000건 수집</td>
+      <td class="text-left">요구사항 정의서, 데이터셋 v1.0</td>
+    </tr>
+    <tr>
+      <td>2단계<br>(4~6월)</td>
+      <td class="text-left">AI 모델 학습, RAG 시스템 구축</td>
+      <td>F1-Score 0.85 이상</td>
+      <td class="text-left">학습된 모델, RAG 파이프라인</td>
+    </tr>
+    <tr>
+      <td>3단계<br>(7~8월)</td>
+      <td class="text-left">서비스 플랫폼 개발, API 구현</td>
+      <td>응답시간 2초 이내</td>
+      <td class="text-left">플랫폼 MVP, API 문서</td>
+    </tr>
+    <tr>
+      <td>4단계<br>(9~10월)</td>
+      <td class="text-left">파일럿 실증, 성능 최적화</td>
+      <td>정확도 90% 이상</td>
+      <td class="text-left">실증 보고서, 상용화 버전</td>
+    </tr>
+  </table>
+
+  <h3>나. 월별 상세 개발 일정</h3>
+  <table>
+    <tr>
+      <th>월</th>
+      <th>주요 개발 활동</th>
+      <th>세부 내용</th>
+      <th>산출물</th>
+      <th>참여기관</th>
+    </tr>
+    <tr>
+      <td>3월</td>
+      <td class="text-left">프로젝트 착수, 킥오프</td>
+      <td class="text-left">프로젝트 계획 수립, 컨소시엄 협약, 요구사항 분석 착수</td>
+      <td class="text-left">프로젝트 계획서, 킥오프 보고서</td>
+      <td>전체</td>
+    </tr>
+    <tr>
+      <td>4월</td>
+      <td class="text-left">데이터 수집/정제</td>
+      <td class="text-left">공공안전 데이터 수집, 라벨링, 데이터 품질 검증</td>
+      <td class="text-left">데이터셋 v0.5 (5,000건)</td>
+      <td>경찰대학</td>
+    </tr>
+    <tr>
+      <td>5월</td>
+      <td class="text-left">데이터셋 완성, 모델 설계</td>
+      <td class="text-left">학습 데이터 10,000건 완성, LLM 아키텍처 설계</td>
+      <td class="text-left">데이터셋 v1.0, 아키텍처 설계서</td>
+      <td>전북대학교</td>
+    </tr>
+    <tr>
+      <td>6월</td>
+      <td class="text-left">LLM 파인튜닝</td>
+      <td class="text-left">Llama 3 기반 도메인 특화 파인튜닝, LoRA 적용</td>
+      <td class="text-left">파인튜닝된 모델 v1.0</td>
+      <td>파디엠, 전북대</td>
+    </tr>
+    <tr>
+      <td>7월</td>
+      <td class="text-left">RAG 시스템 구축</td>
+      <td class="text-left">벡터 DB 구축, 검색 엔진 개발, RAG 파이프라인 연동</td>
+      <td class="text-left">RAG 시스템 MVP</td>
+      <td>파디엠</td>
+    </tr>
+    <tr>
+      <td>8월</td>
+      <td class="text-left">플랫폼 개발, API 구현</td>
+      <td class="text-left">백엔드 API, 관리자 대시보드, 모바일 알림 시스템</td>
+      <td class="text-left">플랫폼 MVP, API 문서</td>
+      <td>파디엠</td>
+    </tr>
+    <tr>
+      <td>9월</td>
+      <td class="text-left">파일럿 실증 시작</td>
+      <td class="text-left">광주경찰청 파일럿 시스템 설치, 운영 테스트</td>
+      <td class="text-left">파일럿 설치 완료 보고서</td>
+      <td>전체</td>
+    </tr>
+    <tr>
+      <td>10월</td>
+      <td class="text-left">성능 최적화, 고도화</td>
+      <td class="text-left">피드백 반영, 성능 개선, NPU 경량화 적용</td>
+      <td class="text-left">상용화 버전 v1.0</td>
+      <td>파디엠</td>
+    </tr>
+    <tr>
+      <td>11월</td>
+      <td class="text-left">실증 결과 분석, 성과 보고</td>
+      <td class="text-left">파일럿 성과 측정, 성과 보고서 작성</td>
+      <td class="text-left">실증 성과 보고서</td>
+      <td>전체</td>
+    </tr>
+    <tr>
+      <td>12월</td>
+      <td class="text-left">확산 전략 수립, 최종 보고</td>
+      <td class="text-left">MOU 체결, 확산 전략 수립, 최종 보고서</td>
+      <td class="text-left">최종 보고서, 확산 전략 문서</td>
+      <td>전체</td>
+    </tr>
+  </table>
+
+  <h2>3. 성능 평가 지표</h2>
+  <h3>가. 기능별 성능 지표</h3>
+  <table>
+    <tr>
+      <th>평가 항목</th>
+      <th>지표</th>
+      <th>목표값</th>
+      <th>측정 방법</th>
+    </tr>
+    <tr>
+      <td>위험 감지 정확도</td>
+      <td>Precision, Recall, F1</td>
+      <td>F1 ≥ 0.90</td>
+      <td class="text-left">검증 데이터셋 기준</td>
+    </tr>
+    <tr>
+      <td>응답 속도</td>
+      <td>Latency (p95)</td>
+      <td>≤ 2초</td>
+      <td class="text-left">API 응답 시간 측정</td>
+    </tr>
+    <tr>
+      <td>처리량</td>
+      <td>TPS (Transactions/sec)</td>
+      <td>≥ 100</td>
+      <td class="text-left">부하 테스트</td>
+    </tr>
+    <tr>
+      <td>모델 크기</td>
+      <td>경량화 후 용량</td>
+      <td>≤ 4GB</td>
+      <td class="text-left">엣지 디바이스 탑재 가능</td>
+    </tr>
+    <tr>
+      <td>사용자 만족도</td>
+      <td>SUS Score</td>
+      <td>≥ 72점</td>
+      <td class="text-left">경찰관 대상 설문</td>
+    </tr>
+  </table>
+
+  <h3>나. End-to-End 성능 지표</h3>
+  <table>
+    <tr>
+      <th>평가 지표</th>
+      <th>목표 값</th>
+      <th>산출 근거</th>
+      <th>측정 방법</th>
+    </tr>
+    <tr>
+      <td>Trajectory 생성율</td>
+      <td>85% 이상</td>
+      <td class="text-left">목표 작업 중 성공적으로 완료된 비율</td>
+      <td class="text-left">작업 완료 이력 분석</td>
+    </tr>
+    <tr>
+      <td>도구 호출 정확도</td>
+      <td>72% 이상</td>
+      <td class="text-left">정확한 API/도구 선택 비율</td>
+      <td class="text-left">도구 선택 결과 검증</td>
+    </tr>
+    <tr>
+      <td>TPS (초당 처리수)</td>
+      <td>100 이상</td>
+      <td class="text-left">동시 처리 성능 목표치</td>
+      <td class="text-left">부하 테스트 (Apache JMeter)</td>
+    </tr>
+    <tr>
+      <td>시스템 가용률</td>
+      <td>99.5% 이상</td>
+      <td class="text-left">정상 가동 시간 비율</td>
+      <td class="text-left">Uptime 모니터링</td>
+    </tr>
+    <tr>
+      <td>자가 복구 성공률</td>
+      <td>80% 이상</td>
+      <td class="text-left">실패 후 자동 복구 비율</td>
+      <td class="text-left">장애 주입 테스트</td>
+    </tr>
+    <tr>
+      <td>RAG 검색 정확도</td>
+      <td>85% 이상</td>
+      <td class="text-left">관련 문서 검색 성공률</td>
+      <td class="text-left">검증 데이터셋 (1,000건)</td>
+    </tr>
+  </table>
+
+  <h3>다. AI 모델 성능 지표</h3>
+  <table>
+    <tr>
+      <th>구분</th>
+      <th>지표</th>
+      <th>목표값</th>
+      <th>비고</th>
+    </tr>
+    <tr>
+      <td rowspan="4">모델<br>성능</td>
+      <td class="text-left">치안 특화 LLM 파인튜닝</td>
+      <td>1개 이상 모델</td>
+      <td class="text-left">성능 벤치마크</td>
+    </tr>
+    <tr>
+      <td class="text-left">모델 응답 정확도</td>
+      <td>85% 이상</td>
+      <td class="text-left">검증 데이터셋</td>
+    </tr>
+    <tr>
+      <td class="text-left">응답 일관성</td>
+      <td>90% 이상</td>
+      <td class="text-left">반복 테스트</td>
+    </tr>
+    <tr>
+      <td class="text-left">추론 속도</td>
+      <td>초당 10토큰 이상</td>
+      <td class="text-left">벤치마크</td>
+    </tr>
+  </table>
+
+  <h2>4. 핵심 기술 차별성</h2>
+  <div class="highlight-box">
+    <strong>기존 솔루션 vs 본 과제 AI AGENT:</strong><br><br>
+    <table style="margin: 0;">
+      <tr>
+        <th>구분</th>
+        <th>기존 CCTV AI</th>
+        <th>본 과제 AI AGENT</th>
+      </tr>
+      <tr>
+        <td>동작 방식</td>
+        <td>패턴 매칭, 고정 알고리즘</td>
+        <td>의도 파악, 상황별 자동 대응</td>
+      </tr>
+      <tr>
+        <td>학습</td>
+        <td>지도학습, 사전 정의</td>
+        <td>LLM 기반, 맥락 이해</td>
+      </tr>
+      <tr>
+        <td>확장성</td>
+        <td>개발 필요</td>
+        <td>RAG로 신규 유형 즉시 반영</td>
+      </tr>
+      <tr>
+        <td>통합</td>
+        <td>단일 기능</td>
+        <td>멀티 에이전트 협업</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>5. 수행 과정의 제약요인 및 대응 전략</h2>
+  <h3>가. 기술적 제약</h3>
+  <table>
+    <tr>
+      <th>제약요인</th>
+      <th>내용</th>
+      <th>영향도</th>
+      <th>대응 전략</th>
+    </tr>
+    <tr>
+      <td>데이터 확보</td>
+      <td class="text-left">치안 분야 데이터의 민감성으로 인해 공개 데이터 확보 어려움</td>
+      <td>중</td>
+      <td class="text-left">경찰대학 및 광주경찰청과 MOU 체결, 익명화/가명화 처리</td>
+    </tr>
+    <tr>
+      <td>AI 홀루시네이션</td>
+      <td class="text-left">LLM이 부정확한 정보를 생성할 위험</td>
+      <td>높음</td>
+      <td class="text-left">RAG 기반 검증, 인간 검수(Human-in-the-loop) 프로세스 적용</td>
+    </tr>
+    <tr>
+      <td>실시간 성능</td>
+      <td class="text-left">엣지 디바이스에서의 처리 속도 한계</td>
+      <td>중</td>
+      <td class="text-left">전북대와 협업한 NPU 최적화, 모델 양자화(QAT) 적용</td>
+    </tr>
+  </table>
+
+  <h3>나. 정책적 제약</h3>
+  <table>
+    <tr>
+      <th>제약요인</th>
+      <th>내용</th>
+      <th>영향도</th>
+      <th>대응 전략</th>
+    </tr>
+    <tr>
+      <td>개인정보보호법</td>
+      <td class="text-left">CCTV 영상 및 신고 데이터 활용 시 개인정보 보호 필요</td>
+      <td>높음</td>
+      <td class="text-left">PIA(개인정보 영향평가) 수행, 데이터 마스킹, 접근 권한 관리</td>
+    </tr>
+    <tr>
+      <td>AI 검증 기준</td>
+      <td class="text-left">AI 서비스 검증을 위한 공인인증기관 절차 미성숙</td>
+      <td>중</td>
+      <td class="text-left">자체 검증 기준 수립, 국과위 AI 안전성 평가 기준 참고</td>
+    </tr>
+    <tr>
+      <td>책임 소재</td>
+      <td class="text-left">AI 판단에 대한 법적 책임 규정 부재</td>
+      <td>중</td>
+      <td class="text-left">법률 자문 확보, 경찰대학 정책 자문, 권고사항 명시</td>
+    </tr>
+  </table>
+
+  <h3>다. 시장 및 사업화 제약</h3>
+  <table>
+    <tr>
+      <th>제약요인</th>
+      <th>내용</th>
+      <th>영향도</th>
+      <th>대응 전략</th>
+    </tr>
+    <tr>
+      <td>공공구매 보수성</td>
+      <td class="text-left">공공기관의 AI 서비스 도입에 대한 보수적 태도</td>
+      <td>중</td>
+      <td class="text-left">광주경찰청 성공 사례 확보, 혁신제품 지정 신청</td>
+    </tr>
+    <tr>
+      <td>현장 수용성</td>
+      <td class="text-left">경찰관 등 현장 담당자의 AI 시스템 신뢰도 제고 필요</td>
+      <td>중</td>
+      <td class="text-left">교육훈련 프로그램 운영, UI/UX 최적화, 성능 투명성 확보</td>
+    </tr>
+    <tr>
+      <td>인력 부족</td>
+      <td class="text-left">현재 종업원 2명으로 프로젝트 수행 인력 부족</td>
+      <td>높음</td>
+      <td class="text-left">정부 지원금을 통한 신규 채용 7명, 대학 연구인력 파견</td>
+    </tr>
+    <tr>
+      <td>재무적 한계</td>
+      <td class="text-left">민간부담금 규모가 제한적</td>
+      <td>중</td>
+      <td class="text-left">컨소시엄 참여기관 현물 지원, 투자 유치 추진</td>
+    </tr>
+  </table>
+  </div>
+
+  <!-- 사업화 계획 -->
+  <div class="sheet">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <h1>Ⅴ. 사업화 계획</h1>
+
+    <h2>1. 사업화 로드맵</h2>
+    <table>
+      <tr>
+        <th>단계</th>
+        <th>기간</th>
+        <th>목표</th>
+        <th>주요 활동</th>
+      </tr>
+      <tr>
+        <td>PoC</td>
+        <td>2026.03~12</td>
+        <td class="text-left">기술 검증 완료</td>
+        <td class="text-left">광주경찰청 파일럿 실증, 성능 검증</td>
+      </tr>
+      <tr>
+        <td>MVP</td>
+        <td>2027.01~06</td>
+        <td class="text-left">최소기능 제품 완성</td>
+        <td class="text-left">상용화 기능 구현, UI/UX 개선</td>
+      </tr>
+      <tr>
+        <td>시장진입</td>
+        <td>2027.07~12</td>
+        <td class="text-left">7건 계약 체결</td>
+        <td class="text-left">전국 경찰청 확대, B2G 영업</td>
+      </tr>
+      <tr>
+        <td>성장</td>
+        <td>2028년~</td>
+        <td class="text-left">매출 50억원</td>
+        <td class="text-left">타 지자체(소방, 교통) 확장</td>
+      </tr>
+    </table>
+
+    <h2>2. 타겟 시장 및 고객</h2>
+    <table>
+      <tr>
+        <th>시장</th>
+        <th>타겟 고객</th>
+        <th>예상 규모</th>
+        <th>진입 전략</th>
+      </tr>
+      <tr>
+        <td>1차<br>(핵심)</td>
+        <td class="text-left">전국 경찰청, 지구대</td>
+        <td>255개 기관</td>
+        <td class="text-left">광주 성공 사례 확보 후 전국 확산</td>
+      </tr>
+      <tr>
+        <td>2차</td>
+        <td class="text-left">소방서, 재난안전센터</td>
+        <td>200개 기관</td>
+        <td class="text-left">재난 대응 AGENT 확장</td>
+      </tr>
+      <tr>
+        <td>3차</td>
+        <td class="text-left">민간 보안업체, 대형 상가</td>
+        <td>시장조사 중</td>
+        <td class="text-left">클라우드 SaaS 모델 전환</td>
+      </tr>
+    </table>
+
+    <h2>3. 수익 모델</h2>
+    <table>
+      <tr>
+        <th>모델</th>
+        <th>내용</th>
+        <th>예상 단가</th>
+        <th>비율</th>
+      </tr>
+      <tr>
+        <td>라이선스</td>
+        <td class="text-left">SW 라이선스 판매 (CCTV 1대당)</td>
+        <td>월 5만원/대</td>
+        <td>60%</td>
+      </tr>
+      <tr>
+        <td>구축형</td>
+        <td class="text-left">맞춤형 시스템 구축</td>
+        <td>기관당 3~5천만원</td>
+        <td>30%</td>
+      </tr>
+      <tr>
+        <td>유지보수</td>
+        <td class="text-left">연간 유지보수 계약</td>
+        <td>구축비의 15%</td>
+        <td>10%</td>
+      </tr>
+    </table>
+
+  <h2>4. 사업화 추진계획 상세</h2>
+  <h3>가. 경쟁사 분석</h3>
+  <table>
+    <tr>
+      <th>구분</th>
+      <th>경쟁사/제품</th>
+      <th>강점</th>
+      <th>약점</th>
+      <th>본 과제 차별성</th>
+    </tr>
+    <tr>
+      <td>해외<br>솔루션</td>
+      <td class="text-left">Palantir AIP</td>
+      <td class="text-left">방안/공공 안전 특화, 강력한 데이터 통합</td>
+      <td class="text-left">고가격, 국내 법규 미반영</td>
+      <td class="text-left">국내 치안 특화, 합리적 가격</td>
+    </tr>
+    <tr>
+      <td>해외<br>솔루션</td>
+      <td class="text-left">Darktrace</td>
+      <td class="text-left">자율 대응, 사이버 보안 강점</td>
+      <td class="text-left">물리 안전 분야 미흡</td>
+      <td class="text-left">CCTV 연동 물리 안전 강화</td>
+    </tr>
+    <tr>
+      <td>국내<br>대기업</td>
+      <td class="text-left">LG CNS, KT</td>
+      <td class="text-left">브랜드 인지도, 조직 규모</td>
+      <td class="text-left">치안 특화 경험 부족</td>
+      <td class="text-left">8년 치안 도메인 노하우</td>
+    </tr>
+    <tr>
+      <td>국내<br>스타트업</td>
+      <td class="text-left">CCTV AI 스타트업</td>
+      <td class="text-left">기술 경쟁력</td>
+      <td class="text-left">AGENT 기능 부재, 자금력 한계</td>
+      <td class="text-left">AI AGENT 완성도, 산학협력</td>
+    </tr>
+  </table>
+
+  <h3>나. 시장 진입 전략</h3>
+  <table>
+    <tr>
+      <th>단계</th>
+      <th>전략</th>
+      <th>구체적 실행방안</th>
+      <th>예산(천원)</th>
+      <th>성과지표</th>
+    </tr>
+    <tr>
+      <td>레퍼런스<br>확보</td>
+      <td class="text-left">광주경찰청 파일럿 성공</td>
+      <td class="text-left">실증 데이터 축적, 성과 보고서 발간, 언론 보도</td>
+      <td>3,000</td>
+      <td class="text-left">성과 보고서, 보도자료 3건</td>
+    </tr>
+    <tr>
+      <td>정부<br>지원연계</td>
+      <td class="text-left">혁신제품 지정</td>
+      <td class="text-left">조달청 혁신제품 지정 신청, 공공기관 우선구매제도 활용</td>
+      <td>2,000</td>
+      <td class="text-left">혁신제품 지정 획득</td>
+    </tr>
+    <tr>
+      <td>파트너십<br>구축</td>
+      <td class="text-left">채널 파트너 확보</td>
+      <td class="text-left">CCTV 설치 업체 5社, SI 업체 3社와 MOU 체결</td>
+      <td>1,000</td>
+      <td class="text-left">MOU 5건 체결</td>
+    </tr>
+    <tr>
+      <td>전국<br>확산</td>
+      <td class="text-left">B2G 영업 강화</td>
+      <td class="text-left">전국 경찰청 순회 설명회, 데모 시연회 개최</td>
+      <td>5,000</td>
+      <td class="text-left">계약 7건</td>
+    </tr>
+  </table>
+
+  <h3>다. 마케팅 전략</h3>
+  <table>
+    <tr>
+      <th>채널</th>
+      <th>세부 내용</th>
+      <th>시기</th>
+      <th>예산(천원)</th>
+      <th>목표</th>
+    </tr>
+    <tr>
+      <td>전시회</td>
+      <td class="text-left">스마트시티쇼, 공공안전 박람회 부스 참가</td>
+      <td>2026 Q4~2027 Q2</td>
+      <td>3,000</td>
+      <td class="text-left">리드 50건 확보</td>
+    </tr>
+    <tr>
+      <td>세미나</td>
+      <td class="text-left">경찰청/소방청 기술 세미나 발표</td>
+      <td>2027 상반기</td>
+      <td>1,000</td>
+      <td class="text-left">발표 3회</td>
+    </tr>
+    <tr>
+      <td>PR</td>
+      <td class="text-left">성공 사례 보도자료, 뉴스 기사 게재</td>
+      <td>2026 Q3~지속</td>
+      <td>2,000</td>
+      <td class="text-left">기사 게재 10건</td>
+    </tr>
+    <tr>
+      <td>디지털</td>
+      <td class="text-left">뉴스레터, 홈페이지, 온라인 데모</td>
+      <td>지속</td>
+      <td>500</td>
+      <td class="text-left">데모 신청 100건</td>
+    </tr>
+  </table>
+
+  <h3>라. 수요처별 판촉 전략</h3>
+  <table>
+    <tr>
+      <th>수요처</th>
+      <th>Pain Point</th>
+      <th>해결 방안</th>
+      <th>접근 전략</th>
+      <th>예상 계약액</th>
+    </tr>
+    <tr>
+      <td>경찰서/<br>지구대</td>
+      <td class="text-left">인력 부족, CCTV 감시 한계</td>
+      <td class="text-left">AI AGENT 자동 위험 감지 및 대응</td>
+      <td class="text-left">광주 성공 사례 기반 신뢰 확보</td>
+      <td>기관당 3천만원</td>
+    </tr>
+    <tr>
+      <td>소방서</td>
+      <td class="text-left">재난 상황 실시간 판단 어려움</td>
+      <td class="text-left">화재/재난 AGENT 확장 적용</td>
+      <td class="text-left">경찰 사례 후 소방 확장</td>
+      <td>기관당 3천만원</td>
+    </tr>
+    <tr>
+      <td>지자체</td>
+      <td class="text-left">스마트시티 통합 관제 필요</td>
+      <td class="text-left">CCTV 연계 통합 플랫폼</td>
+      <td class="text-left">스마트시티 사업단 연계</td>
+      <td>기관당 5천만원</td>
+    </tr>
+    <tr>
+      <td>민간<br>보안</td>
+      <td class="text-left">보안 인력 비용 상승</td>
+      <td class="text-left">AI 기반 무인 감시</td>
+      <td class="text-left">SaaS 모델 도입</td>
+      <td>월 5만원/CCTV</td>
+    </tr>
+  </table>
+
+  <h2>5. 사업화 성과 목표</h2>
+  <h3>가. 단계별 성과 목표</h3>
+  <table>
+    <tr>
+      <th>구분</th>
+      <th>2026년</th>
+      <th>2027년</th>
+      <th>2028년</th>
+    </tr>
+    <tr>
+      <td>계약 건수</td>
+      <td>3건</td>
+      <td>7건</td>
+      <td>15건</td>
+    </tr>
+    <tr>
+      <td>누적 매출</td>
+      <td>3천만원</td>
+      <td>2억원</td>
+      <td>8억원</td>
+    </tr>
+    <tr>
+      <td>고용창출</td>
+      <td>4명</td>
+      <td>7명</td>
+      <td>12명</td>
+    </tr>
+    <tr>
+      <td>MOU</td>
+      <td>2건</td>
+      <td>4건</td>
+      <td>6건</td>
+    </tr>
+    <tr>
+      <td>투자유치</td>
+      <td>-</td>
+      <td>3억원</td>
+      <td>5억원</td>
+    </tr>
+    <tr>
+      <td>사용자 만족도</td>
+      <td>60점</td>
+      <td>72점</td>
+      <td>80점</td>
+    </tr>
+  </table>
+
+  <h3>나. 경제적 파급효과</h3>
+  <table>
+    <tr>
+      <th>구분</th>
+      <th>2026년</th>
+      <th>2027년</th>
+      <th>2028년</th>
+      <th>비고</th>
+    </tr>
+    <tr>
+      <td>직접 매출</td>
+      <td>3천만원</td>
+      <td>2억원</td>
+      <td>8억원</td>
+      <td>라이선스 + 구축 + 유지보수</td>
+    </tr>
+    <tr>
+      <td>비용 절감</td>
+      <td>-</td>
+      <td>5천만원</td>
+      <td>2억원</td>
+      <td>도입기관 인건비 절감</td>
+    </tr>
+    <tr>
+      <td>파급 매출</td>
+      <td>1천만원</td>
+      <td>5천만원</td>
+      <td>2억원</td>
+      <td>파트너사 연계 매출</td>
+    </tr>
+    <tr>
+      <td>직접 고용</td>
+      <td>4명</td>
+      <td>7명</td>
+      <td>12명</td>
+      <td>정규직 기준</td>
+    </tr>
+    <tr>
+      <td>파급 고용</td>
+      <td>2명</td>
+      <td>5명</td>
+      <td>15명</td>
+      <td>파트너사, 협력업체</td>
+    </tr>
+  </table>
+
+  <h3>다. 확산 계획</h3>
+  <table>
+    <tr>
+      <th>단계</th>
+      <th>기간</th>
+      <th>확산 대상</th>
+      <th>확산 전략</th>
+      <th>목표</th>
+    </tr>
+    <tr>
+      <td>시범</td>
+      <td>2026.03~12</td>
+      <td class="text-left">광주경찰청</td>
+      <td class="text-left">파일럿 실증, 성과 측정, 레퍼런스 확보</td>
+      <td>1개 기관</td>
+    </tr>
+    <tr>
+      <td>광주</td>
+      <td>2027.01~06</td>
+      <td class="text-left">광주광역시 내 경찰서</td>
+      <td class="text-left">광주경찰청 성공 사례 기반 확산</td>
+      <td>3개 기관</td>
+    </tr>
+    <tr>
+      <td>호남</td>
+      <td>2027.07~12</td>
+      <td class="text-left">전남·전북 경찰서</td>
+      <td class="text-left">광주 거점으로 호남권 확대</td>
+      <td>7개 기관</td>
+    </tr>
+    <tr>
+      <td>전국</td>
+      <td>2028년~</td>
+      <td class="text-left">전국 경찰청·지구대</td>
+      <td class="text-left">전국 순회 설명회, 혁신제품 지정 활용</td>
+      <td>15개+ 기관</td>
+    </tr>
+    <tr>
+      <td>확장</td>
+      <td>2029년~</td>
+      <td class="text-left">소방·교통·지자체</td>
+      <td class="text-left">AI AGENT 플랫폼화, 타 분야 적용</td>
+      <td>50개+ 기관</td>
+    </tr>
+  </table>
+
+  <h3>라. 사업화 핵심 성공요인</h3>
+  <div class="highlight-box">
+    <strong>성공요인:</strong><br>
+    ① <strong>기술 완성도:</strong> 파일럿 실증에서 입증된 성능 (정확도 90%+, F1-Score 0.90+)<br>
+    ② <strong>레퍼런스:</strong> 광주경찰청 성공 사례를 통한 신뢰 확보<br>
+    ③ <strong>파트너십:</strong> 전북대, 경찰대학과의 지속적 산학협력<br>
+    ④ <strong>정책 연계:</strong> 디지털 뉴딜, K-정부, 경찰청 AI 전략과 연계<br>
+    ⑤ <strong>비즈니스 모델:</strong> 라이선스 + 구축 + 유지보수 3중 수익 구조
+  </div>
+  </div>
+
+        <!-- 붙임 -->
+        <div class="sheet">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <h1>붙임: 필수제출 서류</h1>
+            <ol>
+                <li>사업자등록증 사본</li>
+                <li>법인등기부등본 (최신)</li>
+                <li>2023년도 재무제표 및 감사보고서</li>
+                <li>국세·지방세 완납증명서</li>
+                <li>4대보험 완납증명서</li>
+                <li>기업신용등급평가서 (B- 등급)</li>
+                <li>참여기관 참여의사확인서 (경찰대학, 전북대학교)</li>
+                <li>수요기관 수요확인서 (광주경찰청)</li>
+                <li>사업책임자 및 실무책임자 이력서 (강혜림, 강철원)</li>
+                <li>과제관련 기술/특허 증빙서류</li>
+                <li>연구개발수행계획서</li>
+                <li>민간부담금 조달계획서 (현금 15,000 + 현물 15,000)</li>
+                <li>개인정보 영향평가(PIA) 계획서</li>
+            </ol>
+
+            <h2>서류 제출 확인사항</h2>
+            <table>
+                <tr>
+                    <th>구분</th>
+                    <th>확인사항</th>
+                </tr>
+                <tr>
+                    <td>기관정보</td>
+                    <td class="text-left">사업자등록번호, 본점주소, 대표자 정보 최신 여부</td>
+                </tr>
+                <tr>
+                    <td>재무정보</td>
+                    <td class="text-left">최근 결산 기준 재무제표, 세금 완납 증빙</td>
+                </tr>
+                <tr>
+                    <td>컨소시엄</td>
+                    <td class="text-left">참여의사확인서 날인, 수요확인서 확보</td>
+                </tr>
+                <tr>
+                    <td>인력</td>
+                    <td class="text-left">사업책임자/실무책임자 이력서, 학력/경력 증빙</td>
+                </tr>
+                <tr>
+                    <td>자금조달</td>
+                    <td class="text-left">민간부담금 현금 1,500만원 조달 계획서</td>
+                </tr>
+            </table>
+
+            <div class="warning-box">
+                <strong>제출 유의사항:</strong><br>
+                ① 모든 서류는 공모안내서 기준에 따라 제출 직전 최신본으로 준비<br>
+                ② 제출 서류는 HWP/PDF 형식으로 정보통신산업진흥원 사업관리시스템을 통해 온라인 제출<br>
+                ③ 민간부담금 현물 1,500만원은 시가 산정 근거자료 첨부 필수
+            </div>
+
+            <p class="note">※ 제출처: 정보통신산업진흥원 AI본부 (www.nipa.kr)</p>
+            <p class="note">※ 문의전화: 02-2133-0000 (AI산업진흥팀)</p>
+        </div>
+    </main>
+</body>
+</html>

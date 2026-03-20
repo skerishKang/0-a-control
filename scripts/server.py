@@ -10,10 +10,12 @@ if str(project_root) not in sys.path:
 
 if __package__ in (None, ""):
     from scripts import db as _db
+    from scripts.db_ops import approve_plan_candidates
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
 else:
     from . import db as _db
+    from .db_ops import approve_plan_candidates
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
 
@@ -39,6 +41,252 @@ def parse_limit(query, key: str, default: int, maximum: int) -> int:
         return min(val, maximum)
     except (ValueError, TypeError):
         return default
+
+
+def classify_conversation(text: str) -> dict:
+    """
+    Classify conversation text into 6 layers and extract suggested plans.
+    """
+    text_lower = text.lower()
+
+    layer = "short_term"
+    bucket = "short_term"
+
+    if any(k in text_lower for k in ["오늘", "지금", "당장", "today"]):
+        layer = "today"
+        bucket = "today"
+    elif any(k in text_lower for k in ["이번 주", "주간", "다음 주", "short"]):
+        layer = "short_term"
+        bucket = "short_term"
+    elif any(k in text_lower for k in ["장기", "올해", "long"]):
+        layer = "long_term"
+        bucket = "long_term"
+    elif any(k in text_lower for k in ["매주", "반복", "정기", "매월", "recurring"]):
+        layer = "recurring"
+        bucket = "recurring"
+    elif any(k in text_lower for k in ["프로젝트", "project"]):
+        layer = "project"
+        bucket = "short_term"
+
+    is_philosophy = any(k in text_lower for k in [
+        "철학", "아이디어", "방향", "principle", "philosophy",
+        "통제", "위임", "판단", "협업", "운영", "체계"
+    ])
+
+    if is_philosophy:
+        layer = "philosophy"
+        bucket = "long_term"
+
+    title = text.split("\n")[0][:100]
+
+    return {
+        "layer": layer,
+        "bucket": bucket,
+        "title": title,
+        "description": text[:500],
+        "suggested_plans": [{
+            "title": title,
+            "bucket": bucket,
+            "description": text[:500],
+            "priority_score": 50
+        }]
+    }
+
+
+def parse_quick_input(text: str) -> dict:
+    """
+    Parse natural language quick input into plan candidates with bucket classification.
+    
+    Expected format:
+        오늘:
+        - 9시 광주시 사단법인 문의
+        - 신보 카톡 확인 후 전화
+        
+        기한:
+        - 3/20 소상공인 지원사업 준비
+        
+        보류:
+        - 테무 보조모니터 보기
+    
+    Returns:
+        {
+            "candidates": [...],
+            "main_mission": {...},
+            "current_quest": {...}
+        }
+    """
+    import re
+    from datetime import datetime
+    
+    BUCKET_PATTERNS = {
+        "today": re.compile(r"^(오늘|today|지금|당장|오늘之内)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+        "dated": re.compile(r"^(기한|마감|，截止|dealine|due)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+        "hold": re.compile(r"^(보류|대기|잠시|hold|waiting)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+        "short_term": re.compile(r"^(이번 주|주간|short.?term|주차)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+        "long_term": re.compile(r"^(장기|올해|long.?term|年内)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+        "recurring": re.compile(r"^(매주|반복|정기|recurring|매일|매월)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+    }
+    
+    TIME_PATTERN = re.compile(r"(\d{1,2})[시시]")
+    DATE_PATTERN = re.compile(r"(\d{1,2})[/월\-.月](\d{1,2})")
+    URGENT_KEYWORDS = ["당장", "지금", "紧迫", "긴급", "urgent", "asap"]
+    
+    def extract_items_by_section(text: str) -> dict[str, list[str]]:
+        sections = {section: [] for section in ["today", "dated", "hold", "short_term", "long_term", "recurring"]}
+        current_bucket = None
+        lines = text.strip().split("\n")
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            
+            matched_section = None
+            for section, pattern in BUCKET_PATTERNS.items():
+                if pattern.match(line):
+                    matched_section = section
+                    break
+            
+            if matched_section:
+                current_bucket = matched_section
+                continue
+            
+            if current_bucket and (line.startswith("-") or line.startswith("•") or line.startswith("*")):
+                item = line.lstrip("-•* ").strip()
+                if item:
+                    sections[current_bucket].append(item)
+            elif current_bucket and line:
+                sections[current_bucket].append(line)
+        
+        if not any(sections.values()):
+            sections["today"].extend([l.strip().lstrip("-•* ") for l in lines if l.strip()])
+        
+        return sections
+    
+    def estimate_priority_score(item: str, bucket: str) -> int:
+        score = 50
+        
+        item_lower = item.lower()
+        
+        if any(k in item_lower for k in URGENT_KEYWORDS):
+            score += 20
+        
+        if TIME_PATTERN.search(item):
+            score += 10
+        
+        if bucket == "today":
+            score += 15
+        elif bucket == "dated":
+            score += 5
+        elif bucket == "hold":
+            score -= 20
+        
+        if any(k in item_lower for k in ["문의", "확인", "전화", "연락", "체크", "check"]):
+            score += 10
+        
+        if len(item) < 20:
+            score += 5
+        
+        return max(0, min(100, score))
+    
+    def extract_due_date(item: str) -> str | None:
+        match = DATE_PATTERN.search(item)
+        if match:
+            month, day = int(match.group(1)), int(match.group(2))
+            now = datetime.now()
+            year = now.year if month >= now.month else now.year + 1
+            return f"{year}-{month:02d}-{day:02d}"
+        
+        time_match = TIME_PATTERN.search(item)
+        if time_match:
+            hour = int(time_match.group(1))
+            now = datetime.now()
+            return f"{now.year}-{now.month:02d}-{now.day:02d}T{hour:02d}:00"
+        
+        return None
+    
+    sections = extract_items_by_section(text)
+    
+    candidates = []
+    all_items = []
+    
+    for bucket, items in sections.items():
+        for item in items:
+            priority_score = estimate_priority_score(item, bucket)
+            due_date = extract_due_date(item) if bucket == "dated" else None
+            
+            candidate = {
+                "title": item,
+                "bucket": bucket,
+                "description": f"[{bucket}] {item}",
+                "priority_score": priority_score,
+            }
+            if due_date:
+                candidate["due_date"] = due_date
+            
+            candidates.append(candidate)
+            all_items.append((item, bucket, priority_score))
+    
+    candidates.sort(key=lambda x: x["priority_score"], reverse=True)
+    
+    today_items = [(i, b, p) for i, b, p in all_items if b == "today"]
+    dated_items = [(i, b, p) for i, b, p in all_items if b == "dated"]
+    hold_items = [(i, b, p) for i, b, p in all_items if b == "hold"]
+    
+    main_mission = None
+    if today_items:
+        main_mission = max(today_items, key=lambda x: x[2])
+        main_mission = {
+            "title": main_mission[0],
+            "bucket": "today",
+            "reason": "오늘 해야 할 가장 중요한 일",
+            "priority_score": main_mission[2]
+        }
+    elif dated_items:
+        main_mission = max(dated_items, key=lambda x: x[2])
+        main_mission = {
+            "title": main_mission[0],
+            "bucket": "dated",
+            "reason": "기한이 가장 가까운 중요 일",
+            "priority_score": main_mission[2]
+        }
+    elif candidates:
+        main_mission = {
+            "title": candidates[0]["title"],
+            "bucket": candidates[0]["bucket"],
+            "reason": "우선순위가 가장 높은 항목",
+            "priority_score": candidates[0]["priority_score"]
+        }
+    
+    current_quest = None
+    actionable_items = [(i, b, p) for i, b, p in all_items if any(k in i.lower() for k in ["문의", "전화", "확인", "체크", "연락", "보내기", "작성", "준비", "제출"])]
+    
+    if actionable_items:
+        current_quest = max(actionable_items, key=lambda x: x[2])
+    elif today_items:
+        current_quest = today_items[0]
+    elif candidates:
+        current_quest = (candidates[0]["title"], candidates[0]["bucket"], candidates[0]["priority_score"])
+    
+    if current_quest:
+        current_quest = {
+            "title": current_quest[0],
+            "bucket": current_quest[1],
+            "reason": "가장 실행 가능한 다음 행동",
+            "priority_score": current_quest[2]
+        }
+    
+    return {
+        "candidates": candidates,
+        "main_mission": main_mission,
+        "current_quest": current_quest,
+        "summary": {
+            "today_count": len(today_items),
+            "dated_count": len(dated_items),
+            "hold_count": len(hold_items),
+            "total_count": len(candidates)
+        }
+    }
 
 
 ROOT_DIR = _db.ROOT_DIR
@@ -172,6 +420,40 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             result = run_sync_core()
             self.send_json(result)
             return
+
+        if path == "/api/bridge/parse":
+            text = body.get("text", "").strip()
+            if not text:
+                self.send_json({"error": "text is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            classification = classify_conversation(text)
+            self.send_json({
+                "classification": classification,
+                "suggested_plans": classification.get("suggested_plans", [])
+            })
+            return
+
+        if path == "/api/bridge/quick-input":
+            text = body.get("text", "").strip()
+            if not text:
+                self.send_json({"error": "text is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            result = parse_quick_input(text)
+            self.send_json(result)
+            return
+
+        if path == "/api/bridge/create-plan":
+            candidates = body.get("candidates", [])
+            if not candidates:
+                self.send_json({"error": "candidates is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            result = approve_plan_candidates(candidates)
+            self.send_json({"ok": True, "plans": result})
+            return
+
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown API endpoint")
 
     def do_POST(self) -> None:
@@ -281,13 +563,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
         if path == "/api/suggestions":
             suggestions_path = ROOT_DIR / "data" / "runtime" / "quest_suggestions.json"
-            limit = 3
-            try:
-                raw_limit = query.get("limit", [None])[0]
-                if raw_limit is not None:
-                    limit = min(20, max(1, int(raw_limit)))
-            except (ValueError, TypeError):
-                pass
+            limit = parse_limit(query, "limit", 3, 20)
 
             if not suggestions_path.exists():
                 self.send_json({"suggestions": []})

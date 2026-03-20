@@ -32,8 +32,8 @@ def _load_report_payload(report_ref: str) -> dict[str, Any] | None:
         return None
     try:
         return _read_json(report_path)
-    except json.JSONDecodeError:
-        logger.warning("Report JSON 손상: %s", report_path)
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning("보고서 파일 읽기 오류: %s (%s)", report_path, exc)
         return None
 
 
@@ -132,8 +132,8 @@ def import_verdicts() -> None:
 
         try:
             data = _read_json(file_path)
-        except json.JSONDecodeError as exc:
-            logger.error("JSON 파싱 실패: %s (%s)", file_path.name, exc)
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.error("JSON 파싱 실패 또는 파일 읽기 오류: %s (%s)", file_path.name, exc)
             move_to_failed(file_path)
             continue
 
@@ -143,7 +143,12 @@ def import_verdicts() -> None:
             (data.get("metadata") or {}).get("report_ref"),
         )
 
-        report_payload = _load_report_payload(report_ref)
+        try:
+            report_payload = _load_report_payload(report_ref)
+        except OSError as exc:
+            logger.error("보고서 파일 읽기 오류: %s (%s)", report_ref, exc)
+            move_to_failed(file_path)
+            continue
         verdict_group = data.get("verdict", {})
         judge_group = data.get("judge", {})
 

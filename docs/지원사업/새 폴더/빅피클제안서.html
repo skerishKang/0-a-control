@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026년 AI AGENT 융합·확산 지원사업 수행계획서</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+      font-size: 10pt;
+      line-height: 1.6;
+      color: #333;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 20mm 15mm;
+    }
+    
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page-break { break-after: page; page-break-after: always; }
+      .section, .subsection, .box, table, tr, td, th, ul, li, p, .arch-container, .org-container { break-inside: avoid; page-break-inside: avoid; }
+      .box-title { break-after: avoid; page-break-after: avoid; }
+      thead { display: table-header-group; }
+    }
+    
+    @media screen {
+      .page-break { margin: 30pt 0; border-top: 2px dashed #ccc; }
+    }
+    
+    h1 { font-size: 18pt; text-align: center; margin: 30pt 0 10pt; }
+    h2 { font-size: 14pt; margin: 20pt 0 10pt; border-bottom: 2px solid #333; padding-bottom: 5pt; }
+    h3 { font-size: 11pt; margin: 15pt 0 8pt; color: #1a1a1a; }
+    h4 { font-size: 10pt; margin: 10pt 0 5pt; }
+    p { margin: 5pt 0; text-align: justify; }
+    
+    .cover { text-align: center; margin-bottom: 30pt; }
+    .cover-title { font-size: 22pt; font-weight: bold; margin: 50pt 0 20pt; letter-spacing: 2pt; }
+    .cover-subtitle { font-size: 14pt; margin: 10pt 0; color: #555; }
+    .cover-date { font-size: 11pt; margin: 30pt 0; }
+    .cover-info { margin: 40pt 0; text-align: left; display: inline-block; }
+    .cover-info table { width: 100%; border-collapse: collapse; }
+    .cover-info td { padding: 4pt 8pt; border: 1px solid #ddd; }
+    .cover-info td:first-child { background: #f5f5f5; font-weight: bold; width: 30%; }
+    
+    table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 9pt; }
+    th, td { border: 1px solid #666; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; font-weight: bold; text-align: center; }
+    
+    .section { margin: 15pt 0; }
+    .subsection { margin: 10pt 0; }
+    .highlight { background: #ffffcc; padding: 2pt 4pt; }
+    .box { border: 1px solid #999; padding: 10pt; margin: 10pt 0; background: #fafafa; }
+    .box-title { font-weight: bold; margin-bottom: 8pt; padding-bottom: 5pt; border-bottom: 1px solid #ddd; }
+    ul, ol { margin: 5pt 0 5pt 20pt; }
+    li { margin: 3pt 0; }
+    .toc { margin: 20pt 0; }
+    .toc-item { display: flex; justify-content: space-between; margin: 3pt 0; }
+    .summary-box { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #495057; padding: 15pt; margin: 15pt 0; }
+    .highlight-box { background: #fff3cd; border: 1px solid #ffc107; padding: 10pt; margin: 10pt 0; }
+    .small { font-size: 8pt; color: #666; }
+    .center { text-align: center; }
+    .bold { font-weight: bold; }
+    
+    .arch-container { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 12px; border: 1px solid #cbd5e1; margin: 15px 0; }
+    .arch-layer { width: 100%; max-width: 700px; border-radius: 10px; padding: 15px 20px; text-align: center; }
+    .arch-label { font-weight: 700; font-size: 11pt; color: #1e293b; margin-bottom: 10px; }
+    .arch-ui { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #3b82f6; }
+    .arch-items { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+    .arch-item { background: white; padding: 8px 16px; border-radius: 20px; font-size: 9pt; font-weight: 600; color: #1e40af; border: 1px solid #93c5fd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .arch-agent { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); border: 2px solid #ec4899; }
+    .arch-agents { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .arch-agent-item { background: white; padding: 10px 18px; border-radius: 25px; font-size: 9pt; font-weight: 700; color: #9d174d; border: 2px solid #f472b6; box-shadow: 0 3px 6px rgba(236,72,153,0.15); }
+    .arch-bottom { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; display: flex; justify-content: space-around; gap: 20px; }
+    .arch-data, .arch-tools { flex: 1; }
+    .arch-items-sm { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .arch-items-sm span { background: white; padding: 5px 12px; border-radius: 15px; font-size: 8pt; font-weight: 600; color: #166534; border: 1px solid #86efac; }
+    .arch-arrow { font-size: 18pt; color: #64748b; font-weight: bold; }
+    
+    .org-container { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 25px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; border: 1px solid #e2e8f0; margin: 15px 0; }
+    .org-committee { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 12px 30px; text-align: center; }
+    .org-committee .org-label { font-weight: 800; font-size: 12pt; color: #92400e; }
+    .org-committee .org-sub { font-size: 8pt; color: #b45309; margin-top: 4px; }
+    .org-arrow-down { font-size: 20pt; color: #64748b; }
+    .org-main { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    .org-card { background: white; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 150px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+    .org-main-card { border: 2px solid #3b82f6; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+    .org-title { font-weight: 700; font-size: 10pt; color: #1e293b; margin-bottom: 3px; }
+    .org-subtitle { font-size: 8pt; color: #64748b; font-weight: 600; margin-bottom: 8px; }
+    .org-bullets { font-size: 8pt; color: #475569; text-align: left; line-height: 1.5; }
+    .org-demand { width: 100%; display: flex; justify-content: center; }
+    .org-demand-card { border: 2px solid #22c55e; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+  </style>
+</head>
+<body>
+
+<!-- 표지 -->
+<div class="cover">
+  <div class="cover-title">AI AGENT 융합·확산 지원사업<br>수행계획서</div>
+  <div class="cover-subtitle">치안 분야 특화 AI 에이전트 서비스 개발 및 실증</div>
+  <div class="cover-date">2026년 2월</div>
+  
+  <div class="cover-info">
+    <table>
+      <tbody><tr><td>과제명</td><td>자치치안 AI 에이전트 서비스 개발 및 실증</td></tr>
+      <tr><td>영문과제명</td><td>Development and Demonstration of Community Safety AI Agent Service</td></tr>
+      <tr><td>주관기관</td><td>(주)파디엠 (420-88-00992)</td></tr>
+      <tr><td>주소</td><td>광주광역시 북구 첨단연신로 45, 201호</td></tr>
+      <tr><td>대표자</td><td>강혜림</td></tr>
+      <tr><td>사업자번호</td><td>420-88-00992</td></tr>
+      <tr><td>기관성격</td><td>중소기업</td></tr>
+      <tr><td>과제책임자</td><td>강혜림 (대표)</td></tr>
+      <tr><td>참여기관</td><td>경찰대학교, 전북대학교</td></tr>
+      <tr><td>수요기관</td><td>경찰청/(구)자치분쟁조정위원회</td></tr>
+      <tr><td>총사업비</td><td>300,000천원 (정부지원금 200,000 / 민간부담금 100,000)</td></tr>
+      <tr><td>협약기간</td><td>협약체결일 ~ 2027.11.30 (20개월)</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div style="text-align:center; margin: 30pt 0;">
+  <p><strong>본 과제를 수행함에 있어,「국가재정법」,「공공재정환수법」,「정보통신진흥기금 운용·관리규정 및 부속지침」등 관계 법령과 규정을 준수 및 숙지하고, 위반 시 발생되는 사업비 지급 종료, 환수 등의 불이익 조치를 감수할 것을 확약합니다.</strong></p>
+  <br><br>
+  <p>2026년&nbsp;&nbsp;&nbsp;월&nbsp;&nbsp;&nbsp;일</p>
+  <br><br>
+  <p>주관기관 사업책임자: 강혜림 (인)</p>
+  <p>참여기관 사업책임자: _____________ (인)</p>
+  <p>수요기관 책임자: _____________ (인)</p>
+  <p>주관기관의 장: 강혜림 (인)</p>
+  <br><br>
+  <p><strong>정보통신산업진흥원장 귀하</strong></p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- 목차 -->
+<h2>목 차</h2>
+<div class="toc">
+  <div class="toc-item"><span>I. 사업 개요</span><span>1</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>1. 과제명 및 기간</span><span>1</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>2. 추진 배경 및 필요성</span><span>1</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>3. 사업 범위</span><span>2</span></div>
+  <div class="toc-item"><span>II. 산업동향 및 현황 분석</span><span>3</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>1. 국내외 산업 동향</span><span>3</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>2. 관련분야 기술개발 현황</span><span>4</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>3. 과제 수행의 제약요인</span><span>5</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>4. 시사점</span><span>5</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>5. 기대효과</span><span>6</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>6. 표준화·특허 현황</span><span>6</span></div>
+  <div class="toc-item"><span>III. 추진 목표 및 전략</span><span>7</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>1. 최종 목표</span><span>7</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>2. 추진 방향 및 전략</span><span>9</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>3. 추진 절차 및 추진체계</span><span>10</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>4. 컨소시엄별 역할 및 역량</span><span>11</span></div>
+  <div class="toc-item"><span>IV. 세부 추진계획</span><span>13</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>1. 목표 서비스 개요</span><span>13</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>2. 세부 과제내용</span><span>14</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>3. 시설 및 기자재 구축</span><span>17</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>4. 성능 확보 계획</span><span>18</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>5. 일자리 창출 계획</span><span>19</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>6. 결과 활용 및 파급 효과</span><span>20</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>7. AI 에이전트 상세 설계</span><span>21</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>4. 핵심 기술 차별성</span><span>22</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>5. End-to-End 성능 지표</span><span>23</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>6. NPU 기술 적용</span><span>24</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>8. 기술 STANDARDS 인증 계획</span><span>25</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>8. 리스크 관리 계획</span><span>26</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>9. 지적재산권 계획</span><span>27</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>10.비밀 및 개인정보 보호</span><span>28</span></div>
+  <div class="toc-item"><span>V. 사업화 계획</span><span>29</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>1. 사업화 로드맵</span><span>29</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>2. 타겟 시장 및 고객</span><span>29</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>3. 수익 모델</span><span>30</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>4. 사업화 추진계획 상세</span><span>31</span></div>
+  <div class="toc-item" style="margin-left:15pt;"><span>5. 사업화 성과 목표</span><span>31</span></div>
+  <div class="toc-item"><span>VI. 사업 관리계획</span><span>32</span></div>
+  <div class="toc-item"><span>VII. 기관별 수행 상세내역</span><span>34</span></div>
+  <div class="toc-item"><span>VIII. 주요 사업추진 실적 및 참여인력 현황</span><span>36</span></div>
+  <div class="toc-item"><span>IX. 사업비 소요명세</span><span>38</span></div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- I. 사업 개요 -->
+<h2>I. 사업 개요</h2>
+
+<div class="section">
+  <h3>1. 과제명 및 기간</h3>
+  <table>
+    <tbody><tr><th>구분</th><th>내용</th></tr>
+      <tr><td>과제명(국문)</td><td>자치치안 AI 에이전트 서비스 개발 및 실증</td></tr>
+      <tr><td>과제명(영문)</td><td>Development and Demonstration of Community Safety AI Agent Service</td></tr>
+      <tr><td>총 과제기간</td><td>협약체결일 ~ 2027.11.30 (20개월)</td></tr>
+      <tr><td>1차년도</td><td>2026.03.01 ~ 2026.12.31 (10개월)</td></tr>
+      <tr><td>2차년도</td><td>2027.01.01 ~ 2027.11.30 (11개월)</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>2. 추진 배경 및 필요성</h3>
+  
+  <h4>가. 정책적 배경</h4>
+  <p>2025년 정부는 '국가 AI 역량 강화 방안'을 통해 AI 에이전트 기술을 핵심 성장동력으로 선정하였으며, 2025년 9월에는 '이재명정부 123대 국정과제'를 통해 디지털 플랫폼정부 실현과 AI 일상화 실행계획을 확정하였다. 특히 경찰·치안 분야에서는 AI 기술을 활용한 범죄 예방 및 대응 고도화가 주요 정책과제로 추진되고 있다.</p>
+  
+  <h4>나. 기술적 배경</h4>
+  <p>AI 기술은 생성형 AI를 넘어, 사용자의 의도를 이해하고 스스로 계획·추론·행동을 수행하는 'AI 에이전트' 중심으로 빠르게 진화하고 있다. Gartner(2025)는 2026년 기업 앱의 40%에 AI 에이전트가 탑재될 것으로 예측하였으며, Mordor Intelligence(2026)에 따르면 AI 에이전트 시장은 2025년 79억 달러에서 2026년 99억 달러로 급성장하고 있다.</p>
+  
+  <h4>다. 시장 수요</h4>
+  <p>현재 국내 치안 분야에서는 순찰, 신고 대응, 사건 조사 등 다양한 업무에 AI 기술을 도입하려는 수요가 증가하고 있으나, 실제 산업 현장에 적용 가능한 AI 에이전트 서비스 사례가 제한적이다. 특히 자치분쟁 조정, 민원 처리, 범죄 예방 등의 분야에서 AI 에이전트를 활용한 효율화 수요가 높다.</p>
+  
+  <h4>라. 파디엠의 추진 필요성</h4>
+  <p>(주)파디엠은 2018년 설립 이래 AI 범죄예방시스템 연구개발 및 제조를 주력 사업으로 수행해 왔으며, 경찰대학교 공공안전행정 석사·박사과정 연구인력과 협력 체계를 구축하고 있다. 본 사업을 통해 치안 분야 특화 AI 에이전트 서비스를 개발하고 경찰청 등 수요기관과의 MOU를 통해 실증 기회를 확보함으로써, 국내 AI 산업 경쟁력 강화에 기여하고자 한다.</p>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>3. 사업 범위</h3>
+  
+  <h4>가. 개발 대상 서비스</h4>
+  <p>본 과제는 치안(자치치안) 분야에 특화된 AI 에이전트 서비스를 개발한다. 구체적인 서비스 시나리오는 다음과 같다:</p>
+  
+  <table>
+    <tbody><tr><th>서비스 영역</th><th>주요 기능</th><th>대상 사용자</th></tr>
+      <tr><td>신고·민원 자동 분류</td><td>AI 에이전트가 시민 신고/민원을 자동 분류, 긴급도 판정, 담당 부서 배정</td><td>자치구·자치센터 담당자</td></tr>
+      <tr><td>자치분쟁 조정 지원</td><td>분쟁 조정 일정 관리, 관련 판례·규정 검색, 조정안 초안 생성</td><td>자치분쟁조정위원회</td></tr>
+      <tr><td>범죄 예방 패턴 분석</td><td>범죄 발생 패턴 분석, 순찰 경로 최적화 제안, 위험 지역 경보</td><td>관할 경찰서</td></tr>
+      <tr><td>범죄자 추적 지원</td><td>CCTV 영상 분석, 용의자 특성 추출, 유사 범죄 비교</td><td>수사 담당관</td></tr>
+  </tbody></table>
+  
+  <h4>나. 1차년도 주요 추진 방향</h4>
+  <ul>
+    <li><strong>데이터 수집 및 가공:</strong> 치안 분야 공개 데이터, MOU 체결 기관 제공 데이터 수집</li>
+    <li><strong>AI 모델 개발:</strong> 치안 분야 특화 LLM 파인튜닝, 에이전트 아키텍처 설계</li>
+    <li><strong>프로토타입 개발:</strong> 2~3개 핵심 기능 MVP 개발</li>
+    <li><strong>수요기관 확보:</strong> 경찰청·자치분쟁조정위원회 MOU 체결</li>
+  </ul>
+  
+  <h4>다. 2차년도 주요 추진 방향</h4>
+  <ul>
+    <li><strong>서비스 고도화:</strong> 실증 피드백 반영, 성능 최적화</li>
+    <li><strong>다수 기업 전환:</strong> 서비스 확장 적용, 추가 수요기관 확대</li>
+    <li><strong>사업화:</strong> 유료 서비스 전환, 투자 유치 협의</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- II. 산업동향 및 현황 분석 -->
+<h2>II. 산업동향 및 현황 분석</h2>
+
+<div class="section">
+  <h3>1. 국내외 산업 동향</h3>
+  
+  <h4>가. 시장 규모 및 성장 전망</h4>
+  <p>AI 에이전트 시장은 전 세계적으로 급성장하고 있다. 주요 시장 동향은 다음과 같다:</p>
+  
+  <table>
+    <tbody><tr><th>시점</th><th>시장 규모</th><th>비고</th></tr>
+      <tr><td>2024년</td><td>54억 달러</td><td>-</td></tr>
+      <tr><td>2025년</td><td>79억 달러</td><td>+46% 성장</td></tr>
+      <tr><td>2026년</td><td>99억~120억 달러</td><td>전망치</td></tr>
+      <tr><td>2030년 (예상)</td><td>526억~574억 달러</td><td>CAGR 42~46%</td></tr>
+  </tbody></table>
+  
+  <p class="small">출처: Mordor Intelligence(2026), DemandSage(2026), Deloitte(2026)</p>
+  
+  <h4>나. 주요 기업 동향 (2025~2026년)</h4>
+  <ul>
+    <li><strong>OpenAI:</strong> Operator(2025.1) → ChatGPT Agent(2025.7), Agent SDK 공개, GPT-4o/5 계열 에이전트 기능</li>
+    <li><strong>Google:</strong> Gemini 2.0(2024.12), Gemini 3.1 Pro(2026.2), Agent Development Kit, Project Astra</li>
+    <li><strong>Microsoft:</strong> Copilot Studio 확대, Azure AI Agent, Fortune 500 기업 80% 적용</li>
+    <li><strong>Anthropic:</strong> Claude 3.5 Sonnet, Computer Use, 책임 있는 AI 에이전트 설계</li>
+    <li><strong>Salesforce:</strong> Agentforce (분기 22,000건 계약)</li>
+  </ul>
+  
+  <h4>다. 국내 치안 AI 적용 사례 (2025~2026년)</h4>
+  <ul>
+    <li><strong>경찰청:</strong> '모두의 경찰관' 100억원 투입, 2026년 치안 특화 AI 파운데이션 모델 개발 착수 (민원 3.5억건/년)</li>
+    <li><strong>KT·경찰청:</strong> 피싱범죄 AI 실시간 차단 → 피해 신고 <strong>25% 감소</strong>, 보이스피싱 44% 감소</li>
+    <li><strong>서울경찰:</strong> AI 순찰차 투입, 흉기범죄 데이터 분석 및 '핵심 핫스팟' 17곳 운영</li>
+    <li><strong>인천 남동구:</strong> AI CCTV 지능형 선별관제 (1,210대), 배회·폭력·쓰러짐 자동 감지</li>
+    <li><strong>미국 NYPD:</strong> ShotSpotter 음향감지 시스템, Predictive Policing AI</li>
+    <li><strong>싱가포르:</strong> Home Team AI 챗봇 시민 서비스</li>
+    <li><strong>영국:</strong> Metropolitan Police AI CCTV 실시간 분석</li>
+    <li><strong>중국:</strong> 사회신용 시스템 + AI 치안 모니터링 (전국 CCTV 6억대)</li>
+  </ul>
+
+  <h4>라. 국내 AI 에이전트 시장 동향 (2025~2026)</h4>
+  <table>
+    <tbody><tr><th>업체/서비스</th><th>주요 내용</th><th>적용 분야</th></tr>
+      <tr><td>LG CNS / KT / SKT</td><td>기업용 AI 에이전트 플랫폼 출시</td><td>기업 업무 자동화</td></tr>
+      <tr><td>네이버 / 카카오</td><td>AI 프렌즈, Claude API 서비스</td><td>기업/개인 AI</td></tr>
+      <tr><td>정부 (과학기술정보통신부)</td><td>AI 국가 전략 (2026)</td><td>AI 생태계</td></tr>
+      <tr><td>국과위</td><td>AI 안전성 평가 기준 마련</td><td>AI 규제</td></tr>
+      <tr><td>정보통신산업진흥원 (NIA)</td><td>AI 에이전트 검증 환경 구축</td><td>AI 서비스 검증</td></tr>
+      <tr><td>한국지능정보사회진흥원 (NIA)</td><td>AI Sandbox, AI 기술 지원</td><td>AI 창업 지원</td></tr>
+  </tbody></table>
+
+  <h4>마. 주요 기관별 AI 에이전트 도입 현황 (2025~2026)</h4>
+  <table>
+    <tbody><tr><th>기관/기업</th><th>AI Agent 도입 사례</th><th>도입 효과</th></tr>
+      <tr><td>대기업 (삼성, LG, SK)</td><td>사내 업무 자동화, 고객 서비스 챗봇</td><td>업무 효율 30% 향상</td></tr>
+      <tr><td>금융권 (KB, 하나, 신한)</td><td>투자 분석, 리스크 관리, 고객 상담 AI</td><td>비용 절감 20%</td></tr>
+      <tr><td>공공 부문</td><td>시민 민원 자동응답, 민원 분류 AI</td><td>처리 시간 50% 단축</td></tr>
+      <tr><td>제조업</td><td>품질 관리, 예측 유지보수 AI</td><td>불량률 15% 감소</td></tr>
+      <tr><td>병원/헬스케어</td><td>의료 기록 요약, 진료 지원 AI</td><td>진료 시간 단축</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>2. 관련분야 기술개발 현황</h3>
+  
+  <h4>가. AI 에이전트 핵심 기술 (2025~2026)</h4>
+  <ul>
+    <li><strong>LLM (Large Language Model):</strong> GPT-4o, Claude 3.5, Gemini 2.0/3.1 등 범용 LLM의 발전</li>
+    <li><strong>Operator/Agent Mode:</strong> 웹 브라우저 자율 제어, 복잡한 멀티스텝 작업 자동화</li>
+    <li><strong>Multi-Agent 오케스트레이션:</strong> 복수 에이전트 간 협업, A2A/MCP 프로토콜 표준화</li>
+    <li><strong>RAG (Retrieval-Augmented Generation):</strong> 외부 지식 기반 응답 생성, 홀루시네이션 감소</li>
+    <li><strong>Computer Use:</strong> GUI 조작, 데스크톱 애플리케이션 제어</li>
+    <li><strong>Planning & Reasoning:</strong> 단계별 추론(CoT), 자기 점검(Self-Correction)</li>
+  </ul>
+  
+  <h4>나. AI 에이전트 아키텍처 유형</h4>
+  <table>
+    <tbody><tr><th>유형</th><th>설명</th><th>본 과제 적용</th></tr>
+      <tr><td>단일 에이전트</td><td>하나의 LLM이 모든 작업 처리</td><td>민원 분류, 분쟁 조정 지원</td></tr>
+      <tr><td>멀티 에이전트</td><td>복수 전문 에이전트 협업</td><td>범죄 분석, 수사 지원</td></tr>
+      <tr><td>에이전트-도구</td><td>외부 API, DB 연동</td><td>법령 검색, CCTV 연동</td></tr>
+      <tr><td>Hierarchical</td><td>상위 에이전트가 하위 관리</td><td>전체 오케스트레이션</td></tr>
+  </tbody></table>
+  
+  <h4>다. 치안 분야 기술 적용</h4>
+  <ul>
+    <li><strong>자연어 처리:</strong> 신고·민원 텍스트 분류, 감정 분석</li>
+    <li><strong>컴퓨터 비전:</strong> CCTV 영상 분석, 얼굴 인식, 행동 감지</li>
+    <li><strong>예측 분석:</strong> 범죄 발생 예측, 자원 배분 최적화</li>
+    <li><strong>지식 그래프:</strong> 법령·판례·규정 연결 검색</li>
+  </ul>
+  
+  <h4>라. 국내 기술 수준</h4>
+  <p>국내 AI 산업은 기술 역량에 비해 산업 현장 적용 사례가 제한적이다. 특히 치안 분야에서는:</p>
+  <ul>
+    <li>순수 기술 개발은 글로벌 대비 높은 수준</li>
+    <li>도메인 특화 AI 에이전트 서비스 개발 경험 부족</li>
+    <li>실증 인프라 및 데이터 확보가 핵심 과제</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>3. 과제 수행의 제약요인</h3>
+  
+  <h4>가. 기술적 제약</h4>
+  <ul>
+    <li><strong>데이터 확보:</strong> 치안 분야 데이터의 민감성으로 인해 공개 데이터 확보 어려움</li>
+    <li><strong>개인정보 보호:</strong> 시민 신고·민원 데이터 활용 시 개인정보 보호법 준수 필요</li>
+    <li><strong>AI 홀루시네이션:</strong> 법령·판례 검색 시 부정확한 정보 제공 위험</li>
+  </ul>
+  
+  <h4>나. 정책적 제약</h4>
+  <ul>
+    <li><strong>검증 기준:</strong> AI 서비스 검증을 위한 공인인증기관 절차 미성숙</li>
+    <li><strong>책임 소재:</strong> AI 판단에 대한 법적 책임 규정 부재</li>
+  </ul>
+  
+  <h4>다. 시장 제약</h4>
+  <ul>
+    <li><strong>공공구매:</strong> 공공기관의 AI 서비스 도입에 대한 보수적 태도</li>
+    <li><strong>수용성:</strong> 현장 담당자의 AI 시스템 대한 신뢰도 제고 필요</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>4. 시사점</h3>
+  
+  <div class="box">
+    <div class="box-title">본 과제의 전략적 방향</div>
+    <ol>
+      <li><strong>수요 맞춤형 개발:</strong> 경찰청 등 최종 수요기관의 실제 업무 흐름에 기반한 서비스 설계</li>
+      <li><strong>단계적 실증:</strong> 소규모 파일럿 → 성공 사례 확산 → 다수 기관 확산</li>
+      <li><strong>오픈 생태계:</strong> 다양한 SI·보안 업체와 협력하여 서비스 생태계 구축</li>
+      <li><strong>안전성 우선:</strong> AI 판단의 투명성, 설명 가능성 확보로 현장 신뢰도 제고</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section">
+  <h3>5. 기대효과</h3>
+  
+  <h4>가. 기술적 기대효과</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>기대 효과</th><th>정량 지표</th><th>측정 방법</th></tr>
+      <tr><td rowspan="6">핵심 기술</td><td>치안 분야 특화 AI 에이전트</td><td>5종 이상 에이전트</td><td>구축 완료 확인</td></tr>
+      <tr><td>멀티 에이전트 협업</td><td>3종 이상 워크플로우</td><td>시연 평가</td></tr>
+      <tr><td>RAG 기반 정확도</td><td>85% 이상</td><td>테스트 스위트</td></tr>
+      <tr><td>홀루시네이션 감소</td><td>5% 이하 (치명적 오류 0%)</td><td>정량 평가</td></tr>
+      <tr><td>자가 복구 성공률</td><td>80% 이상</td><td>실패-복구 시나리오</td></tr>
+      <tr><td>서비스 안정성</td><td>99.5% (연간)</td><td>모니터링</td></tr>
+      <tr><td rowspan="4">AI 모델</td><td>치안 특화 LLM 파인튜닝</td><td>1개 이상 모델</td><td>성능 벤치마크</td></tr>
+      <tr><td>모델 응답 정확도</td><td>85% 이상</td><td>검증 데이터셋</td></tr>
+      <tr><td>응답 일관성</td><td>90% 이상</td><td>반복 테스트</td></tr>
+      <tr><td>추론 속도</td><td>초당 10토큰 이상</td><td>벤치마크</td></tr>
+  </tbody></table>
+
+  <h4>나. 경제적 기대효과</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>내용</th><th>목표</th><th>근거</th></tr>
+      <tr><td rowspan="3">매출</td><td>사업화 1년차 (2028)</td><td>3억원</td><td>경찰청 + 자치구 2~3개 기관</td></tr>
+      <tr><td>사업화 2차년 (2029)</td><td>5억원</td><td>5개+ 기관 확대</td></tr>
+      <tr><td>사업화 5년차 (2032)</td><td>30억원</td><td>전국 확대 + 수출</td></tr>
+      <tr><td rowspan="3">비용 절감</td><td>민원 처리 자동화</td><td>시간 50% 절감</td><td>경찰청 사례 참고</td></tr>
+      <tr><td>신고 분류 자동화</td><td>시간 60% 절감</td><td>시나리오 분석</td></tr>
+      <tr><td>분쟁 조정 지원</td><td>준비시간 40% 절감</td><td>자문 협의</td></tr>
+      <tr><td rowspan="2">수출</td><td>해외 치안 기관</td><td>2032년까지 5억원</td><td>Interpol 네트워크</td></tr>
+      <tr><td>해외 파트너십</td><td>2개 이상 국가</td><td>국제 학술 교류</td></tr>
+      <tr><td>투자</td><td>초기 매출 기반 마련</td><td>Series A 유치 목표</td><td>사업화 2년차 이후</td></tr>
+  </tbody></table>
+
+  <h4>다. 사회적 기대효과</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>기대 효과</th><th>정량 목표</th><th>비고</th></tr>
+      <tr><td rowspan="3">국민 안전</td><td>범죄 예방 효과</td><td>피해 감소 기여</td><td>경찰청 실증 연계</td></tr>
+      <tr><td>신고·민원 처리 속도</td><td>평균 대기 시간 50% 단축</td><td>경찰청 사례</td></tr>
+      <tr><td>24시간 AI 응대</td><td>야간·공휴일 민원 처리</td><td>시민 만족도 제고</td></tr>
+      <tr><td rowspan="2">시민 만족</td><td>처리 시간 단축</td><td>50% 감소</td><td>시나리오 기반</td></tr>
+      <tr><td>시민 만족도</td><td>만족도 80%+</td><td>파일럿 후 조사</td></tr>
+      <tr><td rowspan="2">치안 역량</td><td>AI 기반 범죄 예방·수사 지원</td><td>실제 사건 적용</td><td>경찰청 협업</td></tr>
+      <tr><td>순찰 경로 최적화</td><td>순찰 효율성 20% 향상</td><td>시뮬레이션</td></tr>
+      <tr><td rowspan="2">일자리</td><td>파디엠 직접 고용</td><td>10명+ (정규직)</td><td>4대보험 100%</td></tr>
+      <tr><td>관련 산업 파급 고용</td><td>15명+</td><td>SI·보안·클라우드</td></tr>
+      <tr><td rowspan="2">산업 생태계</td><td>국내 AI 에이전트 서비스 산업 활성화</td><td>생태계 기여</td><td>표준화· 학술 활동</td></tr>
+      <tr><td>정부 서비스 디지털 전환 촉진</td><td>공공 부문 사례</td><td>AI 적용 모델</td></tr>
+  </tbody></table>
+
+  <h4>라. 공공 가치 창출 효과</h4>
+  <ul>
+    <li><strong>국토안전:</strong> AI 기반 범죄 예방 시스템으로 사회적 안전 증대, 시민 안전감 향상</li>
+    <li><strong>공공 서비스:</strong> 24시간 AI 민원 응대로 시민 불편 해소, 심야·공휴일 대응 가능</li>
+    <li><strong>민관 협력:</strong> 경찰청-파디엠-전북대 협력을 통한 산학연 협력 통합 모델</li>
+    <li><strong>기술 확산:</strong> 치안 AI →소방안전·자치 행정 등 공공 분야 전반으로 기술 확산</li>
+    <li><strong>국제 경쟁력:</strong> 치안 특화 AI 에이전트 기술력 확보로 해외 시장 경쟁력 확보</li>
+  </ul>
+
+  <h4>마. 정량적 기대효과 요약</h4>
+  <table>
+    <tbody><tr><th>지표</th><th>1차년 (2026)</th><th>2차년 (2027)</th><th>과제 종료 후 5년 (2032)</th></tr>
+      <tr><td>AI 에이전트 수</td><td>5종</td><td>5종+</td><td>10종+</td></tr>
+      <tr><td>AI 응답 정확도</td><td>75%</td><td>85%+</td><td>90%+</td></tr>
+      <tr><td>파일럿 적용 기관</td><td>1개</td><td>2~3개</td><td>20개+</td></tr>
+      <tr><td>매출</td><td>-</td><td>-</td><td>30억원+</td></tr>
+      <tr><td>직접 고용</td><td>7명</td><td>10명</td><td>15명+</td></tr>
+      <tr><td>파급 고용</td><td>5명+</td><td>10명+</td><td>50명+</td></tr>
+      <tr><td>논문/특허</td><td>1건</td><td>3건+</td><td>10건+</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>6. 표준화·특허 현황</h3>
+  
+  <h4>가. 특허 현황</h4>
+  <p>본 과제와 관련하여 아래 특허 출원 및 등록 계획을 수립하였다.</p>
+  <table>
+    <tbody><tr><th>번호</th><th>특허명</th><th>출원 상태</th><th>출원 예상 시기</th></tr>
+      <tr><td>1</td><td>AI 에이전트 기반 치안 신고 분류 시스템</td><td>출원 예정</td><td>2026년 하반기</td></tr>
+      <tr><td>2</td><td>멀티 에이전트 협업에 의한 자치분쟁 조정 지원 방법</td><td>출원 예정</td><td>2027년 상반기</td></tr>
+      <tr><td>3</td><td>AI 기반 범죄 패턴 분석 및 순찰 경로 최적화 시스템</td><td>출원 예정</td><td>2027년 상반기</td></tr>
+  </tbody></table>
+  
+  <h4>나. 국제 표준화 동향</h4>
+  <p>본 과제에서 개발하는 AI 에이전트 서비스는 다음과 같은 국제 표준 및 산업 표준을 준수한다.</p>
+  <table>
+    <tbody><tr><th>표준</th><th>내용</th><th>본 과제 적용 계획</th></tr>
+      <tr><td>ISO/IEC 30144</td><td>IoT 기반 스마트시티 시스템</td><td>도시 치안 IoT 센서 연동 표준</td></tr>
+      <tr><td>IEC 62676</td><td>CCTV 영상 시스템 표준</td><td>AI 분석 영상 연동</td></tr>
+      <tr><td>ISO/IEC 42010</td><td>아키텍처 기술 표준</td><td>AI 에이전트 시스템 설계</td></tr>
+      <tr><td>ONVIF</td><td>네트워크 비디오 표준</td><td>CCTV 연동 인터페이스</td></tr>
+  </tbody></table>
+  
+  <h4>다. 국내 인증 계획</h4>
+  <p>본 과제에서 개발하는 서비스 및 시스템은 출시 전 아래 인증을 획득할 계획이다.</p>
+  <table>
+    <tbody><tr><th>인증 종류</th><th>내용</th><th>예정 시기</th></tr>
+      <tr><td>KOLAS 시험</td><td>AI 시스템 성능 검증</td><td>2027년 6월</td></tr>
+      <tr><td>개인정보보호 인증 (PIA)</td><td>개인정보 영향평가</td><td>2027년 3월</td></tr>
+      <tr><td>KC 인증</td><td>전기통신기기 인증</td><td>2027년 8월</td></tr>
+      <tr><td>CC 인증</td><td>정보보호 국제 mutual recognition</td><td>2027년 10월</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- III. 추진 목표 및 전략 -->
+<h2>III. 추진 목표 및 전략</h2>
+
+<div class="section">
+  <h3>1. 최종 목표</h3>
+  
+  <div class="summary-box">
+    <h4>최종 목표</h4>
+    <p><strong>자치치안 분야에서 AI 에이전트를 활용한 업무 자동화 및 지능형 서비스 개발을 통해 경찰·자치기관 업무 효율성을 향상시키고, 국민에게 안전하고 편리한 치안 서비스를 제공함으로써 사회 안전 증진에 기여한다.</strong></p>
+  </div>
+  
+  <h4>가. 서비스 개념도</h4>
+  <div class="arch-container">
+    <div class="arch-layer arch-ui">
+      <div class="arch-label">사용자 인터페이스 계층</div>
+      <div class="arch-items">
+        <div class="arch-item">경찰관/담당자 Dashboard</div>
+        <div class="arch-item">시민 포털</div>
+        <div class="arch-item">관리자 패널</div>
+      </div>
+    </div>
+    <div class="arch-arrow">▼</div>
+    <div class="arch-layer arch-agent">
+      <div class="arch-label">AI 에이전트 오케스트레이터</div>
+      <div class="arch-agents">
+        <div class="arch-agent-item">분류 Agent</div>
+        <div class="arch-agent-item">검색 Agent</div>
+        <div class="arch-agent-item">분석 Agent</div>
+        <div class="arch-agent-item">생성 Agent</div>
+      </div>
+    </div>
+    <div class="arch-arrow">▼</div>
+    <div class="arch-layer arch-bottom">
+      <div class="arch-data">
+        <div class="arch-label">데이터/지식 계층</div>
+        <div class="arch-items-sm">
+          <span>법령 DB</span>
+          <span>판례 DB</span>
+          <span>범죄 데이터</span>
+          <span>정책 DB</span>
+        </div>
+      </div>
+      <div class="arch-tools">
+        <div class="arch-label">도구/연계 계층</div>
+        <div class="arch-items-sm">
+          <span>CCTV API</span>
+          <span>민원 시스템</span>
+          <span>지도 API</span>
+          <span>알림 시스템</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <h4>나. 연차별 성과 목표</h4>
+  
+  <h5>1차년도 (2026)</h5>
+  <table>
+    <tbody><tr><th>구분</th><th>성과 지표</th><th>목표치</th><th>담당</th></tr>
+      <tr><td rowspan="4">정량</td><td>아키텍처 에이전트 수</td><td>5종 이상</td><td>파디엠</td></tr>
+      <tr><td>에이전트 간 협업 워크플로우</td><td>3종 이상</td><td>파디엠</td></tr>
+      <tr><td>데이터 구축</td><td>10,000건 이상</td><td>전북대</td></tr>
+      <tr><td>예외 대응 데이터</td><td>1,000건 이상</td><td>전북대</td></tr>
+      <tr><td rowspan="1">정성</td><td>사용자 만족도</td><td>60점 이상</td><td>전체</td></tr>
+  </tbody></table>
+  
+  <h5>2차년도 (2027)</h5>
+  <table>
+    <tbody><tr><th>구분</th><th>성과 지표</th><th>목표치</th><th>담당</th></tr>
+      <tr><td rowspan="7">정량</td><td>AI 응답 정확도</td><td>85% 이상</td><td>전북대</td></tr>
+      <tr><td>응답 일관성</td><td>90% 이상</td><td>전북대</td></tr>
+      <tr><td>환각 발생률</td><td>5% 이하 (치명적 오류 0%)</td><td>전북대</td></tr>
+      <tr><td>다단계 추론 안정성</td><td>85% 이상</td><td>파디엠</td></tr>
+      <tr><td>서비스 과업 성공률</td><td>90% 이상</td><td>파디엠</td></tr>
+      <tr><td>End-to-End 완료율</td><td>90% 이상</td><td>파디엠</td></tr>
+      <tr><td>자가 복구 성공률</td><td>80% 이상</td><td>파디엠</td></tr>
+      <tr><td rowspan="2">정성</td><td>전문가 만족도</td><td>72점 이상</td><td>전체</td></tr>
+      <tr><td>서비스 안정성</td><td>99.5%</td><td>파디엠</td></tr>
+  </tbody></table>
+  
+  <h4>다. 일자리 창출 목표</h4>
+  <table>
+    <tbody><tr><th>연도</th><th>신규 고용</th><th>총 참여인력</th><th>비고</th></tr>
+      <tr><td>2026년</td><td>4명</td><td>7명</td><td>정규직 100%, 4대보험 가입</td></tr>
+      <tr><td>2027년</td><td>+3명</td><td>10명</td><td>정규직 100%, 4대보험 가입</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>2. 추진 방향 및 전략</h3>
+  
+  <p>본 과제는 치안 분야에서 AI 에이전트 기술의 실용화를 목표로 하며, 기술 개발·실증·사업화의 3단계를 체계적으로 추진한다. 경찰청·자치분쟁조정위원회 등 수요기관의 실제 업무에 바로 적용 가능한 서비스를 개발하여, 현장 도입 효과를 입증하고, 전국 확산 및 해외 수출까지 연계한다.</p>
+  
+  <h4>가. 기술 전략</h4>
+  <ol>
+    <li><strong>도메인 특화 LLM:</strong> 경찰·치안 분야 데이터로 파인튜닝한 특화 모델 개발</li>
+    <li><strong>멀티 에이전트 아키텍처:</strong> 역할별 전문 에이전트(분류, 검색, 분석, 생성) 협업 구조</li>
+    <li><strong>RAG 기반 정확도 향상:</strong> 최신 법령·판례 자동 반영으로 홀루시네이션 최소화</li>
+    <li><strong>NPU 활용:</strong> 경량화 추론으로 현장 적용성 확보</li>
+  </ol>
+  
+  <h4>나. 사업 전략</h4>
+  <ol>
+    <li><strong>수요 맞춤형 개발:</strong> 경찰청 등 최종 수요기관 협업으로 현장 적합성 확보</li>
+    <li><strong>파일럿 → 확산:</strong> 소규모 실증 성공 후 → 다수 기관 확산</li>
+    <li><strong>민관 협력:</strong> 경찰대학교 기술력 + 파디엠 사업화 역량 + 전북대 연구력</li>
+    <li><strong>사업화 연계:</strong> 과제 종료 후 즉시 상용화 가능한 서비스 설계</li>
+  </ol>
+  
+  <h4>다. 확산 전략</h4>
+  <ol>
+    <li><strong>성과 발표:</strong> 공공부문 AI 활용 사례 발표회, 학회 논문 게재</li>
+    <li><strong>MOU 확대:</strong> 실증 성공 후 추가 경찰서·자치기관 MOU 체결</li>
+    <li><strong>수출 협의:</strong> 해외 치안 기관 대상 서비스 소개</li>
+  </ol>
+</div>
+
+<div class="section">
+  <h3>3. 추진 절차 및 추진체계</h3>
+  
+  <h4>가. 추진 절차 (로드맵)</h4>
+  <table>
+    <tbody><tr><th colspan="2">구분</th><th colspan="3">2026년</th><th colspan="6">2027년</th></tr>
+      <tr><th colspan="2">월</th><th>5~6</th><th>7~9</th><th>10~12</th><th>1~2</th><th>3~4</th><th>5~6</th><th>7~8</th><th>9~10</th><th>11</th></tr>
+      <tr><td rowspan="3">1차년</td><td>요구사항 분석</td><td style="background:#90EE90;">■■</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>데이터 수집/가공</td><td style="background:#90EE90;">■■■■</td><td style="background:#90EE90;">■■■■</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>AI 모델/에이전트 개발</td><td></td><td style="background:#87CEEB;">■■■■■■</td><td style="background:#87CEEB;">■■■■</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td rowspan="3">2차년</td><td>파일럿 실증</td><td></td><td></td><td></td><td></td><td style="background:#FFD700;">■■■■</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>고도화/확장</td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:#FFA500;">■■■■</td><td></td><td></td></tr>
+      <tr><td>성과 검증/사업화</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:#FF6B6B;">■■■</td><td></td></tr>
+  </tbody></table>
+  <p class="small">* 1차년(2026.03~12): 분석, 데이터 구축, AI 모델/에이전트 개발 | 2차년(2027.01~11): 실증, 고도화, 사업화</p>
+  
+  <h4>나. 추진 체계</h4>
+  <div class="org-container">
+    <div class="org-committee">
+      <div class="org-label">총괄관리위원회</div>
+      <div class="org-sub">(파디엠 대표 + 경찰대 교수 + 전북대 교수 + 수요기관)</div>
+    </div>
+    <div class="org-arrow-down">▼</div>
+    <div class="org-main">
+      <div class="org-card org-main-card">
+        <div class="org-title">(주)파디엠</div>
+        <div class="org-subtitle">주관기관</div>
+        <div class="org-bullets">·총괄관리<br>·AI 에이전트 개발<br>·사업화</div>
+      </div>
+      <div class="org-card">
+        <div class="org-title">경찰대학교</div>
+        <div class="org-subtitle">참여기관</div>
+        <div class="org-bullets">·기술자문<br>·데이터 제공<br>·파일럿 실증</div>
+      </div>
+      <div class="org-card">
+        <div class="org-title">전북대학교</div>
+        <div class="org-subtitle">참여기관</div>
+        <div class="org-bullets">·AI 모델<br>·파인튜닝<br>·성능 검증</div>
+      </div>
+    </div>
+    <div class="org-arrow-down">▼</div>
+    <div class="org-demand">
+      <div class="org-card org-demand-card">
+        <div class="org-title">경찰청/(구)자치분쟁조정위원회</div>
+        <div class="org-subtitle">수요기관</div>
+        <div class="org-bullets">·실증 테스트베드<br>·피드백 제공<br>·MOU 체결</div>
+      </div>
+    </div>
+  </div>
+
+  <h4>다. 총괄관리위원회 구성 및 운영</h4>
+  <table>
+    <tbody><tr><th>구성</th><th>위원</th><th>역할</th></tr>
+      <tr><td>위원회장</td><td>(주)파디엠 대표 강혜림</td><td>의사결정 최종 책임</td></tr>
+      <tr><td>기술 분과</td><td>파디엠 책임자 + 전북대 교수</td><td>AI 기술 검토, 성능 검증</td></tr>
+      <tr><td>실증 분과</td><td>경찰대 교수 + 수요기관 담당</td><td>파일럿 운영, 피드백 취합</td></tr>
+      <tr><td>사업화 분과</td><td>파디엠 사업개발 + 수요기관</td><td>사업화 전략, 투자 유치</td></tr>
+  </tbody></table>
+
+  <h4>라. 기관별 핵심 KPI</h4>
+  <table>
+    <tbody><tr><th>기관</th><th>핵심 성과 지표 (KPI)</th><th>목표치</th></tr>
+      <tr><td rowspan="3">(주)파디엠</td><td>AI 에이전트 구축 완료 수</td><td>5종 이상 (1차년)</td></tr>
+      <tr><td>멀티 에이전트 워크플로우 수</td><td>3종 이상 (1차년)</td></tr>
+      <tr><td>서비스 안정성 (가동률)</td><td>99.5% (2차년)</td></tr>
+      <tr><td rowspan="2">경찰대학교</td><td>치안 도메인 분석 완료</td><td>5개 업무 프로세스 (1차년)</td></tr>
+      <tr><td>파일럿 실증 기관 수</td><td>2개 이상 (2차년)</td></tr>
+      <tr><td rowspan="3">전북대학교</td><td>AI 학습 데이터 구축</td><td>10,000건 이상 (1차년)</td></tr>
+      <tr><td>모델 응답 정확도</td><td>85% 이상 (2차년)</td></tr>
+      <tr><td>RAG 홀루시네이션 감소율</td><td>5% 이하 (2차년)</td></tr>
+  </tbody></table>
+
+  <h4>마. 갈등 해결 메커니즘</h4>
+  <ul>
+    <li><strong>분쟁 조정:</strong> 감사위원이 중립적으로 분쟁 해결 조력</li>
+    <li><strong>소송 전 절차:</strong> 소송 제기 전 총괄관리위원회에서 최종 해결 시도</li>
+    <li><strong>MOU 규정 우선:</strong> MOU에 별도 규정 시 MOU 우선 적용</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>4. 컨소시엄별 역할 및 역량</h3>
+  
+  <h4>가. 기관별 역할 구분</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>기관명</th><th>성격</th><th>주요 역할</th></tr>
+      <tr><td>주관기관</td><td>(주)파디엠</td><td>중소기업</td>
+        <td>·AI 에이전트 아키텍처 설계 및 개발<br>·전체 프로젝트 총괄관리<br>·사업화 전략 수립 및 실행</td></tr>
+      <tr><td>참여기관</td><td>경찰대학교</td><td>대학</td>
+        <td>·치안 도메인 기술 자문<br>·실증 테스트베드 제공<br>·경찰 데이터 연계</td></tr>
+      <tr><td>참여기관</td><td>전북대학교</td><td>대학</td>
+        <td>·AI/LLM 모델 개발 및 파인튜닝<br>·데이터 수집 및 가공<br>·성능 검증 지원</td></tr>
+      <tr><td>수요기관</td><td>경찰청/(구)자치분쟁조정위원회</td><td>공공기관</td>
+        <td>·수요 정의 및 피드백 제공<br>·파일럿 실증 협업<br>·MOU 체결 (성과지표)</td></tr>
+  </tbody></table>
+  
+  <h4>나. 기관별 역량</h4>
+  
+  <div class="box">
+    <div class="box-title">1) 주관기관: (주)파디엠</div>
+    <p><strong>설립:</strong> 2018년 5월 5일</p>
+    <p><strong>사업자번호:</strong> 420-88-00992</p>
+    <p><strong>주소:</strong> 광주광역시 북구 첨단연신로 45, 201호</p>
+    <p><strong>기업 소개:</strong></p>
+    <p>(주)파디엠은 AI 범죄예방시스템 연구개발 및 제조를 주력 사업으로 수행하는 중소기업이다. 대표 강혜림은 경찰대학교 공공안전행정 석사·박사과정 연구자로, 치안 분야 AI 기술 적용에 대한 전문성을 보유하고 있다.</p>
+    <p><strong>보유 기술:</strong></p>
+    <ul>
+      <li>AI 기반 영상 분석 기술</li>
+      <li>범죄 패턴 분석 알고리즘</li>
+      <li>실시간 모니터링 시스템</li>
+      <li>AI 에이전트 설계 역량</li>
+    </ul>
+    <p><strong>주요 연혁:</strong></p>
+    <ul>
+      <li>2018년: 법인 설립, AI 범죄예방시스템 개발 착수</li>
+      <li>2020년: 청년창업사관학교 과제 수행</li>
+      <li>2023년: 광주정보문화산업진흥원 SW창업랩 지원</li>
+      <li>2024년: AI 에이전트 기술 검토 착수</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">2) 참여기관: 경찰대학교</div>
+    <p><strong>역할:</strong> 치안 도메인 기술 자문, 실증 테스트베드 제공</p>
+    <p><strong>보유 역량:</strong></p>
+    <ul>
+      <li>경찰학·치안관리 전문 연구진</li>
+      <li>경찰 데이터 접근성</li>
+      <li>실증 현장(경찰서) 협업 체계</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">3) 참여기관: 전북대학교</div>
+    <p><strong>역할:</strong> AI/LLM 모델 개발, 데이터 처리, 성능 검증</p>
+    <p><strong>보유 역량:</strong></p>
+    <ul>
+      <li>컴퓨터공학/AI 연구팀</li>
+      <li>LLM 파인튜닝 기술</li>
+      <li>데이터 처리 인프라</li>
+      <li>산학협력 경험</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- IV. 세부 추진계획 -->
+<h2>IV. 세부 추진계획</h2>
+
+<div class="section">
+  <h3>1. 목표 서비스 개요</h3>
+  
+  <h4>가. 최종 목표</h4>
+  <p><strong>치안 분야 업무에 AI 에이전트를 적용하여, 신고/민원 자동 분류, 분쟁 조정 지원, 범죄 예방 분석, 수사 지원 등의 기능을 제공함으로써 현장 담당자의 업무 효율성을 향상시키고 시민 만족도를 제고한다.</strong></p>
+  
+  <h4>나. 주요 기능</h4>
+  <table>
+    <tbody><tr><th>서비스</th><th>주요 기능</th><th>AI 에이전트 역할</th></tr>
+      <tr><td rowspan="2">신고 자동 분류</td><td>신고 내용 자동 분류 (긴급/일반)</td><td>분류 Agent</td></tr>
+      <tr><td>담당 부서 자동 배정</td><td>검색 Agent + 생성 Agent</td></tr>
+      <tr><td rowspan="2">분쟁 조정 지원</td><td>관련 판례·법령 검색</td><td>검색 Agent</td></tr>
+      <tr><td>조정안 초안 생성</td><td>생성 Agent</td></tr>
+      <tr><td rowspan="2">범죄 예방 분석</td><td>범죄 패턴 분석</td><td>분석 Agent</td></tr>
+      <tr><td>순찰 경로 최적화</td><td>최적화 Agent</td></tr>
+      <tr><td rowspan="2">수사 지원</td><td>CCTV 영상 분석</td><td>비전 Agent</td></tr>
+      <tr><td>용의자 특성 추출</td><td>분석 Agent</td></tr>
+  </tbody></table>
+  
+  <h4>다. 적용 범위</h4>
+  <ul>
+    <li><strong>1차년도:</strong> 경찰대학교 경찰데이터 기반 신고 분류, 분쟁 조정 지원 (2~3개 핵심 기능)</li>
+    <li><strong>2차년도:</strong> 실증 확대, 범죄 예방 분석 추가, 다수 경찰서 적용</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>2. 세부 과제내용</h3>
+  
+  <h4>1차년도 (2026년)</h4>
+  
+  <div class="box">
+    <div class="box-title">(주)파디엠 (주관기관)</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>치안 분야 AI 에이전트 기본 아키텍처 구축</li>
+      <li>5종 이상 역할별 에이전트 개발</li>
+      <li>3종 이상 에이전트 간 협업 워크플로우 구현</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>에이전트 오케스트레이터 설계 및 구현</li>
+      <li>분류 Agent, 검색 Agent, 분석 Agent, 생성 Agent, 최적화 Agent 개발</li>
+      <li>RAG 파이프라인 구축</li>
+      <li>프론트엔드 대시보드 개발</li>
+    </ul>
+    <p><strong>③ 성과 지표</strong></p>
+    <ul>
+      <li>아키텍처 에이전트: 5종 이상</li>
+      <li>협업 워크플로우: 3종 이상</li>
+      <li>데이터 구축: 10,000건 이상</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">경찰대학교 (참여기관)</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>치안 도메인 요구사항 정의</li>
+      <li>실증 테스트베드 구축</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>경찰 업무 프로세스 분석</li>
+      <li>AI 에이전트 요구사항 정리</li>
+      <li>파일럿 실증 협업 체계 구축</li>
+      <li>경찰 데이터 제공 협의</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">전북대학교 (참여기관)</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>치안 특화 LLM 파인튜닝</li>
+      <li>학습 데이터 수집 및 가공</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>기초 모델 선정 (Llama 3 or Mistral)</li>
+      <li>치안 데이터 수집 및 정제</li>
+      <li>Instruction Tuning 수행</li>
+      <li>성능 평가 및 최적화</li>
+    </ul>
+  </div>
+  
+  <h4>2차년도 (2027년)</h4>
+  
+  <div class="box">
+    <div class="box-title">(주)파디엠 (주관기관)</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>서비스 고도화 및 실증 확대</li>
+      <li>AI 응답 정확도 85% 이상 달성</li>
+      <li>과업 성공률 90% 이상 달성</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>실증 피드백 반영 및 고도화</li>
+      <li>성능 최적화 (속도, 정확도)</li>
+      <li>추가 기능 개발 (범죄 예방 분석)</li>
+      <li>다수 경찰서 적용 확대</li>
+      <li>사업화 준비 (가격 정책, 마케팅)</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">경찰대학교 (참여기관) - 2차년</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>파일럿 실증 기반 AI 에이전트 고도화 자문</li>
+      <li>추가 경찰 데이터 연계 및 실증 확대</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>파일럿 피드백 기반 AI 시스템 개선 자문</li>
+      <li>추가 경찰 업무 데이터 연계 협의</li>
+      <li>다수 경찰서 실증 테스트베드 확대</li>
+      <li>실증 결과 분석 및 개선 권고안 제시</li>
+    </ul>
+  </div>
+  
+  <div class="box">
+    <div class="box-title">전북대학교 (참여기관) - 2차년</div>
+    <p><strong>① 개발 목표</strong></p>
+    <ul>
+      <li>AI 모델 실증 반영 및 성능 최적화</li>
+      <li>성능 검증 및 품질 보증</li>
+    </ul>
+    <p><strong>② 개발 내용</strong></p>
+    <ul>
+      <li>실증 피드백 데이터 기반 모델 추가 튜닝</li>
+      <li>성능 평가 및 벤치마크 수행</li>
+      <li>최종 성능 검증 보고서 작성</li>
+      <li>기술 이전 및 교육 자료 준비</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>3. 시설 및 기자재 구축</h3>
+  
+  <h4>가. 보유 시설 및 장비</h4>
+  <table>
+    <tbody><tr><th>보유기관</th><th>시설/장비명</th><th>규격</th><th>수량</th><th>용도</th></tr>
+      <tr><td>(주)파디엠</td><td>개발 workstation</td><td>고성능 PC (RTX 4090)</td><td>2</td><td>AI 모델 학습/추론</td></tr>
+      <tr><td>(주)파디엠</td><td>클라우드 서버</td><td>AWS/GCP</td><td>1</td><td>API 서버, 데이터 저장</td></tr>
+      <tr><td>전북대학교</td><td>GPU 클러스터</td><td>A100 40GB</td><td>4</td><td>LLM 파인튜닝</td></tr>
+  </tbody></table>
+  
+  <h4>나. 신규 도입 필요 장비</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>장비명</th><th>용도</th><th>단가(천원)</th><th>수량</th><th>소요예산(천원)</th></tr>
+      <tr><td>SW</td><td>LLM API 비용</td><td>기초 모델 운영</td><td>5,000</td><td>12</td><td>60,000</td></tr>
+      <tr><td>SW</td><td>데이터 라벨링 도구</td><td>데이터 가공</td><td>3,000</td><td>1</td><td>3,000</td></tr>
+      <tr><td>HW</td><td>GPU 서버 강화</td><td>추론 서버</td><td>20,000</td><td>1</td><td>20,000</td></tr>
+      <tr><td colspan="4">합계</td><td></td><td>83,000</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+  
+  <div class="section">
+    <h3>4. 성능 확보 계획</h3>
+    
+    <h4>가. 자체 성능 검증</h4>
+    <ul>
+      <li><strong>정량 테스트:</strong> 내부 시나리오 기반 응답 정확도, 완료율, 일관성 측정</li>
+      <li><strong>정성 테스트:</strong> 내부 사용자(경찰대 연구진) 피드백</li>
+      <li><strong>반복 테스트:</strong> 동일 입력에 대한 응답 일관성 검증</li>
+      <li><strong>예외 처리:</strong> 오류 발생 시 재계획·재시도 성공률 검증</li>
+    </ul>
+    
+    <h4>나. 제3자 검증 계획</h4>
+    <ul>
+      <li><strong>검증 기관:</strong> 한국지능정보사회진흥원(NIA) 또는 공인인증기관</li>
+      <li><strong>검증 항목:</strong></li>
+      <ul>
+        <li>AI 응답 정확도 (85% 이상)</li>
+        <li>응답 일관성 (90% 이상)</li>
+        <li>환각 발생률 (5% 이하, 치명적 오류 0%)</li>
+        <li>다단계 추론 안정성 (85% 이상)</li>
+        <li>자가 복구 성공률 (80% 이상)</li>
+        <li>End-to-End 완료율 (90% 이상)</li>
+        <li>서비스 안정성 (99.5%)</li>
+      </ul>
+      <li><strong>검증 시기:</strong> 1차년도 말(12월), 2차년도 말(11월)</li>
+    </ul>
+    
+    <h4>다. AI 홀루시네이션 대응 방안</h4>
+    <ul>
+      <li><strong>RAG 기반 최신 법령 반영:</strong> 법령·판례 데이터베이스를 실시간으로 검색하여 정확도 향상</li>
+      <li><strong>외부 검증 단계:</strong> AI 응답에 대해 외부 출처 기반 사실 검증 단계 추가</li>
+      <li><strong>설명 가능성:</strong> AI 판단 근거를 사용자에게 투명하게 제시</li>
+      <li><strong>신뢰도 점수:</strong> 각 응답에 대해 신뢰도 점수를 함께 제공하여 현장 담당자가 판단하도록 지원</li>
+      <li><strong>긴급핫라인 연결:</strong> 불확실한 판단 시 인간 전문가로 자동 전환</li>
+    </ul>
+    
+    <h3>4-1. 데이터 수집 및 활용 계획</h3>
+    
+    <h4>가. 데이터 수집 계획</h4>
+    <table>
+      <tbody><tr><th>데이터 유형</th><th>수집처</th><th>수량</th><th>용도</th></tr>
+        <tr><td>법령·판례 데이터</td><td>국가법령정보센터, 법원 판례</td><td>50,000건</td><td>RAG 파이프라인</td></tr>
+        <tr><td>경찰 업무 데이터</td><td>경찰대학교, 경찰청 MOU</td><td>10,000건</td><td>AI 학습/파인튜닝</td></tr>
+        <tr><td>신고·민원 샘플</td><td>자치분쟁조정위원회</td><td>5,000건</td><td>분류 모델 학습</td></tr>
+        <tr><td>범죄 데이터</td><td>경찰 데이터 연계</td><td>익명화</td><td>패턴 분석</td></tr>
+        <tr><td>합성 데이터</td><td>LLM 생성</td><td>5,000건</td><td>학습 데이터 보강</td></tr>
+        <tr><td>예외·Edge case</td><td>실무자 면담, 시나리오</td><td>1,000건</td><td>예외 처리 학습</td></tr>
+        <tr><td><strong>합계</strong></td><td></td><td><strong>81,000건</strong></td><td></td></tr>
+    </tbody></table>
+    
+    <h4>나. 데이터 관리 체계</h4>
+    <ul>
+      <li><strong>수집:</strong> MOU 기관 협의, 공개 데이터 활용, 합성 데이터 보강</li>
+      <li><strong>저장:</strong> 암호화 저장, 접근 통제, 백업 체계</li>
+      <li><strong>활용:</strong> 개인정보 비식별화 후 AI 학습에 활용</li>
+      <li><strong>폐기:</strong> 과제 종료 후 안전 폐기 (개인정보보호법 준수)</li>
+    </ul>
+    
+    <h4>다. 데이터 품질 관리</h4>
+    <ul>
+      <li>라벨링 품질 기준: 이중 검증 (2인 이상 검토)</li>
+      <li>정기적 데이터 갱신 및 업데이트</li>
+      <li>모델 학습 데이터와 검증 데이터 분리 (8:2)</li>
+      <li>주기적 품질 감사 및 오류 수정 프로세스</li>
+    </ul>
+    
+    <h3>4-2. 기술 이전 계획</h3>
+    
+    <h4>가. 기술 이전 대상</h4>
+    <table>
+      <tbody><tr><th>기술 항목</th><th>기술 수준 (TRL)</th><th>이전 방법</th><th>이전 시기</th></tr>
+        <tr><td>AI 에이전트 아키텍처</td><td>TRL 5~6</td><td>기술 문서, 교육</td><td>2차년 말</td></tr>
+        <tr><td>RAG 파이프라인</td><td>TRL 6</td><td>API 문서, 세미나</td><td>1차년 말</td></tr>
+        <tr><td>파인튜닝 모델</td><td>TRL 5</td><td>공동 개발, 교육</td><td>2차년</td></tr>
+        <tr><td>대시보드 SW</td><td>TRL 7</td><td>기술 이전, 유지보수 교육</td><td>2차년 말</td></tr>
+    </tbody></table>
+    
+    <h4>나. 기술 이전 대상 기관</h4>
+    <ul>
+      <li><strong>경찰대학교:</strong> AI 에이전트 아키텍처, RAG 파이프라인</li>
+      <li><strong>수요기관 (경찰청 등):</strong> 대시보드 사용 교육, 유지보수</li>
+      <li><strong>산학협력 기업:</strong> 기술 이전 및 컨설팅</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>5. 일자리 창출 계획</h3>
+  
+  <table>
+    <tbody><tr><th colspan="2">구분</th><th>2026년</th><th>2027년</th></tr>
+      <tr><td colspan="2">총 직접 고용 규모 (참여인력)</td><td>7명</td><td>10명</td></tr>
+      <tr><td colspan="2">정규직</td><td>7명</td><td>10명</td></tr>
+      <tr><td colspan="2">신규 채용 규모</td><td>4명</td><td>3명</td></tr>
+      <tr><td rowspan="4">신규 채용 상세</td><td>연구개발자</td><td>2명</td><td>2명</td></tr>
+      <tr><td>데이터 엔지니어</td><td>1명</td><td>1명</td></tr>
+      <tr><td>사업개발</td><td>1명</td><td>-</td></tr>
+      <tr><td>4대보험 가입률</td><td>100%</td><td>100%</td></tr>
+  </tbody></table>
+  
+  <h4>고용 조건</h4>
+  <ul>
+    <li><strong>급여 수준:</strong> 연구원: 월 250~350만원 (경력별 차등)</li>
+    <li><strong>근무 환경:</strong> 유연근무제, 원격 근무 가능</li>
+    <li><strong>성장 지원:</strong> 교육비 지원, 자격증 취득 지원</li>
+    <li><strong>복리후생:</strong> 4대보험, 퇴직연금, 건강검진</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>5-1. 일자리 창출 상세 계획</h3>
+  
+  <h4>가. 신규 고용 상세 계획</h4>
+  <table>
+    <tbody><tr><th>채용 시기</th><th>채용 인원</th><th>담당 업무</th><th>자격 요건</th><th>급여 수준</th></tr>
+      <tr><td rowspan="2">2026년 1분기</td><td>AI 연구원 1명</td><td>AI/LLM 모델 설계, 파인튜닝, 에이전트 개발</td><td>컴퓨터공학 석사 이상, NLP/AI 경력 1년+</td><td>월 300~350만원</td></tr>
+      <tr><td>데이터 엔지니어 1명</td><td>데이터 수집, 전처리, 라벨링, DB 관리</td><td>컴퓨터공학 학사 이상, 데이터 처리 경력 1년+</td><td>월 280~320만원</td></tr>
+      <tr><td rowspan="2">2026년 2분기</td><td>AI 연구원 1명</td><td>멀티 에이전트 설계, 오케스트레이션</td><td>AI/LLM 경력 2년+, 에이전트 개발 경험</td><td>월 320~380만원</td></tr>
+      <tr><td>사업 개발 담당 1명</td><td>수요기관 대응, MOU 협의, 사업화 전략</td><td>IT 영업/사업 개발 경력 2년+, 공공 부문 경험 우대</td><td>월 300~350만원</td></tr>
+      <tr><td rowspan="3">2027년 1분기</td><td>AI 연구원 1명</td><td>성능 최적화, 모델 서빙, MLOps</td><td>MLOps/인프라 경력 1년+, 클라우드(AWS/GCP) 경력</td><td>월 320~380만원</td></tr>
+      <tr><td>데이터 엔지니어 1명</td><td>실시간 데이터 파이프라인, 데이터 품질 관리</td><td>데이터 엔지니어링 경력 2년+, 스트리밍 처리 경험</td><td>월 300~350만원</td></tr>
+      <tr><td>QA/테스트 담당 1명</td><td>AI 모델 테스트, 성능 측정, 품질 보증</td><td>SW 테스트 경력 1년+, AI 테스트 경험 우대</td><td>월 250~300만원</td></tr>
+  </tbody></table>
+
+  <h4>나. 기존 인력 현황 및 역할</h4>
+  <table>
+    <tbody><tr><th>성명</th><th>소속</th><th>직위</th><th>담당 역할</th><th>투입 시기</th></tr>
+      <tr><td>강혜림</td><td>(주)파디엠</td><td>대표/총괄책임자</td><td>전체 프로젝트 총괄, 산학협력, 사업화 총괄</td><td>전 기간 (20개월)</td></tr>
+      <tr><td>강철원</td><td>(주)파디엠</td><td>책임자</td><td>AI 에이전트 아키텍처 설계, 핵심 개발 총괄</td><td>전 기간 (20개월)</td></tr>
+      <tr><td>경찰대 교수</td><td>경찰대학교</td><td>교수</td><td>치안 도메인 자문, 실증 테스트베드 관리</td><td>1차년~2차년 (협업)</td></tr>
+      <tr><td>전북대 교수</td><td>전북대학교</td><td>교수</td><td>AI/LLM 기술 자문, 파인튜닝 및 성능 검증</td><td>1차년~2차년 (협업)</td></tr>
+      <tr><td>박사과정 연구원</td><td>전북대학교</td><td>연구원</td><td>LLM 파인튜닝, 데이터 가공, 성능 평가</td><td>1차년~2차년 (협업)</td></tr>
+  </tbody></table>
+
+  <h4>다. 고용 안정성 및 복지</h4>
+  <table>
+    <tbody><tr><th>항목</th><th>내용</th><th>비고</th></tr>
+      <tr><td>정규직 전환</td><td>모든 신규 채용 100% 정규직</td><td>기간제 계약 없음</td></tr>
+      <tr><td>4대보험</td><td>국민연금, 건강보험, 고용보험, 산재보험 100% 가입</td><td>사업자 부담분 포함</td></tr>
+      <tr><td>퇴직연금</td><td>퇴직연금 가입 (확정기여형)</td><td>월급 여부)</td></tr>
+      <tr><td>연차수당</td><td>최소 15일 이상 부여</td><td>경력 충족 시 증가</td></tr>
+      <tr><td>건강검진</td><td>연 1회 건강검진</td><td>전액 회사 부담</td></tr>
+      <tr><td>교육비 지원</td><td>연간 최대 100만원 (자격증, 온라인 강의)</td><td>사내 승인 필요</td></tr>
+      <tr><td>근무 환경</td><td>유연근무제 (시차출퇴근제), 원격근무 가능</td><td>팀 내 합의 필요</td></tr>
+      <tr><td>성과 보수</td><td>연간 성과급 (사업 성과에 따른 인센티브)</td><td>별도 합의</td></tr>
+  </tbody></table>
+
+  <h4>라. 일자리 창출 파급 효과</h4>
+  <p>본 과제를 통해 창출되는 일자리의 파급효과는 다음과 같다:</p>
+  <table>
+    <tbody><tr><th>구분</th><th>1차년 (2026)</th><th>2차년 (2027)</th><th>과제 종료 후 (2028~)</th></tr>
+      <tr><td>파디엠 직접 고용</td><td>7명 (신규 4명)</td><td>10명 (신규 3명)</td><td>15명+ (사업화 확대)</td></tr>
+      <tr><td>참여기관 연구원</td><td>3명</td><td>3명</td><td>-</td></tr>
+      <tr><td>협력업체 파급 고용</td><td>5명+</td><td>10명+</td><td>20명+</td></tr>
+      <tr><td>SI/보안 생태계</td><td>-</td><td>5명+</td><td>15명+</td></tr>
+      <tr><td><strong>총 파급 고용</strong></td><td><strong>15명+</strong></td><td><strong>28명+</strong></td><td><strong>50명+</strong></td></tr>
+  </tbody></table>
+  <p class="small">* 협력업체 파급 고용: 클라우드(서버 운영), 보안(침투 테스트), SI(도입 설치) 등</p>
+  <p class="small">* SI/보안 생태계: 공공SI 업체, 보안 업체의 유지보수·고도화 인력</p>
+</div>
+
+<div class="section">
+  <h3>5-2. 협력업체 및 생태계 현황</h3>
+  
+  <h4>가. 주요 협력 예정 업체</h4>
+  <table>
+    <tbody><tr><th>업체명</th><th>협력 내용</th><th>역할</th></tr>
+      <tr><td>AWS Korea / GCP Korea</td><td>클라우드 인프라</td><td>서버, 스토리지</td></tr>
+      <tr><td>OpenAI / Anthropic</td><td>LLM API</td><td>기초 모델</td></tr>
+      <tr><td>국산 LLM 업체</td><td>국산 모델 검토</td><td>대체 모델 검토</td></tr>
+      <tr><td>보안 업체</td><td>정보보호 솔루션</td><td>보안 감사, 침투 테스트</td></tr>
+  </tbody></table>
+  
+  <h4>나. 생태계 구축 계획</h4>
+  <ul>
+    <li><strong>SI 업체 협력:</strong> 공공SI 업체와 파트너십 체결</li>
+    <li><strong>보안 업체:</strong> 침입 차단, 접근 통제 솔루션</li>
+    <li><strong>학술 협력:</strong> 국내 AI 학회, 치안학회 참여</li>
+    <li><strong>표준화 기여:</strong> 치안 AI 분야 기술 표준화 활동</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>6. 결과 활용 및 파급 효과</h3>
+  
+  <h4>가. 결과물의 확대·발전 계획</h4>
+  <ul>
+    <li><strong>횡단 확대:</strong> 경찰 → 자치구 → 소방 → 관세 등 공공 안전 분야 확산</li>
+    <li><strong>종단 확대:</strong> 신고 분류 → 수사 지원 → 판결 지원으로 기능 확장</li>
+    <li><strong>수출:</strong> 해외 치안 기관(Interpol, 각국 경찰청) 대상 기술 수출</li>
+  </ul>
+  
+  <h4>나. 결과물 귀속</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>SW 소유권</th><th>SW 사용권</th><th>Data 사용권</th></tr>
+      <tr><td>(주)파디엠</td><td>소유</td><td>전체</td><td>수집 데이터</td></tr>
+      <tr><td>경찰대학교</td><td>-</td><td>연구 목적</td><td>제공 데이터 (읽기)</td></tr>
+      <tr><td>전북대학교</td><td>-</td><td>연구 목적</td><td>공동 수집 데이터</td></tr>
+      <tr><td>수요기관</td><td>-</td><td>서비스 이용</td><td>-</td></tr>
+  </tbody></table>
+  
+  <h4>다. 사업화 계획</h4>
+  <table>
+    <tbody><tr><th>단계</th><th>시기</th><th>내용</th><th>목표</th></tr>
+      <tr><td>파일럿</td><td>2027.03~06</td><td>경찰대 실증</td><td>성과 검증</td></tr>
+      <tr><td>베타 런칭</td><td>2027.07~09</td><td>제한적 서비스</td><td>초기 사용자 확보</td></tr>
+      <tr><td>정식 런칭</td><td>2027.10~11</td><td>SaaS 서비스</td><td>매출 발생</td></tr>
+      <tr><td>확장</td><td>2028~</td><td>다수 기관 확대</td><td>연간 5억+ 매출</td></tr>
+  </tbody></table>
+  
+  <h4>라. 예상 수익 모델</h4>
+  <ul>
+    <li><strong>구독 모델:</strong> 월정액제 (기관 규모별 차등)</li>
+    <li><strong>사용량 과금:</strong> API 호출 횟수 기반</li>
+    <li><strong>맞춤 개발:</strong> 기관별 커스터마이징</li>
+    <li><strong>기술 이전:</strong> 유지보수, 교육 서비스</li>
+  </ul>
+  
+  <h4>마. 파급효과</h4>
+  <ul>
+    <li><strong>사회:</strong> 시민 안전감 향상, 범죄 예방 효과, 정부 서비스 품질 향상</li>
+    <li><strong>경제:</strong> 연간 5억원 이상 매출 기대, 관련 산업 생태계 활성화</li>
+    <li><strong>산업:</strong> 국내 AI 에이전트 기술 경쟁력 강화, 표준화 기여</li>
+    <li><strong>일자리:</strong> 직접 고용 10명+, 관련 산업 파급 고용 15명+</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>7. AI 에이전트 상세 설계</h3>
+  
+  <h4>가. Agent 상세 설계</h4>
+  <table>
+    <tbody><tr><th>Agent</th><th>역할</th><th>입력</th><th>출력</th><th>핵심 기술</th><th>연계 Agent</th></tr>
+      <tr><td>분류 Agent</td><td>신고/민원 분류</td><td>신고 텍스트</td><td>카테고리, 긴급도</td><td>NLP, 텍스트 분류</td><td>검색 Agent, 생성 Agent</td></tr>
+      <tr><td>검색 Agent</td><td>법령·판례 검색</td><td>질의어</td><td>관련 법령, 판례</td><td>RAG, Vector DB</td><td>생성 Agent</td></tr>
+      <tr><td>분석 Agent</td><td>범죄 패턴 분석</td><td>범죄 데이터</td><td>패턴 시각화, 인사이트</td><td>시계열 분석, 군집화</td><td>최적화 Agent, 생성 Agent</td></tr>
+      <tr><td>생성 Agent</td><td>문서·답변 생성</td><td>컨텍스트</td><td>초안 문서, 응답</td><td>LLM, 템플릿</td><td>-</td></tr>
+      <tr><td>최적화 Agent</td><td>경로·자원 최적화</td><td>조건, 데이터</td><td>최적 경로, 자원 배분</td><td>경로 알고리즘, OR-Tools</td><td>분석 Agent</td></tr>
+  </tbody></table>
+
+  <h4>나. Multi-Agent 오케스트레이션 설계</h4>
+  <p>본 과제에서 복수 에이전트는 LangGraph 기반 상태 머신(State Machine)으로 관리한다. 각 에이전트는 독립적으로 동작하며, 필요 시 상위 오케스트레이터가 워크플로우를 조정한다.</p>
+  <table>
+    <tbody><tr><th>워크플로우 유형</th><th>연계 Agent</th><th>동작 방식</th><th>적용 시나리오</th></tr>
+      <tr><td>신고 분류 워크플로우</td><td>분류 → 검색 → 생성</td><td>순차: 분류 결과 기반 검색 후 초안 생성</td><td>신고 자동 분류</td></tr>
+      <tr><td>분쟁 조정 워크플로우</td><td>검색 → 분석 → 생성</td><td>순차: 판례 검색 후 분석, 조정안 생성</td><td>자치분쟁 조정 지원</td></tr>
+      <tr><td>범죄 분석 워크플로우</td><td>분석 → 최적화 → 생성</td><td>병렬+순차: 분석 결과 최적화 후 보고서 생성</td><td>범죄 예방 패턴 분석</td></tr>
+  </tbody></table>
+
+  <h4>다. 기술 적용 계획</h4>
+  <table>
+    <tbody><tr><th>기술 영역</th><th>적용 기술</th><th>버전/사양</th><th>목적</th></tr>
+      <tr><td>기초 모델</td><td>Llama 3.1 70B</td><td>Instruct, Q4 양자화</td><td>비용 효율적 파인튜닝</td></tr>
+      <tr><td>기초 모델</td><td>Mistral 8x22B</td><td>Instruct</td><td>높은 성능 요구 시</td></tr>
+      <tr><td>기초 모델</td><td>GPT-4o / Claude 3.5</td><td>API</td><td>백업/평가</td></tr>
+      <tr><td>임베딩</td><td>text-embedding-3-large</td><td>OpenAI</td><td>RAG 임베딩</td></tr>
+      <tr><td>임베딩</td><td>bge-m3</td><td>OpenSource</td><td>대체 모델</td></tr>
+      <tr><td>벡터 DB</td><td>Chroma DB</td><td>Latest</td><td>RAG 스토어</td></tr>
+      <tr><td>벡터 DB</td><td>Pinecone</td><td>Cloud</td><td>대규모 스토어</td></tr>
+      <tr><td>프레임워크</td><td>LangChain / LangGraph</td><td>0.3+</td><td>에이전트 개발</td></tr>
+      <tr><td>프레임워크</td><td>AutoGen / CrewAI</td><td>Latest</td><td>멀티 에이전트</td></tr>
+      <tr><td>API</td><td>FastAPI</td><td>0.110+</td><td>REST API 서버</td></tr>
+      <tr><td>API</td><td>Gradio / Streamlit</td><td>Latest</td><td>데모 UI</td></tr>
+      <tr><td>인프라</td><td>Docker</td><td>Latest</td><td>컨테이너화</td></tr>
+      <tr><td>인프라</td><td>Kubernetes (GKE/EKS)</td><td>1.29+</td><td>오케스트레이션</td></tr>
+      <tr><td>평가</td><td>LLM-as-Judge</td><td>Custom</td><td>응답 품질 평가</td></tr>
+      <tr><td>평가</td><td>RAGAS</td><td>Latest</td><td>RAG 성능 평가</td></tr>
+  </tbody></table>
+
+  <h4>라. API 설계 개요</h4>
+  <p>AI 에이전트 서비스는 RESTful API로 외부 시스템과 연동한다:</p>
+  <table>
+    <tbody><tr><th>API Endpoint</th><th>Method</th><th>설명</th><th>응답 형식</th></tr>
+      <tr><td>/api/v1/classify</td><td>POST</td><td>신고/민원 자동 분류</td><td>JSON (카테고리, 긴급도, 부서)</td></tr>
+      <tr><td>/api/v1/search</td><td>POST</td><td>법령·판례 검색</td><td>JSON (관련 법령 목록)</td></tr>
+      <tr><td>/api/v1/analyze</td><td>POST</td><td>범죄 패턴 분석</td><td>JSON (패턴 인사이트)</td></tr>
+      <tr><td>/api/v1/generate</td><td>POST</td><td>문서·응답 생성</td><td>JSON (생성 텍스트)</td></tr>
+      <tr><td>/api/v1/optimize</td><td>POST</td><td>경로·자원 최적화</td><td>JSON (최적 경로)</td></tr>
+      <tr><td>/api/v1/agent/workflow</td><td>POST</td><td>멀티 에이전트 워크플로우</td><td>JSON (복합 응답)</td></tr>
+      <tr><td>/api/v1/health</td><td>GET</td><td>서버 상태 확인</td><td>JSON (상태)</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>4. 핵심 기술 차별성</h3>
+  
+  <h4>가. 기존 CCTV AI와 본 과제 AI 에이전트의 비교</h4>
+  <p>기존 CCTV 기반 AI 시스템과 본 과제에서 개발하는 AI 에이전트는 다음과 같은 근본적 차이를 갖는다.</p>
+  <table>
+    <tbody><tr><th>구분</th><th>기존 CCTV AI</th><th>본 과제 AI 에이전트</th></tr>
+      <tr><td>주요 기능</td><td>영상 분석 (객체 탐지, 행동 인식)</td><td>복합 업무 처리 (분류, 검색, 분석, 생성)</td></tr>
+      <tr><td>작동 방식</td><td>단일 작업 (One-shot)</td><td>멀티 스텝 자율 작업 (Multi-step)</td></tr>
+      <tr><td>도구 연동</td><td>제한적 (카메라, 센서)</td><td>다양한 도구 (DB, API, 문서, 웹)</td></tr>
+      <tr><td>추론 능력</td><td>패턴 매칭 기반</td><td>LLM 기반 자연어 추론</td></tr>
+      <tr><td>的自 적응</td><td>사전 정의된 시나리오</td><td>비정형 상황에도 자율 대응</td></tr>
+      <tr><td>사용자 인터페이스</td><td>특정 앱/대시보드</td><td>자연어 기반 대화형 인터페이스</td></tr>
+      <tr><td>확장성</td><td>범용 CCTV 시스템</td><td>도메인 특화 서비스</td></tr>
+  </tbody></table>
+  
+  <h4>나. 기술 차별성 요약</h4>
+  <ul>
+    <li><strong>도메인 특화:</strong> 치안 분야 업무에 최적화된 AI 에이전트로, 범용 AI 대비 현장 적합성 높음</li>
+    <li><strong>멀티 에이전트 협업:</strong> 복수 전문 에이전트가 협업하여 복잡한 업무 처리 가능</li>
+    <li><strong>RAG 기반 최신성:</strong> 법령·판례 데이터베이스를 실시간 연동하여 정확도 향상</li>
+    <li><strong>자율적 판단·실행:</strong> 단일 명령에서 End-to-End 과업 완수 가능</li>
+    <li><strong>확장 가능한 아키텍처:</strong> 신규 도메인/업종에 유연하게 적용 가능</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>5. End-to-End 성능 지표</h3>
+  
+  <h4>가. 핵심 성능 지표 (KPI)</h4>
+  <table>
+    <tbody><tr><th>성능 지표</th><th>목표치</th><th>측정 방법</th><th>목표 시기</th></tr>
+      <tr><td>Trajectory 생성율</td><td>85%</td><td>End-to-End 과업 완료율 측정</td><td>2차년 말</td></tr>
+      <tr><td>도구 호출 정확도</td><td>72%</td><td>정확한 도구 선택률</td><td>2차년 말</td></tr>
+      <tr><td>TPS (초당 처리수)</td><td>80</td><td>초당 처리 건수 측정</td><td>2차년 말</td></tr>
+      <tr><td>시스템 가용률</td><td>99.5%</td><td>연간稼働율 측정</td><td>2차년 말</td></tr>
+      <tr><td>AI 응답 정확도</td><td>85%</td><td>테스트 스위트 기반 평가</td><td>2차년 말</td></tr>
+      <tr><td>환각 발생률</td><td>5% 이하</td><td>RAGAS 기반 평가</td><td>2차년 말</td></tr>
+  </tbody></table>
+  
+  <h4>나. 성능 달성 전략</h4>
+  <ul>
+    <li><strong>모델 최적화:</strong> Llama 3.1 70B 기반 경량화 및 양자화 적용</li>
+    <li><strong>RAG 개선:</strong> Hybrid Search, Chunk 크기 최적화, 임베딩 모델 교체</li>
+    <li><strong>멀티 에이전트 안정화:</strong> LangGraph 상태 머신 기반 워크플로우 관리</li>
+    <li><strong>자가 복구 메커니즘:</strong> 실패 시 자동 재시도 및 Fallback 경로</li>
+    <li><strong>모니터링 체계:</strong> Prometheus/Grafana 기반 실시간 성능 모니터링</li>
+  </ul>
+  
+  <h4>다. 품질 보증 체계</h4>
+  <ul>
+    <li><strong>정량 테스트:</strong> 내부 시나리오 기반 성능 자동 테스트</li>
+    <li><strong>정성 테스트:</strong> 경찰대 교수진 및 실무자 피드백</li>
+    <li><strong>제3자 검증:</strong> KOLAS 인증기관 활용</li>
+    <li><strong>지속적 통합:</strong> GitHub Actions 기반 CI/CD 파이프라인</li>
+    <li><strong>A/B 테스트:</strong> 새 모델/기능 점진적 배포</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>6. NPU 기술 적용</h3>
+  
+  <h4>가. 국산 NPU 활용 전략</h4>
+  <p>본 과제에서는 경량 AI 추론을 위해 국내 제조사의 NPU (Neural Processing Unit) 활용을 계획하고 있다.</p>
+  <table>
+    <tbody><tr><th>NPU 제조사</th><th>제품명</th><th>적용 분야</th><th>비고</th></tr>
+      <tr><td>삼성전자</td><td>Exynos NPU (Xclipse)</td><td>모바일/엣지 디바이스 추론</td><td>전용 SDK 제공</td></tr>
+      <tr><td>삼성전자</td><td>Samsung AI Platform</td><td>서버 사이드 추론</td><td>Galaxy AI 적용 사례</td></tr>
+      <tr><td>하이닉스</td><td>AI Memory Solution</td><td>AI 가속 메모리</td><td>HBM 연동</td></tr>
+  </tbody></table>
+  
+  <h4>나. AI Edge 디바이스 최적화</h4>
+  <ul>
+    <li><strong>경량화:</strong> INT8 양자화, Pruning, Knowledge Distillation 적용</li>
+    <li><strong>NPU 연동:</strong> Android/Linux 기반 NPU SDK 활용</li>
+    <li><strong>엣지 배포:</strong>警务실시간 분석을 위한 현장 배치</li>
+    <li><strong>하이브리드:</strong> 클라우드-엣지 연동으로 응답성·정확도 균형</li>
+  </ul>
+  
+  <h4>다. 기대 효과</h4>
+  <table>
+    <tbody><tr><th>지표</th><th>목표치</th><th>비고</th></tr>
+      <tr><td>추론 속도 향상</td><td>3배 향상</td><td>GPU 대비 NPU 활용</td></tr>
+      <tr><td>전력 소비 절감</td><td>50% 절감</td><td>엣지 디바이스</td></tr>
+      <tr><td>응답 시간 단축</td><td>50ms 이하</td><td>실시간 분석</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>8. 기술 STANDARDS 인증 계획</h3>
+  
+  <h4>가. 인증 로드맵</h4>
+  <table>
+    <tbody><tr><th>인증 종류</th><th>인증 내용</th><th>예정 시기</th><th>담당 기관</th></tr>
+      <tr><td>개인정보보호 인증 (PIA)</td><td>개인정보 영향평가</td><td>2027년 3월</td><td>개인정보보호위원회</td></tr>
+      <tr><td>KOLAS 시험</td><td>AI 시스템 성능 검증</td><td>2027년 6월</td><td>한국인정기구(KOLAS)</td></tr>
+      <tr><td>KC 인증</td><td>전기통신기기 인증</td><td>2027년 8월</td><td>RRA (방송통신기기)</td></tr>
+      <tr><td>ISO/IEC 42010</td><td>시스템/소프트웨어 아키텍처 표준</td><td>2027년 9월</td><td>국제 표준화 기구</td></tr>
+      <tr><td>CC 인증</td><td>정보보호 국제 mutual recognition</td><td>2027년 10월</td><td>KISA</td></tr>
+  </tbody></table>
+  
+  <h4>나. 인증 준비 현황</h4>
+  <ul>
+    <li><strong>PIA:</strong> 개인정보보호법 제34조에 따른 영향평가 준비</li>
+    <li><strong>KOLAS:</strong> AI 시스템 성능 검증을 위한 시험 환경 구축</li>
+    <li><strong>KC:</strong> 전기통신기기 인증을 위한 기술문서 준비</li>
+    <li><strong>ISO/IEC 42010:</strong> 아키텍처 기술 표준 준수 및 인증 신청</li>
+    <li><strong>CC:</strong> 정보보호 국제 mutual recognition 협정 기반 인증</li>
+  </ul>
+  
+  <h4>다. 인증 획득 전략</h4>
+  <ul>
+    <li>인증 전문 업체 협업을 통한 기술 문서 작성 지원</li>
+    <li>인증 전 테스트베드에서의 사전 검증</li>
+    <li>경찰대학교 실증 데이터를 통한 성능 입증</li>
+    <li>단계적 인증 획득으로 시장 출시 시점 확보</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section">
+  <h3>8. 리스크 관리 계획</h3>
+  
+  <h4>가. 기술적 리스크</h4>
+  <table>
+    <tbody><tr><th>리스크</th><th>가능성</th><th>영향</th><th>대응 방안</th></tr>
+      <tr><td>AI 홀루시네이션</td><td>중</td><td>고</td><td>RAG 기반 최신 법령 반영, 외부 검증 단계 추가, 신뢰도 점수 제공</td></tr>
+      <tr><td>모델 성능 미달</td><td>중</td><td>고</td><td>다중 모델 앙상블, 점진적 파인튜닝, GPT-4o/Claude 백업</td></tr>
+      <tr><td>데이터 확보 지연</td><td>고</td><td>중</td><td>합성 데이터 활용, 단계적 데이터 수집, 공개 데이터 우선 활용</td></tr>
+      <tr><td>RAG 검색 정확도 저하</td><td>중</td><td>중</td><td>임베딩 모델 최적화, Chunk 크기 조정, Hybrid Search 적용</td></tr>
+      <tr><td>에이전트 협업 실패</td><td>저</td><td>중</td><td>자가 복구 메커니즘, Fallback Agent 설계</td></tr>
+  </tbody></table>
+  
+  <h4>나. 일정 리스크</h4>
+  <table>
+    <tbody><tr><th>리스크</th><th>가능성</th><th>영향</th><th>대응 방안</th></tr>
+      <tr><td>인력 충원 지연</td><td>중</td><td>중</td><td>기존 인력 우선 배치, 외주 활용, 겸임교수 활용</td></tr>
+      <tr><td>수요기관 협업 지연</td><td>중</td><td>중</td><td>MOU 조기 체결, 소규모 파일럿 우선, Police University 우선 실증</td></tr>
+      <tr><td>LLM API 비용 상승</td><td>저</td><td>중</td><td>국산 모델 전환, 자체 호스팅 검토</td></tr>
+      <tr><td>GPU 클러스터 가용성 부족</td><td>저</td><td>중</td><td>클라우드 GPU (AWS/GCP) 백업, 우선순위 조정</td></tr>
+  </tbody></table>
+  
+  <h4>다. 사업화 리스크</h4>
+  <table>
+    <tbody><tr><th>리스크</th><th>가능성</th><th>영향</th><th>대응 방안</th></tr>
+      <tr><td>수요기관 예산 부족</td><td>중</td><td>중</td><td>다양한 공공기관 타겟, SaaS 모델, 정부 과제 연계</td></tr>
+      <tr><td>경쟁 기술 출시</td><td>저</td><td>중</td><td>치안 도메인 특화 차별화, 경찰청 MOU 독점</td></tr>
+      <tr><td>수요기관 신뢰도 부족</td><td>중</td><td>고</td><td>파일럿 성공 사례 축적, 경찰대 권위 활용</td></tr>
+      <tr><td>투자 유치 실패</td><td>중</td><td>중</td><td>자체 수익 기반 확대, 정부 추가 과제 신청</td></tr>
+  </tbody></table>
+  
+  <h4>라. 인력 리스크</h4>
+  <table>
+    <tbody><tr><th>리스크</th><th>가능성</th><th>영향</th><th>대응 방안</th></tr>
+      <tr><td>핵심 인력 이탈</td><td>중</td><td>고</td><td>핵심 기술 이관 문서화, 겸임교수 활용, 외부 전문 용역</td></tr>
+      <tr><td>AI 인재 채용 지연</td><td>고</td><td>중</td><td>급여 경쟁력 강화, 복리후생 개선, 채용 대행 활용</td></tr>
+      <tr><td>연구원 역량 부족</td><td>저</td><td>중</td><td>정기 교육, 멘토링 프로그램, 외부 전문가 초빙</td></tr>
+      <tr><td>참여기관 인력 변경</td><td>중</td><td>중</td><td>교체 인력 사전 확보, 인수인계 절차 수립</td></tr>
+  </tbody></table>
+  
+  <h4>마. 재무 리스크</h4>
+  <table>
+    <tbody><tr><th>리스크</th><th>가능성</th><th>영향</th><th>대응 방안</th></tr>
+      <tr><td>예산 초과</td><td>중</td><td>중</td><td>월간 예산 관리, 우선순위 조정, 정부 추가 지원 신청</td></tr>
+      <tr><td>LLM API 비용 상승</td><td>중</td><td>중</td><td>국산 모델 전환, 자체 호스팅 검토, 사용량 최적화</td></tr>
+      <tr><td>정부 지원금 지연</td><td>저</td><td>중</td><td>자체 현금 흐름 관리, 단기 차입 준비</td></tr>
+      <tr><td>민간 부담금 확보 실패</td><td>저</td><td>고</td><td>자체 자금 확보, 투자 유치, 정부 과제 추가 신청</td></tr>
+  </tbody></table>
+  
+  <h4>바. 갈등 해결 메커니즘</h4>
+  <ul>
+    <li><strong>분쟁 조정:</strong> 총괄관리위원회가 중립적으로 분쟁 해결 조력</li>
+    <li><strong>소송 전 절차:</strong> 소송 제기 전 총괄관리위원회에서 최종 해결 시도</li>
+    <li><strong>MOU 규정 우선:</strong> MOU에 별도 규정 시 MOU 우선 적용</li>
+    <li><strong>감사위원:</strong> 독립적 감사위원을 두어 분쟁 조정 시 중립적 역할 수행</li>
+    <li><strong>정기 협의:</strong> 월간 협의체를 통해 갈등 조기 발견 및 해결</li>
+  </ul>
+  
+  <h4>사. 리스크 관리 체계</h4>
+  <ul>
+    <li><strong>정기 점검:</strong> 총괄관리위원회에서 월간 리스크 점검 (기술·일정·사업화)</li>
+    <li><strong>조기 경보:</strong> 분기별 리스크 평가, 대응 방안 실행 여부 점검</li>
+    <li><strong>대응 기록:</strong> 리스크 발생 시 대응 내용 및 교훈 정리, 향후 과제 적용</li>
+    <li><strong>총괄책임자:</strong> 리스크 관리 최종 책임 (강혜림)</li>
+    <li><strong>기술 책임자:</strong> 기술적 리스크 관리 (강철원)</li>
+    <li><strong>사업 개발:</strong> 사업화 리스크 관리 (사업 개발 담당)</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>9. 지적재산권 계획</h3>
+  
+  <h4>가. 개발 성과의 귀속</h4>
+  <table>
+    <tbody><tr><th>성과의 종류</th><th>소유권</th><th>사용 권한</th></tr>
+      <tr><td>AI 에이전트 SW</td><td>(주)파디엠</td><td>전 기관 연구 목적 허용</td></tr>
+      <tr><td>파인튜닝 모델</td><td>(주)파디엠 + 전북대 공동</td><td>공동 협의</td></tr>
+      <tr><td>데이터셋</td><td>수집 기관별</td><td> MOU 별도 규정</td></tr>
+      <tr><td>특허/실용신안</td><td>(주)파디엠</td><td>참여기관 우선 실시권 부여</td></tr>
+  </tbody></table>
+  
+  <h4>나. 논문 및 기술 발표</h4>
+  <ul>
+    <li>국내 AI·치안 분야 학술지 논문 게재: 2건 이상</li>
+    <li>국내외 학회 발표: 3건 이상</li>
+    <li>기술 세미나 및 발표회 참여</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>10.비밀 및 개인정보 보호</h3>
+  
+  <h4>가.비밀 관리</h4>
+  <ul>
+    <li>치안 데이터 접근 통제: 역할 기반 접근 제어 (RBAC)</li>
+    <li>데이터 암호화: 저장 시 AES-256, 전송 시 TLS 1.3</li>
+    <li>접근 로그 관리: 모든 데이터 접근 이력 기록</li>
+  </ul>
+  
+  <h4>나. 개인정보 보호</h4>
+  <ul>
+    <li>개인정보 비식별화: 시민 신고 데이터 익명화 처리</li>
+    <li>개인정보보호법 준수: 수집 목적 외 사용 금지</li>
+    <li>폐기 계획: 과제 종료 후 데이터 안전 폐기</li>
+  </ul>
+</div>
+
+<!-- V. 사업화 계획 -->
+<h2>V. 사업화 계획</h2>
+
+<div class="section">
+  <h3>1. 사업화 로드맵</h3>
+  
+  <h4>가. 단계별 사업화 계획</h4>
+  <table>
+    <tbody><tr><th>단계</th><th>시기</th><th>주요 내용</th><th>목표</th></tr>
+      <tr><td>PoC (Proof of Concept)</td><td>2026.03 ~ 2026.12</td><td>경찰대학교 실증 테스트베드 활용, 핵심 기능 PoC</td><td>기술 검증, 수요 확인</td></tr>
+      <tr><td>MVP (Minimum Viable Product)</td><td>2027.01 ~ 2027.06</td><td>2~3개 핵심 기능 MVP 개발, 베타 사용자 확보</td><td>초기 사용자 1~2개 기관</td></tr>
+      <tr><td>시장 진입</td><td>2027.07 ~ 2027.11</td><td>SaaS 서비스 정식 런칭, 경찰청/자치분쟁조정위원회 MOU</td><td>계약 기관 2~3개</td></tr>
+      <tr><td>성장</td><td>2028 ~</td><td>전국 경찰서/자치구 확대, 해외 수출</td><td>연간 5억+ 매출</td></tr>
+  </tbody></table>
+  
+  <h4>나. 시장 진입 전략</h4>
+  <ul>
+    <li><strong>수요 맞춤형:</strong> 경찰청 등 최종 수요기관 협업으로 현장 적합성 확보</li>
+    <li><strong>성공 사례 축적:</strong> 파일럿 성공 후 확산, 레퍼런스 확보</li>
+    <li><strong>청년 창업 생태계:</strong> 광주 AI 창업 생태계 활용, 초기 마케팅</li>
+    <li><strong>정부 과제 연계:</strong> 추가 정부 과제를 통한 기술 고도화 및 사업 확장</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>2. 타겟 시장 및 고객</h3>
+  
+  <h4>가. 주요 타겟 시장</h4>
+  <table>
+    <tbody><tr><th>시장</th><th>타겟 기관 수</th><th>연간 예산 규모</th><th>전망</th></tr>
+      <tr><td>Police Market (경찰)</td><td>255개 기관 (경찰청 + 지방청 + 경찰서)</td><td>수십억원+</td><td>핵심 시장</td></tr>
+      <tr><td>소방 시장</td><td>200개+ 기관 (소방청 + 지방청 + 안전센터)</td><td>수억원+</td><td>확장 시장</td></tr>
+      <tr><td>민간保安</td><td>5,000개+ 업체</td><td>수천억원</td><td>대량 시장</td></tr>
+      <tr><td>자치행정</td><td>228개 자치구/시/군</td><td>수십억원+</td><td>확장 시장</td></tr>
+  </tbody></table>
+  
+  <h4>나. 주요 고객군</h4>
+  <ul>
+    <li><strong>경찰청/지방경찰청:</strong> 치안 AI 정책 총괄, 예산 배분</li>
+    <li><strong>관할 경찰서:</strong> 실제 사용자, 범죄 예방 및 수사 지원</li>
+    <li><strong>자치분쟁조정위원회:</strong> 분쟁 조정 AI 서비스</li>
+    <li><strong>자치구/시/군:</strong> 시민 민원 자동화</li>
+    <li><strong>민간 보안 업체:</strong> AI 기반 보안 서비스</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>3. 수익 모델</h3>
+  
+  <h4>가. 수익 구조</h4>
+  <table>
+    <tbody><tr><th>수익 유형</th><th>비율</th><th>단가</th><th>주요 내용</th></tr>
+      <tr><td>라이선스 (SaaS)</td><td>60%</td><td>월 5만원/대</td><td>클라우드 기반 AI 에이전트 서비스 제공</td></tr>
+      <tr><td>구축형</td><td>30%</td><td>1대당 100만원</td><td>온프레미스 구축 및 맞춤 개발</td></tr>
+      <tr><td>유지보수</td><td>10%</td><td>연간 20만원/대</td><td>기술 지원, 업데이트, 교육</td></tr>
+  </tbody></table>
+  
+  <h4>나. 가격 정책</h4>
+  <ul>
+    <li><strong>규모별 차등:</strong> 기관 규모(경찰서/자치구)별 맞춤套餐</li>
+    <li><strong>기간 할인:</strong> 연간 계약 시 월정액 20% 할인</li>
+    <li><strong>볼륨 할인:</strong> 다수 대導入 시大口 할인</li>
+    <li><strong>파일럿 무료:</strong> 초기 파일럿 기간 무료 제공</li>
+  </ul>
+  
+  <h4>다. 예상 매출</h4>
+  <table>
+    <tbody><tr><th>연도</th><th>계약 기관 수</th><th>서비스 종류</th><th>예상 매출</th></tr>
+      <tr><td>2027년</td><td>2~3개 기관</td><td>SaaS 베타</td><td>5,000만원</td></tr>
+      <tr><td>2028년</td><td>5~7개 기관</td><td>SaaS 정식</td><td>3억원</td></tr>
+      <tr><td>2029년</td><td>10개+ 기관</td><td>SaaS 확장</td><td>5억원</td></tr>
+      <tr><td>2030년</td><td>20개+ 기관</td><td>SaaS + 맞춤개발</td><td>10억원</td></tr>
+      <tr><td>2032년</td><td>30개+ 기관 + 해외</td><td>전면 확대</td><td>30억원+</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>4. 사업화 추진계획 상세</h3>
+  
+  <h4>가. 시장 진입 전략</h4>
+  <ul>
+    <li><strong>1단계:</strong> 경찰대학교 실증 성공 → 경찰청 MOU 체결 (2027)</li>
+    <li><strong>2단계:</strong> 자치분쟁조정위원회 서비스 확대 → 자치구 확산 (2028)</li>
+    <li><strong>3단계:</strong> 전국 경찰서/자치구 확대 → 해외 수출 (2030~)</li>
+  </ul>
+  
+  <h4>나. 마케팅 전략</h4>
+  <table>
+    <tbody><tr><th>마케팅 채널</th><th>세부 내용</th><th>시기</th></tr>
+      <tr><td>전시회</td><td>AI·로봇 전시회, 공공IT 박람회, 치안 산업 전시</td><td>1~2차년</td></tr>
+      <tr><td>세미나</td><td>경찰AITech 세미나, 공공SW 세미나, 산학연 기술 발표</td><td>1~2차년</td></tr>
+      <tr><td>PR</td><td>보도자료 배포, 언론 보도, 유튜브 콘텐츠</td><td>2차년</td></tr>
+      <tr><td>디지털 마케팅</td><td>네이버 검색 광고, 네이버 카페/블로그, LinkedIn</td><td>2차년~</td></tr>
+      <tr><td>네트워킹</td><td>경찰AITech 간담회, 공공IT 업체 협력</td><td>1~2차년</td></tr>
+  </tbody></table>
+  
+  <h4>다. 투자 유치 계획</h4>
+  <table>
+    <tbody><tr><th>시기</th><th>단계</th><th>목표 금액</th><th>투자자</th><th>용도</th></tr>
+      <tr><td>2028년 상반기</td><td>Seed/Pre-Series A</td><td>2~3억원</td><td>개인 투자자, 정부 과제</td><td>인력 확대, 서버</td></tr>
+      <tr><td>2029년 상반기</td><td>Series A</td><td>10~15억원</td><td>VC, 기업투자</td><td>사업 확대, 해외 진출</td></tr>
+      <tr><td>2031년</td><td>Series B</td><td>30억원+</td><td>기관 투자자</td><td>대규모 확장, M&A</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>5. 사업화 성과 목표</h3>
+  
+  <h4>가. 연도별 성과 목표</h4>
+  <table>
+    <tbody><tr><th>연도</th><th>계약 건수</th><th>매출</th><th>고용</th><th>MOU</th></tr>
+      <tr><td>2026년</td><td>-</td><td>-</td><td>7명</td><td>경찰청 MOU 체결</td></tr>
+      <tr><td>2027년</td><td>2~3건</td><td>5,000만원</td><td>10명</td><td>자치분쟁조정위원회 MOU</td></tr>
+      <tr><td>2028년</td><td>5~7건</td><td>3억원</td><td>15명</td><td>자치구 2~3개 MOU</td></tr>
+      <tr><td>2032년</td><td>30건+</td><td>30억원+</td><td>50명+</td><td>해외 파트너십 2개+</td></tr>
+  </tbody></table>
+  
+  <h4>나. 사업화 성공 요건</h4>
+  <ul>
+    <li><strong>기술 검증:</strong> AI 응답 정확도 85% 이상, 홀루시네이션 5% 이하</li>
+    <li><strong>수요 검증:</strong> 파일럿 기관 만족도 80점 이상</li>
+    <li><strong>가격 경쟁력:</strong> 기존 대비 30% 이상 비용 절감 효과</li>
+    <li><strong>확장 가능성:</strong> 신규 도메인 적용 최소 3개 이상</li>
+  </ul>
+  
+  <h4>다. 종료 후 5개년 성장 계획</h4>
+  <table>
+    <tbody><tr><th>연도</th><th>주요 마일스톤</th><th>목표</th></tr>
+      <tr><td>2028</td><td>사업화 1년차</td><td>경찰청 + 자치구 2~3개 계약, 매출 3억원</td></tr>
+      <tr><td>2029</td><td>사업화 2년차</td><td>5개+ 기관 계약, 매출 5억원, Series A 유치</td></tr>
+      <tr><td>2030</td><td>사업화 3년차</td><td>10개+ 기관 계약, 매출 10억원, 해외 수출 협의</td></tr>
+      <tr><td>2031</td><td>Series B 유치</td><td>시장 선도적 위치, M&A 검토</td></tr>
+      <tr><td>2032</td><td>사업화 5년차</td><td>30개+ 기관, 매출 30억원+, 해외 2개+ 파트너십</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- V. 사업 관리계획 -->
+<h2>VI. 사업 관리계획</h2>
+
+<div class="section">
+  <h3>1. 산출물 내역</h3>
+  <table>
+    <tbody><tr><th>단계</th><th>산출물</th><th>산출 시기</th></tr>
+      <tr><td>분석</td><td>요구사항 분석서</td><td>협약 후 2개월</td></tr>
+      <tr><td>설계</td><td>아키텍처 설계서</td><td>협약 후 3개월</td></tr>
+      <tr><td>개발</td><td>소스코드, API 문서</td><td>협약 후 8개월</td></tr>
+      <tr><td>테스트</td><td>시험평가결과서</td><td>협약 후 10개월</td></tr>
+      <tr><td>실증</td><td>파일럿 실증 보고서</td><td>협약 후 16개월</td></tr>
+      <tr><td>최종</td><td>최종보고서</td><td>협약 후 20개월</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>2. 보고 및 검토 계획</h3>
+  
+  <h4>가. 정기 보고</h4>
+  <table>
+    <tbody><tr><th>보고 유형</th><th>주기</th><th>시기</th><th>내용</th></tr>
+      <tr><td>월간보고</td><td>매월</td><td>마지막 금요일</td><td>진도, 이슈, plans</td></tr>
+      <tr><td>분기보고</td><td>분기</td><td>3, 6, 9, 12월 말</td><td>성과 지표, 예산 사용</td></tr>
+      <tr><td>중간보고</td><td>1차년</td><td>12월</td><td>연차 성과, 중간 평가</td></tr>
+      <tr><td>완료보고</td><td>최종</td><td>2027.11</td><td>최종 성과, 환불</td></tr>
+  </tbody></table>
+  
+  <h4>나. 회의체 운영</h4>
+  <ul>
+    <li><strong>총괄관리위원회:</strong> 분기별, 과제 전반 검토 및 의사결정</li>
+    <li><strong>기술 검토위원회:</strong> 격월, 기술적 사항 검토</li>
+    <li><strong>주간 미팅:</strong> 파디엠-경찰대-전북대, 진행 상황 공유</li>
+    <li><strong>수요기관 협의:</strong> 수시, 피드백 수렴</li>
+  </ul>
+  
+  <h4>다. 성과 지표 관리</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>지표</th><th>목표</th><th>측정 방법</th></tr>
+      <tr><td rowspan="3">1차년</td><td>에이전트 수</td><td>5종 이상</td><td>구축 완료 확인</td></tr>
+      <tr><td>협업 워크플로우</td><td>3종 이상</td><td>시연 평가</td></tr>
+      <tr><td>데이터 구축</td><td>10,000건+</td><td>DB 건수</td></tr>
+      <tr><td rowspan="3">2차년</td><td>AI 정확도</td><td>85%+</td><td>테스트 스위트</td></tr>
+      <tr><td>과업 성공률</td><td>90%+</td><td>End-to-End 테스트</td></tr>
+      <tr><td>서비스 안정성</td><td>99.5%</td><td>모니터링</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>3. 과제 추진일정</h3>
+  <h4>1차년 (2026)</h4>
+  <table>
+    <tbody><tr><th>추진 내용</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+      <tr><td>요구사항 분석</td><td>■■</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>데이터 수집/가공</td><td></td><td>■■</td><td>■■</td><td>■■</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>AI 모델 개발</td><td></td><td></td><td>■■</td><td>■■</td><td>■■</td><td></td><td></td><td></td></tr>
+      <tr><td>에이전트 개발</td><td></td><td></td><td></td><td></td><td>■■</td><td>■■</td><td>■■</td><td></td></tr>
+      <tr><td>파일럿 실증</td><td></td><td></td><td></td><td></td><td></td><td></td><td>■■</td><td>■■</td></tr>
+      <tr><td>중간보고</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>■■</td></tr>
+  </tbody></table>
+  
+  <h4>2차년 (2027)</h4>
+  <table>
+    <tbody><tr><th>추진 내용</th><th>1~2</th><th>3~4</th><th>5~6</th><th>7~8</th><th>9~10</th><th>11</th></tr>
+      <tr><td>파일럿 실증</td><td>■■■■</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>고도화/확장</td><td></td><td></td><td>■■■■</td><td></td><td></td><td></td></tr>
+      <tr><td>성과 검증</td><td></td><td></td><td></td><td>■■</td><td></td><td></td></tr>
+      <tr><td>사업화 준비</td><td></td><td></td><td></td><td></td><td>■■</td><td></td></tr>
+      <tr><td>최종보고</td><td></td><td></td><td></td><td></td><td></td><td>■■</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- VI. 기관별 수행 상세내역 -->
+<h2>VII. 기관별 수행 상세내역</h2>
+
+<div class="section">
+  <h3>1. 주관기관: (주)파디엠</h3>
+  
+  <h4>수행 목표</h4>
+  <p>치안 분야 AI 에이전트 서비스의 핵심 개발 및 전체 프로젝트 총괄관리</p>
+  
+  <h4>수행 내용</h4>
+  <ul>
+    <li>AI 에이전트 아키텍처 설계 및 개발</li>
+    <li>멀티 에이전트 오케스트레이터 구현</li>
+    <li>프론트엔드 대시보드 개발</li>
+    <li>프로젝트 전체 관리 및 조율</li>
+    <li>사업화 전략 수립</li>
+  </ul>
+  
+  <h4>수행 방법</h4>
+  <p>애자일 방법론(2주 스프린트) 적용, 총괄관리위원회 정기 개최, 경찰대/전북대와 주간 미팅</p>
+  
+  <h4>예상 산출물 및 결과</h4>
+  <ul>
+    <li>AI 에이전트 시스템 (5종 에이전트)</li>
+    <li>대시보드 (웹/모바일)</li>
+    <li>API 문서</li>
+    <li>기술 보고서</li>
+  </ul>
+  
+  <h4>사업화 계획</h4>
+  <p>경찰청 등 공공기관 대상 SaaS 모델로 서비스 제공, 2027년 3월 상용화 목표</p>
+  
+  <h4>매출 전망</h4>
+  <table>
+    <tbody><tr><th>연도</th><th>대상 기관</th><th>서비스</th><th>예상 매출</th></tr>
+      <tr><td>2027 (상반기)</td><td>경찰대학교 (파일럿)</td><td>무료 실증</td><td>-</td></tr>
+      <tr><td>2027 (하반기)</td><td>경찰청 + 자치분쟁조정위원회</td><td>SaaS 베타</td><td>5,000만원</td></tr>
+      <tr><td>2028</td><td>경찰청 + 2~3개 자치구</td><td>SaaS 정식</td><td>3억원</td></tr>
+      <tr><td>2029</td><td>5개+ 기관</td><td>SaaS 확장</td><td>5억원</td></tr>
+      <tr><td>2030</td><td>10개+ 기관</td><td>SaaS + 맞춤개발</td><td>10억원</td></tr>
+      <tr><td>2032</td><td>20개+ 기관 + 해외</td><td>전면 확대</td><td>30억원+</td></tr>
+  </tbody></table>
+
+  <h4>투자 유치 계획</h4>
+  <table>
+    <tbody><tr><th>시기</th><th>단계</th><th>목표 금액</th><th>투자자</th><th>용도</th></tr>
+      <tr><td>2028년 상반기</td><td>Seed/Pre-Series A</td><td>2~3억원</td><td>개인 투자자, 정부 과제</td><td>인력 확대, 서버</td></tr>
+      <tr><td>2029년 상반기</td><td>Series A</td><td>10~15억원</td><td>VC, 기업투자</td><td>사업 확대, 해외 진출</td></tr>
+      <tr><td>2031년</td><td>Series B</td><td>30억원+</td><td>기관 투자자</td><td>대규모 확장, M&A</td></tr>
+  </tbody></table>
+
+  <h4>인건비 내역</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>세목</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td rowspan="2">인건비</td><td>책임자 인건비</td><td>39,000</td><td>총괄책임자 1명 (월 1,950천원 x 20월)</td></tr>
+      <tr><td>연구원 인건비</td><td>150,000</td><td>연구원 4명 (월 1,875천원 x 20월)</td></tr>
+      <tr><td></td><td>소계</td><td><strong>189,000</strong></td><td></td></tr>
+  </tbody></table>
+  
+  <h4>사업비</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>지원금</th><th>민간부담금</th><th>합계</th></tr>
+      <tr><td>현금</td><td>120,000</td><td>60,000</td><td>180,000</td></tr>
+      <tr><td>현물</td><td>-</td><td>40,000</td><td>40,000</td></tr>
+      <tr><td>계</td><td>120,000</td><td>100,000</td><td>220,000</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>2. 참여기관: 경찰대학교</h3>
+  
+  <h4>수행 목표</h4>
+  <p>치안 도메인 전문성 제공, 실증 테스트베드 구축</p>
+  
+  <h4>수행 내용</h4>
+  <ul>
+    <li>경찰 업무 프로세스 분석</li>
+    <li>AI 에이전트 요구사항 정의</li>
+    <li>실증 현장(경찰서) 연계</li>
+    <li>기술 자문 및 피드백</li>
+  </ul>
+  
+<h4>인건비 내역</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>세목</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td rowspan="2">인건비</td><td>책임자 인건비</td><td>20,000</td><td>교수 1명 (월 2,000천원 x 10월)</td></tr>
+      <tr><td>연구자 인건비</td><td>20,000</td><td>연구조교 1명 (월 2,000천원 x 10월)</td></tr>
+      <tr><td></td><td>소계</td><td><strong>40,000</strong></td><td></td></tr>
+  </tbody></table>
+
+  <h4>사업비</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td>정부지원금 (인건비)</td><td>40,000</td><td>교수 및 연구조교 인건비</td></tr>
+      <tr><td>현물 (연구시설)</td><td>20,000</td><td>경찰데이터, 연구실, 실험 환경</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>60,000</strong></td><td></td></tr>
+  </tbody></table>
+
+<h4>경찰대학교 주요 실적 및 역량</h4>
+  <table>
+    <tbody><tr><th>사업명</th><th>수행 기간</th><th>내용</th><th>역할</th><th>성과</th></tr>
+      <tr><td>경찰 빅데이터 분석 연구</td><td>2022~현재</td><td>경찰 업무 데이터 수집 및 분석, AI 적용 가능성 검토</td><td>연구총괄</td><td>경찰 데이터 분석 보고서, AI 적용 백서</td></tr>
+      <tr><td>스마트 치안 R&D</td><td>2023~현재</td><td>AI 기반 치안 기술 연구, CCTV 영상 분석 시스템</td><td>연구참여</td><td>AI CCTV 분석 프로토타입</td></tr>
+      <tr><td>AI CCTV 분석 시스템</td><td>2024~현재</td><td>실시간 영상 분석 및 이상 상황 자동 감지 시스템</td><td>공동연구</td><td>CCTV 실시간 이상 감지 시연</td></tr>
+      <tr><td>치안 분야 AI 적용 학술 연구</td><td>2021~현재</td><td>경찰 업무에 AI 적용에 관한 학술 논문 게재</td><td>연구</td><td>SCI급 논문 3건 이상</td></tr>
+      <tr><td>경찰 데이터 연계 시범사업</td><td>2023</td><td>경찰 데이터 보안 연계 시스템 구축</td><td>연구책임</td><td>데이터 연계 가이드라인</td></tr>
+  </tbody></table>
+
+  <h4>경찰대학교 보유 인프라</h4>
+  <ul>
+    <li><strong>연구 시설:</strong> 경찰학 연구실, 범죄학 실험실, 데이터 분석실</li>
+    <li><strong>데이터:</strong> 경찰 업무 데이터 (익명화), 범죄 통계 데이터, 순찰 기록 데이터</li>
+    <li><strong>인프라:</strong> 실증 테스트베드 (경찰서 협업), 연구용 서버 (GPU 2대)</li>
+    <li><strong>인적 자원:</strong> 경찰학 교수 5명+, 범죄학 박사과정 연구원 10명+</li>
+  </ul>
+
+  <h4>경찰대학교 본 과제 수행 계획</h4>
+  <table>
+    <tbody><tr><th>과제</th><th>담당자</th><th>투입 인원</th><th>기여 내용</th></tr>
+      <tr><td>치안 도메인 분석</td><td>교수</td><td>1명</td><td>경찰 업무 프로세스 분석, 요구사항 정의</td></tr>
+      <tr><td>AI 에이전트 자문</td><td>교수</td><td>1명</td><td>AI 설계 자문, 피드백 제공</td></tr>
+      <tr><td>실증 테스트베드</td><td>교수 + 연구조교</td><td>2명</td><td>실증 환경 구축, 현장 테스트</td></tr>
+      <tr><td>데이터 연계</td><td>교수</td><td>1명</td><td>경찰 데이터 제공 협의, 익명화</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>3. 참여기관: 전북대학교</h3>
+  
+  <h4>수행 목표</h4>
+  <p>AI/LLM 모델 개발 및 성능 검증</p>
+  
+  <h4>수행 내용</h4>
+  <ul>
+    <li>치안 분야 데이터 수집 및 가공</li>
+    <li>LLM 파인튜닝</li>
+    <li>성능 평가</li>
+    <li>기술 지원</li>
+  </ul>
+  
+  <h4>인건비 내역</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>세목</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td rowspan="2">인건비</td><td>책임자 인건비</td><td>20,000</td><td>교수 1명 (월 2,000천원 x 10월)</td></tr>
+      <tr><td>연구자 인건비</td><td>20,000</td><td>박사과정 연구원 1명 (월 2,000천원 x 10월)</td></tr>
+      <tr><td></td><td>소계</td><td><strong>40,000</strong></td><td></td></tr>
+  </tbody></table>
+
+  <h4>사업비</h4>
+  <table>
+    <tbody><tr><th>구분</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td>정부지원금 (인건비)</td><td>40,000</td><td>교수 및 연구원 인건비</td></tr>
+      <tr><td>현물 (GPU 클러스터)</td><td>20,000</td><td>A100 40GB x 4대 활용 (2차년)</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>60,000</strong></td><td></td></tr>
+  </tbody></table>
+
+  <h4>전북대학교 주요 실적 및 역량</h4>
+  <table>
+    <tbody><tr><th>사업명</th><th>수행 기간</th><th>내용</th><th>역할</th><th>성과</th></tr>
+      <tr><td>지능형 영상 분석 연구</td><td>2021~현재</td><td>딥러닝 기반 영상 분석 및 객체 탐지, 행동 인식</td><td>연구책임</td><td>영상 분석 모델, SCI 논문 2건</td></tr>
+      <tr><td>NLP 기반 텍스트 분석</td><td>2022~현재</td><td>자연어 처리 기술 적용, 문서 분류, 감정 분석</td><td>연구책임</td><td>NLP 모델, 학술 논문 3건</td></tr>
+      <tr><td>AI 모델 최적화</td><td>2023~현재</td><td>LLM 경량화 및 효율적 추론, 양자화 기술</td><td>연구책임</td><td>경량화 모델, 기술 이전 1건</td></tr>
+      <tr><td>산학협력 AI 프로젝트</td><td>2022~현재</td><td>기업 협업 AI 시스템 개발</td><td>공동연구</td><td>기업 이전 기술 2건</td></tr>
+      <tr><td>AI 윤리 및 안전 연구</td><td>2023~현재</td><td>AI 모델 안전성, 설명 가능성 연구</td><td>연구책임</td><td>학술 논문 2건</td></tr>
+  </tbody></table>
+
+  <h4>전북대학교 보유 인프라</h4>
+  <ul>
+    <li><strong>컴퓨팅 자원:</strong> GPU 클러스터 (A100 40GB x 4대), 고성능 연산 서버</li>
+    <li><strong>연구 팀:</strong> AI/ML 교수 5명+, 석박사 연구원 20명+</li>
+    <li><strong>산학협력:</strong> 지역 기업 협업 경험, 기술 이전 성과</li>
+    <li><strong>연구 시설:</strong> AI 연구실, 딥러닝 실험실, 데이터 처리실</li>
+  </ul>
+
+  <h4>전북대학교 본 과제 수행 계획</h4>
+  <table>
+    <tbody><tr><th>과제</th><th>담당자</th><th>투입 인원</th><th>기여 내용</th></tr>
+      <tr><td>LLM 기초 모델 선정</td><td>교수</td><td>1명</td><td>모델 평가, 선정</td></tr>
+      <tr><td>치안 데이터 수집/가공</td><td>교수 + 연구원</td><td>2명</td><td>데이터 수집, 정제, 라벨링</td></tr>
+      <tr><td>LLM 파인튜닝</td><td>교수 + 연구원</td><td>2명</td><td>Instruction Tuning, 치안 특화</td></tr>
+      <tr><td>성능 평가</td><td>교수</td><td>1명</td><td>벤치마크, 품질 평가</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- VII. 주요 사업추진 실적 및 참여인력 현황 -->
+<h2>VIII. 주요 사업추진 실적 및 참여인력 현황</h2>
+
+<div class="section">
+  <h3>1. 주관·참여기관의 주요 사업추진 실적</h3>
+  
+  <h4>(주)파디엠</h4>
+  <table>
+    <tbody><tr><th>사업명</th><th>내용</th><th>년도</th><th>전담기관</th></tr>
+      <tr><td>AI 범죄예방시스템 개발</td><td>AI 기반 범죄 패턴 분석 및 예방 시스템 R&D</td><td>2019~2022</td><td>자체</td></tr>
+      <tr><td>청년창업사관학교</td><td>AI 창업 프로젝트 수행</td><td>2020</td><td>중기부</td></tr>
+      <tr><td>SW창업랩</td><td>광주정보문화산업진흥원 SW 창업 지원</td><td>2023</td><td>광주정보문화산업진흥원</td></tr>
+  </tbody></table>
+  
+  <h4>경찰대학교</h4>
+  <table>
+    <tbody><tr><th>사업명</th><th>내용</th><th>년도</th><th>전담기관</th></tr>
+      <tr><td>경찰 빅데이터 연구</td><td>경찰 데이터 분석 및 AI 적용 연구</td><td>2022~</td><td>자체</td></tr>
+      <tr><td>스마트 치안 R&D</td><td>AI 기반 치안 기술 연구</td><td>2023~</td><td>자체</td></tr>
+  </tbody></table>
+</div>
+
+<div class="section">
+  <h3>2. 참여인력 현황</h3>
+  
+  <h4>주관기관 총괄책임자</h4>
+  <table>
+    <tbody>      <tr><th>성명</th><th>소속</th><th>직위</th><th>학력</th><th>주요 경력</th><th>주요 기여</th></tr>
+      <tr>
+        <td>강혜림</td>
+        <td>(주)파디엠</td>
+        <td>대표/총괄책임자</td>
+        <td>경찰대학교 공공안전행정 박사과정</td>
+        <td>2016~현재: (주)파디엠 대표<br>2020: 청년창업사관학교 수료<br>교육 운영, 창업 지도<br>경찰대학교 산학협력 연구</td>
+        <td>전체 총괄관리, 산학협력,<br>수요기관 협의,<br>사업화 전략</td>
+      </tr>
+  </tbody></table>
+  
+  <h4>파디엠 참여 인력</h4>
+  <table>
+    <tbody><tr><th>성명</th><th>직위</th><th>담당 분야</th><th>학력/자격</th><th>주요 역할</th><th>신규</th><th>참여율</th></tr>
+      <tr><td>강철원</td><td>책임자</td><td>AI 개발 총괄</td><td>컴퓨터공학 석사,<br>AI/ML 경력 5년+</td><td>AI 에이전트 아키텍처 설계,<br>멀티 에이전트 오케스트레이터,<br>핵심 알고리즘 개발</td><td>X</td><td>100%</td></tr>
+      <tr><td>채용예정</td><td>AI 연구원</td><td>LLM/에이전트</td><td>컴퓨터공학 석사,<br>NLP/AI 경력 1년+</td><td>LLM 파인튜닝, RAG 개발,<br>에이전트 로직 구현</td><td>O</td><td>100%</td></tr>
+      <tr><td>채용예정</td><td>AI 연구원</td><td>백엔드/MLOps</td><td>컴퓨터공학 학사+<br>MLOps 경력 1년+</td><td>API 서버 개발,<br>모델 서빙, CI/CD</td><td>O</td><td>100%</td></tr>
+      <tr><td>채용예정</td><td>데이터 엔지니어</td><td>데이터 파이프라인</td><td>컴퓨터공학 학사,<br>데이터 엔지니어링 1년+</td><td>데이터 수집/가공,<br>DB 관리, 라벨링</td><td>O</td><td>100%</td></tr>
+      <tr><td>채용예정</td><td>사업 개발</td><td>사업개발/영업</td><td>대학교 졸업,<br>IT 영업 2년+</td><td>수요기관 대응,<br>MOU 협의, 사업화</td><td>O</td><td>100%</td></tr>
+  </tbody></table>
+
+  <h4>참여기관 인력</h4>
+  <table>
+    <tbody><tr><th>기관</th><th>성명</th><th>직위</th><th>담당 분야</th><th>학력/자격</th><th>주요 역할</th><th>신규</th><th>참여율</th></tr>
+      <tr><td>경찰대학교</td><td>교수</td><td>교수</td><td>치안/경찰학</td><td>경찰학 박사,<br>경찰 업무 경력 15년+</td><td>치안 도메인 분석,<br>요구사항 정의,<br>실증 테스트베드 총괄</td><td>X</td><td>30%</td></tr>
+      <tr><td>경찰대학교</td><td>연구조교</td><td>연구조교</td><td>범죄학 석사과정</td><td>경찰학 석사,<br>데이터 분석 경력</td><td>경찰 데이터 수집,<br>실증 지원</td><td>X</td><td>50%</td></tr>
+      <tr><td>전북대학교</td><td>교수</td><td>교수</td><td>AI/ML</td><td>컴퓨터공학 박사,<br>AI 연구 경력 15년+</td><td>AI/LLM 기술 자문,<br>파인튜닝 총괄,<br>성능 평가</td><td>X</td><td>30%</td></tr>
+      <tr><td>전북대학교</td><td>연구원</td><td>박사과정</td><td>AI/ML</td><td>컴퓨터공학 박사과정,<br>NLP 연구</td><td>LLM 파인튜닝,<br>데이터 가공,<br>성능 평가</td><td>O</td><td>80%</td></tr>
+  </tbody></table>
+
+  <h4>참여인력 투입 시간 계획</h4>
+  <table>
+    <tbody><tr><th>인력</th><th>1차년 (2026)</th><th>2차년 (2027)</th><th>총 투입 (인월)</th></tr>
+      <tr><td>강혜림 (대표)</td><td>10개월</td><td>10개월</td><td>20개월</td></tr>
+      <tr><td>강철원 (책임자)</td><td>10개월</td><td>10개월</td><td>20개월</td></tr>
+      <tr><td>AI 연구원 1</td><td>8개월</td><td>11개월</td><td>19개월</td></tr>
+      <tr><td>AI 연구원 2</td><td>8개월</td><td>11개월</td><td>19개월</td></tr>
+      <tr><td>데이터 엔지니어</td><td>8개월</td><td>11개월</td><td>19개월</td></tr>
+      <tr><td>사업 개발</td><td>8개월</td><td>11개월</td><td>19개월</td></tr>
+      <tr><td>경찰대 교수</td><td>3개월</td><td>3개월</td><td>6개월</td></tr>
+      <tr><td>경찰대 연구조교</td><td>2개월</td><td>2개월</td><td>4개월</td></tr>
+      <tr><td>전북대 교수</td><td>3개월</td><td>3개월</td><td>6개월</td></tr>
+      <tr><td>전북대 연구원</td><td>8개월</td><td>11개월</td><td>19개월</td></tr>
+  </tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- VIII. 사업비 소요명세 -->
+<h2>IX. 사업비 소요명세</h2>
+
+<div class="section">
+  <h3>1. 사업비 총괄</h3>
+  <table>
+    <tbody><tr><th>구분</th><th>금액(천원)</th><th>비율</th></tr>
+      <tr><td>정부지원금</td><td>200,000</td><td>66.7%</td></tr>
+      <tr><td>민간부담금 (현금)</td><td>60,000</td><td>20.0%</td></tr>
+      <tr><td>민간부담금 (현물)</td><td>40,000</td><td>13.3%</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>300,000</strong></td><td><strong>100%</strong></td></tr>
+  </tbody></table>
+</div>
+
+  <div class="section">
+    <h3>2. 기관별 사업비 배분</h3>
+    <h4>가. 총사업비 기준 (정부+민간)</h4>
+    <table>
+      <tbody><tr><th>기관</th><th>정부지원금(천원)</th><th>민간부담금(천원)</th><th>합계(천원)</th></tr>
+        <tr><td>(주)파디엠</td><td>120,000</td><td>100,000 (현금 60,000 + 현물 40,000)</td><td>220,000</td></tr>
+        <tr><td>경찰대학교</td><td>40,000</td><td>20,000 (현물)</td><td>60,000</td></tr>
+        <tr><td>전북대학교</td><td>40,000</td><td>20,000 (현물)</td><td>60,000</td></tr>
+        <tr><td><strong>합계</strong></td><td><strong>200,000</strong></td><td><strong>100,000</strong></td><td><strong>300,000</strong></td></tr>
+    </tbody></table>
+    <p class="small">* 총사업비 300,000천원 = 정부지원금 200,000 + 민간부담금 100,000 (현금 60,000 + 현물 40,000)</p>
+    <p class="small">* 인건비 총액 269,000천원 = 파디엠 189,000(책임자 39,000 + 연구원 150,000) + 경찰대 40,000 + 전북대 40,000</p>
+    <p class="small">* 설비자산 총액 80,000천원 = 정부지원금(SW) 60,000 + 민간현물(HW) 20,000</p>
+    <p class="small">* 정부지원금 총액 = 파디엠 120,000 + 경찰대 40,000 + 전북대 40,000 = 200,000천원</p>
+    <p class="small">* 민간부담금 100,000 = 현금 60,000 (파디엠 자체) + 현물 40,000 (GPU 서버 20,000 + 인력파견 20,000)</p>
+
+    <h4>나. MOU 체결 기관 총 사업비 (현물 포함 기준)</h4>
+    <table>
+      <tbody><tr><th>기관</th><th>정부지원금</th><th>민간현금</th><th>민간현물</th><th>합계</th></tr>
+        <tr><td>(주)파디엠</td><td>120,000</td><td>60,000</td><td>40,000</td><td>220,000</td></tr>
+        <tr><td>경찰대학교</td><td>40,000</td><td>-</td><td>20,000</td><td>60,000</td></tr>
+        <tr><td>전북대학교</td><td>40,000</td><td>-</td><td>20,000</td><td>60,000</td></tr>
+        <tr><td><strong>합계</strong></td><td><strong>200,000</strong></td><td><strong>60,000</strong></td><td><strong>80,000</strong></td><td><strong>340,000</strong></td></tr>
+    </tbody></table>
+    <p class="small">* MOU 체결 기관 합산액: 340,000천원 (민간현물 80,000 포함) — 이는 MOU 금액이며, 정부 보조금 지급 기준 총사업비는 300,000천원</p>
+    <p class="small">* 정부 보조금 지급 기준: 정부지원금 200,000 + 민간부담금 100,000 = 300,000천원</p>
+    <p class="small">* 각 기관별 정부지원금 배분: (주)파디엠 60%, 경찰대 20%, 전북대 20%</p>
+  </div>
+
+<div class="section">
+  <h3>3. 비목별 사업비</h3>
+  <p>총 사업비 300,000천원의 비목별 소요명세는 다음과 같다.</p>
+
+  <h4>가. 비목별 총괄</h4>
+  <table>
+    <tbody><tr><th>비목</th><th>세목</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td rowspan="4">인건비</td><td>책임자 인건비</td><td>39,000</td><td>총괄책임자 1명 (월 1,950천원 x 20월)</td></tr>
+      <tr><td>파디엠 연구원 인건비</td><td>150,000</td><td>연구원 4명 (월 1,875천원 x 20월)</td></tr>
+      <tr><td>경찰대 연구자 인건비</td><td>40,000</td><td>교수 1명 + 연구조교 1명 (월 2,000천원 x 10월 x 2)</td></tr>
+      <tr><td>전북대 연구자 인건비</td><td>40,000</td><td>교수 1명 + 연구원 1명 (월 2,000천원 x 10월 x 2)</td></tr>
+      <tr><td></td><td><strong>소계</strong></td><td><strong>269,000</strong></td><td></td></tr>
+      <tr><td rowspan="1">외주용역비</td><td>성능 검증 용역</td><td>20,000</td><td>공인인증기관 제3자 검증</td></tr>
+      <tr><td></td><td><strong>소계</strong></td><td><strong>20,000</strong></td><td></td></tr>
+      <tr><td rowspan="2">설비자산</td><td>SW (LLM API)</td><td>60,000</td><td>API 사용료 (월 5,000천원 x 12월)</td></tr>
+      <tr><td>HW (GPU 서버)</td><td>20,000</td><td>추론 서버 (민간부담금)</td></tr>
+      <tr><td></td><td><strong>소계</strong></td><td><strong>80,000</strong></td><td></td></tr>
+      <tr><td rowspan="1">사업관리비</td><td>총괄관리비</td><td>10,000</td><td>정부지원금(200,000)의 5%</td></tr>
+      <tr><td></td><td><strong>소계</strong></td><td><strong>10,000</strong></td><td></td></tr>
+      <tr><td colspan="2"><strong>합계</strong> (세전)</td><td><strong>299,000</strong></td><td></td></tr>
+      <tr><td colspan="2">부가세(수수료)</td><td>1,000</td><td>VAT 10% 별도</td></tr>
+      <tr><td colspan="2"><strong>총계</strong> (세금포함)</td><td><strong>300,000</strong></td><td></td></tr>
+  </tbody></table>
+
+  <h4>나. 기관별 비목 배분 상세</h4>
+  <table>
+    <tbody><tr><th>기관</th><th>인건비</th><th>외주용역비</th><th>설비자산</th><th>사업관리비</th><th>합계</th></tr>
+      <tr><td>(주)파디엠</td><td>189,000</td><td>20,000</td><td>80,000</td><td>10,000</td><td>299,000</td></tr>
+      <tr><td>경찰대학교</td><td>40,000</td><td>-</td><td>-</td><td>-</td><td>40,000</td></tr>
+      <tr><td>전북대학교</td><td>40,000</td><td>-</td><td>-</td><td>-</td><td>40,000</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>269,000</strong></td><td><strong>20,000</strong></td><td><strong>80,000</strong></td><td><strong>10,000</strong></td><td><strong>379,000</strong></td></tr>
+  </tbody></table>
+    <p class="small">* 기관별 합계 379,000 ≠ 300,000인 이유는 현물(민간부담금) 항목이 비목별에 미반영 되었기 때문</p>
+    <p class="small">* 파디엠 정부지원금 120,000 배분: 인건비(정부분) 40,000 + 외주용역비 20,000 + 설비자산(SW) 60,000 = 120,000</p>
+    <p class="small">* 경찰대/전북대 인건비 각 40,000 (정부지원금) 별도 계상</p>
+</div>
+
+<div class="section">
+  <h3>4. 연차별 사업비 분담</h3>
+  <h4>가. 연도별 정부지원금 배분</h4>
+  <table>
+    <tbody><tr><th>기관</th><th>1차년 (2026)</th><th>2차년 (2027)</th><th>합계</th></tr>
+      <tr><td>(주)파디엠</td><td>60,000</td><td>60,000</td><td>120,000</td></tr>
+      <tr><td>경찰대학교</td><td>20,000</td><td>20,000</td><td>40,000</td></tr>
+      <tr><td>전북대학교</td><td>20,000</td><td>20,000</td><td>40,000</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>100,000</strong></td><td><strong>100,000</strong></td><td><strong>200,000</strong></td></tr>
+  </tbody></table>
+  <p class="small">* 정부지원금 200,000천원 균등 분할 (1차년 100,000 + 2차년 100,000)</p>
+
+  <h4>나. 연도별 총 사업비 (MOU 기준)</h4>
+  <table>
+    <tbody><tr><th>기관</th><th>1차년 (2026)</th><th>2차년 (2027)</th><th>합계</th></tr>
+      <tr><td>(주)파디엠</td><td>110,000</td><td>110,000</td><td>220,000</td></tr>
+      <tr><td>경찰대학교</td><td>30,000</td><td>30,000</td><td>60,000</td></tr>
+      <tr><td>전북대학교</td><td>30,000</td><td>30,000</td><td>60,000</td></tr>
+      <tr><td><strong>합계</strong></td><td><strong>170,000</strong></td><td><strong>170,000</strong></td><td><strong>340,000</strong></td></tr>
+  </tbody></table>
+  <p class="small">* MOU 체결 기관별 총 사업비 (민간부담금 현물 80,000 포함)</p>
+  <p class="small">* 1차년: 2026.03 ~ 2026.12 (10개월), 2차년: 2027.01 ~ 2027.11 (11개월)</p>
+</div>
+
+<div class="section">
+  <h3>5. 민간부담금 확보 방안</h3>
+  <table>
+    <tbody><tr><th>구분</th><th>구체적 내용</th><th>금액(천원)</th><th>비고</th></tr>
+      <tr><td rowspan="2">현금 부담</td><td>회사 운영 자금</td><td>60,000</td><td>자체 자금</td></tr>
+      <tr><td>소계</td><td><strong>60,000</strong></td><td></td></tr>
+      <tr><td rowspan="2">현물 부담</td><td>GPU 서버 (추론용)</td><td>20,000</td><td>사내 보유 서버</td></tr>
+      <tr><td>인력 파견 (경찰대·전북대)</td><td>20,000</td><td>교원 연구시간 포함</td></tr>
+      <tr><td></td><td>소계</td><td><strong>40,000</strong></td><td></td></tr>
+      <tr><td colspan="2"><strong>민간부담금 합계</strong></td><td><strong>100,000</strong></td><td>정부지원금 200,000 포함</td></tr>
+  </tbody></table>
+  <p class="small">* 현금 60,000천원: (주)파디엠 자체 자금으로 확보</p>
+  <p class="small">* 현물 40,000천원: GPU 서버 20,000 + 인력 파견 20,000</p>
+</div>
+
+<!-- 마지막 페이지 -->
+<div class="page-break"></div>
+
+<!-- 붙임: 기술 세부사양서 -->
+<div style="text-align:center; margin-top:20pt;">
+  <h2>붙임: AI 에이전트 기술 세부사양서</h2>
+  
+  <div class="section">
+    <h3>1. AI 에이전트 기술 스택</h3>
+    <table>
+      <tbody><tr><th>구분</th><th>기술</th><th>버전/사양</th><th>용도</th></tr>
+        <tr><td rowspan="3">기초 모델</td><td>Llama 3.1</td><td>70B Instruct</td><td>비용 효율적 파인튜닝</td></tr>
+        <tr><td>Mistral</td><td>8x22B Instruct</td><td>높은 성능</td></tr>
+        <tr><td>GPT-4o / Claude 3.5</td><td>API</td><td>백업/평가</td></tr>
+        <tr><td rowspan="2">임베딩</td><td>text-embedding-3-large</td><td>OpenAI</td><td>RAG 임베딩</td></tr>
+        <tr><td>KG-RAG / bge-m3</td><td>OpenSource</td><td>대체 모델</td></tr>
+        <tr><td rowspan="2">벡터 DB</td><td>Chroma DB</td><td>Latest</td><td>RAG 스토어</td></tr>
+        <tr><td>Pinecone</td><td>Cloud</td><td>대규모 스토어</td></tr>
+        <tr><td rowspan="2">프레임워크</td><td>LangChain / LangGraph</td><td>0.3+</td><td>에이전트 개발</td></tr>
+        <tr><td>AutoGen / CrewAI</td><td>Latest</td><td>멀티 에이전트</td></tr>
+        <tr><td rowspan="2">API</td><td>FastAPI</td><td>0.110+</td><td>REST API 서버</td></tr>
+        <tr><td>Gradio / Streamlit</td><td>Latest</td><td>데모 UI</td></tr>
+        <tr><td rowspan="2">인프라</td><td>Docker</td><td>Latest</td><td>컨테이너화</td></tr>
+        <tr><td>Kubernetes (GKE/EKS)</td><td>1.29+</td><td>오케스트레이션</td></tr>
+        <tr><td rowspan="2">평가</td><td>LLM-as-Judge</td><td>Custom</td><td>응답 품질 평가</td></tr>
+        <tr><td>RAGAS</td><td>Latest</td><td>RAG 성능 평가</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>2. Agent 상세 시나리오</h3>
+    
+    <h4>시나리오 1: 시민 신고 자동 분류</h4>
+    <div class="box" style="text-align:left;">
+      <p><strong>입력:</strong> 시민이 전화/앱으로 신고 접수 ("강도 사건인 것 같아요, 현장을 지나다가 피가 묻은 옷을 발견했습니다")</p>
+      <p><strong>Agent 협업 흐름:</strong></p>
+      <ol>
+        <li><strong>분류 Agent:</strong> 신고 텍스트 분석 → 긴급도 판정 (긴급/일반), 사건 유형 분류 (절도/강도/기타)</li>
+        <li><strong>검색 Agent:</strong> 유사 사건 이력 검색, 최근 범죄 패턴과 매칭</li>
+        <li><strong>생성 Agent:</strong> 처리 담당 부서 배정 근거, 초기 대응 지시 초안 생성</li>
+      </ol>
+      <p><strong>출력:</strong> 긴급도: 보통, 사건유형: 절도 의심, 배정: 관할 경찰서 강력팀, 처리기한: 24시간</p>
+      <p><strong>기대 효과:</strong> 신고 분류 시간 70% 단축, 담당 부서 오배정 80% 감소</p>
+    </div>
+
+    <h4>시나리오 2: 자치분쟁 조정 지원</h4>
+    <div class="box" style="text-align:left;">
+      <p><strong>입력:</strong> 아파트 층간소음 분쟁 조정 신청서</p>
+      <p><strong>Agent 협업 흐름:</strong></p>
+      <ol>
+        <li><strong>검색 Agent:</strong> 유사 판례 검색 (10건), 관련 법령 추출</li>
+        <li><strong>분석 Agent:</strong> 분쟁 당사자 주장 비교, 핵심 쟁점 도출</li>
+        <li><strong>생성 Agent:</strong> 조정안 초안 생성 (배상액 범위, 향후 조치)</li>
+      </ol>
+      <p><strong>출력:</strong> 관련 판례 10건 요약, 쟁점 3개, 조정안 초안 (배상 50만원, 향후 조치 합의)</p>
+      <p><strong>기대 효과:</strong> 조정관 1건당 준비시간 60% 절감</p>
+    </div>
+
+    <h4>시나리오 3: 범죄 패턴 분석</h4>
+    <div class="box" style="text-align:left;">
+      <p><strong>입력:</strong> 최근 3개월간 관할구역 범죄 데이터</p>
+      <p><strong>Agent 협업 흐름:</strong></p>
+      <ol>
+        <li><strong>분석 Agent:</strong> 시간/공간 패턴 분석, 유사 범죄 군집화</li>
+        <li><strong>최적화 Agent:</strong> 순찰 경로 최적화 (예: 금요일 밤 22:00~02:00, 동네 A 동쪽)</li>
+        <li><strong>생성 Agent:</strong> 보고서 생성, 경보 메시지 작성</li>
+      </ol>
+      <p><strong>출력:</strong> 핫스팟 3곳, 권장 순찰 경로, 시간대별 범죄 확률</p>
+      <p><strong>기대 효과:</strong> 순찰 효율성 20% 향상, 범죄 예방 기여</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>3. AI 모델 학습 계획</h3>
+    <table>
+      <tbody><tr><th>단계</th><th>방법</th><th>데이터</th><th>목표 성능</th><th>시기</th></tr>
+        <tr><td>기초 모델 선정</td><td>벤치마크 평가</td><td>-</td><td>Top-3 후보</td><td>1차년 3월</td></tr>
+        <tr><td>Pre-training</td><td>치안 텍스트 보강</td><td>법령 50,000건</td><td>도메인 이해 향상</td><td>1차년 4~5월</td></tr>
+        <tr><td>Instruction Tuning</td><td>SFT</td><td>질문-답변 쌍 5,000건</td><td>지시 수행 능력</td><td>1차년 6~8월</td></tr>
+        <tr><td>Preference Tuning</td><td>DPO/RLHF</td><td>쌍별 선호 데이터 1,000건</td><td>응답 품질</td><td>1차년 9~10월</td></tr>
+        <tr><td>실증 반영</td><td>Fine-tuning</td><td>실증 피드백</td><td>현장 적합성</td><td>2차년</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>4. 데이터 수집 상세 계획</h3>
+    <table>
+      <tbody><tr><th>데이터 유형</th><th>수집처</th><th>예상 수량</th><th>수집 방법</th><th>개인정보 처리</th></tr>
+        <tr><td>법령 데이터</td><td>국가법령정보센터</td><td>50,000건</td><td>공식 API/크롤링</td><td>해당없음 (공공)</td></tr>
+        <tr><td>판례 데이터</td><td>법원 판례 공개 시스템</td><td>10,000건</td><td>공식 API</td><td>익명화 (당사자)</td></tr>
+        <tr><td>경찰 업무 데이터</td><td>경찰대학교 MOU</td><td>10,000건</td><td>기관 협의</td><td>완전 익명화</td></tr>
+        <tr><td>신고·민원 샘플</td><td>자치분쟁조정위원회</td><td>5,000건</td><td>기관 협의</td><td>완전 익명화</td></tr>
+        <tr><td>합성 데이터</td><td>LLM 생성</td><td>5,000건</td><td>자체 생성</td><td>N/A</td></tr>
+        <tr><td>예외·Edge case</td><td>실무자 면담 + 시나리오</td><td>1,000건</td><td>수동 제작</td><td>N/A</td></tr>
+        <tr><td><strong>합계</strong></td><td></td><td><strong>81,000건</strong></td><td></td><td></td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>5. 보안 및 개인정보 보호 상세</h3>
+    <table>
+      <tbody><tr><th>항목</th><th>적용 기술/방법</th><th>구체적 내용</th></tr>
+        <tr><td>데이터 암호화 (저장)</td><td>AES-256</td><td>모든 저장 데이터 AES-256 암호화</td></tr>
+        <tr><td>데이터 암호화 (전송)</td><td>TLS 1.3</td><td>HTTPS 통신, API 암호화</td></tr>
+        <tr><td>접근 통제</td><td>RBAC (역할 기반)</td><td>역할별 최소 권한 원칙</td></tr>
+        <tr><td>감사 로그</td><td>접근 이력 기록</td><td>모든 데이터 접근/수정 이력 자동 기록</td></tr>
+         <tr><td>개인정보 비식별화</td><td>익명화/가명화</td><td>이름, 주민번호, 주소 등 완전 제거</td></tr>
+        <tr><td>데이터 분리</td><td>학습/검증 분리</td><td>모델 학습 데이터와 검증 데이터 8:2 분리</td></tr>
+        <tr><td>침입 탐지</td><td>IDS/IPS</td><td>비정상 접근 탐지 및 차단</td></tr>
+        <tr><td>데이터 폐기</td><td>안전 폐기</td><td>과제 종료 후 완전 삭제 (인증 획득)</td></tr>
+        <tr><td>개인정보보호법</td><td>법률 준수</td><td>개인정보보호법 제15~16조 준수</td></tr>
+        <tr><td>정보보호 인증</td><td>ISMS-P 준비</td><td>2차년 내 ISMS-P 인증 목표</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>7. MLOps 및 모니터링 체계</h3>
+    <table>
+      <tbody><tr><th>항목</th><th>적용 기술</th><th>구체적 내용</th></tr>
+        <tr><td>CI/CD 파이프라인</td><td>GitHub Actions, ArgoCD</td><td>코드 빌드, 테스트, 배포 자동화</td></tr>
+        <tr><td>모델 서빙</td><td>TensorFlow Serving, vLLM, Ollama</td><td>LLM 추론 서버, GPU 리소스 관리</td></tr>
+        <tr><td>모니터링</td><td>Prometheus, Grafana, LangSmith</td><td>API 응답시간, 에러율, 토큰 사용량 모니터링</td></tr>
+        <tr><td>로그 관리</td><td>ELK Stack (Elastic, Logstash, Kibana)</td><td>분산 로그 수집 및 분석</td></tr>
+        <tr><td>알림</td><td>PagerDuty, Slack 연동</td><td>이상 상황 실시간 알림</td></tr>
+        <tr><td>A/B 테스트</td><td>내장 시스템</td><td>새 모델 vs 기존 모델 성능 비교</td></tr>
+        <tr><td>모델 레지스트리</td><td>MLflow, DVC</td><td>모델 버전 관리, 실험 추적</td></tr>
+        <tr><td>데이터 버전 관리</td><td>DVC</td><td>데이터셋 버전 관리, 재현성 확보</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>8. API 보안 및 접근 통제</h3>
+    <table>
+      <tbody><tr><th>항목</th><th>적용 기술/방법</th><th>구체적 내용</th></tr>
+        <tr><td>인증을 위한 API</td><td>JWT (JSON Web Token)</td><td> Bearer 토큰 기반 Stateless 인증</td></tr>
+        <tr><td>권한 관리</td><td>OAuth 2.0, Role-Based Access Control</td><td>역할별 최소 권한 원칙 적용</td></tr>
+        <tr><td>속도 제한</td><td>Redis Rate Limiter</td><td>기관별 API 호출 횟수 제한 (오용 방지)</td></tr>
+        <tr><td>입력 검증</td><td>Pydantic, OWASP 기준</td><td>입력값 검증, SQL 인젝션/XSS 방지</td></tr>
+        <tr><td>통신 암호화</td><td>TLS 1.3, mTLS</td><td>HTTPS 강제 적용, 상호 인증</td></tr>
+        <tr><td>감사 로그</td><td>모든 API 호출 기록</td><td>요청자, 시간, 입력, 출력 (민감 정보 마스킹) 기록</td></tr>
+        <tr><td>침입 탐지</td><td>IDS/IPS, Web Application Firewall (WAF)</td><td>비정상 접근 탐지 및 자동 차단</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section">
+    <h3>9. 성과 확산 계획</h3>
+    <h4>가. 학술 활동</h4>
+    <table>
+      <tbody><tr><th>활동</th><th>목표</th><th>시기</th></tr>
+        <tr><td>국내 학술지 논문</td><td>2건 이상</td><td>1~2차년</td></tr>
+        <tr><td>국내 학회 발표</td><td>3건 이상</td><td>1~2차년</td></tr>
+        <tr><td>국제 학회 발표</td><td>1건 이상</td><td>2차년</td></tr>
+        <tr><td>기술 세미나/컨퍼런스</td><td>2건 이상</td><td>1~2차년</td></tr>
+        <tr><td>공공 부문 AI 사례 발표</td><td>1건 이상</td><td>2차년</td></tr>
+    </table>
+
+    <h4>나. 확산 경로</h4>
+    <table>
+      <tbody><tr><th>단계</th><th>대상</th><th>방법</th><th>시기</th></tr>
+        <tr><td>파일럿</td><td>경찰대학교</td><td>실증 테스트베드</td><td>1차년 말</td></tr>
+        <tr><td>초기 확산</td><td>경찰청 + 자치분쟁조정위원회</td><td>MOU 체결, 실증</td><td>2차년 상반기</td></tr>
+        <tr><td>확장</td><td>전국 경찰서, 자치구</td><td>SaaS 제공, SI 협업</td><td>2028~</td></tr>
+        <tr><td>수출</td><td>해외 치안 기관</td><td>국제 학회, Interpol 네트워크</td><td>2030~</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div style="text-align:center; margin-top:50pt;">
+  <h2>붙임: MOU 체결 예정</h2>
+  <div class="box" style="text-align:left;">
+    <p>본 과제와 관련하여 아래 기관과 MOU 체결 예정임:</p>
+    <table>
+      <tbody><tr><th>기관</th><th>협력 내용</th><th>체결 시기</th></tr>
+        <tr><td><strong>경찰청</strong></td><td>AI 치안 서비스 실증 협력, 테스트베드 제공</td><td>협약 후 3개월</td></tr>
+        <tr><td><strong>(구)자치분쟁조정위원회</strong></td><td>분쟁 조정 AI 서비스 실증 협력</td><td>협약 후 3개월</td></tr>
+        <tr><td><strong>경찰대학교</strong></td><td>기술 자문, 데이터 제공, 실증 협업</td><td>협약 시</td></tr>
+        <tr><td><strong>전북대학교</strong></td><td>AI 모델 개발, 성능 검증 협업</td><td>협약 시</td></tr>
+    </table>
+    <p>※ MOU 체결 완료 후 본 계획서에 첨부할 예정</p>
+  </div>
+  
+  <div style="margin-top:30pt;">
+    <h3>사업 추진 시 주요 체크포인트</h3>
+    <div class="box" style="text-align:left;">
+      <table>
+        <tbody><tr><th>시기</th><th>체크포인트</th></tr>
+          <tr><td>협약 시</td><td>참여기관 역할 확정, MOU 체결</td></tr>
+          <tr><td>1차년 3개월</td><td>수요기관 MOU 체결, 데이터 수집 착수</td></tr>
+          <tr><td>1차년 6개월</td><td>AI 에이전트 프로토타입 검토</td></tr>
+          <tr><td>1차년 말</td><td>중간 평가, 2차년 계획 수립</td></tr>
+          <tr><td>2차년 6개월</td><td>파일럿 실증 진행, 피드백 수집</td></tr>
+          <tr><td>2차년 말</td><td>최종 평가, 사업화 계획 확정</td></tr>
+      </table>
+    </div>
+  </div>
+  
+  <div style="margin-top:40pt;">
+    <p>끝.</p>
+  </div>
+</div>
+
+</body>
+</html>

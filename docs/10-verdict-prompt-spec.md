@@ -57,10 +57,10 @@ cat data/queue/reports/20260309T053100Z-q123-s456.report.json \
 ## 7. 재처리 전략
 - `verdict_verifier.py` 같은 스크립트로 JSON Schema 검증 후 서버에 넘긴다.
 - 실패 유형별 조치:
-  1. **verdict 없음**: report 생성 후 `VERDICT_TIMEOUT_MIN` 초 경과 시 알림을 발생시키고 에이전트가 우선 처리.
-  2. **JSON 파손**: `data/queue/verdicts/failed/{report_id}.json`으로 이동, 원본 report는 그대로 둬서 재시도 가능.
-  3. **중복 처리**: ingest 측에서 첫 성공 verdict만 수용, 나머지는 `data/queue/processed/duplicates/`로 이동.
-  4. **동일 report 재판정**: `metadata.verdict_seq` 비교 후 더 큰 값만 최신으로 채택.
+ 1. **verdict 없음**: report 생성 후 `VERDICT_TIMEOUT_MIN` 초 경과 시 알림을 발생시키고 에이전트가 우선 처리.
+ 2. **JSON 파손**: `data/queue/verdicts/failed/{report_id}.json`으로 이동, 원본 report는 그대로 둬서 재시도 가능.
+ 3. **중복 처리**: ingest 측에서 첫 성공 verdict만 수용, 나머지는 `data/queue/processed/duplicates/`로 이동.
+ 4. **동일 report 재판정**: `metadata.verdict_seq` 비교 후 더 큰 값만 최신으로 채택.
 
 ## 8. 참고 연결
 - 파이프라인 흐름: `docs/08-file-verdict-pipeline.md`

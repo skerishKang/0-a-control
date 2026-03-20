@@ -131,6 +131,10 @@ async function openSessionDetailPanel(sessionId) {
   const questReport = findLatestRecordBySourceType(records, "quest_report")?.content || "이 세션에서 공식적으로 보고된 퀘스트 작업 결과가 없습니다.";
   const questVerdict = findLatestRecordBySourceType(records, "quest_verdict")?.content || "이 세션에서 생성된 AI 작업 판정 기록이 없습니다.";
   
+  // Analyze session for badges
+  const badges = analyzeSessionForBadges(session);
+  const preview = generateSessionPreview(session);
+  
   const meta = [
     session.agent_name,
     session.model_name,
@@ -138,12 +142,77 @@ async function openSessionDetailPanel(sessionId) {
     formatRecentLabel(session.started_at),
   ].filter(Boolean).join(" / ");
 
+  // Parse summary into structured sections (Intent/Actions/Decisions/Next)
+  const summaryText = session.summary_md || "";
+  const lines = summaryText.split("\n").filter(l => l.trim());
+  
+  // Extract Actions (lines starting with -, •, *)
+  const actionLines = lines.filter(l => l.trim().startsWith("-") || l.trim().startsWith("•") || l.trim().startsWith("*")).slice(0, 5);
+  // Extract Decisions (lines with 완료, 종료, 결정)
+  const decisionLines = lines.filter(l => {
+    const lower = l.toLowerCase();
+    return lower.includes("완료") || lower.includes("종료") || lower.includes("결정") || lower.includes("done") || lower.includes("complete") || lower.includes("ended");
+  }).slice(0, 3);
+  // Extract Next (lines with 다음, next, continue)
+  const nextLines = lines.filter(l => {
+    const lower = l.toLowerCase();
+    return lower.includes("다음") || lower.includes("next") || lower.includes("continue") || lower.includes("다음으로") || lower.includes("다음 단계");
+  }).slice(0, 3);
+  
+  const hasStructuredContent = actionLines.length > 0 || decisionLines.length > 0 || nextLines.length > 0;
+
   const detailHtml = `
     <div class="session-panel-body">
+      <!-- Badges and preview -->
+      <div style="margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:8px;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <span style="color:${badges.lengthColor};font-size:12px;padding:2px 8px;background:${badges.lengthColor}22;border-radius:4px;">${badges.lengthBadge}</span>
+          <span style="color:${badges.valueColor};font-size:12px;padding:2px 8px;background:${badges.valueColor}22;border-radius:4px;">${badges.valueLabel}</span>
+        </div>
+        <span style="color:#555;font-size:13px;">${escapeHtml(preview)}</span>
+      </div>
+
+      <!-- Basic Info -->
       <div class="detail-section">
         <strong>기본 정보</strong>
         <p class="muted">${escapeHtml(meta)}</p>
       </div>
+      
+      ${hasStructuredContent ? `
+      <!-- Structured Sections (like sessions_html) -->
+      <div class="detail-section" style="background:#fffbea;padding:12px;border-radius:8px;border-left:4px solid #f1c40f;margin:12px 0;">
+        <strong>Intent</strong>
+        <p class="muted">${escapeHtml(lines[0] || "세션 의도 없음")}</p>
+      </div>
+      
+      ${actionLines.length > 0 ? `
+      <div class="detail-section">
+        <strong>Actions</strong>
+        <ul style="margin:8px 0;padding-left:20px;">
+          ${actionLines.map(l => `<li style="margin:4px 0;">${escapeHtml(l)}</li>`).join("")}
+        </ul>
+      </div>
+      ` : ''}
+      
+      ${decisionLines.length > 0 ? `
+      <div class="detail-section">
+        <strong>Decisions</strong>
+        <ul style="margin:8px 0;padding-left:20px;">
+          ${decisionLines.map(l => `<li style="margin:4px 0;">${escapeHtml(l)}</li>`).join("")}
+        </ul>
+      </div>
+      ` : ''}
+      
+      ${nextLines.length > 0 ? `
+      <div class="detail-section" style="background:#e8f5e9;padding:12px;border-radius:8px;border-left:4px solid #27ae60;margin:12px 0;">
+        <strong>Next Start</strong>
+        <ul style="margin:8px 0;padding-left:20px;">
+          ${nextLines.map(l => `<li style="margin:4px 0;">${escapeHtml(l)}</li>`).join("")}
+        </ul>
+      </div>
+      ` : ''}
+      ` : `
+      <!-- Fallback: Original summary -->
       <div class="session-panel-highlight-grid">
         <div class="detail-section highlight-box">
           <strong>핵심 판단</strong>
@@ -155,6 +224,9 @@ async function openSessionDetailPanel(sessionId) {
         </div>
       </div>
       ${session.summary_md ? `<div class="detail-section"><strong>요약</strong><p class="muted">${escapeHtml(session.summary_md)}</p></div>` : ''}
+      `}
+      
+      <!-- Quest Reports -->
       <div class="session-panel-highlight-grid">
         <div class="detail-section highlight-box">
           <strong>최근 퀘스트 보고</strong>
@@ -165,6 +237,8 @@ async function openSessionDetailPanel(sessionId) {
           <p class="muted">${escapeHtml(questVerdict)}</p>
         </div>
       </div>
+      
+      <!-- Transcript Records -->
       <div class="detail-section">
         <strong>대화 기록</strong>
         <div id="sessionRecordFilter" class="filter-chip-row compact"></div>
@@ -201,30 +275,100 @@ function classifySession(session) {
   return "unknown";
 }
 
+// Analyze session for badges (similar to generate_session_html.py)
+function analyzeSessionForBadges(session) {
+  const summary = session.summary_md || "";
+  const contentLength = summary.length;
+  
+  // Length badge
+  let lengthBadge = "short";
+  let lengthColor = "#999";
+  if (contentLength >= 1500) { lengthBadge = "medium"; lengthColor = "#f39c12"; }
+  if (contentLength >= 2500) { lengthBadge = "long"; lengthColor = "#27ae60"; }
+  
+  // Value badge based on content keywords
+  let valueBadge = "empty";
+  let valueColor = "#e74c3c";
+  let valueLabel = "비어있음";
+  
+  const lowerSummary = summary.toLowerCase();
+  if (summary.includes("완료") || summary.includes("종료") || lowerSummary.includes("done") || lowerSummary.includes("complete") || lowerSummary.includes("ended")) {
+    valueBadge = "decisions"; valueColor = "#27ae60"; valueLabel = "결정";
+  } else if (summary.includes("다음") || lowerSummary.includes("next") || lowerSummary.includes("continue")) {
+    valueBadge = "next-action"; valueColor = "#3498db"; valueLabel = "다음";
+  } else if (summary.includes("-") || summary.includes("•") || summary.includes("*")) {
+    valueBadge = "actions"; valueColor = "#9b59b6"; valueLabel = "행동";
+  } else if (contentLength > 30) {
+    valueBadge = "transcript-only"; valueColor = "#f39c12"; valueLabel = "트랜스크립트";
+  }
+  
+  return { lengthBadge, lengthColor, valueBadge, valueColor, valueLabel };
+}
+
+// Generate 1-line preview from summary
+function generateSessionPreview(session) {
+  const summary = session.summary_md || "";
+  if (!summary) return "세션 요약 없음";
+  
+  // Get first meaningful line
+  const lines = summary.split("\n").filter(l => l.trim());
+  if (lines.length === 0) return "세션 요약 없음";
+  
+  // Return first line, truncated
+  return lines[0].substring(0, 80) + (lines[0].length > 80 ? "..." : "");
+}
+
 function renderSessions() {
   const targetId = 'recentSessionList';
   const parentPanel = document.getElementById(targetId)?.parentElement;
   if (!parentPanel) return;
 
-  renderSessionFilters();
+  // Hide agent filter for now - can be enabled later if needed
+  const filterContainer = document.getElementById("sessionAgentFilter");
+  if (filterContainer) filterContainer.style.display = "none";
   
-  // Apply agent filter
+  // Apply agent filter (still used for detail view)
   const allFilteredSessions = state.sessions.filter((item) => {
     if (!visibleSessionAgents.has(item.agent_name)) return false;
     if (state.sessionAgentFilter === "all") return true;
     return item.agent_name === state.sessionAgentFilter;
   });
 
-  // Main view only shows operational
-  const operationalSessions = allFilteredSessions
-    .filter((s) => classifySession(s) === 'operational')
-    .sort((a, b) => {
-      const aTime = new Date(a.ended_at || a.started_at || 0).getTime();
-      const bTime = new Date(b.ended_at || b.started_at || 0).getTime();
-      return bTime - aTime;
-    });
+  // Sort by time
+  const sortedSessions = [...allFilteredSessions].sort((a, b) => {
+    const aTime = new Date(a.ended_at || a.started_at || 0).getTime();
+    const bTime = new Date(b.ended_at || b.started_at || 0).getTime();
+    return bTime - aTime;
+  });
 
-  setCountBadge("recentSessionCount", operationalSessions.length);
+  // RECENT PANEL: Only show 3 most recent items (compressed view)
+  const recentItems = sortedSessions.slice(0, 3);
+  
+  const renderRecentCard = (item) => {
+    const badges = analyzeSessionForBadges(item);
+    const preview = generateSessionPreview(item);
+    const time = formatRecentLabel(item.ended_at || item.started_at);
+    const title = item.title || item.project_key || "세션";
+    
+    return `
+      <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}" onclick="openSessionDetailPanel('${item.id}')">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:4px;">
+          <strong style="font-size:13px;">${escapeHtml(title.substring(0, 30))}</strong>
+          <span style="color:${badges.lengthColor};font-size:10px;">${badges.lengthBadge}</span>
+          <span style="color:${badges.valueColor};font-size:10px;">${badges.valueLabel}</span>
+        </div>
+        <span style="color:#777;font-size:11px;">${escapeHtml(preview)}</span>
+        <span style="color:#999;font-size:10px;display:block;margin-top:2px;">${escapeHtml(item.agent_name)} · ${time}</span>
+      </div>
+    `;
+  };
+
+  // Render compressed recent panel
+  document.getElementById(targetId).innerHTML = recentItems.map(renderRecentCard).join("");
+  
+  // Update count badge
+  setCountBadge("recentSessionCount", sortedSessions.length);
+  
   parentPanel.classList.add("panel-browsing");
 
   const renderSessionCard = (item, isDetailed = false) => {
@@ -294,6 +438,4 @@ function renderSessions() {
 
     showDetailedList("최근 세션", "전체 세션 목록", sortedSessions, detailFormatter);
   };
-  
-  renderCappedList(targetId, operationalSessions, renderSessionCard, 3, "운영 세션 기록이 없습니다.");
 }
