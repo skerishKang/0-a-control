@@ -51,12 +51,27 @@ _FOSSIL_
 # 로컬 임시 파일
 *.txt
 *.png
+*.pdf
+*.hwp
+*.hwpx
+*.zip
+*.ppt
+*.pptx
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.jpg
+*.jpeg
+*.gif
+*.webp
 nul
 server.pid
 *.bat
 
 # blobs
 data/blobs/
+sessions_html/
 
 # 유지용 깃킵은 추적
 !**/.gitkeep
