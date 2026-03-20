@@ -72,3 +72,9 @@ log "BACKFILL START batch_limit=$BATCH_LIMIT max_rounds=$MAX_ROUNDS"
 backfill_source "5666389128" "강혜림"
 backfill_source "889584794" "내텔레"
 log "BACKFILL END"
+
+bash scripts/log-event.sh \
+  telegram_backfill \
+  external_inbox \
+  "telegram-backfill-$(date +%Y%m%d-%H%M%S)" \
+  --detail "priority backfill completed"

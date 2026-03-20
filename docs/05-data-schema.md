@@ -168,6 +168,21 @@ Suggested columns:
 - `created_at` TEXT NOT NULL
 - `metadata_json` TEXT
 
+## Table: `event_log`
+Operational event timeline for exact "when did we do this?" queries.
+
+Suggested columns:
+
+- `id` TEXT PRIMARY KEY
+- `event_type` TEXT NOT NULL
+  - examples: `session_start`, `session_end`, `session_summary_updated`, `quest_reported`, `quest_verdict`, `plan_item_created`
+- `entity_id` TEXT NOT NULL
+- `entity_type` TEXT NOT NULL
+  - examples: `session`, `quest`, `plan_item`
+- `detail` TEXT
+- `metadata_json` TEXT
+- `created_at` TEXT NOT NULL
+
 ## Minimal Relationships
 - `source_records.session_id -> sessions.id`
 - `quests.plan_item_id -> plan_items.id`
@@ -186,6 +201,19 @@ The app and agents should optimize for these queries:
 6. get next restart point
 7. get recent sessions for a project
 8. drill into raw source records only if needed
+
+## Search Layer
+SQLite remains the source of truth.
+
+For retrieval, the app may maintain SQLite FTS5 indexes for:
+
+- `sessions.title`, `sessions.summary_md`
+- `source_records.source_name`, `source_records.content`
+- `brief_records.title`, `brief_records.content_md`
+- `decision_records.title`, `decision_records.reason`, `decision_records.impact_summary`
+- `external_inbox.source_name`, `external_inbox.author`, `external_inbox.title`, `external_inbox.raw_content`, `external_inbox.attachment_path`
+
+This improves "find the prior context" queries without introducing a separate vector DB.
 
 ## V1 Constraint
 Do not add channel-specific tables for Telegram or email yet.

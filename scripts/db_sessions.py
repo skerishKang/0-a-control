@@ -5,11 +5,11 @@ import uuid
 
 try:
     from scripts.agent_registry import canonical_agent_name
-    from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
+    from scripts.db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from scripts.db_state import refresh_current_state
 except ModuleNotFoundError:
     from agent_registry import canonical_agent_name
-    from db_base import connect, now_iso, row_to_dict, rows_to_dicts
+    from db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from db_state import refresh_current_state
 
 
@@ -53,6 +53,21 @@ def start_session(
                 None,
                 json.dumps(metadata, ensure_ascii=False) if metadata else None,
             ),
+        )
+        record_event(
+            conn,
+            event_type="session_start",
+            entity_id=session_id,
+            entity_type="session",
+            detail=title or f"{agent_name} session started",
+            metadata={
+                "agent_name": agent_name,
+                "source_type": source_type,
+                "model_name": model_name or "",
+                "project_key": project_key or "",
+                "working_dir": working_dir or "",
+            },
+            created_at=started_at,
         )
         row = conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,)).fetchone()
         result = row_to_dict(row) if row else {}
@@ -122,9 +137,7 @@ def end_session(
         session = conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,)).fetchone()
         if session is None:
             raise ValueError("session not found")
-        merged_metadata = dict(session["metadata_json"] and json.loads(session["metadata_json"]) or {})
-        if metadata:
-            merged_metadata.update(metadata)
+        merged_metadata = merge_metadata(session["metadata_json"], metadata)
         summary_value = summary_md or session["summary_md"]
         conn.execute(
             """
@@ -142,6 +155,19 @@ def end_session(
                 session_id,
             ),
         )
+        record_event(
+            conn,
+            event_type="session_end",
+            entity_id=session_id,
+            entity_type="session",
+            detail=summary_value or session["title"] or "session ended",
+            metadata={
+                "status": status,
+                "files_touched_count": len(files_touched or []),
+                "actions_count": len(actions or []),
+            },
+            created_at=ended_at,
+        )
         row = conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,)).fetchone()
         return row_to_dict(row) if row else {}
 
@@ -152,9 +178,7 @@ def update_session_summary(session_id: str, summary_md: str, metadata: dict | No
         if session is None:
             raise ValueError("session not found")
 
-        merged_metadata = dict(session["metadata_json"] and json.loads(session["metadata_json"]) or {})
-        if metadata:
-            merged_metadata.update(metadata)
+        merged_metadata = merge_metadata(session["metadata_json"], metadata)
 
         conn.execute(
             """
@@ -167,6 +191,14 @@ def update_session_summary(session_id: str, summary_md: str, metadata: dict | No
                 json.dumps(merged_metadata, ensure_ascii=False) if merged_metadata else None,
                 session_id,
             ),
+        )
+        record_event(
+            conn,
+            event_type="session_summary_updated",
+            entity_id=session_id,
+            entity_type="session",
+            detail=(summary_md or "")[:100],
+            metadata={"has_summary": bool(summary_md)},
         )
         row = conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,)).fetchone()
         return row_to_dict(row) if row else {}

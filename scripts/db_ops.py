@@ -10,7 +10,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 from scripts.ai_verdict import generate_verdict
-from scripts.db_base import connect, now_iso, row_to_dict, rows_to_dicts
+from scripts.db_base import connect, now_iso, record_event, row_to_dict, rows_to_dicts
 from scripts.db_sessions import append_source_record
 from scripts.db_state import refresh_current_state
 from scripts.report_export import export_quest_report
@@ -77,6 +77,21 @@ def _update_quest_status_with_decision(
             updated_at,
             None,
         ),
+    )
+    
+    record_event(
+        conn,
+        event_type="quest_verdict",
+        entity_id=quest_id,
+        entity_type="quest",
+        detail=f"{verdict}: {quest['title']}",
+        metadata={
+            "plan_item_id": quest["plan_item_id"],
+            "reason": reason,
+            "restart_point": restart_point,
+            "next_hint": next_hint,
+        },
+        created_at=updated_at,
     )
     
     refresh_current_state(conn)
@@ -169,6 +184,19 @@ def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> lis
             
             row = conn.execute("SELECT * FROM plan_items WHERE id = ?", (item_id,)).fetchone()
             created_items.append(row_to_dict(row))
+            record_event(
+                conn,
+                event_type="plan_item_created",
+                entity_id=item_id,
+                entity_type="plan_item",
+                detail=title,
+                metadata={
+                    "bucket": bucket,
+                    "priority_score": priority_score,
+                    "related_source_id": related_source_id,
+                },
+                created_at=updated_at,
+            )
 
         if session_id:
             # Log the action to the session
@@ -359,6 +387,19 @@ def apply_verdict(
                 json.dumps({"report_ref": report_ref, "raw_impact": plan_impact}, ensure_ascii=False),
             ),
         )
+        record_event(
+            conn,
+            event_type="quest_verdict",
+            entity_id=quest_id,
+            entity_type="quest",
+            detail=f"{verdict}: {quest['title']}",
+            metadata={
+                "provider": provider,
+                "report_ref": report_ref,
+                "plan_item_id": quest["plan_item_id"],
+            },
+            created_at=updated_at,
+        )
         refresh_current_state(conn)
         updated_quest = row_to_dict(conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone())
 
@@ -512,6 +553,19 @@ def report_quest_progress(
                 "UPDATE plan_items SET status = ?, updated_at = ? WHERE id = ?",
                 ("pending", updated_at, quest["plan_item_id"]),
             )
+        record_event(
+            conn,
+            event_type="quest_reported",
+            entity_id=quest_id,
+            entity_type="quest",
+            detail=quest["title"],
+            metadata={
+                "self_assessment": self_assessment,
+                "blocker": blocker,
+                "report_ref": metadata.get("latest_report", {}).get("report_ref") if metadata else "",
+            },
+            created_at=updated_at,
+        )
         refresh_current_state(conn)
         updated_quest = row_to_dict(conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone())
 
