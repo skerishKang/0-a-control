@@ -301,6 +301,7 @@ get_latest_briefs = _db.get_latest_briefs
 get_plans = _db.get_plans
 get_quests = _db.get_quests
 get_recent_sessions = _db.get_recent_sessions
+get_session_view_model = _db.get_session_view_model
 get_source_records = _db.get_source_records
 get_workdiary_priority_candidates = _db.get_workdiary_priority_candidates
 get_workdiary_top_level = _db.get_workdiary_top_level
@@ -508,6 +509,14 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             session_id = query.get("session_id", [""])[0]
             limit = parse_limit(query, "limit", 200, 200)
             self.send_json({"records": get_source_records(session_id, limit)})
+            return
+        if path.startswith("/api/sessions/view/"):
+            session_id = path.rsplit("/", 1)[-1]
+            if not session_id:
+                self.send_json({"error": "session_id is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            record_limit = parse_limit(query, "limit", 500, 2000)
+            self.send_json({"view": get_session_view_model(session_id, record_limit)})
             return
 
         if path == "/api/workdiary/top-level":
