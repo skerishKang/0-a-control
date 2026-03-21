@@ -12,7 +12,7 @@ TRANSCRIPT_META_PATTERNS = (
     re.compile(r"^Script done on\b", re.IGNORECASE),
 )
 
-NOISE_PATTERNS = (
+COMMON_NOISE_PATTERNS = (
     re.compile(r"^\s*Conversation interrupted\b", re.IGNORECASE),
     re.compile(r"^Something went wrong", re.IGNORECASE),
     re.compile(r"^Hit `/feedback` to report\b", re.IGNORECASE),
@@ -20,10 +20,13 @@ NOISE_PATTERNS = (
     re.compile(r"^Enable in /experimental and restart Codex!?$", re.IGNORECASE),
     re.compile(r"^계속하려면 아무 키나 누르십시오", re.IGNORECASE),
     re.compile(r"\bgpt-[\w.]+\s+\w+\s+[·•]\s+\d+%\s+left", re.IGNORECASE),
+    re.compile(r"^Token usage:\s*", re.IGNORECASE),
+)
+
+CODEX_NOISE_PATTERNS = (
     re.compile(r"^OpenAI Codex\b", re.IGNORECASE),
     re.compile(r"^model:\s*", re.IGNORECASE),
     re.compile(r"^directory:\s*", re.IGNORECASE),
-    re.compile(r"^Token usage:\s*", re.IGNORECASE),
     re.compile(r"^To continue this session, run codex resume\b", re.IGNORECASE),
 )
 
@@ -68,9 +71,16 @@ def _looks_like_terminal_frame(line: str) -> bool:
     return len(stripped) >= 3 and all(ch in frame_chars for ch in stripped)
 
 
-def clean_transcript_content(content: str) -> str:
+def _get_noise_patterns(profile: str) -> tuple[re.Pattern[str], ...]:
+    if profile == "codex":
+        return COMMON_NOISE_PATTERNS + CODEX_NOISE_PATTERNS
+    return COMMON_NOISE_PATTERNS
+
+
+def clean_transcript_content(content: str, profile: str = "default") -> str:
     cleaned_lines: list[str] = []
     skip_bootstrap = False
+    noise_patterns = _get_noise_patterns(profile)
 
     for raw_line in strip_ansi(content).splitlines():
         line = raw_line.rstrip()
@@ -80,7 +90,7 @@ def clean_transcript_content(content: str) -> str:
             cleaned_lines.append("")
             continue
 
-        if "You are starting inside the 0-a-control workspace." in stripped:
+        if profile == "codex" and "You are starting inside the 0-a-control workspace." in stripped:
             skip_bootstrap = True
             continue
         if skip_bootstrap:
@@ -92,7 +102,7 @@ def clean_transcript_content(content: str) -> str:
             continue
         if any(pattern.match(stripped) for pattern in TRANSCRIPT_META_PATTERNS):
             continue
-        if any(pattern.search(stripped) for pattern in NOISE_PATTERNS):
+        if any(pattern.search(stripped) for pattern in noise_patterns):
             continue
         if stripped in {"Working", "Explored"}:
             continue
@@ -113,17 +123,17 @@ def clean_transcript_content(content: str) -> str:
     return "\n".join(compacted).strip()
 
 
-def _clean_lines(content: str) -> list[str]:
-    lines: list[str] = []
-    for raw_line in clean_transcript_content(content).splitlines():
-        line = raw_line.strip()
-        if line:
-            lines.append(line)
-    return lines
+def _clean_lines(content: str, profile: str = "default") -> list[str]:
+    return [line.strip() for line in clean_transcript_content(content, profile=profile).splitlines() if line.strip()]
 
 
-def summarize_transcript(content: str, title: str = "", project_key: str = "") -> str:
-    lines = _clean_lines(content)
+def summarize_transcript(
+    content: str,
+    title: str = "",
+    project_key: str = "",
+    profile: str = "default",
+) -> str:
+    lines = _clean_lines(content, profile=profile)
     if not lines:
         return title or (f"{project_key} 작업 세션" if project_key else "작업 세션")
 
@@ -192,16 +202,12 @@ def parse_summary_md(summary_md: str) -> dict[str, Any]:
         if len(line) > 8:
             actions.append(line)
 
-    actions = _dedupe(actions, 5)
-    decisions = _dedupe(decisions, 3)
-    next_start = _dedupe(next_start, 3)
-
     return {
         "raw": text,
         "intent": intent,
-        "actions": actions,
-        "decisions": decisions,
-        "next_start": next_start,
+        "actions": _dedupe(actions, 5),
+        "decisions": _dedupe(decisions, 3),
+        "next_start": _dedupe(next_start, 3),
         "has_structured_content": bool(actions or decisions or next_start),
     }
 

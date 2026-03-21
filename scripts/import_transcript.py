@@ -49,12 +49,12 @@ def is_noise_line(line: str) -> bool:
     return False
 
 
-def chunk_transcript(content: str) -> list[dict[str, str]]:
+def chunk_transcript(content: str, profile: str = "default") -> list[dict[str, str]]:
     chunks: list[dict[str, str]] = []
     current_role = "tool"
     current_lines: list[str] = []
 
-    for raw_line in clean_transcript_content(content).splitlines():
+    for raw_line in clean_transcript_content(content, profile=profile).splitlines():
         line = normalize_line(raw_line)
         if is_noise_line(line):
             continue
@@ -104,6 +104,7 @@ def main() -> None:
     content = strip_ansi(raw).strip()
     if not content:
         raise SystemExit(0)
+    profile = "codex" if "codex" in (args.source_name or "").lower() else "default"
 
     append_source_record(
         session_id=args.session_id,
@@ -117,10 +118,11 @@ def main() -> None:
             "transcript_path": str(transcript_path),
             "bytes": os.path.getsize(transcript_path),
             "parse_type": "raw_dump",
+            "transcript_profile": profile,
         },
     )
 
-    chunks = chunk_transcript(content)
+    chunks = chunk_transcript(content, profile=profile)
     for i, chunk in enumerate(chunks):
         text = chunk["text"].strip()
         if not text:
@@ -141,10 +143,11 @@ def main() -> None:
 
     update_session_summary(
         session_id=args.session_id,
-        summary_md=summarize_transcript(content, project_key=args.project),
+        summary_md=summarize_transcript(content, project_key=args.project, profile=profile),
         metadata={
             "summary_source": "terminal_transcript",
             "transcript_path": str(transcript_path),
+            "transcript_profile": profile,
         },
     )
 

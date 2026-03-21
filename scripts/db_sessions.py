@@ -270,10 +270,14 @@ def get_session_view_model(session_id: str, record_limit: int = 500) -> dict:
         None,
     )
 
-    transcript_content = "\n\n".join(
+    transcript_raw_content = "\n\n".join(
         record.get("content", "").strip() for record in transcript_records if record.get("content")
     ).strip()
-    transcript_content = clean_transcript_content(transcript_content)
+    transcript_profile = "codex" if (session.get("agent_name") or "").lower() == "codex" else "default"
+    transcript_cleaned_content = clean_transcript_content(
+        transcript_raw_content,
+        profile=transcript_profile,
+    )
 
     metadata_value = session.get("metadata_json")
     if isinstance(metadata_value, dict):
@@ -331,9 +335,12 @@ def get_session_view_model(session_id: str, record_limit: int = 500) -> dict:
         },
         "dialogue": dialogue_records,
         "transcript": {
-            "available": bool(transcript_content),
+            "available": bool(transcript_raw_content or transcript_cleaned_content),
             "record_count": len(transcript_records),
-            "content": transcript_content,
+            "profile": transcript_profile,
+            "raw_content": transcript_raw_content,
+            "cleaned_content": transcript_cleaned_content,
+            "content": transcript_cleaned_content,
         },
         "records": {
             "all": records,
