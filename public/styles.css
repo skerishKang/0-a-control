@@ -867,3 +867,30 @@ p {
   color: var(--muted);
   white-space: nowrap;
 }
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: -0.15rem;
+}
+
+.hero-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #f8fbff;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.hero-meta-chip-muted {
+  background: #fff8f8;
+  color: var(--red);
+  border-color: rgba(209, 67, 67, 0.18);
+}

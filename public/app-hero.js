@@ -1,3 +1,27 @@
+﻿function formatDashboardTodayLabel() {
+  const now = new Date();
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `오늘 ${yyyy}-${mm}-${dd} (${weekdays[now.getDay()]})`;
+}
+
+function pickDashboardFreshness(current) {
+  const verdictAt = current?.recent_verdict?.updated_at || "";
+  const briefTitle = current?.latest_morning_brief?.title || "";
+  const briefDateMatch = briefTitle.match(/\d{4}-\d{2}-\d{2}/);
+  const stale = current?.quest_status_summary?.is_stale;
+
+  if (verdictAt) {
+    const label = typeof formatRecentLabel === "function" ? formatRecentLabel(verdictAt) : verdictAt;
+    return stale ? `데이터 기준 ${label} · 이전 판단 유지 중` : `데이터 기준 ${label}`;
+  }
+  if (briefDateMatch) {
+    return stale ? `브리프 기준 ${briefDateMatch[0]} · 갱신 필요` : `브리프 기준 ${briefDateMatch[0]}`;
+  }
+  return "데이터 기준 확인 필요";
+}
 /**
  * Hero Card rendering module
  * Responsibility: UI rendering for the main mission and overall progress
@@ -5,6 +29,10 @@
 
 function renderHeroCard(current) {
   const statusSummary = current.quest_status_summary || {};
+  const todayLabel = document.getElementById("dashboardTodayLabel");
+  const freshnessLabel = document.getElementById("dashboardFreshnessLabel");
+  if (todayLabel) todayLabel.textContent = formatDashboardTodayLabel();
+  if (freshnessLabel) freshnessLabel.textContent = pickDashboardFreshness(current);
   
   // 1. Titles & Texts
   document.getElementById("mainMissionTitle").textContent = current.main_mission_title || "주 임무가 없습니다.";
@@ -65,3 +93,4 @@ function renderHeroCard(current) {
   // Return values for other cards to use (like Caution Card)
   return { nextCore, cautionText };
 }
+

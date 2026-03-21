@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 
 <head>
@@ -16,7 +16,6 @@
 <body>
   <main class="layout">
     <section class="zone-section zone-mission">
-      <p class="zone-title">지금 할 일</p>
       <section class="hero-card">
       <div class="hero-header">
         <div class="title-group">
@@ -28,6 +27,10 @@
             <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력</button>
           </div>
         </div>
+      </div>
+      <div class="hero-meta" aria-label="dashboard freshness">
+        <span id="dashboardTodayLabel" class="hero-meta-chip">오늘 기준 --</span>
+        <span id="dashboardFreshnessLabel" class="hero-meta-chip hero-meta-chip-muted">데이터 기준 --</span>
       </div>
       <p id="loadStatusMessage" class="mission-reason" hidden></p>
       <div class="mission-grid">
@@ -294,3 +297,4 @@
 </body>
 
 </html>
+
