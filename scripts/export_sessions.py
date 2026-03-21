@@ -184,6 +184,8 @@ def session_note_from_view(view: dict) -> tuple[str, str, str]:
 """
     if transcript.get("available"):
         note += f"- Transcript: embedded in DB source_records ({transcript.get('record_count', 0)} record(s))\n"
+        note += f"- Transcript profile: {transcript.get('profile') or 'default'}\n"
+        note += "- Transcript views: cleaned + raw available in dashboard/html export\n"
     else:
         note += "- (no transcript)\n"
     note += f"- DB session: `{session_id}`\n"

@@ -93,7 +93,51 @@ pre {
 }
 .list { padding-left: 20px; }
 .list li { margin: 6px 0; }
+.transcript-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 10px 0 12px;
+}
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip-btn {
+    border: 1px solid #ccd3da;
+    background: #fff;
+    color: #334155;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.chip-btn.active {
+    background: #1f2937;
+    color: #fff;
+    border-color: #1f2937;
+}
+.transcript-panel[hidden] { display: none; }
 </style>
+"""
+
+SCRIPT = """
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-transcript-root]").forEach((root) => {
+    const buttons = root.querySelectorAll("[data-transcript-mode]");
+    const panels = root.querySelectorAll("[data-transcript-panel]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const mode = button.dataset.transcriptMode;
+        buttons.forEach((item) => item.classList.toggle("active", item === button));
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.transcriptPanel !== mode;
+        });
+      });
+    });
+  });
+});
+</script>
 """
 
 
@@ -153,6 +197,29 @@ def _render_transcript(content: str) -> str:
     if not content.strip():
         return "<p>(no transcript)</p>"
     return f"<pre>{_esc(content)}</pre>"
+
+
+def _render_transcript_views(transcript: dict) -> str:
+    if not transcript.get("available"):
+        return "<p>(no transcript)</p>"
+
+    cleaned = transcript.get("cleaned_content") or transcript.get("content") or ""
+    raw = transcript.get("raw_content") or ""
+    profile = transcript.get("profile") or "default"
+
+    return (
+        '<div data-transcript-root="true">'
+        '<div class="transcript-toolbar">'
+        '<div class="chip-row">'
+        '<button type="button" class="chip-btn active" data-transcript-mode="cleaned">정리본</button>'
+        '<button type="button" class="chip-btn" data-transcript-mode="raw">원문</button>'
+        "</div>"
+        f'<p class="meta">profile: {_esc(profile)}</p>'
+        "</div>"
+        f'<div class="transcript-panel" data-transcript-panel="cleaned">{_render_transcript(cleaned)}</div>'
+        f'<div class="transcript-panel" data-transcript-panel="raw" hidden>{_render_transcript(raw)}</div>'
+        "</div>"
+    )
 
 
 def render_session_html(view: dict) -> str:
@@ -231,8 +298,9 @@ def render_session_html(view: dict) -> str:
             _render_dialogue(view.get("dialogue") or []),
             "<div class=\"raw-box\">",
             "<h2>Raw Transcript</h2>",
-            _render_transcript(transcript.get("content") or ""),
+            _render_transcript_views(transcript),
             "</div>",
+            SCRIPT,
             "</body>",
             "</html>",
         ]
