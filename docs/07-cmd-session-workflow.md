@@ -67,6 +67,21 @@ Rules:
   - `kilo`
   - `opencode`
 
+## Foreign Transcript Import
+If a tool session was run outside the wrapper, import the saved transcript into an existing session:
+
+```bash
+python scripts/import_codex_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\codex.log
+python scripts/import_gemini_cli_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\gemini.log
+python scripts/import_windsurf_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\windsurf.log
+```
+
+If `--file` is omitted, the importer looks for:
+
+```text
+data/runtime/transcripts/<session_id>.log
+```
+
 ## Quest Report → External Verdict → 다음 퀘스트 흐름
 1. **퀘스트 보고**: `scripts/worklog.sh user`로 보고 내용을 남기고, `report_quest_progress`가 `data/queue/reports/`에 JSON을 생성하며 퀘스트 상태를 `pending`으로 전환한다.
 2. **external verdict 대기**: 외부 에이전트(예: Gemini) 워커가 report JSON을 판독해 `data/queue/verdicts/`에 verdict JSON을 기록한다. 이동안 CMD UI에는 동일 퀘스트 카드가 유지되지만 "판정 대기" 배지가 붙는다.
