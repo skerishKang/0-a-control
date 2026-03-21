@@ -53,10 +53,9 @@ def delete_sessions(session_ids: list[str]) -> None:
         conn.execute(
             f"""
             DELETE FROM event_log
-            WHERE session_id IN ({placeholders})
-               OR (entity_type = 'session' AND entity_id IN ({placeholders}))
+            WHERE entity_type = 'session' AND entity_id IN ({placeholders})
             """,
-            session_ids + session_ids,
+            session_ids,
         )
         conn.execute(
             f"DELETE FROM sessions WHERE id IN ({placeholders})",
