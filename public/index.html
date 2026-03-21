@@ -19,20 +19,20 @@
       <section class="hero-card">
       <div class="hero-header">
         <div class="title-group">
-          <p class="section-label alert-label">지금 1개만 잡기</p>
+          <div class="hero-subhead">
+            <p class="section-label alert-label">지금 1개만 잡기</p>
+            <div class="hero-meta" aria-label="dashboard freshness">
+              <span id="dashboardTodayLabel" class="hero-meta-chip">오늘 기준 --</span>
+              <span id="dashboardFreshnessLabel" class="hero-meta-chip hero-meta-chip-muted">데이터 기준 --</span>
+            </div>
+          </div>
           <div class="mission-title-row">
             <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
             <button id="openMissionReasonBtn" type="button" class="secondary-btn mission-reason-btn">이유</button>
-          </div>
-          <div class="mission-action-grid">
             <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일</button>
             <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력으로 분류</button>
           </div>
         </div>
-      </div>
-      <div class="hero-meta" aria-label="dashboard freshness">
-        <span id="dashboardTodayLabel" class="hero-meta-chip">오늘 기준 --</span>
-        <span id="dashboardFreshnessLabel" class="hero-meta-chip hero-meta-chip-muted">데이터 기준 --</span>
       </div>
       <p id="loadStatusMessage" class="mission-reason" hidden></p>
       <div class="mission-grid">

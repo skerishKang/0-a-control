@@ -150,9 +150,18 @@ p {
   flex: 1;
 }
 
+.hero-subhead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
 .mission-title-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 0.75rem;
   align-items: center;
 }
@@ -167,9 +176,14 @@ p {
     width: 100% !important;
   }
 
-  .mission-title-row,
-  .mission-action-grid {
+  .hero-subhead,
+  .mission-title-row {
     grid-template-columns: 1fr;
+  }
+
+  .hero-subhead {
+    display: grid;
+    justify-content: stretch;
   }
 }
 
@@ -180,13 +194,6 @@ p {
   font-weight: 950;
   margin-bottom: 0;
   color: var(--text);
-}
-
-.mission-action-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.9rem;
 }
 
 .mission-reason-btn {
@@ -207,7 +214,6 @@ p {
 }
 
 .header-action-btn {
-  width: 100%;
   white-space: nowrap;
   min-height: 4.1rem;
   padding: 1rem 1.4rem !important;
@@ -885,7 +891,7 @@ p {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
-  margin-top: -0.15rem;
+  margin-top: 0;
 }
 
 .hero-meta-chip {
