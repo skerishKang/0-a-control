@@ -20,11 +20,13 @@
       <div class="hero-header">
         <div class="title-group">
           <p class="section-label alert-label">지금 1개만 잡기</p>
-          <div class="mission-head">
+          <div class="mission-title-row">
             <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
-            <button id="openMissionReasonBtn" type="button" class="secondary-btn compact-btn">이유</button>
-            <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일 보기</button>
-            <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력</button>
+            <button id="openMissionReasonBtn" type="button" class="secondary-btn mission-reason-btn">이유</button>
+          </div>
+          <div class="mission-action-grid">
+            <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일</button>
+            <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력으로 분류</button>
           </div>
         </div>
       </div>
@@ -45,6 +47,7 @@
         </div>
         <div class="hero-actions">
           <button id="openReportPanelBtn" type="button" class="primary-btn">지금 퀘스트 완료 보고하기</button>
+          <button id="deferCurrentQuestBtn" type="button" class="secondary-btn">오늘에서 내리기</button>
         </div>
       </div>
     </section>
@@ -175,7 +178,7 @@
 
   <div id="bridgePanel" class="bridge-panel" hidden>
     <div class="bridge-header">
-      <h3>빠른 입력 → 플랜</h3>
+      <h3>빠른 입력 → 오늘/기한/보류 분류</h3>
       <button id="closeBridgePanelBtn" type="button" class="icon-btn" aria-label="닫기">×</button>
     </div>
     <div class="bridge-content">

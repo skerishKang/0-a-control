@@ -150,6 +150,13 @@ p {
   flex: 1;
 }
 
+.mission-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 @media (max-width: 860px) {
   .hero-header {
     flex-direction: column;
@@ -158,6 +165,11 @@ p {
   
   .header-action-btn {
     width: 100% !important;
+  }
+
+  .mission-title-row,
+  .mission-action-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -170,35 +182,34 @@ p {
   color: var(--text);
 }
 
-.mission-head {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
+.mission-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+  margin-top: 0.9rem;
 }
 
-.compact-btn {
-  padding: 0.2rem 0.6rem !important;
-  font-size: 0.8rem !important;
-  font-weight: 700 !important;
-  border-radius: 0.5rem !important;
+.mission-reason-btn {
+  min-height: calc(clamp(1.8rem, 4vw, 2.8rem) * 1.2);
+  padding: 0.5rem 1rem !important;
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  border-radius: 0.8rem !important;
   border: 1px solid var(--line) !important;
-  background: #f1f5f9 !important;
-  color: var(--muted) !important;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%) !important;
+  color: var(--text) !important;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.compact-btn:hover {
-  background: #e2e8f0 !important;
-  color: var(--text) !important;
+.mission-reason-btn:hover {
+  background: #eaf2fb !important;
 }
 
 .header-action-btn {
+  width: 100%;
   white-space: nowrap;
-  margin-left: auto;
-  min-height: 100%;
+  min-height: 4.1rem;
   padding: 1rem 1.4rem !important;
   font-size: 1.05rem !important;
   border-radius: 0.85rem !important;
@@ -327,6 +338,7 @@ p {
 
 .hero-actions {
   display: flex;
+  flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
   gap: 0.75rem;

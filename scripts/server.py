@@ -307,6 +307,7 @@ get_workdiary_priority_candidates = _db.get_workdiary_priority_candidates
 get_workdiary_top_level = _db.get_workdiary_top_level
 report_quest_progress = _db.report_quest_progress
 refresh_current_state = _db.refresh_current_state
+defer_current_quest_to_short_term = _db.defer_current_quest_to_short_term
 start_session = _db.start_session
 
 
@@ -369,6 +370,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         if path == "/api/current-state/refresh":
             result = refresh_current_state()
             self.send_json({"ok": True, "state": result})
+            return
+        if path == "/api/current-quest/defer":
+            result = defer_current_quest_to_short_term()
+            self.send_json({"ok": True, **result})
             return
         if path == "/api/quests/report":
             result = report_quest_progress(

@@ -12,6 +12,7 @@ if __package__ in (None, ""):
         approve_plan_candidates,
         evaluate_quest,
         get_current_state,
+        defer_current_quest_to_short_term,
         get_latest_briefs,
         get_plans,
         get_quests,
@@ -40,6 +41,7 @@ else:
     from .db_ops import (
         evaluate_quest,
         get_current_state,
+        defer_current_quest_to_short_term,
         get_latest_briefs,
         get_plans,
         get_quests,
@@ -77,6 +79,7 @@ __all__ = [
     "get_external_inbox_source_messages",
     "end_session",
     "get_current_state",
+    "defer_current_quest_to_short_term",
     "get_plans",
     "get_quests",
     "get_recent_sessions",

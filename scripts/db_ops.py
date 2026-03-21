@@ -468,6 +468,106 @@ def evaluate_quest(
         return row_to_dict(row) if row else {}
 
 
+def defer_current_quest_to_short_term() -> dict:
+    with connect() as conn:
+        refresh_current_state(conn)
+        state_rows = conn.execute(
+            "SELECT state_key, state_value FROM current_state WHERE state_key IN ('current_quest_id', 'main_mission_id')"
+        ).fetchall()
+        state_map = {row["state_key"]: row["state_value"] for row in state_rows}
+        quest_id = state_map.get("current_quest_id") or ""
+        plan_item_id = state_map.get("main_mission_id") or ""
+        if not quest_id:
+            raise ValueError("current quest not found")
+
+        quest_row = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
+        if quest_row is None:
+            raise ValueError("current quest not found")
+
+        quest = dict(quest_row)
+        updated_at = now_iso()
+        quest_status = quest["status"] if quest["status"] in {"done", "hold"} else "hold"
+        restart_point = quest.get("restart_point") or "오늘 플랜에서 내린 뒤 여기서 다시 시작"
+        next_hint = quest.get("next_quest_hint") or "short_term에서 다시 꺼내기"
+        metadata = json.loads(quest.get("metadata_json") or "{}")
+        metadata["deferred_from_today"] = {
+            "at": updated_at,
+            "reason": "moved from today to short_term",
+        }
+
+        conn.execute(
+            """
+            UPDATE quests
+            SET status = ?, restart_point = ?, next_quest_hint = ?, updated_at = ?, metadata_json = ?
+            WHERE id = ?
+            """,
+            (
+                quest_status,
+                restart_point,
+                next_hint,
+                updated_at,
+                json.dumps(metadata, ensure_ascii=False),
+                quest_id,
+            ),
+        )
+
+        if plan_item_id:
+            conn.execute(
+                """
+                UPDATE plan_items
+                SET bucket = 'short_term', status = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (quest_status, updated_at, plan_item_id),
+            )
+
+        conn.execute(
+            """
+            INSERT INTO decision_records (
+                id, decision_type, title, reason, impact_summary,
+                related_plan_item_id, related_quest_id, related_session_id, created_at, metadata_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                str(uuid.uuid4()),
+                "scope_cut",
+                f"Move current quest out of today: {quest['title']}",
+                "사용자가 오늘판에서 내리기로 결정",
+                "[today] removed -> [short_term] deferred",
+                plan_item_id or None,
+                quest_id,
+                None,
+                updated_at,
+                None,
+            ),
+        )
+
+        record_event(
+            conn,
+            event_type="plan_item_deferred",
+            entity_id=plan_item_id or quest_id,
+            entity_type="plan_item" if plan_item_id else "quest",
+            detail=quest["title"],
+            metadata={
+                "quest_id": quest_id,
+                "plan_item_id": plan_item_id,
+                "from_bucket": "today",
+                "to_bucket": "short_term",
+                "status": quest_status,
+            },
+            created_at=updated_at,
+        )
+        refresh_current_state(conn)
+
+        quest_out = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
+        plan_out = conn.execute("SELECT * FROM plan_items WHERE id = ?", (plan_item_id,)).fetchone() if plan_item_id else None
+        return {
+            "quest": row_to_dict(quest_out) if quest_out else {},
+            "plan_item": row_to_dict(plan_out) if plan_out else {},
+            "current_state": get_current_state(),
+        }
+
+
 def report_quest_progress(
     quest_id: str,
     work_summary: str,

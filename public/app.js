@@ -28,6 +28,11 @@ function updateQuestFormState(current) {
       }
     }
   }
+
+  const deferBtn = document.getElementById("deferCurrentQuestBtn");
+  if (deferBtn) {
+    deferBtn.disabled = !currentQuestExists;
+  }
 }
 
 function updateLoadingStatus(loadErrors = [], renderErrors = []) {
@@ -348,6 +353,36 @@ async function handleQuestEvaluation(event) {
   await loadAll();
 }
 
+async function handleDeferCurrentQuest() {
+  const current = state.currentState || {};
+  if (!current.current_quest_id) {
+    alert("현재 퀘스트가 없습니다.");
+    return;
+  }
+
+  const btn = document.getElementById("deferCurrentQuestBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "내리는 중...";
+  }
+
+  try {
+    await fetchJson("/api/current-quest/defer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    await loadAll();
+  } catch (error) {
+    alert(`오늘에서 내리기 실패: ${error.message}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "오늘에서 내리기";
+    }
+  }
+}
+
 async function handleTelegramSync() {
   const btn = document.getElementById("syncTelegramBtn");
   const banner = document.getElementById("syncStatusBanner");
@@ -387,6 +422,7 @@ async function handleTelegramSync() {
 }
 
 document.getElementById("openReportPanelBtn").addEventListener("click", openReportPanel);
+document.getElementById("deferCurrentQuestBtn")?.addEventListener("click", handleDeferCurrentQuest);
 document.getElementById("openExternalContextPanelBtn").addEventListener("click", openExternalContextPanel);
 document.getElementById("openBridgePanelBtn")?.addEventListener("click", openBridgePanel);
 document.getElementById("syncTelegramBtn").addEventListener("click", handleTelegramSync);
