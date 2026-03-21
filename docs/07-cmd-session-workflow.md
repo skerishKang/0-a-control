@@ -82,6 +82,18 @@ If `--file` is omitted, the importer looks for:
 data/runtime/transcripts/<session_id>.log
 ```
 
+### Transcript Profiles
+- `codex`: bootstrap block, Codex chrome, token usage, resume hint 제거
+- `gemini-cli`: CLI usage/help 배너 제거
+- `windsurf`: IDE chrome/Cascade 배너 제거
+- transcript detail 화면에서는 `정리본`과 `원문`을 모두 볼 수 있음
+
+### Import Verification Session Cleanup
+- importer 검증용 세션은 제목에 `verification` 또는 `importer verification`을 포함
+- 검증이 끝난 세션은 장기 운영 판단 근거로 쓰지 않음
+- 필요 시 `sessions_html/` 확인 후 DB에서 별도 정리하거나 상태를 검증용으로 메모
+- 운영 세션과 검증 세션을 혼동하지 않도록 최근 세션 리뷰 시 제목 기준으로 구분
+
 ## Quest Report → External Verdict → 다음 퀘스트 흐름
 1. **퀘스트 보고**: `scripts/worklog.sh user`로 보고 내용을 남기고, `report_quest_progress`가 `data/queue/reports/`에 JSON을 생성하며 퀘스트 상태를 `pending`으로 전환한다.
 2. **external verdict 대기**: 외부 에이전트(예: Gemini) 워커가 report JSON을 판독해 `data/queue/verdicts/`에 verdict JSON을 기록한다. 이동안 CMD UI에는 동일 퀘스트 카드가 유지되지만 "판정 대기" 배지가 붙는다.

@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from db_sessions import append_source_record, update_session_summary
-from session_summary import clean_transcript_content, strip_ansi, summarize_transcript
+from session_summary import clean_transcript_content, infer_transcript_profile, strip_ansi, summarize_transcript
 
 
 USER_RE = re.compile(r"^(?:> |(?:You|User|Human|사용자):\s*)", re.IGNORECASE)
@@ -104,7 +104,7 @@ def main() -> None:
     content = strip_ansi(raw).strip()
     if not content:
         raise SystemExit(0)
-    profile = "codex" if "codex" in (args.source_name or "").lower() else "default"
+    profile = infer_transcript_profile(source_name=args.source_name)
 
     append_source_record(
         session_id=args.session_id,

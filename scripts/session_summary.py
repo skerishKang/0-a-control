@@ -30,6 +30,20 @@ CODEX_NOISE_PATTERNS = (
     re.compile(r"^To continue this session, run codex resume\b", re.IGNORECASE),
 )
 
+GEMINI_NOISE_PATTERNS = (
+    re.compile(r"^Usage:\s*gemini\b", re.IGNORECASE),
+    re.compile(r"^Gemini CLI\b", re.IGNORECASE),
+    re.compile(r"^Commands:\s*$", re.IGNORECASE),
+    re.compile(r"^Options:\s*$", re.IGNORECASE),
+    re.compile(r"^\s+gemini\s", re.IGNORECASE),
+)
+
+WINDSURF_NOISE_PATTERNS = (
+    re.compile(r"^Windsurf\b", re.IGNORECASE),
+    re.compile(r"^Cascade\b", re.IGNORECASE),
+    re.compile(r"^Continue with\b", re.IGNORECASE),
+)
+
 ACTION_PREFIXES = ("- ", "* ", "• ", "1. ", "2. ", "3. ")
 DECISION_PATTERNS = (
     "완료",
@@ -74,7 +88,22 @@ def _looks_like_terminal_frame(line: str) -> bool:
 def _get_noise_patterns(profile: str) -> tuple[re.Pattern[str], ...]:
     if profile == "codex":
         return COMMON_NOISE_PATTERNS + CODEX_NOISE_PATTERNS
+    if profile == "gemini-cli":
+        return COMMON_NOISE_PATTERNS + GEMINI_NOISE_PATTERNS
+    if profile == "windsurf":
+        return COMMON_NOISE_PATTERNS + WINDSURF_NOISE_PATTERNS
     return COMMON_NOISE_PATTERNS
+
+
+def infer_transcript_profile(agent_name: str = "", source_name: str = "") -> str:
+    value = f"{agent_name} {source_name}".lower()
+    if "codex" in value:
+        return "codex"
+    if "gemini" in value:
+        return "gemini-cli"
+    if "windsurf" in value:
+        return "windsurf"
+    return "default"
 
 
 def clean_transcript_content(content: str, profile: str = "default") -> str:

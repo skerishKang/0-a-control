@@ -148,6 +148,41 @@ function renderTranscriptModeTabs(transcript) {
   });
 }
 
+function renderTranscriptActions(transcriptText, sessionTitle, transcriptMode) {
+  const target = document.getElementById("sessionTranscriptActions");
+  if (!target || !transcriptText) return;
+  target.innerHTML = `
+    <button type="button" class="filter-chip" data-transcript-action="copy">복사</button>
+    <button type="button" class="filter-chip" data-transcript-action="download">다운로드</button>
+  `;
+
+  target.querySelectorAll("[data-transcript-action]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const action = button.dataset.transcriptAction;
+      if (action === "copy") {
+        await navigator.clipboard.writeText(transcriptText);
+        button.textContent = "복사됨";
+        window.setTimeout(() => {
+          button.textContent = "복사";
+        }, 1200);
+        return;
+      }
+
+      const safeTitle = (sessionTitle || "session").replace(/[\\/:*?\"<>|]+/g, "_");
+      const filename = `${safeTitle}-${transcriptMode}.txt`;
+      const blob = new Blob([transcriptText], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    });
+  });
+}
+
 function renderSessionRecords() {
   renderSessionRecordFilters();
   const filteredRecords = (state.sessionPanelView?.dialogue || []).filter((record) => {
@@ -206,17 +241,22 @@ function renderSessionPanelContent() {
     const transcriptText = transcriptMode === "raw"
       ? (transcript.raw_content || "")
       : (transcript.cleaned_content || transcript.content || "");
+    const transcriptModeLabel = transcriptMode === "raw" ? "원문" : "정리본";
     target.innerHTML = transcript.available
       ? `
         <div class="detail-section">
           <strong>원문 transcript</strong>
-          <div id="sessionTranscriptModeTabs" class="filter-chip-row compact" style="margin:8px 0 12px;"></div>
-          <p class="muted" style="margin:0 0 8px;">현재 보기: ${escapeHtml(transcriptMode === "raw" ? "원문" : "정리본")}${transcript.profile ? ` · profile: ${escapeHtml(transcript.profile)}` : ""}</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 12px;">
+            <div id="sessionTranscriptModeTabs" class="filter-chip-row compact"></div>
+            <div id="sessionTranscriptActions" class="filter-chip-row compact"></div>
+          </div>
+          <p class="muted" style="margin:0 0 8px;">현재 보기: ${escapeHtml(transcriptModeLabel)}${transcript.profile ? ` · profile: ${escapeHtml(transcript.profile)}` : ""}</p>
           <pre style="white-space:pre-wrap;max-height:420px;overflow:auto;">${escapeHtml(transcriptText)}</pre>
         </div>
       `
       : `<div class="detail-section"><strong>원문 transcript</strong><p class="muted">저장된 transcript가 없습니다.</p></div>`;
     renderTranscriptModeTabs(transcript);
+    renderTranscriptActions(transcriptText, view.header?.title || view.session_id, transcriptModeLabel);
     return;
   }
 

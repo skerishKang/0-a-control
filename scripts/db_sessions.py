@@ -8,12 +8,12 @@ try:
     from scripts.agent_registry import canonical_agent_name
     from scripts.db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from scripts.db_state import refresh_current_state
-    from scripts.session_summary import build_session_badges, clean_transcript_content, parse_summary_md
+    from scripts.session_summary import build_session_badges, clean_transcript_content, infer_transcript_profile, parse_summary_md
 except ModuleNotFoundError:
     from agent_registry import canonical_agent_name
     from db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from db_state import refresh_current_state
-    from session_summary import build_session_badges, clean_transcript_content, parse_summary_md
+    from session_summary import build_session_badges, clean_transcript_content, infer_transcript_profile, parse_summary_md
 
 
 def start_session(
@@ -273,7 +273,7 @@ def get_session_view_model(session_id: str, record_limit: int = 500) -> dict:
     transcript_raw_content = "\n\n".join(
         record.get("content", "").strip() for record in transcript_records if record.get("content")
     ).strip()
-    transcript_profile = "codex" if (session.get("agent_name") or "").lower() == "codex" else "default"
+    transcript_profile = infer_transcript_profile(agent_name=session.get("agent_name") or "")
     transcript_cleaned_content = clean_transcript_content(
         transcript_raw_content,
         profile=transcript_profile,
