@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import uuid
@@ -399,11 +399,11 @@ def _load_transcript_excerpt(conn, session_id: str, limit: int = 8) -> list[str]
             continue
         if line in {"Working", "Explored"}:
             continue
-        if len(line) >= 20 and set(line) <= {"─", "│", "╭", "╮", "╰", "╯", " "}:
+        if len(line) >= 20 and set(line) <= {"│", "•", "─", " ", "╭", "╮", "╰", "╯"}:
             continue
-        if line.startswith("│ directory:"):
+        if line.startswith("│ directory:") or line.startswith("directory:"):
             continue
-        if line.startswith("│ model:"):
+        if line.startswith("│ model:") or line.startswith("model:"):
             continue
         if "OpenAI Codex" in line and "directory:" in line:
             continue
@@ -576,3 +576,4 @@ def get_resume_context(
             "prompt": prompt,
             "compact_prompt": compact_prompt,
         }
+

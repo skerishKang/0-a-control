@@ -1,142 +1,110 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Export sessions from DB to operational memory structure.
 Creates session notes in sessions/YYYY-MM-DD/ folder.
 """
 
-import sqlite3
-import json
-import os
+from __future__ import annotations
+
 from datetime import datetime
 from pathlib import Path
 
-DB_PATH = "G:/Ddrive/BatangD/task/workdiary/0-a-control/data/control_tower.db"
+try:
+    from scripts.db_sessions import get_session_view_model
+    from scripts.db_base import connect, rows_to_dicts
+except ModuleNotFoundError:
+    from db_sessions import get_session_view_model
+    from db_base import connect, rows_to_dicts
+
+
 SESSIONS_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions")
 
 
-def parse_timestamp(ts):
-    """Parse ISO timestamp to datetime and date string."""
+def parse_timestamp(ts: str | None) -> tuple[datetime | None, str | None]:
     if not ts:
         return None, None
     try:
         dt = datetime.fromisoformat(ts.replace("+00:00", ""))
         return dt, dt.strftime("%Y-%m-%d")
-    except:
+    except Exception:
         return None, None
 
 
-def format_time(ts):
-    """Format timestamp to HH:MM."""
+def format_time(ts: str | None) -> str:
     dt, _ = parse_timestamp(ts)
     return dt.strftime("%H:%M") if dt else ""
 
 
-def extract_sections(summary_md, metadata_json):
-    """
-    Extract Intent, Actions, Decisions, Next Start from summary_md.
-    Rule-based extraction only - don't fabricate content.
-    """
-    if not summary_md:
-        return "See transcript for details", [], [], []
-
-    lines = [l.strip() for l in summary_md.strip().split("\n") if l.strip()]
-    if not lines:
-        return "No summary", [], [], []
-
-    # Extract: first line as Intent
-    intent = lines[0]
-
-    # Categorize remaining lines
-    actions = []
-    decisions = []
-    next_start = []
-
-    # Keywords for categorization
-    decision_keywords = ["완료", "종료", "정리", "결정", "done", "complete", "finished", "ended", "updated", "created", "수정", "변경"]
-    next_keywords = ["다음", "next", "continue", "다음으로", "다음 단계", "then", "after this"]
-    action_indicators = ["-", "•", "*", "1.", "2.", "3."]
-
-    for line in lines[1:]:
-        # Skip token usage lines
-        if "Token usage" in line or "left ·" in line or "esc to interrupt" in line:
-            continue
-        if "session ended" in line.lower() or "session exited" in line.lower():
-            decisions.append(line)
-            continue
-
-        # Check for next/start keywords
-        lower_line = line.lower()
-        is_next = any(k in lower_line for k in next_keywords)
-        is_decision = any(k in lower_line for k in decision_keywords)
-
-        # Check if it's a list item
-        is_list = any(line.startswith(indicator) for indicator in action_indicators)
-
-        if is_next:
-            next_start.append(line)
-        elif is_decision:
-            decisions.append(line)
-        elif is_list:
-            actions.append(line)
-        elif len(line) > 10:  # Only include meaningful lines
-            # Default to actions if ambiguous
-            actions.append(line)
-
-    # Deduplicate while preserving order
-    def dedupe(items):
-        seen = set()
-        result = []
-        for item in items:
-            if item not in seen:
-                seen.add(item)
-                result.append(item)
-        return result
-
-    actions = dedupe(actions)[:5]  # Max 5 items
-    decisions = dedupe(decisions)[:3]  # Max 3 items
-    next_start = dedupe(next_start)[:3]  # Max 3 items
-
-    return intent, actions, decisions, next_start
+def _format_list(items: list[str], fallback: str) -> list[str]:
+    cleaned = [item.strip() for item in items if item and item.strip()]
+    return cleaned or [fallback]
 
 
-def session_note_from_row(row):
-    """Create session note content from DB row."""
-    (session_id, agent_name, model_name, source_type, project_key,
-     working_dir, title, started_at, ended_at, summary_md, status,
-     files_touched_json, actions_json, metadata_json) = row
+def _display_text(value: str | None, fallback: str) -> str:
+    text = (value or "").strip()
+    if not text:
+        return fallback
+    broken_markers = ("\ufffd", "?붿", "덈", "몄", "湲", "떎")
+    if any(marker in text for marker in broken_markers) or text.count("?") >= 2:
+        return fallback
+    return text
 
-    # Parse metadata
-    meta = json.loads(metadata_json) if metadata_json else {}
-    transcript_path = meta.get("transcript_path", "")
 
-    # Parse timestamps
+def session_note_from_view(view: dict) -> tuple[str, str, str]:
+    header = view.get("header", {})
+    meta = view.get("meta", {})
+    summary = view.get("summary", {})
+    artifacts = view.get("artifacts", {})
+    transcript = view.get("transcript", {})
+    quest = view.get("quest", {})
+
+    session_id = view["session_id"]
+    started_at = header.get("started_at")
+    ended_at = header.get("ended_at")
     started_dt, date_str = parse_timestamp(started_at)
-    ended_dt, _ = parse_timestamp(ended_at)
 
-    time_str = ""
-    if started_dt:
-        end_time = format_time(ended_at) if ended_at else "active"
-        time_str = f"{format_time(started_at)} ~ {end_time}"
+    if not date_str:
+        date_str = "unknown"
 
-    # File naming: YYYY-MM-DD/YYYY-MM-DD_HHMM_<short-id>.md
-    time_prefix = format_time(started_at).replace(":", "") if started_dt else "0000"
+    title = header.get("title") or meta.get("project_key") or "Untitled session"
+    agent_name = meta.get("agent_name") or "-"
+    status = header.get("status") or "-"
+    source_type = meta.get("source_type") or "-"
+    project_key = meta.get("project_key") or "-"
+    model_name = meta.get("model_name") or "-"
+    working_dir = meta.get("working_dir") or "-"
+
+    start_time = format_time(started_at)
+    end_time = format_time(ended_at) if ended_at else "active"
+    time_str = f"{start_time} ~ {end_time}" if start_time else ""
+
+    time_prefix = start_time.replace(":", "") if start_time else "0000"
     short_id = session_id[:8]
-    filename = f"{date_str}_{time_prefix}_{short_id}.md" if date_str else f"unknown_{short_id}.md"
+    filename = f"{date_str}_{time_prefix}_{short_id}.md"
 
-    # Extract sections
-    intent, actions, decisions, next_start = extract_sections(summary_md, metadata_json)
+    intent = _display_text(summary.get("intent"), "요약이 없습니다.")
+    actions = _format_list(summary.get("actions") or [], "(no specific actions recorded)")
+    decisions = _format_list(summary.get("decisions") or [], "(none recorded)")
+    next_start = _format_list(
+        summary.get("next_start") or [],
+        "Check current-state API for today's mission",
+    )
+    files_touched = [item.strip() for item in (artifacts.get("files_touched") or []) if item and item.strip()]
+    actions_json = [item.strip() for item in (artifacts.get("actions") or []) if item and item.strip()]
 
-    # Build note content
-    note = f"""# Session Note
+    note = f"""# {title}
 
 ## Metadata
 
 - **Session ID**: `{session_id}`
-- **Date**: {date_str or "unknown"}
+- **Date**: {date_str}
 - **Time**: {time_str}
 - **Agent**: {agent_name}
+- **Model**: {model_name}
+- **Project**: {project_key}
+- **Working Dir**: `{working_dir}`
+- **Source Type**: {source_type}
 - **Status**: {status}
-- **Previous Session**: N/A (exported from DB)
 
 ---
 
@@ -150,34 +118,26 @@ def session_note_from_row(row):
 
 ## Actions
 
-> What was actually done? (bullet points)
+> What was actually done?
 
 """
 
-    if actions:
-        for a in actions:
-            if a.strip():
-                note += f"- {a.strip()}\n"
-    else:
-        note += "- (no specific actions recorded)\n"
+    for item in actions:
+        note += f"- {item}\n"
 
     note += """
-
 ## Decisions
 
-> What was decided? (with rationale if available)
+> What was decided?
 
 | Decision | Rationale |
 |----------|-----------|
 """
+    for item in decisions:
+        note += f"| {item} | - |\n"
 
-    if decisions:
-        for d in decisions:
-            note += f"| {d} | - |\n"
-    else:
-        note += "| (none recorded) | |\n"
-
-    note += """---
+    note += """
+---
 
 ## Artifacts
 
@@ -185,8 +145,16 @@ def session_note_from_row(row):
 
 | File | Role |
 |------|------|
-| (none recorded) |       |
+"""
+    if not files_touched and not actions_json:
+        note += "| (none recorded) | - |\n"
+    else:
+        for item in files_touched:
+            note += f"| {item} | file |\n"
+        for item in actions_json:
+            note += f"| {item} | action |\n"
 
+    note += """
 ---
 
 ## Next Start
@@ -194,98 +162,77 @@ def session_note_from_row(row):
 > Where should the next session pick up?
 
 """
+    for index, item in enumerate(next_start, 1):
+        note += f"{index}. {item}\n"
 
-    if next_start:
-        for i, n in enumerate(next_start, 1):
-            note += f"{i}. {n}\n"
-    else:
-        note += "1. Check current-state API for today's mission\n"
-        note += "2. Review plans for pending items\n"
+    note += """
+---
 
-    note += """---
+## Quest
+
+"""
+    note += f"- Recent quest report: {quest.get('report') or '(none recorded)'}\n"
+    note += f"- Recent AI verdict: {quest.get('verdict') or '(none recorded)'}\n"
+
+    note += """
+---
 
 ## Raw Refs
 
-> Transcript path or other references (not full content)
+> Transcript path or raw references (not full content)
 
 """
-
-    if transcript_path:
-        note += f"- Transcript: `{transcript_path}`\n"
+    if transcript.get("available"):
+        note += f"- Transcript: embedded in DB source_records ({transcript.get('record_count', 0)} record(s))\n"
     else:
         note += "- (no transcript)\n"
-
     note += f"- DB session: `{session_id}`\n"
 
-    return filename, note
+    return date_str, filename, note
 
 
-def export_sessions():
-    """Export all sessions from DB to sessions/ folder."""
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT id, agent_name, model_name, source_type, project_key,
-               working_dir, title, started_at, ended_at, summary_md, status,
-               files_touched_json, actions_json, metadata_json
-        FROM sessions
-        ORDER BY started_at DESC
-    """)
-    rows = cur.fetchall()
-    conn.close()
+def export_sessions() -> int:
+    with connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT *
+            FROM sessions
+            ORDER BY started_at DESC
+            """
+        ).fetchall()
+        sessions = rows_to_dicts(rows)
 
-    print(f"Found {len(rows)} sessions")
+    print(f"Found {len(sessions)} sessions")
 
-    # Track for INDEX
-    index_entries = []
+    index_entries: list[dict] = []
 
-    for row in rows:
-        session_id = row[0]
-        started_at = row[7]
-        _, date_str = parse_timestamp(started_at)
+    for session in sessions:
+        view = get_session_view_model(session["id"])
+        date_str, filename, content = session_note_from_view(view)
 
-        if not date_str:
-            date_str = "unknown"
-            print(f"  Skipping session without date: {session_id}")
-            continue
-
-        # Create date folder
         date_dir = SESSIONS_DIR / date_str
         date_dir.mkdir(parents=True, exist_ok=True)
-
-        # Generate note
-        filename, content = session_note_from_row(row)
-
-        # Write note
         filepath = date_dir / filename
         filepath.write_text(content, encoding="utf-8")
 
-        # Add to index
-        status = row[10]
-        agent = row[1]
-        title = row[6] or "Untitled"
-        index_entries.append({
-            "date": date_str,
-            "filename": filename,
-            "status": status,
-            "agent": agent,
-            "title": title[:50]
-        })
-
+        index_entries.append(
+            {
+                "date": date_str,
+                "filename": filename,
+                "status": view["header"].get("status") or "-",
+                "agent": view["meta"].get("agent_name") or "-",
+                "title": (view["header"].get("title") or "Untitled")[:50],
+            }
+        )
         print(f"  Created: {date_str}/{filename}")
 
-    # Update INDEX.md
     update_index(index_entries)
-
     print("\nExport complete!")
-    return len(rows)
+    return len(sessions)
 
 
-def update_index(entries):
-    """Update sessions/INDEX.md with session list."""
-    # Sort by date descending
-    entries.sort(key=lambda x: x["date"], reverse=True)
-
+def update_index(entries: list[dict]) -> None:
+    entries.sort(key=lambda item: item["date"], reverse=True)
     lines = [
         "# Session Index",
         "",
@@ -293,16 +240,21 @@ def update_index(entries):
         "|------|---------|-------|--------|-------|",
     ]
 
-    for e in entries:
-        title_escaped = e["title"].replace("|", "\\|")
-        lines.append(f"| {e['date']} | {e['filename'][:16]}... | {e['agent']} | {e['status']} | {title_escaped} |")
+    for item in entries:
+        title_escaped = item["title"].replace("|", "\\|")
+        lines.append(
+            f"| {item['date']} | {item['filename'][:16]}... | {item['agent']} | {item['status']} | {title_escaped} |"
+        )
 
-    lines.append("")
-    lines.append("## Usage")
-    lines.append("")
-    lines.append("1. New session: Copy `TEMPLATE.md` as `YYYY-MM-DD_HHMM_<id>.md`")
-    lines.append("2. Fill in during/after session")
-    lines.append("3. Next session reads last session note for context")
+    lines.extend(
+        [
+            "",
+            "## Usage",
+            "",
+            "sessions/ is a read-only export from SQLite.",
+            "If DB state changes, rerun the export instead of editing these files manually.",
+        ]
+    )
 
     index_path = SESSIONS_DIR / "INDEX.md"
     index_path.write_text("\n".join(lines), encoding="utf-8")
@@ -311,3 +263,4 @@ def update_index(entries):
 
 if __name__ == "__main__":
     export_sessions()
+

@@ -24,33 +24,33 @@
 | 2026-03-14 | 2026-03-14_2301_... | gemini-cli | active | 0-a-control new session |
 | 2026-03-14 | 2026-03-14_2301_... | opencode | active | 0-a-control new opencode session |
 | 2026-03-14 | 2026-03-14_2301_... | kilo | closed | 0-a-control new session |
-| 2026-03-14 | 2026-03-14_2301_... | codex | closed | Untitled |
-| 2026-03-14 | 2026-03-14_2259_... | codex | closed | Untitled |
-| 2026-03-14 | 2026-03-14_2257_... | codex | closed | Untitled |
-| 2026-03-14 | 2026-03-14_2257_... | codex | closed | Untitled |
-| 2026-03-14 | 2026-03-14_2249_... | codex | active | Untitled |
-| 2026-03-14 | 2026-03-14_2244_... | codex | active | Untitled |
-| 2026-03-14 | 2026-03-14_2243_... | codex | active | Untitled |
-| 2026-03-14 | 2026-03-14_2241_... | codex | closed | Untitled |
-| 2026-03-14 | 2026-03-14_2233_... | codex | closed | Untitled |
+| 2026-03-14 | 2026-03-14_2301_... | codex | closed | workdiary |
+| 2026-03-14 | 2026-03-14_2259_... | codex | closed | workdiary |
+| 2026-03-14 | 2026-03-14_2257_... | codex | closed | workdiary |
+| 2026-03-14 | 2026-03-14_2257_... | codex | closed | workdiary |
+| 2026-03-14 | 2026-03-14_2249_... | codex | active | workdiary |
+| 2026-03-14 | 2026-03-14_2244_... | codex | active | workdiary |
+| 2026-03-14 | 2026-03-14_2243_... | codex | active | workdiary |
+| 2026-03-14 | 2026-03-14_2241_... | codex | closed | workdiary |
+| 2026-03-14 | 2026-03-14_2233_... | codex | closed | workdiary |
 | 2026-03-14 | 2026-03-14_1838_... | kilo | active | 0-a-control new session |
 | 2026-03-14 | 2026-03-14_1838_... | kilo | active | 0-a-control new session |
 | 2026-03-14 | 2026-03-14_1048_... | kilo | active | 0-a-control new session |
-| 2026-03-13 | 2026-03-13_2121_... | codex | active | Untitled |
-| 2026-03-13 | 2026-03-13_2121_... | codex | active | Untitled |
-| 2026-03-13 | 2026-03-13_2102_... | codex | closed | Untitled |
-| 2026-03-13 | 2026-03-13_2102_... | codex | closed | Untitled |
+| 2026-03-13 | 2026-03-13_2121_... | codex | active | workdiary |
+| 2026-03-13 | 2026-03-13_2121_... | codex | active | workdiary |
+| 2026-03-13 | 2026-03-13_2102_... | codex | closed | workdiary |
+| 2026-03-13 | 2026-03-13_2102_... | codex | closed | workdiary |
 | 2026-03-13 | 2026-03-13_1812_... | kilo | closed | 0-a-control new session |
 | 2026-03-13 | 2026-03-13_1811_... | kilo | closed | 0-a-control new session |
-| 2026-03-13 | 2026-03-13_1544_... | codex | active | Untitled |
-| 2026-03-13 | 2026-03-13_1443_... | codex | closed | Untitled |
-| 2026-03-13 | 2026-03-13_1442_... | codex | closed | Untitled |
-| 2026-03-13 | 2026-03-13_1057_... | codex | closed | Untitled |
+| 2026-03-13 | 2026-03-13_1544_... | codex | active | workdiary |
+| 2026-03-13 | 2026-03-13_1443_... | codex | closed | workdiary |
+| 2026-03-13 | 2026-03-13_1442_... | codex | closed | workdiary |
+| 2026-03-13 | 2026-03-13_1057_... | codex | closed | workdiary |
 | 2026-03-11 | 2026-03-11_1219_... | kilo | active | 0-a-control new session |
 | 2026-03-11 | 2026-03-11_1219_... | opencode | active | 0-a-control new opencode session |
-| 2026-03-11 | 2026-03-11_0546_... | codex | closed | Untitled |
-| 2026-03-11 | 2026-03-11_0546_... | codex | closed | Untitled |
-| 2026-03-11 | 2026-03-11_0315_... | codex | closed | Untitled |
+| 2026-03-11 | 2026-03-11_0546_... | codex | closed | workdiary |
+| 2026-03-11 | 2026-03-11_0546_... | codex | closed | workdiary |
+| 2026-03-11 | 2026-03-11_0315_... | codex | closed | workdiary |
 | 2026-03-09 | 2026-03-09_0656_... | codex | closed | 0-a-control pre session |
 | 2026-03-09 | 2026-03-09_0654_... | codex | closed | 0-a-control pre session |
 | 2026-03-08 | 2026-03-08_2306_... | gemini-cli | active | Metadata Test |
@@ -150,6 +150,5 @@
 
 ## Usage
 
-1. New session: Copy `TEMPLATE.md` as `YYYY-MM-DD_HHMM_<id>.md`
-2. Fill in during/after session
-3. Next session reads last session note for context
+sessions/ is a read-only export from SQLite.
+If DB state changes, rerun the export instead of editing these files manually.
