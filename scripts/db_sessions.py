@@ -8,12 +8,12 @@ try:
     from scripts.agent_registry import canonical_agent_name
     from scripts.db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from scripts.db_state import refresh_current_state
-    from scripts.session_summary import build_session_badges, parse_summary_md
+    from scripts.session_summary import build_session_badges, clean_transcript_content, parse_summary_md
 except ModuleNotFoundError:
     from agent_registry import canonical_agent_name
     from db_base import connect, merge_metadata, now_iso, record_event, row_to_dict, rows_to_dicts
     from db_state import refresh_current_state
-    from session_summary import build_session_badges, parse_summary_md
+    from session_summary import build_session_badges, clean_transcript_content, parse_summary_md
 
 
 def start_session(
@@ -273,6 +273,7 @@ def get_session_view_model(session_id: str, record_limit: int = 500) -> dict:
     transcript_content = "\n\n".join(
         record.get("content", "").strip() for record in transcript_records if record.get("content")
     ).strip()
+    transcript_content = clean_transcript_content(transcript_content)
 
     metadata_value = session.get("metadata_json")
     if isinstance(metadata_value, dict):

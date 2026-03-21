@@ -366,7 +366,7 @@ function renderSessions() {
     const badges = analyzeSessionForBadges(item);
     const preview = generateSessionPreview(item);
     const time = formatRecentLabel(item.ended_at || item.started_at);
-    const title = item.title || item.project_key || "?몄뀡";
+    const title = item.title || item.project_key || "세션";
     
     return `
       <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}" onclick="openSessionDetailPanel('${item.id}')">
@@ -376,7 +376,7 @@ function renderSessions() {
           <span style="color:${badges.valueColor};font-size:10px;">${badges.valueLabel}</span>
         </div>
         <span style="color:#777;font-size:11px;">${escapeHtml(preview)}</span>
-        <span style="color:#999;font-size:10px;display:block;margin-top:2px;">${escapeHtml(item.agent_name)} 쨌 ${time}</span>
+        <span style="color:#999;font-size:10px;display:block;margin-top:2px;">${escapeHtml(item.agent_name)} · ${time}</span>
       </div>
     `;
   };
@@ -391,7 +391,7 @@ function renderSessions() {
 
   const renderSessionCard = (item, isDetailed = false) => {
     const agentLabel = [item.agent_name, item.model_name].filter(Boolean).join(" / ");
-    const summary = item.summary_md || "?꾩쭅 ?몄뀡 ?붿빟???놁뒿?덈떎.";
+    const summary = item.summary_md || "아직 세션 요약이 없습니다.";
     const category = classifySession(item);
     
     const verdictBadge = item.has_quest_verdict
@@ -409,7 +409,7 @@ function renderSessions() {
         <div class="session-link-head">
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             ${agentBadge}
-            <strong>${escapeHtml(item.title || item.project_key || "?몄뀡")}</strong>
+            <strong>${escapeHtml(item.title || item.project_key || "세션")}</strong>
             ${categoryBadge}
           </div>
           ${verdictBadge}
@@ -428,10 +428,10 @@ function renderSessions() {
   };
 
   const categoryLabel = {
-    operational: "?댁쁺 ?몄뀡",
-    unknown: "遺꾨쪟 誘명솗???몄뀡",
-    test: "?뚯뒪???몄뀡",
-    simulated: "?쒕??덉씠???몄뀡",
+    operational: "운영 세션",
+    unknown: "분류 미확정 세션",
+    test: "테스트 세션",
+    simulated: "시뮬레이션 세션",
   };
 
   parentPanel.onclick = () => {
@@ -454,7 +454,7 @@ function renderSessions() {
       return `${headerHtml}<div onclick="openSessionDetailPanel('${item.id}')" class="clickable-item">${cardHtml}</div>`;
     };
 
-    showDetailedList("理쒓렐 ?몄뀡", "?꾩껜 ?몄뀡 紐⑸줉", sortedSessions, detailFormatter);
+    showDetailedList("최근 세션", "전체 세션 목록", sortedSessions, detailFormatter);
   };
 }
 

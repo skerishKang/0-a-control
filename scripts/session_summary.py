@@ -4,13 +4,15 @@ import re
 from typing import Any
 
 
+ANSI_ESCAPE_RE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+
 TRANSCRIPT_META_PATTERNS = (
     re.compile(r"^Script started on\b", re.IGNORECASE),
     re.compile(r"^Script done on\b", re.IGNORECASE),
 )
 
 NOISE_PATTERNS = (
-    re.compile(r"^[■•]\s*Conversation interrupted\b", re.IGNORECASE),
+    re.compile(r"^\s*Conversation interrupted\b", re.IGNORECASE),
     re.compile(r"^Something went wrong", re.IGNORECASE),
     re.compile(r"^Hit `/feedback` to report\b", re.IGNORECASE),
     re.compile(r"^Tip:\s*NEW:\s*Use ChatGPT Apps\b", re.IGNORECASE),
@@ -19,18 +21,69 @@ NOISE_PATTERNS = (
     re.compile(r"\bgpt-[\w.]+\s+\w+\s+·\s+\d+%\s+left", re.IGNORECASE),
 )
 
+ACTION_PREFIXES = ("- ", "* ", "• ", "1. ", "2. ", "3. ")
+DECISION_PATTERNS = (
+    "완료",
+    "종료",
+    "결정",
+    "정리",
+    "done",
+    "complete",
+    "completed",
+    "finished",
+    "ended",
+    "updated",
+    "created",
+    "fixed",
+)
+NEXT_PATTERNS = (
+    "다음",
+    "next",
+    "continue",
+    "restart",
+    "resume",
+    "follow-up",
+)
+
+
+def strip_ansi(content: str) -> str:
+    return ANSI_ESCAPE_RE.sub("", content or "")
+
+
+def clean_transcript_content(content: str) -> str:
+    cleaned_lines: list[str] = []
+    for raw_line in strip_ansi(content).splitlines():
+        line = raw_line.rstrip()
+        stripped = line.strip()
+        if not stripped:
+            cleaned_lines.append("")
+            continue
+        if any(pattern.match(stripped) for pattern in TRANSCRIPT_META_PATTERNS):
+            continue
+        if any(pattern.search(stripped) for pattern in NOISE_PATTERNS):
+            continue
+        cleaned_lines.append(line)
+
+    compacted: list[str] = []
+    blank_run = 0
+    for line in cleaned_lines:
+        if not line.strip():
+            blank_run += 1
+            if blank_run > 1:
+                continue
+        else:
+            blank_run = 0
+        compacted.append(line)
+
+    return "\n".join(compacted).strip()
+
 
 def _clean_lines(content: str) -> list[str]:
     lines: list[str] = []
-    for raw_line in content.splitlines():
+    for raw_line in clean_transcript_content(content).splitlines():
         line = raw_line.strip()
-        if not line:
-            continue
-        if any(pattern.match(line) for pattern in TRANSCRIPT_META_PATTERNS):
-            continue
-        if any(pattern.search(line) for pattern in NOISE_PATTERNS):
-            continue
-        lines.append(line)
+        if line:
+            lines.append(line)
     return lines
 
 
@@ -56,31 +109,6 @@ def summarize_transcript(content: str, title: str = "", project_key: str = "") -
     if len(summary) > 220:
         summary = summary[:217].rstrip() + "..."
     return summary
-
-
-ACTION_PREFIXES = ("- ", "* ", "• ", "1. ", "2. ", "3. ")
-DECISION_PATTERNS = (
-    "완료",
-    "종료",
-    "결정",
-    "정리",
-    "done",
-    "complete",
-    "completed",
-    "finished",
-    "ended",
-    "updated",
-    "created",
-    "fixed",
-)
-NEXT_PATTERNS = (
-    "다음",
-    "next",
-    "continue",
-    "restart",
-    "resume",
-    "follow-up",
-)
 
 
 def _dedupe(items: list[str], limit: int) -> list[str]:
