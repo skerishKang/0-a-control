@@ -6,35 +6,33 @@ import re
 from pathlib import Path
 
 from db_sessions import append_source_record, update_session_summary
-from session_summary import summarize_transcript
+from session_summary import clean_transcript_content, strip_ansi, summarize_transcript
 
-ANSI_CSI_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
-ANSI_OSC_RE = re.compile(r"\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)")
 
-# Common Prompts for heuristic splitting
-USER_RE = re.compile(r"^(?:> |› |(?:You|User|Human):\s*)", re.IGNORECASE)
+USER_RE = re.compile(r"^(?:> |(?:You|User|Human|사용자):\s*)", re.IGNORECASE)
 ASSISTANT_RE = re.compile(
-    r"^(?:(?:Codex|Gemini|Assistant|AI|Response|Bot):\s*|•\s|[-*]\s)",
+    r"^(?:(?:Codex|Gemini|Assistant|AI|Response|Bot|Windsurf):\s*|[-*]\s)",
     re.IGNORECASE,
 )
 TOOL_RE = re.compile(
-    r"^(?:(?:Tool|System|Executing|Error|Warning|Info):\s*|\$\s+|\[\d{4}-\d{2}-\d{2}|Script started on|Windows PowerShell 기록)",
+    r"^(?:(?:Tool|System|Executing|Error|Warning|Info):\s*|\$\s+|\[\d{4}-\d{2}-\d{2}|Script started on|Script done on)",
     re.IGNORECASE,
 )
 
 NOISE_RE = re.compile(
-    r"^(?:Tip:|model:\s|directory:\s|gpt-[\w.-]+|OpenAI Codex|Windows PowerShell 기록|PSVersion:|Host Application:|호스트 응용 프로그램:)",
+    r"^(?:Tip:|model:\s|directory:\s|gpt-[\w.-]+|OpenAI Codex|Token usage:|To continue this session, run codex resume)",
     re.IGNORECASE,
 )
 
-def strip_ansi(text: str) -> str:
-    text = ANSI_OSC_RE.sub("", text)
-    text = ANSI_CSI_RE.sub("", text)
-    text = text.replace("\r", "\n")
-    text = re.sub(r"(?<!\n)([›•])\s", r"\n\1 ", text)
-    text = re.sub(r"(?<!\n)(Script started on)", r"\n\1", text)
-    text = re.sub(r"(?<!\n)(Script done on)", r"\n\1", text)
-    return text
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Import terminal transcript into source_records")
+    parser.add_argument("--session-id", required=True)
+    parser.add_argument("--source-name", required=True)
+    parser.add_argument("--project", default="")
+    parser.add_argument("--cwd", default="")
+    parser.add_argument("--file", required=True)
+    return parser.parse_args()
 
 
 def normalize_line(line: str) -> str:
@@ -48,28 +46,19 @@ def is_noise_line(line: str) -> bool:
         return True
     if NOISE_RE.match(line):
         return True
-    if len(line) >= 20 and set(line) <= {"─", "│", "╭", "╮", "╰", "╯", " "}:
-        return True
     return False
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Import terminal transcript into source_records")
-    parser.add_argument("--session-id", required=True)
-    parser.add_argument("--source-name", required=True)
-    parser.add_argument("--project", default="")
-    parser.add_argument("--cwd", default="")
-    parser.add_argument("--file", required=True)
-    return parser.parse_args()
 
 def chunk_transcript(content: str) -> list[dict[str, str]]:
-    chunks = []
-    current_role = "tool"  # default fallback
-    current_lines = []
+    chunks: list[dict[str, str]] = []
+    current_role = "tool"
+    current_lines: list[str] = []
 
-    for raw_line in content.splitlines():
+    for raw_line in clean_transcript_content(content).splitlines():
         line = normalize_line(raw_line)
         if is_noise_line(line):
             continue
+
         if USER_RE.match(line):
             if current_lines:
                 chunks.append({"role": current_role, "text": "\n".join(current_lines)})
@@ -93,8 +82,8 @@ def chunk_transcript(content: str) -> list[dict[str, str]]:
 
     if current_lines:
         chunks.append({"role": current_role, "text": "\n".join(current_lines)})
-    # Drop low-signal chunks that are just transcript scaffolding.
-    filtered = []
+
+    filtered: list[dict[str, str]] = []
     for chunk in chunks:
         text = chunk["text"].strip()
         if not text:
@@ -103,6 +92,7 @@ def chunk_transcript(content: str) -> list[dict[str, str]]:
             continue
         filtered.append({"role": chunk["role"], "text": text})
     return filtered
+
 
 def main() -> None:
     args = parse_args()
@@ -115,7 +105,6 @@ def main() -> None:
     if not content:
         raise SystemExit(0)
 
-    # 1. Save the entire original transcript as a single immutable tool record
     append_source_record(
         session_id=args.session_id,
         source_name=args.source_name,
@@ -127,11 +116,10 @@ def main() -> None:
         metadata={
             "transcript_path": str(transcript_path),
             "bytes": os.path.getsize(transcript_path),
-            "parse_type": "raw_dump"
+            "parse_type": "raw_dump",
         },
     )
 
-    # 2. Chunk by roles and save sequentially
     chunks = chunk_transcript(content)
     for i, chunk in enumerate(chunks):
         text = chunk["text"].strip()
@@ -147,11 +135,10 @@ def main() -> None:
             working_dir=args.cwd,
             metadata={
                 "chunk_index": i,
-                "total_chunks": len(chunks)
+                "total_chunks": len(chunks),
             },
         )
 
-    # 3. Update the summary
     update_session_summary(
         session_id=args.session_id,
         summary_md=summarize_transcript(content, project_key=args.project),
@@ -160,6 +147,7 @@ def main() -> None:
             "transcript_path": str(transcript_path),
         },
     )
+
 
 if __name__ == "__main__":
     main()

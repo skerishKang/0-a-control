@@ -5,6 +5,7 @@ from typing import Any
 
 
 ANSI_ESCAPE_RE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+LITERAL_ESCAPE_RE = re.compile(r"\\x1b\[[0-9;?]*[ -/]*[@-~]", re.IGNORECASE)
 
 TRANSCRIPT_META_PATTERNS = (
     re.compile(r"^Script started on\b", re.IGNORECASE),
@@ -15,10 +16,15 @@ NOISE_PATTERNS = (
     re.compile(r"^\s*Conversation interrupted\b", re.IGNORECASE),
     re.compile(r"^Something went wrong", re.IGNORECASE),
     re.compile(r"^Hit `/feedback` to report\b", re.IGNORECASE),
-    re.compile(r"^Tip:\s*NEW:\s*Use ChatGPT Apps\b", re.IGNORECASE),
+    re.compile(r"^Tip:\s*(?:NEW|New):", re.IGNORECASE),
     re.compile(r"^Enable in /experimental and restart Codex!?$", re.IGNORECASE),
     re.compile(r"^계속하려면 아무 키나 누르십시오", re.IGNORECASE),
-    re.compile(r"\bgpt-[\w.]+\s+\w+\s+·\s+\d+%\s+left", re.IGNORECASE),
+    re.compile(r"\bgpt-[\w.]+\s+\w+\s+[·•]\s+\d+%\s+left", re.IGNORECASE),
+    re.compile(r"^OpenAI Codex\b", re.IGNORECASE),
+    re.compile(r"^model:\s*", re.IGNORECASE),
+    re.compile(r"^directory:\s*", re.IGNORECASE),
+    re.compile(r"^Token usage:\s*", re.IGNORECASE),
+    re.compile(r"^To continue this session, run codex resume\b", re.IGNORECASE),
 )
 
 ACTION_PREFIXES = ("- ", "* ", "• ", "1. ", "2. ", "3. ")
@@ -47,21 +53,50 @@ NEXT_PATTERNS = (
 
 
 def strip_ansi(content: str) -> str:
-    return ANSI_ESCAPE_RE.sub("", content or "")
+    cleaned = ANSI_ESCAPE_RE.sub("", content or "")
+    cleaned = LITERAL_ESCAPE_RE.sub("", cleaned)
+    cleaned = cleaned.replace("\r", "\n")
+    cleaned = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", cleaned)
+    return cleaned
+
+
+def _looks_like_terminal_frame(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    frame_chars = set("╭╮╰╯│─┌┐└┘")
+    return len(stripped) >= 3 and all(ch in frame_chars for ch in stripped)
 
 
 def clean_transcript_content(content: str) -> str:
     cleaned_lines: list[str] = []
+    skip_bootstrap = False
+
     for raw_line in strip_ansi(content).splitlines():
         line = raw_line.rstrip()
         stripped = line.strip()
+
         if not stripped:
             cleaned_lines.append("")
+            continue
+
+        if "You are starting inside the 0-a-control workspace." in stripped:
+            skip_bootstrap = True
+            continue
+        if skip_bootstrap:
+            if "Keep that first reply to 1-3 short sentences." in stripped:
+                skip_bootstrap = False
+            continue
+
+        if _looks_like_terminal_frame(stripped):
             continue
         if any(pattern.match(stripped) for pattern in TRANSCRIPT_META_PATTERNS):
             continue
         if any(pattern.search(stripped) for pattern in NOISE_PATTERNS):
             continue
+        if stripped in {"Working", "Explored"}:
+            continue
+
         cleaned_lines.append(line)
 
     compacted: list[str] = []
