@@ -94,188 +94,206 @@ def classify_conversation(text: str) -> dict:
 
 
 def parse_quick_input(text: str) -> dict:
-    """
-    Parse natural language quick input into plan candidates with bucket classification.
-    
-    Expected format:
-        오늘:
-        - 9시 광주시 사단법인 문의
-        - 신보 카톡 확인 후 전화
-        
-        기한:
-        - 3/20 소상공인 지원사업 준비
-        
-        보류:
-        - 테무 보조모니터 보기
-    
-    Returns:
-        {
-            "candidates": [...],
-            "main_mission": {...},
-            "current_quest": {...}
-        }
-    """
+    """Parse Korean/English quick input into normalized plan candidates."""
     import re
     from datetime import datetime
-    
-    BUCKET_PATTERNS = {
-        "today": re.compile(r"^(오늘|today|지금|당장|오늘之内)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
-        "dated": re.compile(r"^(기한|마감|，截止|dealine|due)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
-        "hold": re.compile(r"^(보류|대기|잠시|hold|waiting)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
-        "short_term": re.compile(r"^(이번 주|주간|short.?term|주차)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
-        "long_term": re.compile(r"^(장기|올해|long.?term|年内)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
-        "recurring": re.compile(r"^(매주|반복|정기|recurring|매일|매월)\s*[:：]?", re.MULTILINE | re.IGNORECASE),
+
+    bucket_aliases = {
+        "today": {
+            "오늘", "today", "지금", "당장", "오늘 할 일", "오늘 우선", "today tasks",
+        },
+        "dated": {
+            "기한", "마감", "due", "deadline", "기한 일정", "마감 일정",
+        },
+        "hold": {
+            "보류", "대기", "hold", "waiting", "잠시 보류",
+        },
+        "short_term": {
+            "단기", "단기 플랜", "단기플랜", "short term", "short-term",
+            "이번 주", "이번주", "오늘 또는 단기",
+        },
+        "long_term": {
+            "장기", "long term", "long-term", "중장기",
+        },
+        "recurring": {
+            "반복", "정기", "매일", "매주", "매월", "recurring",
+        },
     }
-    
-    TIME_PATTERN = re.compile(r"(\d{1,2})[시시]")
-    DATE_PATTERN = re.compile(r"(\d{1,2})[/월\-.月](\d{1,2})")
-    URGENT_KEYWORDS = ["당장", "지금", "紧迫", "긴급", "urgent", "asap"]
-    
-    def extract_items_by_section(text: str) -> dict[str, list[str]]:
-        sections = {section: [] for section in ["today", "dated", "hold", "short_term", "long_term", "recurring"]}
-        current_bucket = None
-        lines = text.strip().split("\n")
-        
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            
-            matched_section = None
-            for section, pattern in BUCKET_PATTERNS.items():
-                if pattern.match(line):
-                    matched_section = section
-                    break
-            
-            if matched_section:
-                current_bucket = matched_section
-                continue
-            
-            if current_bucket and (line.startswith("-") or line.startswith("•") or line.startswith("*")):
-                item = line.lstrip("-•* ").strip()
-                if item:
-                    sections[current_bucket].append(item)
-            elif current_bucket and line:
-                sections[current_bucket].append(line)
-        
-        if not any(sections.values()):
-            sections["today"].extend([l.strip().lstrip("-•* ") for l in lines if l.strip()])
-        
-        return sections
-    
+
+    bucket_order = ["today", "dated", "hold", "short_term", "long_term", "recurring"]
+    sections = {bucket: [] for bucket in bucket_order}
+
+    bullet_pattern = re.compile(r"^\s*[-*\u2022\u00b7]\s*")
+    section_pattern = re.compile(r"\s*[:\uff1a]\s*$")
+    date_pattern = re.compile(r"(?<!\d)(\d{1,2})\s*[/.-]\s*(\d{1,2})(?!\d)")
+    time_pattern = re.compile(r"(\d{1,2})\s*\uc2dc")
+
+    urgent_keywords = ["오늘", "지금", "당장", "긴급", "급", "urgent", "asap", "마감", "기한"]
+    actionable_keywords = [
+        "문의", "확인", "전화", "연락", "체크", "보내기", "작성", "준비", "제출",
+        "reply", "call", "email", "send", "check", "verify",
+    ]
+
+    def normalize_header(line: str) -> str | None:
+        normalized = section_pattern.sub("", line.strip()).lower()
+        normalized = re.sub(r"\s+", " ", normalized)
+        for bucket, aliases in bucket_aliases.items():
+            if normalized in {alias.lower() for alias in aliases}:
+                return bucket
+        return None
+
+    current_bucket = None
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        bucket = normalize_header(line)
+        if bucket:
+            current_bucket = bucket
+            continue
+
+        item = bullet_pattern.sub("", line).strip()
+        if not item:
+            continue
+
+        if current_bucket is None:
+            current_bucket = "today"
+        sections[current_bucket].append(item)
+
+    if not any(sections.values()):
+        sections["today"] = [
+            bullet_pattern.sub("", line.strip())
+            for line in text.splitlines()
+            if line.strip()
+        ]
+
     def estimate_priority_score(item: str, bucket: str) -> int:
         score = 50
-        
-        item_lower = item.lower()
-        
-        if any(k in item_lower for k in URGENT_KEYWORDS):
-            score += 20
-        
-        if TIME_PATTERN.search(item):
-            score += 10
-        
+        lowered = item.lower()
+
         if bucket == "today":
-            score += 15
+            score += 20
         elif bucket == "dated":
+            score += 10
+        elif bucket == "short_term":
             score += 5
         elif bucket == "hold":
-            score -= 20
-        
-        if any(k in item_lower for k in ["문의", "확인", "전화", "연락", "체크", "check"]):
+            score -= 25
+        elif bucket == "long_term":
+            score -= 5
+
+        if any(keyword in lowered for keyword in urgent_keywords):
+            score += 15
+        if any(keyword in lowered for keyword in actionable_keywords):
             score += 10
-        
-        if len(item) < 20:
-            score += 5
-        
+        if date_pattern.search(item):
+            score += 8
+        if time_pattern.search(item):
+            score += 10
+        if len(item) <= 24:
+            score += 4
+
         return max(0, min(100, score))
-    
+
     def extract_due_date(item: str) -> str | None:
-        match = DATE_PATTERN.search(item)
-        if match:
-            month, day = int(match.group(1)), int(match.group(2))
-            now = datetime.now()
+        now = datetime.now()
+        date_match = date_pattern.search(item)
+        if date_match:
+            month, day = int(date_match.group(1)), int(date_match.group(2))
             year = now.year if month >= now.month else now.year + 1
             return f"{year}-{month:02d}-{day:02d}"
-        
-        time_match = TIME_PATTERN.search(item)
+
+        time_match = time_pattern.search(item)
         if time_match:
             hour = int(time_match.group(1))
-            now = datetime.now()
             return f"{now.year}-{now.month:02d}-{now.day:02d}T{hour:02d}:00"
-        
+
         return None
-    
-    sections = extract_items_by_section(text)
-    
+
     candidates = []
     all_items = []
-    
-    for bucket, items in sections.items():
-        for item in items:
+
+    for bucket in bucket_order:
+        for item in sections[bucket]:
             priority_score = estimate_priority_score(item, bucket)
-            due_date = extract_due_date(item) if bucket == "dated" else None
-            
             candidate = {
                 "title": item,
                 "bucket": bucket,
                 "description": f"[{bucket}] {item}",
                 "priority_score": priority_score,
             }
-            if due_date:
-                candidate["due_date"] = due_date
-            
+            if bucket == "dated":
+                due_date = extract_due_date(item)
+                if due_date:
+                    candidate["due_date"] = due_date
+
             candidates.append(candidate)
             all_items.append((item, bucket, priority_score))
-    
-    candidates.sort(key=lambda x: x["priority_score"], reverse=True)
-    
+
+    candidates.sort(key=lambda item: item["priority_score"], reverse=True)
+
     today_items = [(i, b, p) for i, b, p in all_items if b == "today"]
     dated_items = [(i, b, p) for i, b, p in all_items if b == "dated"]
     hold_items = [(i, b, p) for i, b, p in all_items if b == "hold"]
-    
+
     main_mission = None
     if today_items:
-        main_mission = max(today_items, key=lambda x: x[2])
+        title, bucket, score = today_items[0]
         main_mission = {
-            "title": main_mission[0],
-            "bucket": "today",
-            "reason": "오늘 해야 할 가장 중요한 일",
-            "priority_score": main_mission[2]
+            "title": title,
+            "bucket": bucket,
+            "reason": "오늘 목록에서 먼저 붙잡아야 할 중심 항목",
+            "priority_score": score,
         }
     elif dated_items:
-        main_mission = max(dated_items, key=lambda x: x[2])
+        title, bucket, score = max(dated_items, key=lambda item: item[2])
         main_mission = {
-            "title": main_mission[0],
-            "bucket": "dated",
-            "reason": "기한이 가장 가까운 중요 일",
-            "priority_score": main_mission[2]
+            "title": title,
+            "bucket": bucket,
+            "reason": "기한이 가까워 먼저 확인해야 하는 항목",
+            "priority_score": score,
         }
     elif candidates:
+        top = candidates[0]
         main_mission = {
-            "title": candidates[0]["title"],
-            "bucket": candidates[0]["bucket"],
+            "title": top["title"],
+            "bucket": top["bucket"],
             "reason": "우선순위가 가장 높은 항목",
-            "priority_score": candidates[0]["priority_score"]
+            "priority_score": top["priority_score"],
         }
-    
+
     current_quest = None
-    actionable_items = [(i, b, p) for i, b, p in all_items if any(k in i.lower() for k in ["문의", "전화", "확인", "체크", "연락", "보내기", "작성", "준비", "제출"])]
-    
+    actionable_items = [
+        (i, b, p)
+        for i, b, p in all_items
+        if any(keyword in i.lower() for keyword in actionable_keywords)
+    ]
     if actionable_items:
-        current_quest = max(actionable_items, key=lambda x: x[2])
-    elif today_items:
-        current_quest = today_items[0]
-    elif candidates:
-        current_quest = (candidates[0]["title"], candidates[0]["bucket"], candidates[0]["priority_score"])
-    
-    if current_quest:
+        title, bucket, score = max(actionable_items, key=lambda item: item[2])
         current_quest = {
-            "title": current_quest[0],
-            "bucket": current_quest[1],
-            "reason": "가장 실행 가능한 다음 행동",
-            "priority_score": current_quest[2]
+            "title": title,
+            "bucket": bucket,
+            "reason": "지금 바로 실행 가능한 다음 행동",
+            "priority_score": score,
         }
-    
+    elif today_items:
+        title, bucket, score = today_items[0]
+        current_quest = {
+            "title": title,
+            "bucket": bucket,
+            "reason": "오늘 항목 중 먼저 착수할 후보",
+            "priority_score": score,
+        }
+    elif candidates:
+        top = candidates[0]
+        current_quest = {
+            "title": top["title"],
+            "bucket": top["bucket"],
+            "reason": "현재 목록에서 가장 먼저 잡을 수 있는 항목",
+            "priority_score": top["priority_score"],
+        }
+
     return {
         "candidates": candidates,
         "main_mission": main_mission,
@@ -284,8 +302,8 @@ def parse_quick_input(text: str) -> dict:
             "today_count": len(today_items),
             "dated_count": len(dated_items),
             "hold_count": len(hold_items),
-            "total_count": len(candidates)
-        }
+            "total_count": len(candidates),
+        },
     }
 
 
