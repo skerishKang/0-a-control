@@ -8,13 +8,15 @@ if __package__ in (None, ""):
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     from scripts.db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
+    from scripts.current_quest_ops import (
+        defer_current_quest_to_short_term,
+        mark_current_quest_unfinished,
+        start_current_quest_from_main_mission,
+    )
     from scripts.db_ops import (
         approve_plan_candidates,
         evaluate_quest,
         get_current_state,
-        defer_current_quest_to_short_term,
-        mark_current_quest_unfinished,
-        start_current_quest_from_main_mission,
         get_latest_briefs,
         get_plans,
         get_quests,
@@ -40,12 +42,14 @@ if __package__ in (None, ""):
     )
 else:
     from .db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
-    from .db_ops import (
-        evaluate_quest,
-        get_current_state,
+    from .current_quest_ops import (
         defer_current_quest_to_short_term,
         mark_current_quest_unfinished,
         start_current_quest_from_main_mission,
+    )
+    from .db_ops import (
+        evaluate_quest,
+        get_current_state,
         get_latest_briefs,
         get_plans,
         get_quests,
