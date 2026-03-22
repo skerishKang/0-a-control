@@ -106,6 +106,21 @@ function normalizeSuggestionTitle(value) {
     .trim();
 }
 
+function normalizeDayPhaseLabel(value) {
+  return {
+    "in-progress": "진행 중",
+    morning: "아침 정리",
+    midday: "진행 중",
+    end_of_day: "마감 정리",
+  }[String(value || "").trim()] || value || "미정";
+}
+
+function normalizeBriefContent(value) {
+  return String(value || "")
+    .replace(/\bNone\b/g, "없음")
+    .replace(/\s+-\s+/g, "\n- ");
+}
+
 function renderTodaySummarySection(state) {
   const targetId = "todaySummaryList";
   const container = document.getElementById(targetId);
@@ -174,7 +189,7 @@ function renderTodaySummarySection(state) {
         },
         {
           title: "오늘 단계",
-          detail: dayPhase || "미정",
+          detail: normalizeDayPhaseLabel(dayPhase),
         },
         ...datedPressure.slice(0, 5).map((item) => ({
           title: `주의 일정: ${item.title || "항목 없음"}`,
@@ -857,7 +872,7 @@ function renderBriefsSection(state) {
   setCountBadge("briefCount", items.length);
 
   const formatter = (item) => {
-    const summary = (item.content_md || "")
+    const summary = normalizeBriefContent(item.content_md || "")
       .split("\n")
       .map((line) => line.trim())
       .find((line) => line && !line.startsWith("#")) || "핵심 요약이 아직 없습니다.";
@@ -877,7 +892,7 @@ function renderBriefsSection(state) {
     showDetailedList("최근 브리프", "브리프 목록", state.briefs, (i) => `
       <div class='list-item'>
         <strong>${escapeHtml(i.title)}</strong>
-        <p class='muted'>${escapeHtml(i.content_md)}</p>
+        <p class='muted'>${escapeHtml(normalizeBriefContent(i.content_md))}</p>
       </div>
     `);
   };
@@ -977,7 +992,7 @@ async function renderDerivedSuggestionsSection() {
 
     if (parentPanel) {
       parentPanel.onclick = () => {
-        showDetailedList("프로젝트에서 온 추천 퀸스트", "추천 퀸스트 상세", state.derivedSuggestions || [], (i) => `
+        showDetailedList("프로젝트에서 온 추천 퀘스트", "추천 퀘스트 상세", state.derivedSuggestions || [], (i) => `
           <div class='list-item'>
             <strong>[${escapeHtml(normalizeProjectLabel(i.source_project || "unknown"))}] ${escapeHtml(normalizeSuggestionTitle(i.title || "-"))}</strong>
             <p class='muted'>${escapeHtml(i.why_now || "-")}</p>
@@ -989,6 +1004,6 @@ async function renderDerivedSuggestionsSection() {
     }
   } catch (error) {
     console.error("Failed to load derived suggestions", error);
-    container.innerHTML = `<div class="empty-state">추천 퀸스트를 불러오지 못했습니다.</div>`;
+    container.innerHTML = `<div class="empty-state">추천 퀘스트를 불러오지 못했습니다.</div>`;
   }
 }
