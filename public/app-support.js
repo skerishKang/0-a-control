@@ -30,6 +30,7 @@ function labelAgentStatus(status) {
   return {
     working: "작업 중",
     idle: "대기",
+    stale: "정리 필요",
     error: "오류",
     unavailable: "미설치",
   }[status] || status || "";
@@ -44,7 +45,7 @@ function renderAgentStatusSection(state) {
   if (parentPanel) parentPanel.classList.add("panel-browsing");
 
   const items = (state.agents || []).slice().sort((a, b) => {
-    const statusOrder = { working: 0, error: 1, idle: 2, unavailable: 3 };
+    const statusOrder = { working: 0, stale: 1, error: 2, idle: 3, unavailable: 4 };
     const aOrder = statusOrder[a.status] ?? 9;
     const bOrder = statusOrder[b.status] ?? 9;
     if (aOrder !== bOrder) return aOrder - bOrder;
@@ -61,7 +62,9 @@ function renderAgentStatusSection(state) {
   const topItems = items.slice(0, 4);
   container.innerHTML = topItems.map((item) => {
     const latest = item.last_session || {};
-    const latestText = latest.title || latest.started_at || "최근 세션 없음";
+    const latestText = item.status === "stale"
+      ? `활성 세션 기록 남음: ${latest.title || latest.started_at || "세션 정보 없음"}`
+      : (latest.title || latest.started_at || "최근 세션 없음");
     return `
       <div class="list-item candidate-item">
         <div class="candidate-head">
@@ -78,11 +81,12 @@ function renderAgentStatusSection(state) {
       showDetailedList("에이전트 상태", "실행기 상태와 최근 세션", items, (item) => {
         const latest = item.last_session || {};
         const latestLines = [
-          latest.title ? `최근 세션: ${latest.title}` : "최근 세션: 없음",
-          latest.status ? `세션 상태: ${latest.status}` : "",
-          latest.started_at ? `시작: ${latest.started_at}` : "",
-          item.resolved_path ? `실행 파일: ${item.resolved_path}` : `실행 파일: ${item.executable || "-"}`,
-        ].filter(Boolean);
+            latest.title ? `최근 세션: ${latest.title}` : "최근 세션: 없음",
+            latest.status ? `세션 상태: ${latest.status}` : "",
+            latest.started_at ? `시작: ${latest.started_at}` : "",
+            item.resolved_path ? `실행 파일: ${item.resolved_path}` : `실행 파일: ${item.executable || "-"}`,
+            item.status === "stale" ? "실행 프로세스는 없지만 active 세션 기록이 남아 있음" : "",
+          ].filter(Boolean);
         return `
           <div class='list-item'>
             <strong>${escapeHtml(item.label || item.canonical_name || "agent")}</strong>

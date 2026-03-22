@@ -84,8 +84,9 @@ class AgentRegistryTests(unittest.TestCase):
             self.assertTrue(statuses["codex"]["process_running"])
             self.assertEqual(statuses["gemini-cli"]["status"], "idle")
             self.assertFalse(statuses["gemini-cli"]["process_running"])
-            self.assertEqual(statuses["opencode"]["status"], "idle")
+            self.assertEqual(statuses["opencode"]["status"], "stale")
             self.assertFalse(statuses["opencode"]["process_running"])
+            self.assertTrue(statuses["opencode"]["has_stale_session"])
             self.assertIsNotNone(statuses["codex"]["last_session"])
         finally:
             db_base.DATA_DIR = original_paths["data_dir"]

@@ -157,6 +157,7 @@ def get_agent_statuses() -> list[dict]:
         canonical = agent["canonical_name"]
         latest = latest_sessions.get(canonical)
         status = "idle"
+        has_stale_session = False
         if not agent["available"]:
             status = "unavailable"
         elif canonical in running_agents:
@@ -165,12 +166,16 @@ def get_agent_statuses() -> list[dict]:
             latest_status = (latest.get("status") or "").lower()
             if latest_status in {"error", "failed"}:
                 status = "error"
+            elif latest_status == "active":
+                status = "stale"
+                has_stale_session = True
 
         items.append(
             {
                 **agent,
                 "status": status,
                 "process_running": canonical in running_agents,
+                "has_stale_session": has_stale_session,
                 "last_session": latest,
             }
         )

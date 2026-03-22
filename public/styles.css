@@ -119,6 +119,11 @@ p {
   color: #355070;
 }
 
+.agent-status-badge.stale {
+  background: #fff7e6;
+  color: #b26a00;
+}
+
 .agent-status-badge.error {
   background: #fff1f1;
   color: #b42318;
