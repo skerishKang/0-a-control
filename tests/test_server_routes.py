@@ -20,13 +20,17 @@ class _DummyHandler:
         self.error = None
 
     def __getattr__(self, name):
-        if name.startswith("_get_"):
+        if name.startswith("_get_") or name.startswith("_post_"):
             return lambda *args, **kwargs: None
         raise AttributeError(name)
 
     def _get_agents_status(self, query):
         self.called = "agents"
         self.called_query = query
+
+    def _post_agents_cleanup_stale(self, body):
+        self.called = "cleanup_stale"
+        self.called_query = body
 
     def _get_sessions_view(self, path, query):
         self.called = "session_view"
@@ -65,6 +69,12 @@ class ServerRouteTests(unittest.TestCase):
         with patch("scripts.server.get_agent_statuses", return_value=[{"canonical_name": "codex", "status": "idle"}]):
             ControlTowerHandler._get_agents_status(handler, {})
         self.assertEqual(handler.payload[0]["agents"][0]["canonical_name"], "codex")
+
+    def test_post_route_dispatches_cleanup_stale(self):
+        handler = _DummyHandler()
+        ControlTowerHandler.handle_api_post_dispatch(handler, "/api/agents/cleanup-stale", {"agent_name": "codex"})
+        self.assertEqual(handler.called, "cleanup_stale")
+        self.assertEqual(handler.called_query, {"agent_name": "codex"})
 
 
 if __name__ == "__main__":

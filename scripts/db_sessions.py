@@ -175,6 +175,41 @@ def end_session(
         return row_to_dict(row) if row else {}
 
 
+def close_latest_active_session_for_agent(
+    agent_name: str,
+    summary_md: str = "stale active session closed from dashboard",
+    metadata: dict | None = None,
+) -> dict:
+    agent_key = str(agent_name or "").strip()
+    if not agent_key:
+        raise ValueError("agent_name is required")
+
+    with connect() as conn:
+        row = conn.execute(
+            """
+            SELECT id
+            FROM sessions
+            WHERE agent_name = ? AND status = 'active'
+            ORDER BY started_at DESC, rowid DESC
+            LIMIT 1
+            """,
+            (agent_key,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("no active session found for agent")
+        session_id = row["id"]
+
+    merged_metadata = {"cleanup_source": "dashboard_agent_status"}
+    if metadata:
+        merged_metadata.update(metadata)
+    return end_session(
+        session_id=session_id,
+        summary_md=summary_md,
+        status="closed",
+        metadata=merged_metadata,
+    )
+
+
 def update_session_summary(session_id: str, summary_md: str, metadata: dict | None = None) -> dict:
     with connect() as conn:
         session = conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,)).fetchone()

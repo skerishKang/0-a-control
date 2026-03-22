@@ -28,6 +28,7 @@ if __package__ in (None, ""):
     )
     from scripts.db_sessions import (
         append_source_record,
+        close_latest_active_session_for_agent,
         end_session,
         get_resume_context,
         get_session_view_model,
@@ -65,6 +66,7 @@ else:
     )
     from .db_sessions import (
         append_source_record,
+        close_latest_active_session_for_agent,
         end_session,
         get_resume_context,
         get_session_view_model,
@@ -83,6 +85,7 @@ else:
 
 __all__ = [
     "append_source_record",
+    "close_latest_active_session_for_agent",
     "DB_PATH",
     "ROOT_DIR",
     "WORKDIARY_DIR",

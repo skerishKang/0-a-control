@@ -51,6 +51,7 @@ ROOT_DIR = _db.ROOT_DIR
 append_source_record = _db.append_source_record
 create_sample_data_if_empty = _db.create_sample_data_if_empty
 end_session = _db.end_session
+close_latest_active_session_for_agent = _db.close_latest_active_session_for_agent
 evaluate_quest = _db.evaluate_quest
 get_external_inbox_overview = _db.get_external_inbox_overview
 get_external_inbox_source_messages = _db.get_external_inbox_source_messages
@@ -188,6 +189,14 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         )
         self.send_json({"ok": True, "session": result})
 
+    def _post_agents_cleanup_stale(self, body: dict) -> None:
+        result = close_latest_active_session_for_agent(
+            agent_name=body["agent_name"],
+            summary_md=body.get("summary_md", "stale active session closed from dashboard"),
+            metadata={"user_action": "cleanup_stale_agent_session"},
+        )
+        self.send_json({"ok": True, "session": result})
+
     def _post_telegram_sync_core(self, body: dict) -> None:
         result = run_sync_core()
         self.send_json(result)
@@ -227,6 +236,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/sessions/start": self._post_sessions_start,
             "/api/sessions/log": self._post_sessions_log,
             "/api/sessions/end": self._post_sessions_end,
+            "/api/agents/cleanup-stale": self._post_agents_cleanup_stale,
             "/api/telegram/sync-core": self._post_telegram_sync_core,
             "/api/bridge/parse": self._post_bridge_parse,
             "/api/bridge/quick-input": self._post_bridge_quick_input,

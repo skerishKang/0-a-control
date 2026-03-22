@@ -81,18 +81,23 @@ function renderAgentStatusSection(state) {
     parentPanel.onclick = () => {
       showDetailedList("에이전트 상태", "실행기 상태와 최근 세션", items, (item) => {
         const latest = item.last_session || {};
+        const latestTitle = normalizeSessionTitleLabel(latest.title || latest.started_at || "");
         const latestLines = [
-            latest.title ? `최근 세션: ${latest.title}` : "최근 세션: 없음",
+            latest.title || latest.started_at ? `최근 세션: ${latestTitle}` : "최근 세션: 없음",
             latest.status ? `세션 상태: ${latest.status}` : "",
             latest.started_at ? `시작: ${latest.started_at}` : "",
             item.resolved_path ? `실행 파일: ${item.resolved_path}` : `실행 파일: ${item.executable || "-"}`,
             item.status === "stale" ? "실행 프로세스는 없지만 active 세션 기록이 남아 있음" : "",
           ].filter(Boolean);
+        const actionButton = item.status === "stale"
+          ? `<div style="margin-top:8px;"><button type="button" class="secondary-btn" onclick="cleanupStaleAgentSession('${escapeHtml(item.canonical_name)}')">stale 세션 정리</button></div>`
+          : "";
         return `
           <div class='list-item'>
             <strong>${escapeHtml(item.label || item.canonical_name || "agent")}</strong>
             <p class='muted'>상태: ${escapeHtml(labelAgentStatus(item.status))}</p>
             <p class='muted'>${escapeHtml(latestLines.join(" / "))}</p>
+            ${actionButton}
           </div>
         `;
       });
@@ -967,6 +972,21 @@ function renderWorkdiarySection(state) {
     `);
   };
 }
+
+window.cleanupStaleAgentSession = async function cleanupStaleAgentSession(agentName) {
+  if (!agentName) return;
+  try {
+    await fetchJson("/api/agents/cleanup-stale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ agent_name: agentName }),
+    });
+    await loadAll();
+  } catch (error) {
+    console.error("Failed to clean stale agent session:", error);
+    alert(`stale 세션 정리에 실패했습니다: ${error.message || error}`);
+  }
+};
 
 function renderPriorityCandidatesSection(state) {
   const targetId = "priorityCandidateList";
