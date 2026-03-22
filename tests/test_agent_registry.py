@@ -10,6 +10,8 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 import scripts.db_base as db_base
+from unittest.mock import patch
+
 from scripts.agent_registry import canonical_agent_name, get_agent_statuses, list_registered_agents
 
 
@@ -29,7 +31,8 @@ class AgentRegistryTests(unittest.TestCase):
             self.assertIn("executable", item)
             self.assertIn("available", item)
 
-    def test_agent_status_uses_latest_session(self) -> None:
+    @patch("scripts.agent_registry.get_running_agent_names", return_value={"codex"})
+    def test_agent_status_prefers_running_processes(self, _mock_running) -> None:
         temp_dir = tempfile.TemporaryDirectory()
         data_dir = Path(temp_dir.name) / "data"
         db_path = data_dir / "control_tower.db"
@@ -67,10 +70,22 @@ class AgentRegistryTests(unittest.TestCase):
                     """,
                     ("s-2", "gemini-cli", "interactive", "2026-03-22T01:00:00Z", "closed"),
                 )
+                conn.execute(
+                    """
+                    INSERT INTO sessions (
+                        id, agent_name, source_type, started_at, status
+                    ) VALUES (?, ?, ?, ?, ?)
+                    """,
+                    ("s-3", "opencode", "interactive", "2026-03-22T02:00:00Z", "active"),
+                )
 
             statuses = {item["canonical_name"]: item for item in get_agent_statuses()}
             self.assertEqual(statuses["codex"]["status"], "working")
+            self.assertTrue(statuses["codex"]["process_running"])
             self.assertEqual(statuses["gemini-cli"]["status"], "idle")
+            self.assertFalse(statuses["gemini-cli"]["process_running"])
+            self.assertEqual(statuses["opencode"]["status"], "idle")
+            self.assertFalse(statuses["opencode"]["process_running"])
             self.assertIsNotNone(statuses["codex"]["last_session"])
         finally:
             db_base.DATA_DIR = original_paths["data_dir"]

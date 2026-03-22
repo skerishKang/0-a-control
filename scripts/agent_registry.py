@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -66,6 +67,62 @@ def list_registered_agents() -> list[dict]:
     return items
 
 
+def _agent_match_tokens(spec: AgentSpec) -> set[str]:
+    tokens = {spec.canonical_name.lower(), spec.executable.lower(), Path(spec.executable).name.lower()}
+    tokens.update(alias.lower() for alias in spec.aliases)
+    return {token for token in tokens if token}
+
+
+def get_running_agent_names() -> set[str]:
+    if os.name != "nt":
+        return set()
+
+    command = (
+        "Get-CimInstance Win32_Process | "
+        "Select-Object Name,CommandLine | "
+        "ConvertTo-Json -Compress"
+    )
+
+    try:
+        result = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", command],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=10,
+            check=True,
+        )
+    except Exception:
+        return set()
+
+    raw = (result.stdout or "").strip()
+    if not raw:
+        return set()
+
+    try:
+        import json
+
+        records = json.loads(raw)
+    except Exception:
+        return set()
+
+    if isinstance(records, dict):
+        records = [records]
+
+    running: set[str] = set()
+    for spec in AGENT_SPECS:
+        match_tokens = _agent_match_tokens(spec)
+        for record in records:
+            name = str(record.get("Name") or "").lower()
+            commandline = str(record.get("CommandLine") or "").lower()
+            haystack = f"{name} {commandline}"
+            if any(token in haystack for token in match_tokens):
+                running.add(spec.canonical_name)
+                break
+
+    return running
+
+
 def get_agent_statuses() -> list[dict]:
     try:
         if __package__ in (None, ""):
@@ -94,6 +151,7 @@ def get_agent_statuses() -> list[dict]:
             for row in rows:
                 latest_sessions[row["agent_name"]] = dict(row)
 
+    running_agents = get_running_agent_names()
     items: list[dict] = []
     for agent in list_registered_agents():
         canonical = agent["canonical_name"]
@@ -101,17 +159,18 @@ def get_agent_statuses() -> list[dict]:
         status = "idle"
         if not agent["available"]:
             status = "unavailable"
+        elif canonical in running_agents:
+            status = "working"
         elif latest:
             latest_status = (latest.get("status") or "").lower()
-            if latest_status == "active":
-                status = "working"
-            elif latest_status in {"error", "failed"}:
+            if latest_status in {"error", "failed"}:
                 status = "error"
 
         items.append(
             {
                 **agent,
                 "status": status,
+                "process_running": canonical in running_agents,
                 "last_session": latest,
             }
         )
