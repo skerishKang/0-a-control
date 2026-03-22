@@ -2,6 +2,16 @@
  * Support Grid rendering module
  */
 
+function normalizeProjectLabel(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "unknown";
+  return raw
+    .replace(/^ipu-security$/i, "24-1-ipu-ai-firewall")
+    .replace(/^\[?ipu-security\]?/i, "24-1")
+    .replace(/IPU AI Security Filter/gi, "IPU AI Firewall")
+    .trim();
+}
+
 function renderSupportGrid(state) {
   renderTodaySummarySection(state);
   renderUnfinishedPlansSection(state);
@@ -13,6 +23,13 @@ function renderSupportGrid(state) {
   renderPriorityCandidatesSection(state);
   renderExternalContextPanel(state);
   renderDerivedSuggestionsSection().catch(() => {});
+}
+
+function normalizeSuggestionTitle(value) {
+  return String(value || "")
+    .replace(/IPU AI Security Filter/gi, "IPU AI Firewall")
+    .replace(/security-filter/gi, "firewall")
+    .trim();
 }
 
 function renderTodaySummarySection(state) {
@@ -33,12 +50,8 @@ function renderTodaySummarySection(state) {
   const done = progress.done || 0;
   const partial = progress.partial || 0;
 
-  if (done > 0) {
-    items.push({ label: "완료", value: `${done}건`, type: "done" });
-  }
-  if (partial > 0) {
-    items.push({ label: "부분", value: `${partial}건`, type: "partial" });
-  }
+  if (done > 0) items.push({ label: "완료", value: `${done}건`, type: "done" });
+  if (partial > 0) items.push({ label: "부분", value: `${partial}건`, type: "partial" });
 
   const questStatus = verdict.status || "none";
   if (questStatus === "done") {
@@ -872,16 +885,16 @@ async function renderDerivedSuggestionsSection() {
     setCountBadge("derivedSuggestionCount", suggestions.length);
 
     if (suggestions.length === 0) {
-      container.innerHTML = `<div class="empty-state">?? ???? ????. CLI?? --refresh? ?? ???? ???.</div>`;
+      container.innerHTML = `<div class="empty-state">추천 퀸스트가 없습니다. CLI에서 새로고침 후 다시 확인하세요.</div>`;
       return;
     }
 
     container.innerHTML = suggestions.map((s) => {
-      const source = s.source_project || "unknown";
+      const source = normalizeProjectLabel(s.source_project || "unknown");
       return `
         <div class="list-item">
           <div class="candidate-head">
-            <strong>[${escapeHtml(source)}] ${escapeHtml(s.title)}</strong>
+            <strong>[${escapeHtml(source)}] ${escapeHtml(normalizeSuggestionTitle(s.title))}</strong>
           </div>
           <span class="candidate-reason">${escapeHtml(s.why_now || "-")}</span>
         </div>
@@ -890,17 +903,18 @@ async function renderDerivedSuggestionsSection() {
 
     if (parentPanel) {
       parentPanel.onclick = () => {
-        showDetailedList("?? ???? ??? ?? ?? ?? ??", "?? ????", state.derivedSuggestions || [], (i) => `
+        showDetailedList("프로젝트에서 온 추천 퀸스트", "추천 퀸스트 상세", state.derivedSuggestions || [], (i) => `
           <div class='list-item'>
-            <strong>[${escapeHtml(i.source_project || "unknown")}] ${escapeHtml(i.title || "-")}</strong>
+            <strong>[${escapeHtml(normalizeProjectLabel(i.source_project || "unknown"))}] ${escapeHtml(normalizeSuggestionTitle(i.title || "-"))}</strong>
             <p class='muted'>${escapeHtml(i.why_now || "-")}</p>
-            <p class='muted'>?? ??: ${escapeHtml(i.completion_criteria || "-")}</p>
-            <p class='muted'>?? ??: ${escapeHtml(i.next_candidates || i.next_quest_candidates || "-")}</p>
+            <p class='muted'>완료 기준: ${escapeHtml(i.completion_criteria || "-")}</p>
+            <p class='muted'>다음 후보: ${escapeHtml(i.next_candidates || i.next_quest_candidates || "-")}</p>
           </div>
         `);
       };
     }
-  } catch (e) {
-    container.innerHTML = `<div class="empty-state">?? ???? ???? ???? ??.</div>`;
+  } catch (error) {
+    console.error("Failed to load derived suggestions", error);
+    container.innerHTML = `<div class="empty-state">추천 퀸스트를 불러오지 못했습니다.</div>`;
   }
 }
