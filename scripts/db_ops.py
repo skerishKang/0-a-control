@@ -530,9 +530,9 @@ def defer_current_quest_to_short_term() -> dict:
             (
                 str(uuid.uuid4()),
                 "scope_cut",
-                f"Move current quest out of today: {quest['title']}",
-                "????? ??? ?? ???? ?? ?? ??? ???? ??",
-                "[today] removed -> [short_term] deferred",
+                f"단기 플랜으로 이동: {quest['title']}",
+                "오늘판에서는 내리고, 단기 플랜으로 다시 이어갈 항목으로 정리했습니다.",
+                "오늘판에서 내리고 단기 플랜으로 넘김",
                 plan_item_id or None,
                 quest_id,
                 None,
@@ -600,12 +600,12 @@ def mark_current_quest_unfinished() -> dict:
 
         quest = dict(quest_row)
         updated_at = now_iso()
-        restart_point = quest.get("restart_point") or "??? ?? ???? ?? ??? ??"
-        next_hint = quest.get("next_quest_hint") or "?? ?? ??? ??? ??"
+        restart_point = quest.get("restart_point") or "현재 멈춘 지점부터 다시 시작합니다."
+        next_hint = quest.get("next_quest_hint") or "오늘 안에 다시 붙잡을 수 있는 다음 행동을 정리합니다."
         metadata = json.loads(quest.get("metadata_json") or "{}")
         metadata["marked_unfinished"] = {
             "at": updated_at,
-            "reason": "kept in today as unfinished",
+            "reason": "today_unfinished",
         }
 
         conn.execute(
@@ -644,9 +644,9 @@ def mark_current_quest_unfinished() -> dict:
             (
                 str(uuid.uuid4()),
                 "scope_cut",
-                f"Keep current quest unfinished: {quest['title']}",
-                "?? ? ?? ???? ??? ??? ??? ?? ??",
-                "[today] kept as unfinished",
+                f"미완료로 남김: {quest['title']}",
+                "오늘판에 남겨 두고, 미완료 상태로 다시 이어갈 수 있게 정리했습니다.",
+                "오늘 미완료로 남김",
                 plan_item_id or None,
                 quest_id,
                 None,

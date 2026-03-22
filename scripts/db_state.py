@@ -27,13 +27,70 @@ def extract_completion_criteria_for_plan(conn: sqlite3.Connection, plan_item_id:
 def latest_decision_summary(conn: sqlite3.Connection) -> dict:
     row = conn.execute(
         """
-        SELECT title, reason, impact_summary, created_at
+        SELECT decision_type, title, reason, impact_summary, created_at,
+               related_plan_item_id, related_quest_id
         FROM decision_records
         ORDER BY created_at DESC
         LIMIT 1
         """
     ).fetchone()
-    return row_to_dict(row) or {}
+    if not row:
+        return {}
+
+    data = row_to_dict(row)
+    if data.get("decision_type") != "scope_cut":
+        data.pop("decision_type", None)
+        data.pop("related_plan_item_id", None)
+        data.pop("related_quest_id", None)
+        return data
+
+    title = str(data.get("title") or "")
+    impact = str(data.get("impact_summary") or "")
+    created_at = data.get("created_at")
+    related_plan_item_id = data.get("related_plan_item_id")
+    related_quest_id = data.get("related_quest_id")
+
+    mode = None
+    if "단기 플랜으로 이동" in title or "Move current quest out of today" in title or "short_term" in impact:
+        mode = "defer"
+    elif "미완료로 남김" in title or "Keep current quest unfinished" in title or "unfinished" in impact:
+        mode = "hold"
+    else:
+        event = conn.execute(
+            """
+            SELECT event_type
+            FROM event_log
+            WHERE created_at <= ?
+              AND (
+                entity_id = COALESCE(?, '')
+                OR entity_id = COALESCE(?, '')
+              )
+              AND event_type IN ('plan_item_deferred', 'quest_marked_unfinished')
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (created_at, related_plan_item_id or "", related_quest_id or ""),
+        ).fetchone()
+        if event:
+            if event["event_type"] == "plan_item_deferred":
+                mode = "defer"
+            elif event["event_type"] == "quest_marked_unfinished":
+                mode = "hold"
+
+    quest_title = title.split(":", 1)[1].strip() if ":" in title else title.strip()
+    if mode == "defer":
+        data["title"] = f"단기 플랜으로 이동: {quest_title}"
+        data["reason"] = "오늘판에서는 내리고, 단기 플랜으로 다시 이어갈 항목으로 정리했습니다."
+        data["impact_summary"] = "오늘판에서 내리고 단기 플랜으로 넘김"
+    elif mode == "hold":
+        data["title"] = f"미완료로 남김: {quest_title}"
+        data["reason"] = "오늘판에 남겨 두고, 미완료 상태로 다시 이어갈 수 있게 정리했습니다."
+        data["impact_summary"] = "오늘 미완료로 남김"
+
+    data.pop("decision_type", None)
+    data.pop("related_plan_item_id", None)
+    data.pop("related_quest_id", None)
+    return data
 
 
 def build_day_progress_summary(conn: sqlite3.Connection) -> dict:

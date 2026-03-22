@@ -863,7 +863,7 @@ function renderPriorityCandidatesSection(state) {
     showDetailedList("우선 검토 후보", "프로젝트 후보 목록", state.priorityCandidates, (i) => `
       <div class='list-item'>
         <strong>${escapeHtml(i.name)}</strong>
-        <p class='muted'>${escapeHtml(i.priority_reason)} (Score: ${escapeHtml(String(i.priority_score ?? 0))})</p>
+        <p class='muted'>${escapeHtml(i.priority_reason)} (점수: ${escapeHtml(String(i.priority_score ?? 0))})</p>
       </div>
     `);
   };
@@ -885,7 +885,7 @@ async function renderDerivedSuggestionsSection() {
     setCountBadge("derivedSuggestionCount", suggestions.length);
 
     if (suggestions.length === 0) {
-      container.innerHTML = `<div class="empty-state">추천 퀸스트가 없습니다. CLI에서 새로고침 후 다시 확인하세요.</div>`;
+      container.innerHTML = `<div class="empty-state">추천 퀘스트가 없습니다. CLI에서 새로고침 후 다시 확인하세요.</div>`;
       return;
     }
 
