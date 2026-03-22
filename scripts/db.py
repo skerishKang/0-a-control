@@ -7,6 +7,7 @@ if __package__ in (None, ""):
     project_root = Path(__file__).resolve().parents[1]
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
+    from scripts.agent_registry import get_agent_statuses, list_registered_agents
     from scripts.db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
     from scripts.current_quest_ops import (
         defer_current_quest_to_short_term,
@@ -43,6 +44,7 @@ if __package__ in (None, ""):
         refresh_current_state,
     )
 else:
+    from .agent_registry import get_agent_statuses, list_registered_agents
     from .db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
     from .current_quest_ops import (
         defer_current_quest_to_short_term,
@@ -92,6 +94,8 @@ __all__ = [
     "evaluate_quest",
     "get_external_inbox_overview",
     "get_external_inbox_source_messages",
+    "get_agent_statuses",
+    "list_registered_agents",
     "end_session",
     "get_current_state",
     "mark_current_quest_unfinished",

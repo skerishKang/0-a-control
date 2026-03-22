@@ -343,6 +343,7 @@ end_session = _db.end_session
 evaluate_quest = _db.evaluate_quest
 get_external_inbox_overview = _db.get_external_inbox_overview
 get_external_inbox_source_messages = _db.get_external_inbox_source_messages
+get_agent_statuses = _db.get_agent_statuses
 get_current_state = _db.get_current_state
 get_latest_briefs = _db.get_latest_briefs
 get_plans = _db.get_plans
@@ -637,6 +638,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _get_health(self, query: dict[str, list[str]]) -> None:
         self.send_json({"ok": True})
 
+    def _get_agents_status(self, query: dict[str, list[str]]) -> None:
+        self.send_json({"agents": get_agent_statuses()})
+
     def _get_telegram_sync_status(self, query: dict[str, list[str]]) -> None:
         self.send_json({"sources": get_core_sources_sync_status()})
 
@@ -684,6 +688,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/external-inbox": self._get_external_inbox,
             "/api/external-inbox/source": self._get_external_inbox_source,
             "/api/health": self._get_health,
+            "/api/agents/status": self._get_agents_status,
             "/api/telegram/sync-status": self._get_telegram_sync_status,
             "/api/telegram/status": self._get_telegram_status,
             "/api/telegram/chats": self._get_telegram_chats,
