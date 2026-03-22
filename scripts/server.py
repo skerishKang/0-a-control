@@ -47,7 +47,7 @@ def parse_limit(query, key: str, default: int, maximum: int) -> int:
 
 def classify_conversation(text: str) -> dict:
     """
-    Classify conversation text into 6 layers and extract suggested plans.
+    Classify conversation text into planning layers and extract suggested plans.
     """
     text_lower = text.lower()
     rules = [
@@ -66,7 +66,7 @@ def classify_conversation(text: str) -> dict:
         {
             "layer": "long_term",
             "bucket": "long_term",
-            "keywords": ["장기", "올해", "long"],
+            "keywords": ["장기", "후반", "long"],
             "weight": 3,
         },
         {
@@ -86,7 +86,7 @@ def classify_conversation(text: str) -> dict:
             "bucket": "long_term",
             "keywords": [
                 "철학", "아이디어", "방향", "principle", "philosophy",
-                "통제", "위임", "판단", "협업", "운영", "체계",
+                "체제", "책임", "판단", "작업", "운영", "체계",
             ],
             "weight": 1,
         },
@@ -117,8 +117,8 @@ def classify_conversation(text: str) -> dict:
             "title": title,
             "bucket": bucket,
             "description": text[:500],
-            "priority_score": 50
-        }]
+            "priority_score": 50,
+        }],
     }
 
 
@@ -135,11 +135,11 @@ def parse_quick_input(text: str) -> dict:
             "기한", "마감", "due", "deadline", "기한 일정", "마감 일정",
         },
         "hold": {
-            "보류", "대기", "hold", "waiting", "잠시 보류",
+            "보류", "대기", "hold", "waiting", "임시 보류",
         },
         "short_term": {
             "단기", "단기 플랜", "단기플랜", "short term", "short-term",
-            "이번 주", "이번주", "오늘 또는 단기",
+            "이번 주", "이번주", "오늘 후 단기",
         },
         "long_term": {
             "장기", "long term", "long-term", "중장기",
@@ -155,11 +155,11 @@ def parse_quick_input(text: str) -> dict:
     bullet_pattern = re.compile(r"^\s*[-*\u2022\u00b7]\s*")
     section_pattern = re.compile(r"\s*[:\uff1a]\s*$")
     date_pattern = re.compile(r"(?<!\d)(\d{1,2})\s*[/.-]\s*(\d{1,2})(?!\d)")
-    time_pattern = re.compile(r"(\d{1,2})\s*\uc2dc")
+    time_pattern = re.compile("(\d{1,2})\s*" + "시")
 
     urgent_keywords = ["오늘", "지금", "당장", "긴급", "급", "urgent", "asap", "마감", "기한"]
     actionable_keywords = [
-        "문의", "확인", "전화", "연락", "체크", "보내기", "작성", "준비", "제출",
+        "문의", "확인", "통화", "연락", "체크", "보내기", "작성", "준비", "제출",
         "reply", "call", "email", "send", "check", "verify",
     ]
 
@@ -272,7 +272,7 @@ def parse_quick_input(text: str) -> dict:
         main_mission = {
             "title": title,
             "bucket": bucket,
-            "reason": "오늘 목록에서 먼저 붙잡아야 할 중심 항목",
+            "reason": "오늘 목록에서 먼저 붙잡아야 할 집중 대상 항목",
             "priority_score": score,
         }
     elif dated_items:
