@@ -29,6 +29,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+MAX_BODY_SIZE = 1 * 1024 * 1024  # 1 MiB
+
 
 def parse_limit(query, key: str, default: int, maximum: int) -> int:
     raw = query.get(key, [None])[0]
@@ -48,34 +50,61 @@ def classify_conversation(text: str) -> dict:
     Classify conversation text into 6 layers and extract suggested plans.
     """
     text_lower = text.lower()
+    rules = [
+        {
+            "layer": "today",
+            "bucket": "today",
+            "keywords": ["오늘", "지금", "당장", "today"],
+            "weight": 5,
+        },
+        {
+            "layer": "short_term",
+            "bucket": "short_term",
+            "keywords": ["이번 주", "주간", "다음 주", "short"],
+            "weight": 4,
+        },
+        {
+            "layer": "long_term",
+            "bucket": "long_term",
+            "keywords": ["장기", "올해", "long"],
+            "weight": 3,
+        },
+        {
+            "layer": "recurring",
+            "bucket": "recurring",
+            "keywords": ["매주", "반복", "정기", "매월", "recurring"],
+            "weight": 3,
+        },
+        {
+            "layer": "project",
+            "bucket": "short_term",
+            "keywords": ["프로젝트", "project"],
+            "weight": 2,
+        },
+        {
+            "layer": "philosophy",
+            "bucket": "long_term",
+            "keywords": [
+                "철학", "아이디어", "방향", "principle", "philosophy",
+                "통제", "위임", "판단", "협업", "운영", "체계",
+            ],
+            "weight": 1,
+        },
+    ]
 
-    layer = "short_term"
-    bucket = "short_term"
+    scored = []
+    for rule in rules:
+        hits = sum(1 for keyword in rule["keywords"] if keyword in text_lower)
+        if hits:
+            scored.append((hits * rule["weight"], -rule["weight"], rule))
 
-    if any(k in text_lower for k in ["오늘", "지금", "당장", "today"]):
-        layer = "today"
-        bucket = "today"
-    elif any(k in text_lower for k in ["이번 주", "주간", "다음 주", "short"]):
+    if scored:
+        _, _, best = max(scored)
+        layer = best["layer"]
+        bucket = best["bucket"]
+    else:
         layer = "short_term"
         bucket = "short_term"
-    elif any(k in text_lower for k in ["장기", "올해", "long"]):
-        layer = "long_term"
-        bucket = "long_term"
-    elif any(k in text_lower for k in ["매주", "반복", "정기", "매월", "recurring"]):
-        layer = "recurring"
-        bucket = "recurring"
-    elif any(k in text_lower for k in ["프로젝트", "project"]):
-        layer = "project"
-        bucket = "short_term"
-
-    is_philosophy = any(k in text_lower for k in [
-        "철학", "아이디어", "방향", "principle", "philosophy",
-        "통제", "위임", "판단", "협업", "운영", "체계"
-    ])
-
-    if is_philosophy:
-        layer = "philosophy"
-        bucket = "long_term"
 
     title = text.split("\n")[0][:100]
 
@@ -493,7 +522,17 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         if not parsed.path.startswith("/api/"):
             self.send_error(HTTPStatus.NOT_FOUND, "Not found")
             return
-        content_length = int(self.headers.get("Content-Length", "0"))
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+        except (TypeError, ValueError):
+            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        if content_length < 0:
+            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        if content_length > MAX_BODY_SIZE:
+            self.send_json({"error": "request body too large"}, status=HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
+            return
         raw_body = self.rfile.read(content_length) if content_length else b"{}"
         try:
             body = json.loads(raw_body.decode("utf-8") or "{}")
