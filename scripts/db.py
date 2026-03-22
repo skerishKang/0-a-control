@@ -13,6 +13,7 @@ if __package__ in (None, ""):
         mark_current_quest_unfinished,
         start_current_quest_from_main_mission,
     )
+    from scripts.plan_ops import approve_plan_candidates, get_latest_briefs, get_plans
     from scripts.verdict_ops import (
         DuplicateVerdict,
         apply_verdict,
@@ -20,10 +21,7 @@ if __package__ in (None, ""):
         report_quest_progress,
     )
     from scripts.db_ops import (
-        approve_plan_candidates,
         get_current_state,
-        get_latest_briefs,
-        get_plans,
         get_quests,
         get_recent_sessions,
     )
@@ -51,6 +49,7 @@ else:
         mark_current_quest_unfinished,
         start_current_quest_from_main_mission,
     )
+    from .plan_ops import approve_plan_candidates, get_latest_briefs, get_plans
     from .verdict_ops import (
         DuplicateVerdict,
         apply_verdict,
@@ -59,8 +58,6 @@ else:
     )
     from .db_ops import (
         get_current_state,
-        get_latest_briefs,
-        get_plans,
         get_quests,
         get_recent_sessions,
     )
