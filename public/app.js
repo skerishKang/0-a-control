@@ -38,6 +38,12 @@ function updateQuestFormState(current) {
   if (deferBtn) {
     deferBtn.disabled = !currentQuestExists;
   }
+
+  const startBtn = document.getElementById("startCurrentQuestBtn");
+  if (startBtn) {
+    startBtn.hidden = currentQuestExists;
+    startBtn.disabled = currentQuestExists;
+  }
 }
 
 function updateLoadingStatus(loadErrors = [], renderErrors = []) {
@@ -388,6 +394,36 @@ async function handleHoldCurrentQuest() {
   }
 }
 
+async function handleStartCurrentQuest() {
+  const current = state.currentState || {};
+  if (current.current_quest_id) {
+    await loadAll();
+    return;
+  }
+
+  const btn = document.getElementById("startCurrentQuestBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "생성 중...";
+  }
+
+  try {
+    await fetchJson("/api/current-quest/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    await loadAll();
+  } catch (error) {
+    alert(`퀘스트 시작 실패: ${error.message}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "지금 퀘스트 잡기";
+    }
+  }
+}
+
 async function handleDeferCurrentQuest() {
   const current = state.currentState || {};
   if (!current.current_quest_id) {
@@ -616,6 +652,7 @@ async function handleBridgeCreatePlan() {
 document.getElementById("closeBridgePanelBtn")?.addEventListener("click", closeBridgePanel);
 document.getElementById("bridgeParseBtn")?.addEventListener("click", handleBridgeParse);
 document.getElementById("bridgeCreatePlanBtn")?.addEventListener("click", handleBridgeCreatePlan);
+document.getElementById("startCurrentQuestBtn")?.addEventListener("click", handleStartCurrentQuest);
 document.getElementById("panelBackdrop").addEventListener("click", () => {
   closeReportPanel();
   closeDetailPanel();
@@ -639,4 +676,3 @@ loadAll().catch((error) => {
   state.renderErrors = [];
   updateLoadingStatus(state.loadErrors, state.renderErrors);
 });
-
