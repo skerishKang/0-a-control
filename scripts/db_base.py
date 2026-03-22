@@ -142,6 +142,38 @@ CREATE TABLE IF NOT EXISTS event_log (
     metadata_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS telegram_sources (
+    source_id TEXT PRIMARY KEY,
+    source_name TEXT NOT NULL,
+    chat_class TEXT NOT NULL,
+    is_core BOOLEAN NOT NULL DEFAULT 0,
+    sync_mode TEXT NOT NULL DEFAULT 'manual',
+    last_synced_at TEXT,
+    last_message_id INTEGER NOT NULL DEFAULT 0,
+    metadata_json TEXT
+);
+
+CREATE TABLE IF NOT EXISTS external_inbox (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_type TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    source_name TEXT,
+    external_message_id TEXT,
+    author TEXT,
+    item_type TEXT DEFAULT 'text',
+    title TEXT,
+    raw_content TEXT NOT NULL,
+    attachment_path TEXT,
+    attachment_ref TEXT,
+    item_timestamp TEXT,
+    imported_at TEXT NOT NULL,
+    processed_at TEXT,
+    status TEXT NOT NULL DEFAULT 'new',
+    session_id TEXT,
+    metadata_json TEXT,
+    UNIQUE(source_id, external_message_id)
+);
 """
 
 
