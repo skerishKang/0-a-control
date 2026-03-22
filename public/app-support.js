@@ -300,9 +300,14 @@ function renderTodaySummarySection(state) {
 
       // confirmed_starting_point: 사용자가 확정한 내일 첫 퀘스트 (아직 자동 연동)
       if (confirmedStart && confirmedStart.title) {
+        const isPromotable = !current.current_quest_id;
+        const actionHtml = isPromotable
+          ? `<div style="margin-top:8px;"><button type="button" class="primary-btn" onclick="promoteStartingPoint()">이 약속으로 작업 시작</button></div>`
+          : `<div style="margin-top:8px;"><button type="button" class="primary-btn" disabled title="이미 진행 중인 퀘스트가 있습니다">이 약속으로 작업 시작 (진행 중인 퀘스트 있음)</button></div>`;
+
         detailItems.push({
           title: `✅ 내일 첫 퀘스트 (확인됨)`,
-          detail: `<strong>${escapeHtml(confirmedStart.title)}</strong><br><span class="muted">${escapeHtml(confirmedStart.reason || "")} · ${confirmedStart.confirmed_at || ""}</span>`,
+          detail: `<strong>${escapeHtml(confirmedStart.title)}</strong><br><span class="muted">${escapeHtml(confirmedStart.reason || "")} · ${confirmedStart.confirmed_at || ""}</span>${actionHtml}`,
         });
       }
 
@@ -1162,3 +1167,28 @@ async function renderDerivedSuggestionsSection() {
     container.innerHTML = `<div class="empty-state">추천 퀘스트를 불러오지 못했습니다.</div>`;
   }
 }
+
+window.promoteStartingPoint = async function promoteStartingPoint() {
+  if (!window.confirm("어제 확정한 시작점으로 작업을 시작할까요?")) return;
+  
+  try {
+    const response = await fetch("/api/tomorrow-first-quest/promote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "승격에 실패했습니다.");
+    }
+    
+    const modal = document.getElementById("detailedListModal");
+    if (modal) modal.style.display = "none";
+    
+    if (window.loadAll) await window.loadAll();
+    alert("퀘스트를 시작했습니다. 작업 일지를 유지하세요.");
+  } catch (error) {
+    console.error("Failed to promote starting point:", error);
+    alert(`작업 시작 실패: ${error.message}`);
+  }
+};

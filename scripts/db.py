@@ -12,6 +12,7 @@ if __package__ in (None, ""):
     from scripts.current_quest_ops import (
         defer_current_quest_to_short_term,
         mark_current_quest_unfinished,
+        promote_confirmed_starting_point_to_quest,
         start_current_quest_from_main_mission,
     )
     from scripts.plan_ops import approve_plan_candidates, get_latest_briefs, get_plans
@@ -115,6 +116,7 @@ __all__ = [
     "get_workdiary_top_level",
     "init_db",
     "now_iso",
+    "promote_confirmed_starting_point_to_quest",
     "refresh_current_state",
     "start_session",
     "update_session_summary",

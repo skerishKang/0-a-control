@@ -331,3 +331,69 @@ def start_current_quest_from_main_mission() -> dict:
             "quest": row_to_dict(quest_out) if quest_out else {},
             "current_state": _read_current_state_from_conn(conn),
         }
+
+
+def promote_confirmed_starting_point_to_quest() -> dict:
+    with connect() as conn:
+        refresh_current_state(conn)
+        state = _read_current_state_from_conn(conn)
+        
+        # 1. current_quest가 이미 있으면 승격 금지 (비어 있지 않은 값일 때만)
+        if state.get("current_quest_id"):
+            raise ValueError("이미 진행 중인 퀘스트가 있습니다. 먼저 종료하거나 보류(hold)하세요.")
+        
+        # 2. confirmed_starting_point가 없으면 승격 금지
+        confirmed = state.get("confirmed_starting_point")
+        if not confirmed or not confirmed.get("title"):
+            raise ValueError("승격할 확정된 시작점이 없습니다.")
+            
+        updated_at = now_iso()
+        quest_id = str(uuid.uuid4())
+        title = confirmed["title"]
+        why_now = confirmed.get("reason") or "어제 확정한 시작점입니다."
+        
+        # 3. 새 quest 생성 (plan_item_id 없이도 생성 가능해야 함)
+        conn.execute(
+            """
+            INSERT INTO quests (
+                id, plan_item_id, parent_quest_id, title, why_now, completion_criteria, status,
+                verdict_reason, restart_point, next_quest_hint, created_at, updated_at, metadata_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                quest_id,
+                None,
+                None,
+                title,
+                why_now,
+                "확정된 시작점의 목표를 달성한다.",
+                "active",
+                None,
+                f"{title} 시작",
+                "",
+                updated_at,
+                updated_at,
+                json.dumps({"promoted_from_confirmed_start": True}, ensure_ascii=False),
+            ),
+        )
+        
+        # 4. 성공 후 confirmed_starting_point 제거
+        conn.execute("DELETE FROM current_state WHERE state_key = 'confirmed_starting_point'")
+        
+        record_event(
+            conn,
+            event_type="quest_promoted",
+            entity_id=quest_id,
+            entity_type="quest",
+            detail=title,
+            metadata={"source": confirmed.get("source")},
+            created_at=updated_at,
+        )
+        
+        refresh_current_state(conn)
+        quest_out = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
+        return {
+            "ok": True,
+            "quest": row_to_dict(quest_out) if quest_out else {},
+            "current_state": _read_current_state_from_conn(conn),
+        }

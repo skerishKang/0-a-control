@@ -70,6 +70,7 @@ get_workdiary_top_level = _db.get_workdiary_top_level
 report_quest_progress = _db.report_quest_progress
 refresh_current_state = _db.refresh_current_state
 defer_current_quest_to_short_term = _db.defer_current_quest_to_short_term
+promote_confirmed_starting_point_to_quest = _db.promote_confirmed_starting_point_to_quest
 start_session = _db.start_session
 
 
@@ -240,6 +241,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         result = confirm_starting_point(title=title, reason=reason, source=source)
         self.send_json({**result, "current_state": get_current_state()})
 
+    def _post_tomorrow_first_quest_promote(self, body: dict) -> None:
+        result = promote_confirmed_starting_point_to_quest()
+        self.send_json({**result, "current_state": get_current_state()})
+
     def handle_api_post_dispatch(self, path: str, body: dict) -> None:
         exact_routes = {
             "/api/quests/evaluate": self._post_quests_evaluate,
@@ -254,6 +259,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/bridge/quick-input": self._post_bridge_quick_input,
             "/api/bridge/create-plan": self._post_bridge_create_plan,
             "/api/tomorrow-first-quest/confirm": self._post_tomorrow_first_quest_confirm,
+            "/api/tomorrow-first-quest/promote": self._post_tomorrow_first_quest_promote,
         }
         prefix_routes = [
             ("/api/current-quest/hold", self._post_current_quest_hold),
