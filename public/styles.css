@@ -109,6 +109,26 @@ p {
   text-align: center;
 }
 
+.agent-status-badge.working {
+  background: #e8f7ec;
+  color: #166534;
+}
+
+.agent-status-badge.idle {
+  background: #eef4fb;
+  color: #355070;
+}
+
+.agent-status-badge.error {
+  background: #fff1f1;
+  color: #b42318;
+}
+
+.agent-status-badge.unavailable {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
 .layout {
   padding: 1rem 1.5rem 2rem;
   display: grid;

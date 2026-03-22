@@ -19,10 +19,80 @@ function renderSupportGrid(state) {
   renderSessionsSection(state);
   renderBriefsSection(state);
   renderExternalInboxSection(state);
+  renderAgentStatusSection(state);
   renderWorkdiarySection(state);
   renderPriorityCandidatesSection(state);
   renderExternalContextPanel(state);
   renderDerivedSuggestionsSection().catch(() => {});
+}
+
+function labelAgentStatus(status) {
+  return {
+    working: "작업 중",
+    idle: "대기",
+    error: "오류",
+    unavailable: "미설치",
+  }[status] || status || "";
+}
+
+function renderAgentStatusSection(state) {
+  const targetId = "agentStatusList";
+  const container = document.getElementById(targetId);
+  if (!container) return;
+
+  const parentPanel = container.parentElement;
+  if (parentPanel) parentPanel.classList.add("panel-browsing");
+
+  const items = (state.agents || []).slice().sort((a, b) => {
+    const statusOrder = { working: 0, error: 1, idle: 2, unavailable: 3 };
+    const aOrder = statusOrder[a.status] ?? 9;
+    const bOrder = statusOrder[b.status] ?? 9;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return String(a.label || a.canonical_name || "").localeCompare(String(b.label || b.canonical_name || ""));
+  });
+
+  setCountBadge("agentStatusCount", items.length);
+
+  if (!items.length) {
+    container.innerHTML = `<div class="list-item empty">에이전트 상태 정보를 아직 불러오지 못했습니다.</div>`;
+    return;
+  }
+
+  const topItems = items.slice(0, 4);
+  container.innerHTML = topItems.map((item) => {
+    const latest = item.last_session || {};
+    const latestText = latest.title || latest.started_at || "최근 세션 없음";
+    return `
+      <div class="list-item candidate-item">
+        <div class="candidate-head">
+          <strong>${escapeHtml(item.label || item.canonical_name || "agent")}</strong>
+          <span class="session-badge agent-status-badge ${escapeHtml(item.status || "idle")}">${escapeHtml(labelAgentStatus(item.status))}</span>
+        </div>
+        <span class="candidate-reason">${escapeHtml(latestText)}</span>
+      </div>
+    `;
+  }).join("");
+
+  if (parentPanel) {
+    parentPanel.onclick = () => {
+      showDetailedList("에이전트 상태", "실행기 상태와 최근 세션", items, (item) => {
+        const latest = item.last_session || {};
+        const latestLines = [
+          latest.title ? `최근 세션: ${latest.title}` : "최근 세션: 없음",
+          latest.status ? `세션 상태: ${latest.status}` : "",
+          latest.started_at ? `시작: ${latest.started_at}` : "",
+          item.resolved_path ? `실행 파일: ${item.resolved_path}` : `실행 파일: ${item.executable || "-"}`,
+        ].filter(Boolean);
+        return `
+          <div class='list-item'>
+            <strong>${escapeHtml(item.label || item.canonical_name || "agent")}</strong>
+            <p class='muted'>상태: ${escapeHtml(labelAgentStatus(item.status))}</p>
+            <p class='muted'>${escapeHtml(latestLines.join(" / "))}</p>
+          </div>
+        `;
+      });
+    };
+  }
 }
 
 function normalizeSuggestionTitle(value) {

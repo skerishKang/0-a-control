@@ -94,6 +94,9 @@ function applyApiResult(api, payload) {
     case "sessions":
       state.sessions = payload?.sessions || [];
       break;
+    case "agents":
+      state.agents = payload?.agents || [];
+      break;
     case "activeSession":
       state.activeSession = payload?.session || null;
       break;
@@ -169,6 +172,7 @@ async function loadAll() {
     { key: "briefs", label: "briefs", url: "/api/briefs/latest" },
     { key: "quests", label: "quests", url: "/api/quests" },
     { key: "sessions", label: "sessions", url: "/api/sessions/recent?limit=8" },
+    { key: "agents", label: "agents", url: "/api/agents/status", optional: true },
     { key: "activeSession", label: "active-session", url: "/api/sessions/active" },
     { key: "workdiaryItems", label: "workdiary", url: "/api/workdiary/top-level" },
     { key: "priorityCandidates", label: "priority-candidates", url: "/api/workdiary/priority-candidates" },

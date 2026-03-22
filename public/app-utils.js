@@ -4,6 +4,7 @@ const state = {
   briefs: [],
   quests: [],
   sessions: [],
+  agents: [],
   workdiaryItems: [],
   priorityCandidates: [],
   externalInbox: { items: [], summary: {} },
