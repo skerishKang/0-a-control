@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 0-a-control - Main Application Entry (Orchestrator)
  * Responsibility: State loading and module coordination
  */
@@ -27,6 +27,11 @@ function updateQuestFormState(current) {
         submitBtn.textContent = "퀘스트 완료 보고 (Ctrl+Enter)";
       }
     }
+  }
+
+  const holdBtn = document.getElementById("holdCurrentQuestBtn");
+  if (holdBtn) {
+    holdBtn.disabled = !currentQuestExists;
   }
 
   const deferBtn = document.getElementById("deferCurrentQuestBtn");
@@ -353,6 +358,36 @@ async function handleQuestEvaluation(event) {
   await loadAll();
 }
 
+async function handleHoldCurrentQuest() {
+  const current = state.currentState || {};
+  if (!current.current_quest_id) {
+    alert("현재 퀘스트가 없습니다.");
+    return;
+  }
+
+  const btn = document.getElementById("holdCurrentQuestBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "정리 중...";
+  }
+
+  try {
+    await fetchJson("/api/current-quest/hold", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    await loadAll();
+  } catch (error) {
+    alert(`미완료 처리 실패: ${error.message}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "미완료로 남기기";
+    }
+  }
+}
+
 async function handleDeferCurrentQuest() {
   const current = state.currentState || {};
   if (!current.current_quest_id) {
@@ -363,7 +398,7 @@ async function handleDeferCurrentQuest() {
   const btn = document.getElementById("deferCurrentQuestBtn");
   if (btn) {
     btn.disabled = true;
-    btn.textContent = "내리는 중...";
+    btn.textContent = "정리 중...";
   }
 
   try {
@@ -374,11 +409,11 @@ async function handleDeferCurrentQuest() {
     });
     await loadAll();
   } catch (error) {
-    alert(`오늘에서 내리기 실패: ${error.message}`);
+    alert(`단기 플랜 이동 실패: ${error.message}`);
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.textContent = "오늘에서 내리기";
+      btn.textContent = "단기 플랜으로";
     }
   }
 }
@@ -422,6 +457,7 @@ async function handleTelegramSync() {
 }
 
 document.getElementById("openReportPanelBtn").addEventListener("click", openReportPanel);
+document.getElementById("holdCurrentQuestBtn")?.addEventListener("click", handleHoldCurrentQuest);
 document.getElementById("deferCurrentQuestBtn")?.addEventListener("click", handleDeferCurrentQuest);
 document.getElementById("openExternalContextPanelBtn").addEventListener("click", openExternalContextPanel);
 document.getElementById("openBridgePanelBtn")?.addEventListener("click", openBridgePanel);
@@ -603,3 +639,4 @@ loadAll().catch((error) => {
   state.renderErrors = [];
   updateLoadingStatus(state.loadErrors, state.renderErrors);
 });
+

@@ -19,6 +19,8 @@ function renderTodaySummarySection(state) {
   const targetId = "todaySummaryList";
   const container = document.getElementById(targetId);
   if (!container) return;
+  const parentPanel = container.parentElement;
+  if (parentPanel) parentPanel.classList.add("panel-browsing");
 
   const current = state.currentState || {};
   const progress = current.day_progress_summary || {};
@@ -28,50 +30,79 @@ function renderTodaySummarySection(state) {
   const dayPhase = current.day_phase || "";
 
   const items = [];
-
-  // 1. 오늘 진행 상황 (단호하게)
   const done = progress.done || 0;
   const partial = progress.partial || 0;
+
   if (done > 0) {
     items.push({ label: "완료", value: `${done}건`, type: "done" });
   }
   if (partial > 0) {
-    items.push({ label: "진행중", value: `${partial}건`, type: "partial" });
+    items.push({ label: "부분", value: `${partial}건`, type: "partial" });
   }
 
-  // 2. 현재 퀘스트 상태
   const questStatus = verdict.status || "none";
   if (questStatus === "done") {
-    items.push({ label: "퀘스트", value: "완료", type: "done" });
+    items.push({ label: "최근 판정", value: "완료", type: "done" });
   } else if (questStatus === "partial") {
-    items.push({ label: "퀘스트", value: "진행중", type: "partial" });
+    items.push({ label: "최근 판정", value: "부분", type: "partial" });
   } else if (questStatus === "hold") {
-    items.push({ label: "퀘스트", value: "보류", type: "hold" });
+    items.push({ label: "최근 판정", value: "보류", type: "hold" });
   }
 
-  // 3. 기한 위험 (가장 급한 것 1개)
-  if (datedPressure && datedPressure.length > 0) {
+  if (datedPressure.length > 0) {
     const urgent = datedPressure[0];
-    items.push({ label: "기한", value: urgent.title?.slice(0, 20) || "확인필요", type: "risk" });
+    items.push({ label: "주의", value: urgent.title?.slice(0, 20) || "항목 없음", type: "risk" });
   }
 
-  // 4. 지금 할 것 (간단히)
   if (recommendedNext) {
-    const short = recommendedNext.length > 25 ? recommendedNext.slice(0, 25) + "..." : recommendedNext;
+    const short = recommendedNext.length > 25 ? `${recommendedNext.slice(0, 25)}...` : recommendedNext;
     items.push({ label: "다음", value: short, type: "action" });
   }
 
   if (items.length === 0) {
-    container.innerHTML = `<div class="list-item empty">오늘 아직 판단이 없습니다.</div>`;
-    return;
+    container.innerHTML = `<div class="list-item empty">오늘 판단 요약이 아직 없습니다.</div>`;
+  } else {
+    container.innerHTML = items.slice(0, 4).map(item => `
+      <div class="list-item summary-item">
+        <span class="summary-label">${escapeHtml(item.label)}</span>
+        <span class="summary-value ${item.type}">${escapeHtml(item.value)}</span>
+      </div>
+    `).join("");
   }
 
-  container.innerHTML = items.slice(0, 4).map(item => `
-    <div class="list-item summary-item">
-      <span class="summary-label">${escapeHtml(item.label)}</span>
-      <span class="summary-value ${item.type}">${escapeHtml(item.value)}</span>
-    </div>
-  `).join("");
+  if (parentPanel) {
+    parentPanel.onclick = () => {
+      const detailItems = [
+        {
+          title: "오늘 진행 요약",
+          detail: `완료 ${done}건 / 부분 ${partial}건`,
+        },
+        {
+          title: "최근 판정 상태",
+          detail: verdict.status ? labelStatus(verdict.status) : "판정 없음",
+        },
+        {
+          title: "추천 다음 행동",
+          detail: recommendedNext || "추천 없음",
+        },
+        {
+          title: "오늘 단계",
+          detail: dayPhase || "미정",
+        },
+        ...datedPressure.slice(0, 5).map((item) => ({
+          title: `주의 일정: ${item.title || "항목 없음"}`,
+          detail: item.due_at || item.why_now || "세부 정보 없음",
+        })),
+      ];
+
+      showDetailedList("오늘 운영 요약", "오늘 상태를 요약한 상세 보기", detailItems, (i) => `
+        <div class='list-item'>
+          <strong>${escapeHtml(i.title)}</strong>
+          <p class='muted'>${escapeHtml(i.detail || "-")}</p>
+        </div>
+      `);
+    };
+  }
 }
 
 function renderUnfinishedPlansSection(state) {
@@ -829,20 +860,23 @@ async function renderDerivedSuggestionsSection() {
   const targetId = "derivedSuggestionList";
   const container = document.getElementById(targetId);
   if (!container) return;
+  const parentPanel = container.parentElement;
+  if (parentPanel) parentPanel.classList.add("panel-browsing");
 
   try {
     const response = await fetch("/api/suggestions");
     const data = await response.json();
     const suggestions = data.suggestions || [];
-    
+    state.derivedSuggestions = suggestions;
+
     setCountBadge("derivedSuggestionCount", suggestions.length);
 
     if (suggestions.length === 0) {
-      container.innerHTML = `<div class="empty-state">추천 퀘스트가 없습니다. CLI에서 --refresh로 새로고침하세요.</div>`;
+      container.innerHTML = `<div class="empty-state">?? ???? ????. CLI?? --refresh? ?? ???? ???.</div>`;
       return;
     }
 
-    container.innerHTML = suggestions.map(s => {
+    container.innerHTML = suggestions.map((s) => {
       const source = s.source_project || "unknown";
       return `
         <div class="list-item">
@@ -853,7 +887,20 @@ async function renderDerivedSuggestionsSection() {
         </div>
       `;
     }).join("");
+
+    if (parentPanel) {
+      parentPanel.onclick = () => {
+        showDetailedList("?? ???? ??? ?? ?? ?? ??", "?? ????", state.derivedSuggestions || [], (i) => `
+          <div class='list-item'>
+            <strong>[${escapeHtml(i.source_project || "unknown")}] ${escapeHtml(i.title || "-")}</strong>
+            <p class='muted'>${escapeHtml(i.why_now || "-")}</p>
+            <p class='muted'>?? ??: ${escapeHtml(i.completion_criteria || "-")}</p>
+            <p class='muted'>?? ??: ${escapeHtml(i.next_candidates || i.next_quest_candidates || "-")}</p>
+          </div>
+        `);
+      };
+    }
   } catch (e) {
-    container.innerHTML = `<div class="empty-state">추천 퀘스트를 불러올 수 없습니다.</div>`;
+    container.innerHTML = `<div class="empty-state">?? ???? ???? ???? ??.</div>`;
   }
 }

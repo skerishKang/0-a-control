@@ -371,7 +371,11 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             result = refresh_current_state()
             self.send_json({"ok": True, "state": result})
             return
-        if path == "/api/current-quest/defer":
+        if path.startswith("/api/current-quest/hold") or path.startswith("/api/quest-hold"):
+            result = _db.mark_current_quest_unfinished()
+            self.send_json({"ok": True, **result})
+            return
+        if path.startswith("/api/current-quest/defer") or path.startswith("/api/quest-defer"):
             result = defer_current_quest_to_short_term()
             self.send_json({"ok": True, **result})
             return

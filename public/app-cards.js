@@ -175,11 +175,18 @@ function renderPlanChangesCard(current) {
   const latestDecision = current.latest_decision_summary || {};
   
   if (latestDecision.title) {
+    const normalizedTitle = latestDecision.title
+      .replace(/^Quest verdict:\s*/i, "")
+      .replace(/^Keep current quest unfinished:\s*/i, "미완료로 남김: ")
+      .replace(/^Move current quest out of today:\s*/i, "단기 플랜으로 이동: ");
+    const normalizedSecondary = String(latestDecision.impact_summary || latestDecision.reason || "-")
+      .replace("[today] removed -> [short_term] deferred", "오늘판에서 내리고 단기 플랜으로 넘김")
+      .replace("[today] kept as unfinished", "오늘 미완료로 남김");
     entries.push({
       badgeText: "방금 판정",
       badgeClass: "partial",
-      title: latestDecision.title.replace(/^Quest verdict:\s*/i, ""),
-      secondary: latestDecision.impact_summary || latestDecision.reason || "-",
+      title: normalizedTitle,
+      secondary: normalizedSecondary,
     });
   }
 

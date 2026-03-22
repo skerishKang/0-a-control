@@ -20,7 +20,10 @@
       <div class="hero-header">
         <div class="title-group">
           <div class="hero-subhead">
-            <p class="section-label alert-label">지금 1개만 잡기</p>
+            <div class="hero-subhead-left">
+              <p class="section-label alert-label">지금 1개만 잡기</p>
+              <button id="openMissionReasonBtn" type="button" class="secondary-btn mission-subhead-btn">선정 이유</button>
+            </div>
             <div class="hero-meta" aria-label="dashboard freshness">
               <span id="dashboardTodayLabel" class="hero-meta-chip">오늘 기준 --</span>
               <span id="dashboardFreshnessLabel" class="hero-meta-chip hero-meta-chip-muted">데이터 기준 --</span>
@@ -28,7 +31,6 @@
           </div>
           <div class="mission-title-row">
             <h2 id="mainMissionTitle">정보를 불러오고 있습니다...</h2>
-            <button id="openMissionReasonBtn" type="button" class="secondary-btn mission-reason-btn">이유</button>
             <button id="openExternalContextPanelBtn" type="button" class="secondary-btn header-action-btn">텔레그램/이메일</button>
             <button id="openBridgePanelBtn" type="button" class="secondary-btn header-action-btn">빠른 입력으로 분류</button>
           </div>
@@ -47,7 +49,8 @@
         </div>
         <div class="hero-actions">
           <button id="openReportPanelBtn" type="button" class="primary-btn">지금 퀘스트 완료 보고하기</button>
-          <button id="deferCurrentQuestBtn" type="button" class="secondary-btn">오늘에서 내리기</button>
+          <button id="holdCurrentQuestBtn" type="button" class="secondary-btn">미완료로 남기기</button>
+          <button id="deferCurrentQuestBtn" type="button" class="secondary-btn">단기 플랜으로</button>
         </div>
       </div>
     </section>
