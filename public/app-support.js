@@ -62,9 +62,10 @@ function renderAgentStatusSection(state) {
   const topItems = items.slice(0, 4);
   container.innerHTML = topItems.map((item) => {
     const latest = item.last_session || {};
+    const latestTitle = normalizeSessionTitleLabel(latest.title || latest.started_at || "");
     const latestText = item.status === "stale"
-      ? `활성 세션 기록 남음: ${latest.title || latest.started_at || "세션 정보 없음"}`
-      : (latest.title || latest.started_at || "최근 세션 없음");
+      ? `활성 세션 기록 남음: ${latestTitle}`
+      : (latestTitle || "최근 세션 없음");
     return `
       <div class="list-item candidate-item">
         <div class="candidate-head">
@@ -137,6 +138,27 @@ function normalizeItemTypeLabel(value) {
   if (key === "folder") return "폴더";
   if (key === "project") return "프로젝트";
   return value || "항목";
+}
+
+function normalizeExternalStatusLabel(value) {
+  const key = String(value || "").trim().toLowerCase();
+  if (!key || key === "new") return "새 항목";
+  if (key === "reviewing") return "검토중";
+  if (key === "saved") return "저장됨";
+  if (key === "archived") return "보관됨";
+  return labelStatus(value) || value || "";
+}
+
+function normalizeSessionTitleLabel(value) {
+  const raw = String(value || "").trim();
+  const normalized = raw.toLowerCase();
+  if (!raw) return "세션 정보 없음";
+  if (normalized === "0-a-control new session") return "0-a-control 기본 세션";
+  if (normalized === "0-a-control new opencode session") return "0-a-control OpenCode 세션";
+  if (normalized === "0-a-control new codex session") return "0-a-control Codex 세션";
+  if (normalized === "0-a-control new gemini-cli session") return "0-a-control Gemini CLI 세션";
+  if (normalized === "0-a-control new kilo session") return "0-a-control Kilo 세션";
+  return raw;
 }
 
 function renderTodaySummarySection(state) {
@@ -806,7 +828,7 @@ function renderExternalInboxSection(state) {
       <div class="list-item candidate-item">
         <div class="candidate-head">
           <strong>${escapeHtml(title)}</strong>
-          <span class="session-badge verdict ${escapeHtml(item.status || "new")}">${escapeHtml(labelStatus(item.status) || item.status || "")}</span>
+          <span class="session-badge verdict ${escapeHtml(item.status || "new")}">${escapeHtml(normalizeExternalStatusLabel(item.status))}</span>
         </div>
         <span class="candidate-reason">${escapeHtml(source)} · ${escapeHtml(preview || "-")}</span>
       </div>

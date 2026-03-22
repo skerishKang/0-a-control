@@ -256,7 +256,7 @@ function renderSessionPanelContent() {
       `
       : `<div class="detail-section"><strong>원문 transcript</strong><p class="muted">저장된 transcript가 없습니다.</p></div>`;
     renderTranscriptModeTabs(transcript);
-    renderTranscriptActions(transcriptText, view.header?.title || view.session_id, transcriptModeLabel);
+    renderTranscriptActions(transcriptText, normalizeSessionTitle(view.header?.title, view.project_key) || view.session_id, transcriptModeLabel);
     return;
   }
 
@@ -416,6 +416,18 @@ function normalizeSessionLengthLabel(value) {
   return value || "";
 }
 
+function normalizeSessionTitle(value, projectKey) {
+  const raw = String(value || "").trim();
+  const normalized = raw.toLowerCase();
+  if (!raw) return projectKey || "세션";
+  if (normalized === "0-a-control new session") return "0-a-control 기본 세션";
+  if (normalized === "0-a-control new opencode session") return "0-a-control OpenCode 세션";
+  if (normalized === "0-a-control new codex session") return "0-a-control Codex 세션";
+  if (normalized === "0-a-control new gemini-cli session") return "0-a-control Gemini CLI 세션";
+  if (normalized === "0-a-control new kilo session") return "0-a-control Kilo 세션";
+  return raw;
+}
+
 // Generate 1-line preview from summary
 function generateSessionPreview(session) {
   const summary = session.summary_md || "";
@@ -459,7 +471,7 @@ function renderSessions() {
     const badges = analyzeSessionForBadges(item);
     const preview = generateSessionPreview(item);
     const time = formatRecentLabel(item.ended_at || item.started_at);
-    const title = item.title || item.project_key || "세션";
+    const title = normalizeSessionTitle(item.title, item.project_key);
     
     return `
       <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}" onclick="openSessionDetailPanel('${item.id}')">
