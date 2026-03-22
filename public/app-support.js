@@ -195,10 +195,18 @@ function renderTodaySummarySection(state) {
   const datedPressure = current.dated_pressure_summary || [];
   const recommendedNext = current.recommended_next_quest || "";
   const dayPhase = current.day_phase || "";
+  const todayDone = current.today_done_quests || [];
+  const tomorrowFirst = current.tomorrow_first_quest || null;
+  const confirmedStart = current.confirmed_starting_point || null;
 
   const items = [];
   const done = progress.done || 0;
   const partial = progress.partial || 0;
+
+  // end-of-day 마감 처리 권장 신호
+  if (dayPhase === "end-of-day") {
+    items.push({ label: "마감", value: "정리 권장", type: "closing" });
+  }
 
   if (done > 0) items.push({ label: "완료", value: `${done}건`, type: "done" });
   if (partial > 0) items.push({ label: "부분", value: `${partial}건`, type: "partial" });
@@ -220,6 +228,11 @@ function renderTodaySummarySection(state) {
   if (recommendedNext) {
     const short = recommendedNext.length > 25 ? `${recommendedNext.slice(0, 25)}...` : recommendedNext;
     items.push({ label: "다음", value: short, type: "action" });
+  }
+
+  if (tomorrowFirst && tomorrowFirst.title) {
+    const short = tomorrowFirst.title.length > 20 ? `${tomorrowFirst.title.slice(0, 20)}...` : tomorrowFirst.title;
+    items.push({ label: "내일 첫 퀘스트", value: short, type: "suggestion" });
   }
 
   if (items.length === 0) {
@@ -252,11 +265,54 @@ function renderTodaySummarySection(state) {
           title: "오늘 단계",
           detail: normalizeDayPhaseLabel(dayPhase),
         },
-        ...datedPressure.slice(0, 5).map((item) => ({
+      ];
+
+      // 오늘 완료된 quest 목록
+      if (todayDone.length > 0) {
+        detailItems.push({
+          title: "--- 오늘 완료된 퀘스트 ---",
+          detail: `${todayDone.length}건`,
+        });
+        todayDone.forEach((q) => {
+          detailItems.push({
+            title: `✓ ${q.title || "제목 없음"}`,
+            detail: q.verdict_reason || q.updated_at || "",
+          });
+        });
+      }
+
+      // end-of-day 마감 권장 메시지
+      if (dayPhase === "end-of-day") {
+        detailItems.push({
+          title: "🌙 마감 처리 권장",
+          detail: "오늘 작업을 정리하고 미완료 항목의 재시작 전략을 정하세요. 미완료를 hold로 남기거나 단기 플랜으로 넘길 수 있습니다.",
+        });
+      }
+
+      // 내일 첫 퀘스트 제안
+      if (tomorrowFirst && tomorrowFirst.title) {
+        const sourceLabel = tomorrowFirst.source === "today_hold" ? "오늘 미완료 → 계속" : "단기 플랜 → 이동";
+        detailItems.push({
+          title: `🌅 내일 첫 퀘스트`,
+          detail: `<strong>${escapeHtml(tomorrowFirst.title)}</strong><br><span class="muted">${escapeHtml(tomorrowFirst.reason || "")} (${sourceLabel})</span>`,
+        });
+      }
+
+      // confirmed_starting_point: 사용자가 확정한 내일 첫 퀘스트 (아직 자동 연동)
+      if (confirmedStart && confirmedStart.title) {
+        detailItems.push({
+          title: `✅ 내일 첫 퀘스트 (확인됨)`,
+          detail: `<strong>${escapeHtml(confirmedStart.title)}</strong><br><span class="muted">${escapeHtml(confirmedStart.reason || "")} · ${confirmedStart.confirmed_at || ""}</span>`,
+        });
+      }
+
+      // dated pressure
+      datedPressure.slice(0, 5).forEach((item) => {
+        detailItems.push({
           title: `주의 일정: ${item.title || "항목 없음"}`,
           detail: item.due_at || item.why_now || "세부 정보 없음",
-        })),
-      ];
+        });
+      });
 
       showDetailedList("오늘 운영 요약", "오늘 상태를 요약한 상세 보기", detailItems, (i) => `
         <div class='list-item'>

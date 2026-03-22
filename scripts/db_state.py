@@ -491,6 +491,60 @@ def get_external_inbox_source_messages(
     }
 
 
+def build_today_done_quests(conn: sqlite3.Connection) -> list[dict]:
+    # 오늘(KST 기준) 완료된 퀘스트 목록
+    now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
+    today_str = now_kst.date().isoformat()
+    rows = conn.execute(
+        """
+        SELECT * FROM quests
+        WHERE status IN ('done', 'partial')
+          AND updated_at >= ?
+        ORDER BY updated_at DESC
+        """,
+        (today_str,),
+    ).fetchall()
+    return rows_to_dicts(rows)
+
+
+def build_tomorrow_first_quest(conn: sqlite3.Connection) -> dict | None:
+    # 1순위: 오늘 hold 상태로 남은 항목
+    hold_item = conn.execute(
+        """
+        SELECT * FROM plan_items
+        WHERE bucket = 'today' AND status = 'hold'
+        ORDER BY priority_score DESC, updated_at DESC
+        LIMIT 1
+        """
+    ).fetchone()
+    if hold_item:
+        return {
+            "source": "today_hold",
+            "id": hold_item["id"],
+            "title": hold_item["title"],
+            "reason": "오늘 미완료로 남긴 항목. 이어서 진행하면 됨",
+        }
+
+    # 2순위: short_term 버킷의 우선순위 높은 항목
+    short_term = conn.execute(
+        """
+        SELECT * FROM plan_items
+        WHERE bucket = 'short_term' AND status IN ('pending', 'active', 'partial', 'hold')
+        ORDER BY priority_score DESC, updated_at DESC
+        LIMIT 1
+        """
+    ).fetchone()
+    if short_term:
+        return {
+            "source": "short_term",
+            "id": short_term["id"],
+            "title": short_term["title"],
+            "reason": "단기 플랜 중 가장 우선순위가 높은 다음 목표",
+        }
+
+    return None
+
+
 def generate_priority_recommendation(state: dict) -> dict:
     candidates = get_workdiary_priority_candidates(5)
     recommended = candidates[0] if candidates else None
@@ -511,6 +565,7 @@ def generate_priority_recommendation(state: dict) -> dict:
 def generate_morning_brief(conn: sqlite3.Connection, state: dict) -> dict:
     main = state["main_mission"] or {}
     quest = state["current_quest"] or {}
+    confirmed = state.get("confirmed_starting_point")
     due_items = state["due_items"][:3]
     unfinished = state["unfinished_items"][:3]
     recommendation = generate_priority_recommendation(state)
@@ -519,18 +574,21 @@ def generate_morning_brief(conn: sqlite3.Connection, state: dict) -> dict:
     main_reason = main.get("priority_reason", "우선순위 이유 없음")
     quest_title = quest.get("title", "미정")
 
-    if candidates and "workdiary 핵심 프로젝트 흐름 파악" in main_title:
-        main_title = f"{recommendation['title']} 포함 핵심 프로젝트 흐름 파악"
-        main_reason = f"{main_reason} 우선 추천 후보는 {recommendation['title']}이며, {recommendation['reason']}"
-        quest_title = f"{recommendation['title']} 포함 우선 검토 후보 5개 좁히기"
-
     lines = [
         "## 오늘 브리핑",
         "",
         f"- 주 임무: {main_title}",
         f"- 이유: {main_reason}",
-        f"- 현재 퀘스트: {quest_title}",
     ]
+
+    # 어제 확정한 시작점이 있으면 추가
+    if confirmed and confirmed.get("title"):
+        lines.append(f"- 어제 확정한 첫 시작: {confirmed['title']}")
+        if confirmed.get("reason"):
+            lines.append(f"  (이유: {confirmed['reason']})")
+
+    lines.append(f"- 현재 퀘스트: {quest_title}")
+    
     if due_items:
         lines.append(f"- 기한 압박: {due_items[0]['title']}")
     if unfinished:
@@ -631,6 +689,20 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
         ).fetchall()
     )
 
+    today_done_quests = build_today_done_quests(conn)
+    tomorrow_first_quest = build_tomorrow_first_quest(conn)
+    
+    # confirmed_starting_point 읽기
+    confirmed_row = conn.execute(
+        "SELECT state_value FROM current_state WHERE state_key = 'confirmed_starting_point'"
+    ).fetchone()
+    confirmed_starting_point = None
+    if confirmed_row and confirmed_row["state_value"]:
+        try:
+            confirmed_starting_point = json.loads(confirmed_row["state_value"])
+        except json.JSONDecodeError:
+            pass
+
     state = {
         "main_mission": row_to_dict(main_mission),
         "current_quest": row_to_dict(current_quest),
@@ -640,6 +712,9 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
         "recommended_next_quest": current_quest["next_quest_hint"] if current_quest else None,
         "restart_point": current_quest["restart_point"] if current_quest else None,
         "day_progress_summary": build_day_progress_summary(conn),
+        "today_done_quests": today_done_quests,
+        "tomorrow_first_quest": tomorrow_first_quest,
+        "confirmed_starting_point": confirmed_starting_point,
     }
     
     # Calculate structured quest_status_summary
@@ -731,7 +806,9 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
     upsert_state(conn, "latest_decision_summary", latest_decision_summary(conn))
     upsert_state(conn, "restart_point", state["restart_point"] or "")
     upsert_state(conn, "day_progress_summary", state["day_progress_summary"])
-    
+    upsert_state(conn, "today_done_quests", today_done_quests)
+    upsert_state(conn, "tomorrow_first_quest", tomorrow_first_quest or {})
+
     # Enhanced heuristic for Daily Operating Loop status
     now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
     hour = now_kst.hour

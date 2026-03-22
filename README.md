@@ -33,7 +33,21 @@
 *   **AGENTS.md**: 역할(User, Head Agent, Background Agents) 및 운영 원칙
 *   **docs/08-file-verdict-pipeline.md**: 파일 기반 퀘스트 판정 파이프라인 상세
 *   **docs/00-startup-routine.md**: 일일 시작 및 종료 루틴
+*   **docs/14-kilo-mode-skill-guide.md**: Kilo custom mode와 skill 연결/사용 가이드
 *   **scripts/_archive/**: 현재는 사용하지 않지만 보존 중인 마이그레이션/백필 스크립트
+
+## Kilo 운영 (Mode + Skill)
+
+Kilo에서 0-a-control을 운영할 때는 4개의 custom mode와 4개의 skill을 조합한다.
+
+| 시점 | 명령어 | Mode | Skill |
+|------|--------|------|-------|
+| 아침 | `/ops-brief` | ops-brief | daily-briefing |
+| 작업 중 | `/ops-quest` | ops-quest | quest-review |
+| 정보 도착 | `/ops-triage` | ops-triage | telegram-email-triage |
+| 마감 | `/ops-close` | ops-close | session-refresh |
+
+상세한 사용법과 데이터 흐름은 [docs/14-kilo-mode-skill-guide.md](docs/14-kilo-mode-skill-guide.md)를 참고하십시오.
 
 ## Telegram 동기화
 

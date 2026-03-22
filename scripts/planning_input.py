@@ -16,7 +16,7 @@ def classify_conversation(text: str) -> dict:
         {
             "layer": "short_term",
             "bucket": "short_term",
-            "keywords": ["\uc774\ubc88 \uc8fc", "\uc8fc\uac04", "\ub2e4\uc74c \uc8fc", "short"],
+            "keywords": ["이번 주", "다음 주", "short"],  # '주간' 제거: '매주 + 주간' 충돌 시 recurring 우선
             "weight": 4,
         },
         {
@@ -30,6 +30,18 @@ def classify_conversation(text: str) -> dict:
             "bucket": "recurring",
             "keywords": ["\ub9e4\uc8fc", "\ubc18\ubcf5", "\uc815\uae30", "\ub9e4\uc6d4", "recurring"],
             "weight": 3,
+        },
+        {
+            "layer": "dated",
+            "bucket": "dated",
+            "keywords": ["\uae30\ud55c", "\ub9c8\uac10", "\uae4c\uc9c0", "due", "deadline"],
+            "weight": 4,
+        },
+        {
+            "layer": "hold",
+            "bucket": "hold",
+            "keywords": ["\ubcf4\ub958", "\ub300\uae30", "hold", "waiting"],
+            "weight": 2,
         },
         {
             "layer": "project",
@@ -61,10 +73,11 @@ def classify_conversation(text: str) -> dict:
     for rule in rules:
         hits = sum(1 for keyword in rule["keywords"] if keyword in text_lower)
         if hits:
-            scored.append((hits * rule["weight"], -rule["weight"], rule))
+            # (스코어, -weight, 인덱스, rule) 순서로 저장하여 동점 시 먼저 나온 규칙이 선택되도록 함
+            scored.append((hits * rule["weight"], -rule["weight"], rules.index(rule), rule))
 
     if scored:
-        _, _, best = max(scored)
+        _, _, _, best = max(scored)
         layer = best["layer"]
         bucket = best["bucket"]
     else:

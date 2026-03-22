@@ -527,6 +527,68 @@ p {
   border-color: var(--line);
 }
 
+/* Today summary value type badges */
+.summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.summary-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.summary-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 0.35rem;
+  white-space: nowrap;
+}
+
+.summary-value.done {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.summary-value.partial {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.summary-value.hold {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.summary-value.risk {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.summary-value.action {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.summary-value.closing {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #f8fafc;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.summary-value.suggestion {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .panel-wide {
   grid-column: span 2;
 }

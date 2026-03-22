@@ -11,12 +11,14 @@ if str(project_root) not in sys.path:
 if __package__ in (None, ""):
     from scripts import db as _db
     from scripts.db_ops import approve_plan_candidates
+    from scripts.confirmed_starting_point import confirm_starting_point
     from scripts.planning_input import classify_conversation, parse_quick_input
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
+    from .confirmed_starting_point import confirm_starting_point
     from .planning_input import classify_conversation, parse_quick_input
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
@@ -228,6 +230,16 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         result = approve_plan_candidates(candidates)
         self.send_json({"ok": True, "plans": result})
 
+    def _post_tomorrow_first_quest_confirm(self, body: dict) -> None:
+        title = body.get("title")
+        reason = body.get("reason", "")
+        source = body.get("source", "manual")
+        if not title:
+            self.send_json({"error": "title is required"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        result = confirm_starting_point(title=title, reason=reason, source=source)
+        self.send_json({**result, "current_state": get_current_state()})
+
     def handle_api_post_dispatch(self, path: str, body: dict) -> None:
         exact_routes = {
             "/api/quests/evaluate": self._post_quests_evaluate,
@@ -241,6 +253,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/bridge/parse": self._post_bridge_parse,
             "/api/bridge/quick-input": self._post_bridge_quick_input,
             "/api/bridge/create-plan": self._post_bridge_create_plan,
+            "/api/tomorrow-first-quest/confirm": self._post_tomorrow_first_quest_confirm,
         }
         prefix_routes = [
             ("/api/current-quest/hold", self._post_current_quest_hold),
