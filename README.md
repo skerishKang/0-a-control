@@ -20,6 +20,7 @@
 2. **실행**:
     *   **Windows**: `start-control-tower.bat`로 대시보드 서버를 시작할 수 있습니다. 다만 `launchers/`와 일부 에이전트 래퍼는 WSL/bash 환경을 전제로 하므로 Windows 지원은 부분적입니다.
     *   **Windows 에이전트 바로가기**: 루트의 `open-*.bat` 파일들을 사용하면 `launchers/`를 열지 않고도 각 에이전트를 바로 시작할 수 있습니다. 루트에는 `0-a-control`용 사용자 진입점만 두고, 진단/범용 배치는 내부 `launchers/`에 둡니다. 예: `open-codex-0-a-control.bat`, `open-gemini-cli-0-a-control.bat`, `open-kilo-0-a-control.bat`, `open-opencode-0-a-control-new.bat`
+    *   **진입점 원칙**: 루트의 `open-*.bat` 파일은 `launchers/` 안의 실제 구현을 호출하는 사용자 진입점입니다. 동작 변경은 먼저 `launchers/`를 기준으로 검토하십시오.
     *   **에이전트 시작 위치**: `open-*-0-a-control*.bat` 경로는 각 에이전트를 `0-a-control` 워크스페이스 기준으로 시작하도록 맞춥니다.
     *   **에이전트 자동 컨텍스트**: `open-*-0-a-control*.bat` 경로로 시작하면 `AGENTS.md`와 `README.md` 기반 시작 문맥이 Codex, Gemini CLI, Kilo, OpenCode에 공통 적용되도록 설계합니다.
     *   **macOS/Linux/WSL**: `start-control-tower.sh` 실행
