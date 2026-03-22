@@ -408,6 +408,14 @@ function analyzeSessionForBadges(session) {
   return { lengthBadge, lengthColor, valueBadge, valueColor, valueLabel };
 }
 
+function normalizeSessionLengthLabel(value) {
+  const key = String(value || "").trim().toLowerCase();
+  if (key === "short") return "짧음";
+  if (key === "medium") return "중간";
+  if (key === "long") return "길음";
+  return value || "";
+}
+
 // Generate 1-line preview from summary
 function generateSessionPreview(session) {
   const summary = session.summary_md || "";
@@ -457,7 +465,7 @@ function renderSessions() {
       <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}" onclick="openSessionDetailPanel('${item.id}')">
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:4px;">
           <strong style="font-size:13px;">${escapeHtml(title.substring(0, 30))}</strong>
-          <span style="color:${badges.lengthColor};font-size:10px;">${badges.lengthBadge}</span>
+          <span style="color:${badges.lengthColor};font-size:10px;">${normalizeSessionLengthLabel(badges.lengthBadge)}</span>
           <span style="color:${badges.valueColor};font-size:10px;">${badges.valueLabel}</span>
         </div>
         <span style="color:#777;font-size:11px;">${escapeHtml(preview)}</span>

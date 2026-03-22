@@ -121,6 +121,24 @@ function normalizeBriefContent(value) {
     .replace(/\s+-\s+/g, "\n- ");
 }
 
+function normalizeBriefTypeLabel(value) {
+  const key = String(value || "").trim().toLowerCase();
+  if (!key || key === "brief") return "브리프";
+  if (key === "morning_auto") return "자동 아침";
+  if (key === "morning") return "아침";
+  if (key === "evening") return "저녁";
+  return value || "브리프";
+}
+
+function normalizeItemTypeLabel(value) {
+  const key = String(value || "").trim().toLowerCase();
+  if (!key || key === "item") return "항목";
+  if (key === "file") return "파일";
+  if (key === "folder") return "폴더";
+  if (key === "project") return "프로젝트";
+  return value || "항목";
+}
+
 function renderTodaySummarySection(state) {
   const targetId = "todaySummaryList";
   const container = document.getElementById(targetId);
@@ -880,7 +898,7 @@ function renderBriefsSection(state) {
       <div class="list-item candidate-item">
         <div class="candidate-head">
           <strong>${escapeHtml(item.title)}</strong>
-          <span class="candidate-rank">${escapeHtml(item.brief_type || "brief")}</span>
+          <span class="candidate-rank">${escapeHtml(normalizeBriefTypeLabel(item.brief_type))}</span>
         </div>
         <span class="candidate-reason">${escapeHtml(summary)}</span>
       </div>
@@ -914,7 +932,7 @@ function renderWorkdiarySection(state) {
     <div class="list-item candidate-item">
       <div class="candidate-head">
         <strong>${escapeHtml(item.name)}</strong>
-        <span class="candidate-rank">${escapeHtml(item.item_type || "item")}</span>
+        <span class="candidate-rank">${escapeHtml(normalizeItemTypeLabel(item.item_type))}</span>
       </div>
       <span class="candidate-reason">${escapeHtml(formatDateTime(item.modified_at).slice(0, 16) || "-")}</span>
     </div>
