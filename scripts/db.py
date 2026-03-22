@@ -13,15 +13,19 @@ if __package__ in (None, ""):
         mark_current_quest_unfinished,
         start_current_quest_from_main_mission,
     )
+    from scripts.verdict_ops import (
+        DuplicateVerdict,
+        apply_verdict,
+        evaluate_quest,
+        report_quest_progress,
+    )
     from scripts.db_ops import (
         approve_plan_candidates,
-        evaluate_quest,
         get_current_state,
         get_latest_briefs,
         get_plans,
         get_quests,
         get_recent_sessions,
-        report_quest_progress,
     )
     from scripts.db_sessions import (
         append_source_record,
@@ -47,14 +51,18 @@ else:
         mark_current_quest_unfinished,
         start_current_quest_from_main_mission,
     )
-    from .db_ops import (
+    from .verdict_ops import (
+        DuplicateVerdict,
+        apply_verdict,
         evaluate_quest,
+        report_quest_progress,
+    )
+    from .db_ops import (
         get_current_state,
         get_latest_briefs,
         get_plans,
         get_quests,
         get_recent_sessions,
-        report_quest_progress,
     )
     from .db_sessions import (
         append_source_record,
@@ -82,6 +90,8 @@ __all__ = [
     "UTC",
     "connect",
     "create_sample_data_if_empty",
+    "DuplicateVerdict",
+    "apply_verdict",
     "evaluate_quest",
     "get_external_inbox_overview",
     "get_external_inbox_source_messages",
