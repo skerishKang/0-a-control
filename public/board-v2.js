@@ -61,6 +61,22 @@ function pickDoneItems(state) {
   return state.today_done_quests || [];
 }
 
+function formatPlanLabel(value) {
+  const mapping = {
+    today: "오늘",
+    short_term: "단기",
+    long_term: "장기",
+    recurring: "반복",
+    dated: "기한",
+    hold: "보류",
+    pending: "대기",
+    partial: "부분",
+    active: "진행 중",
+    done: "완료",
+  };
+  return mapping[value] || value || "상태 미정";
+}
+
 function renderList(items, emptyText, metaFormatter) {
   if (!items || !items.length) {
     return `<p class="v2-empty">${escapeHtml(emptyText)}</p>`;
@@ -137,7 +153,7 @@ function renderMorning(state) {
         <section class="v2-rail-section">
           <span class="v2-section-label">미완료 항목</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: item.bucket || "상태 미정", isDue: false }))}
+            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.bucket), isDue: false }))}
           </div>
         </section>
       </aside>
@@ -222,7 +238,7 @@ function renderInProgress(state) {
         <section class="v2-rail-section">
           <span class="v2-section-label">미완료 항목</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: item.bucket || "상태 미정", isDue: false }))}
+            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.bucket), isDue: false }))}
           </div>
         </section>
       </aside>
@@ -313,7 +329,7 @@ function renderEndOfDay(state) {
         <section class="v2-rail-section">
           <span class="v2-section-label">남은 전략</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: item.status || item.bucket || "상태 미정", isDue: false }))}
+            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.status || item.bucket), isDue: false }))}
           </div>
         </section>
 
