@@ -31,10 +31,47 @@ body.v2-body {
   min-height: 100vh;
 }
 
+.v2-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--v2-border);
+  background: rgba(253, 252, 240, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.v2-topbar-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+}
+
+.v2-topbar-title {
+  color: var(--v2-primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.v2-topbar-link {
+  color: var(--v2-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.v2-topbar-link:hover {
+  text-decoration: underline;
+}
+
 .v2-layout {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr) 320px;
-  min-height: 100vh;
+  min-height: calc(100vh - 54px);
   max-width: 1600px;
   margin: 0 auto;
   background: var(--v2-bg);
@@ -163,6 +200,45 @@ body.v2-body {
   color: var(--v2-text-muted);
   font-size: 18px;
   font-style: italic;
+}
+
+.v2-main-progress {
+  justify-content: flex-start;
+}
+
+.v2-quest-title {
+  font-size: clamp(36px, 4.6vw, 62px);
+}
+
+.v2-progress-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+  max-width: 720px;
+}
+
+.v2-inline-card {
+  background: var(--v2-surface);
+  border: 1px solid var(--v2-border);
+  box-shadow: var(--v2-shadow);
+  padding: 18px 20px;
+}
+
+.v2-inline-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--v2-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v2-inline-card strong {
+  display: block;
+  color: var(--v2-text);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .v2-start-card {
