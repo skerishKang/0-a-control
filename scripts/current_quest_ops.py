@@ -338,8 +338,11 @@ def promote_confirmed_starting_point_to_quest() -> dict:
         refresh_current_state(conn)
         state = _read_current_state_from_conn(conn)
         
-        # 1. current_quest가 이미 있으면 승격 금지 (비어 있지 않은 값일 때만)
-        if state.get("current_quest_id"):
+        # 1. active 퀘스트가 이미 있으면 승격 금지 (quests 테이블 직접 조회)
+        active_quest = conn.execute(
+            "SELECT id FROM quests WHERE status = 'active' LIMIT 1"
+        ).fetchone()
+        if active_quest:
             raise ValueError("이미 진행 중인 퀘스트가 있습니다. 먼저 종료하거나 보류(hold)하세요.")
         
         # 2. confirmed_starting_point가 없으면 승격 금지

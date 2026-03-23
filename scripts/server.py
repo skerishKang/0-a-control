@@ -11,14 +11,14 @@ if str(project_root) not in sys.path:
 if __package__ in (None, ""):
     from scripts import db as _db
     from scripts.db_ops import approve_plan_candidates
-    from scripts.confirmed_starting_point import confirm_starting_point
+    from scripts.confirmed_starting_point import confirm_starting_point, clear_confirmed_starting_point
     from scripts.planning_input import classify_conversation, parse_quick_input
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
-    from .confirmed_starting_point import confirm_starting_point
+    from .confirmed_starting_point import confirm_starting_point, clear_confirmed_starting_point
     from .planning_input import classify_conversation, parse_quick_input
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
@@ -245,6 +245,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         result = promote_confirmed_starting_point_to_quest()
         self.send_json({**result, "current_state": get_current_state()})
 
+    def _post_tomorrow_first_quest_clear(self, body: dict) -> None:
+        result = clear_confirmed_starting_point()
+        self.send_json({**result, "current_state": get_current_state()})
+
     def handle_api_post_dispatch(self, path: str, body: dict) -> None:
         exact_routes = {
             "/api/quests/evaluate": self._post_quests_evaluate,
@@ -260,6 +264,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/bridge/create-plan": self._post_bridge_create_plan,
             "/api/tomorrow-first-quest/confirm": self._post_tomorrow_first_quest_confirm,
             "/api/tomorrow-first-quest/promote": self._post_tomorrow_first_quest_promote,
+            "/api/tomorrow-first-quest/clear": self._post_tomorrow_first_quest_clear,
         }
         prefix_routes = [
             ("/api/current-quest/hold", self._post_current_quest_hold),

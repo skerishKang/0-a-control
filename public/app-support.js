@@ -302,8 +302,14 @@ function renderTodaySummarySection(state) {
       if (confirmedStart && confirmedStart.title) {
         const isPromotable = !current.current_quest_id;
         const actionHtml = isPromotable
-          ? `<div style="margin-top:8px;"><button type="button" class="primary-btn" onclick="promoteStartingPoint()">이 약속으로 작업 시작</button></div>`
-          : `<div style="margin-top:8px;"><button type="button" class="primary-btn" disabled title="이미 진행 중인 퀘스트가 있습니다">이 약속으로 작업 시작 (진행 중인 퀘스트 있음)</button></div>`;
+          ? `<div style="margin-top:8px; display:flex; gap:8px;">
+               <button type="button" class="primary-btn" onclick="promoteStartingPoint()">이 약속으로 작업 시작</button>
+               <button type="button" class="secondary-btn" onclick="clearStartingPoint()">이 약속 비우기</button>
+             </div>`
+          : `<div style="margin-top:8px; display:flex; gap:8px;">
+               <button type="button" class="primary-btn" disabled title="이미 진행 중인 퀘스트가 있습니다">이 약속으로 작업 시작</button>
+               <button type="button" class="secondary-btn" onclick="clearStartingPoint()">이 약속 비우기</button>
+             </div>`;
 
         detailItems.push({
           title: `✅ 내일 첫 퀘스트 (확인됨)`,
@@ -1190,5 +1196,31 @@ window.promoteStartingPoint = async function promoteStartingPoint() {
   } catch (error) {
     console.error("Failed to promote starting point:", error);
     alert(`작업 시작 실패: ${error.message}`);
+  }
+};
+
+window.clearStartingPoint = async function clearStartingPoint() {
+  if (!window.confirm("확정된 시작점을 비울까요?")) return;
+  
+  try {
+    const response = await fetch("/api/tomorrow-first-quest/clear", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "비우기에 실패했습니다.");
+    }
+    
+    // 성공 시 모달 닫기 및 전체 새로고침
+    const modal = document.getElementById("detailedListModal");
+    if (modal) modal.style.display = "none";
+    
+    if (window.loadAll) await window.loadAll();
+    alert("시작점을 비웠습니다.");
+  } catch (error) {
+    console.error("Failed to clear starting point:", error);
+    alert(`비우기 실패: ${error.message}`);
   }
 };

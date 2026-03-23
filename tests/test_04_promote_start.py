@@ -13,7 +13,7 @@ from scripts.db_ops import get_current_state
 def test_promote_failure_no_starting_point():
     with connect() as conn:
         conn.execute("DELETE FROM current_state WHERE state_key = 'confirmed_starting_point'")
-        conn.execute("DELETE FROM current_state WHERE state_key = 'current_quest_id'")
+        conn.execute("DELETE FROM quests")
         conn.commit()
     
     with pytest.raises(ValueError):
@@ -22,7 +22,13 @@ def test_promote_failure_no_starting_point():
 def test_promote_failure_current_quest_exists():
     with connect() as conn:
         upsert_state(conn, "confirmed_starting_point", {"title": "테스트", "reason": "이유"})
-        upsert_state(conn, "current_quest_id", "some-active-quest-id")
+        
+        active_id = str(uuid.uuid4())
+        ts = now_iso()
+        conn.execute(
+            "INSERT INTO quests (id, title, status, completion_criteria, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (active_id, "진행 중인 퀘스트", "active", "완료 기준", ts, ts)
+        )
         conn.commit()
     
     with pytest.raises(ValueError):
@@ -32,19 +38,40 @@ def test_promote_success():
     title = "내일의 첫 단추"
     reason = "오늘의 연결 고리"
     
-    # 퀘스트 테이블 비우기 (테스트 환경)
     with connect() as conn:
         conn.execute("DELETE FROM quests")
-        conn.execute("DELETE FROM current_state WHERE state_key = 'current_quest_id'")
+        conn.execute("DELETE FROM current_state WHERE state_key LIKE 'current_quest_%'")
         upsert_state(conn, "confirmed_starting_point", {"title": title, "reason": reason, "source": "manual"})
         conn.commit()
     
-    # 여기서 강제로 refresh_current_state를 호출하지 않고 promote만 실행
-    # 내부적으로 refresh를 호출하므로 current_quest_id가 없는 상태여야 함
     result = promote_confirmed_starting_point_to_quest()
     
     assert result["ok"] is True
     assert result["quest"]["title"] == title
     
+    state = get_current_state()
+    assert state.get("confirmed_starting_point") is None
+
+def test_clear_starting_point_success():
+    with connect() as conn:
+        upsert_state(conn, "confirmed_starting_point", {"title": "비울 제목", "reason": "이유"})
+        conn.commit()
+    
+    from scripts.confirmed_starting_point import clear_confirmed_starting_point
+    result = clear_confirmed_starting_point()
+    
+    assert result["ok"] is True
+    state = get_current_state()
+    assert state.get("confirmed_starting_point") is None
+
+def test_clear_starting_point_no_op():
+    with connect() as conn:
+        conn.execute("DELETE FROM current_state WHERE state_key = 'confirmed_starting_point'")
+        conn.commit()
+    
+    from scripts.confirmed_starting_point import clear_confirmed_starting_point
+    result = clear_confirmed_starting_point()
+    
+    assert result["ok"] is True
     state = get_current_state()
     assert state.get("confirmed_starting_point") is None
