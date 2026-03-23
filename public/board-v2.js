@@ -7,6 +7,10 @@
     .replace(/'/g, "&#039;");
 }
 
+// ── 로컬 미리보기 상태 ──
+let _localPreviewPhase = null;
+let _cachedState = null;
+
 function getDayLabel() {
   const now = new Date();
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -15,6 +19,80 @@ function getDayLabel() {
   const dd = String(now.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd} (${weekdays[now.getDay()]})`;
 }
+
+// ── Phase 헬퍼 ──
+function getAutoPhase(state) {
+  const phase = state.day_phase || "morning";
+  if (phase === "end-of-day") return "end-of-day";
+  if (
+    phase === "in-progress" ||
+    phase === "midday" ||
+    phase === "verdict-pending" ||
+    state.current_quest_id ||
+    (state.current_quest && state.current_quest.id)
+  ) return "in-progress";
+  return "morning";
+}
+
+function getEffectivePhase(state) {
+  return _localPreviewPhase || getAutoPhase(state);
+}
+
+function getPhaseLabel(phase) {
+  const mapping = {
+    morning: "아침",
+    midday: "진행",
+    "in-progress": "진행",
+    "end-of-day": "마감",
+  };
+  return mapping[phase] || phase;
+}
+
+function renderPhaseTabs(activePhase) {
+  const el = document.getElementById("v2PhaseTabs");
+  if (!el) return;
+
+  const tabs = [
+    { key: "morning", label: "아침" },
+    { key: "in-progress", label: "진행" },
+    { key: "end-of-day", label: "마감" },
+  ];
+
+  el.innerHTML = tabs
+    .map(
+      (tab) =>
+        `<button class="v2-phase-tab${activePhase === tab.key ? " -active" : ""}" ` +
+        `type="button" onclick="window.boardV2SetPhase('${tab.key}')">${tab.label}</button>`
+    )
+    .join("");
+}
+
+function renderStatusLabel(phase) {
+  const el = document.getElementById("v2StatusLabel");
+  if (!el) return;
+  const isPreview = _localPreviewPhase !== null;
+  el.textContent = isPreview ? `미리보기: ${getPhaseLabel(phase)}` : `상태: ${getPhaseLabel(phase)}`;
+}
+
+function dispatchRender(state, phase) {
+  if (phase === "end-of-day") {
+    renderEndOfDay(state);
+  } else if (phase === "in-progress") {
+    renderInProgress(state);
+  } else {
+    renderMorning(state);
+  }
+}
+
+window.boardV2SetPhase = function boardV2SetPhase(phase) {
+  _localPreviewPhase = phase;
+  if (_cachedState) {
+    const effectivePhase = getEffectivePhase(_cachedState);
+    renderPhaseTabs(effectivePhase);
+    renderStatusLabel(effectivePhase);
+    dispatchRender(_cachedState, effectivePhase);
+  }
+};
 
 function pickMainMission(state) {
   if (state.main_mission && typeof state.main_mission === "object") {
@@ -485,19 +563,12 @@ async function loadBoardV2() {
     const state = payload.current_state || {};
     state.__briefs = briefsResponse.ok ? ((await briefsResponse.json()).briefs || []) : [];
     state.__sessions = sessionsResponse.ok ? ((await sessionsResponse.json()).sessions || []) : [];
-    const phase = state.day_phase || "morning";
 
-    if (phase === "end-of-day") {
-      renderEndOfDay(state);
-      return;
-    }
-
-    if (phase === "in-progress" || phase === "verdict-pending" || state.current_quest_id || (state.current_quest && state.current_quest.id)) {
-      renderInProgress(state);
-      return;
-    }
-
-    renderMorning(state);
+    _cachedState = state;
+    const phase = getEffectivePhase(state);
+    renderPhaseTabs(phase);
+    renderStatusLabel(phase);
+    dispatchRender(state, phase);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     root.innerHTML = `<div class="v2-loading">데이터 로드 실패</div>`;
@@ -517,6 +588,7 @@ window.boardV2PromoteStartingPoint = async function boardV2PromoteStartingPoint(
     if (!response.ok) {
       throw new Error(result.error || "작업 시작에 실패했습니다.");
     }
+    _localPreviewPhase = null;
     await loadBoardV2();
     window.alert("확정한 시작점을 현재 퀘스트로 전환했습니다.");
   } catch (error) {
