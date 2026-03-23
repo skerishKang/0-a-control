@@ -116,6 +116,11 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         if parsed.path.startswith("/api/"):
             self.handle_api_get(parsed.path, parse_qs(parsed.query))
             return
+        if parsed.path in {"", "/"}:
+            self.send_response(HTTPStatus.FOUND)
+            self.send_header("Location", "/board-v2.html")
+            self.end_headers()
+            return
         self.handle_static(parsed.path)
 
     def _post_quests_evaluate(self, body: dict) -> None:
@@ -473,8 +478,6 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
                 raise
 
     def handle_static(self, path: str) -> None:
-        if path in {"", "/"}:
-            path = "/board-v2.html"
         candidate = (PUBLIC_DIR / path.lstrip("/")).resolve()
         if not str(candidate).startswith(str(PUBLIC_DIR.resolve())) or not candidate.exists():
             self.send_error(HTTPStatus.NOT_FOUND, "Static file not found")

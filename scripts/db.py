@@ -51,6 +51,7 @@ else:
     from .current_quest_ops import (
         defer_current_quest_to_short_term,
         mark_current_quest_unfinished,
+        promote_confirmed_starting_point_to_quest,
         start_current_quest_from_main_mission,
     )
     from .plan_ops import approve_plan_candidates, get_latest_briefs, get_plans
