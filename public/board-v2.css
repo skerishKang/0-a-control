@@ -122,6 +122,11 @@ body.v2-body {
   padding: 16px 18px;
 }
 
+.v2-rail-card-accent {
+  border-color: rgba(45, 90, 39, 0.2);
+  background: linear-gradient(to bottom, rgba(45, 90, 39, 0.05), rgba(255, 254, 248, 0.96));
+}
+
 .v2-list {
   list-style: none;
   padding: 0;
@@ -224,6 +229,11 @@ body.v2-body {
   padding: 18px 20px;
 }
 
+.v2-inline-card-accent {
+  border-color: rgba(45, 90, 39, 0.2);
+  background: linear-gradient(to bottom, rgba(45, 90, 39, 0.04), rgba(255, 254, 248, 0.98));
+}
+
 .v2-inline-label {
   display: block;
   margin-bottom: 8px;
@@ -264,6 +274,10 @@ body.v2-body {
   display: flex;
   gap: 8px;
   margin-top: 14px;
+}
+
+.v2-start-card .v2-item-title {
+  font-size: 17px;
 }
 
 .v2-btn {

@@ -20,13 +20,13 @@ function pickMainMission(state) {
   if (state.main_mission && typeof state.main_mission === "object") {
     return {
       title: state.main_mission.title || state.main_mission_title || "주 임무가 없습니다.",
-      reason: state.main_mission.priority_reason || state.main_mission_reason || "이유 정보 없음",
+      reason: state.main_mission.priority_reason || state.main_mission_reason || "오늘 우선순위로 올린 항목입니다.",
     };
   }
 
   return {
     title: state.main_mission_title || "주 임무가 없습니다.",
-    reason: state.main_mission_reason || "이유 정보 없음",
+    reason: state.main_mission_reason || "오늘 우선순위로 올린 항목입니다.",
   };
 }
 
@@ -46,8 +46,8 @@ function pickCurrentQuest(state) {
     completionCriteria:
       state.current_quest_completion_criteria ||
       quest.completion_criteria ||
-      "완료 기준이 아직 정리되지 않았습니다.",
-    restartPoint: state.restart_point || quest.restart_point || "재진입 포인트가 아직 없습니다.",
+      "완료 기준을 아직 적지 않았습니다.",
+    restartPoint: state.restart_point || quest.restart_point || "다시 시작할 지점이 아직 없습니다.",
   };
 }
 
@@ -180,8 +180,8 @@ function renderInProgress(state) {
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">계획 변화</span>
-          <div class="v2-rail-card">
+          <span class="v2-section-label">변화 요약</span>
+          <div class="v2-rail-card v2-rail-card-accent">
             <span class="v2-item-title">오늘 진행 요약</span>
             <span class="v2-item-meta">완료 ${progress.done || 0} · 부분 ${progress.partial || 0} · 보류 ${progress.hold || 0}</span>
           </div>
@@ -210,7 +210,7 @@ function renderInProgress(state) {
 
       <aside class="v2-rail v2-rail-right">
         <section class="v2-rail-section">
-          <span class="v2-section-label">상태</span>
+          <span class="v2-section-label">진행 상태</span>
           <div class="v2-rail-card">
             <span class="v2-item-title">${questStatus.is_pending ? "판정 대기 중" : "진행 중"}</span>
             <span class="v2-item-meta">${escapeHtml(questStatus.preliminary_reason || state.day_phase_reason || "현재 퀘스트 중심으로 진행 중입니다.")}</span>
@@ -271,7 +271,7 @@ function renderEndOfDay(state) {
     <div class="v2-layout">
       <aside class="v2-rail v2-rail-left">
         <section class="v2-rail-section">
-          <span class="v2-section-label">오늘 한 일</span>
+          <span class="v2-section-label">오늘 결과</span>
           <div class="v2-rail-card">
             ${renderList(doneItems, "완료한 퀘스트가 없습니다.", (item) => ({ text: item.completed_at || "완료 시각 없음", isDue: false }))}
           </div>
@@ -279,7 +279,7 @@ function renderEndOfDay(state) {
 
         <section class="v2-rail-section">
           <span class="v2-section-label">진행 요약</span>
-          <div class="v2-rail-card">
+          <div class="v2-rail-card v2-rail-card-accent">
             <span class="v2-item-title">완료 ${progress.done || 0} · 부분 ${progress.partial || 0} · 보류 ${progress.hold || 0}</span>
             <span class="v2-item-meta">오늘 하루의 실제 진행을 기준으로 정리합니다.</span>
           </div>
@@ -293,7 +293,7 @@ function renderEndOfDay(state) {
           <h1 class="v2-mission-title v2-quest-title">오늘 한 일과 내일의 첫 단추를 정리합니다.</h1>
 
           <div class="v2-progress-stack">
-            <div class="v2-inline-card">
+            <div class="v2-inline-card v2-inline-card-accent">
               <span class="v2-inline-label">남은 항목</span>
               <strong>${unfinishedItems.length ? `${unfinishedItems.length}개 항목이 다시 이어갈 대상으로 남아 있습니다.` : "다시 이어갈 항목이 없습니다."}</strong>
             </div>
@@ -309,7 +309,7 @@ function renderEndOfDay(state) {
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">미완료 전략</span>
+          <span class="v2-section-label">남은 전략</span>
           <div class="v2-rail-card">
             ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: item.status || item.bucket || "상태 미정", isDue: false }))}
           </div>
