@@ -305,6 +305,16 @@ body.v2-body {
   cursor: not-allowed;
 }
 
+.v2-btn-secondary {
+  background: transparent;
+  color: var(--v2-primary);
+  border: 1px solid rgba(45, 90, 39, 0.22);
+}
+
+.v2-btn-secondary:hover {
+  background: rgba(45, 90, 39, 0.06);
+}
+
 .v2-loading {
   min-height: 100vh;
   display: flex;

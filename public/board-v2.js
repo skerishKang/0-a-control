@@ -89,6 +89,7 @@ function renderMorning(state) {
   const suggested = state.tomorrow_first_quest || null;
   const startPoint = confirmed || suggested;
   const hasCurrentQuest = Boolean(state.current_quest_id || (state.current_quest && state.current_quest.id));
+  const canClear = Boolean(confirmed && confirmed.title);
 
   const startHtml = startPoint && startPoint.title
     ? `
@@ -97,7 +98,8 @@ function renderMorning(state) {
         <span class="v2-item-title">${escapeHtml(startPoint.title)}</span>
         <span class="v2-item-meta">${escapeHtml(startPoint.reason || "")}</span>
         <div class="v2-start-actions">
-          <button class="v2-btn v2-btn-primary" type="button" onclick="window.promoteStartingPoint && window.promoteStartingPoint()" ${hasCurrentQuest ? "disabled" : ""}>${hasCurrentQuest ? "진행 중인 작업 있음" : "이 약속으로 작업 시작"}</button>
+          <button class="v2-btn v2-btn-primary" type="button" onclick="window.boardV2PromoteStartingPoint()" ${hasCurrentQuest ? "disabled" : ""}>${hasCurrentQuest ? "진행 중인 작업 있음" : "이 약속으로 작업 시작"}</button>
+          ${canClear ? `<button class="v2-btn v2-btn-secondary" type="button" onclick="window.boardV2ClearStartingPoint()">이 약속 비우기</button>` : ""}
         </div>
       </div>
     `
@@ -355,5 +357,47 @@ async function loadBoardV2() {
     root.innerHTML = `<div class="v2-loading">데이터 로드 실패</div>`;
   }
 }
+
+window.boardV2PromoteStartingPoint = async function boardV2PromoteStartingPoint() {
+  if (!window.confirm("이 약속으로 작업을 시작할까요?")) return;
+
+  try {
+    const response = await fetch("/api/tomorrow-first-quest/promote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "작업 시작에 실패했습니다.");
+    }
+    await loadBoardV2();
+    window.alert("확정한 시작점을 현재 퀘스트로 전환했습니다.");
+  } catch (error) {
+    console.error("Failed to promote starting point:", error);
+    window.alert(`작업 시작 실패: ${error.message}`);
+  }
+};
+
+window.boardV2ClearStartingPoint = async function boardV2ClearStartingPoint() {
+  if (!window.confirm("확정된 시작점을 비울까요?")) return;
+
+  try {
+    const response = await fetch("/api/tomorrow-first-quest/clear", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "비우기에 실패했습니다.");
+    }
+    await loadBoardV2();
+    window.alert("확정된 시작점을 비웠습니다.");
+  } catch (error) {
+    console.error("Failed to clear starting point:", error);
+    window.alert(`비우기 실패: ${error.message}`);
+  }
+};
 
 document.addEventListener("DOMContentLoaded", loadBoardV2);
