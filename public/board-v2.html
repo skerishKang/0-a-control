@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -10,12 +10,17 @@
   <div class="v2-topbar">
     <div class="v2-topbar-inner">
       <span class="v2-topbar-title">운영 본부 v2</span>
+      <div class="v2-topbar-center">
+        <div id="v2PhaseTabs" class="v2-phase-tabs"></div>
+        <span id="v2StatusLabel" class="v2-status-label"></span>
+      </div>
       <a href="/index.html" class="v2-topbar-link">Classic 보기</a>
     </div>
   </div>
   <div id="boardV2Root" class="v2-root">
     <div class="v2-loading">데이터를 불러오는 중입니다...</div>
   </div>
+  <script src="board-v2-shared.js"></script>
   <script src="board-v2.js"></script>
 </body>
 </html>
