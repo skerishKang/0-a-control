@@ -1,8 +1,3 @@
-// ── 로컬 미리보기 상태 ──
-let _localPreviewPhase = null;
-let _cachedState = null;
-
-// ── Phase 헬퍼 ──
 function getAutoPhase(state) {
   const phase = state.day_phase || "morning";
   if (phase === "end-of-day") return "end-of-day";
