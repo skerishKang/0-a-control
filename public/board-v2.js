@@ -61,6 +61,20 @@ function pickDoneItems(state) {
   return state.today_done_quests || [];
 }
 
+function pickBriefs(state) {
+  if (Array.isArray(state.__briefs) && state.__briefs.length) {
+    return state.__briefs;
+  }
+  if (state.latest_morning_brief && Object.keys(state.latest_morning_brief).length) {
+    return [state.latest_morning_brief];
+  }
+  return [];
+}
+
+function pickSessions(state) {
+  return Array.isArray(state.__sessions) ? state.__sessions : [];
+}
+
 function formatPlanLabel(value) {
   const mapping = {
     today: "오늘",
@@ -75,6 +89,24 @@ function formatPlanLabel(value) {
     done: "완료",
   };
   return mapping[value] || value || "상태 미정";
+}
+
+function formatSessionStatus(value) {
+  const mapping = {
+    active: "진행 중",
+    closed: "종료",
+    stale: "정리 필요",
+  };
+  return mapping[value] || value || "상태 미정";
+}
+
+function summarizeBrief(brief) {
+  const content = String(brief?.content_md || "")
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("##"));
+  return content[0] || "브리프 요약이 없습니다.";
 }
 
 function renderList(items, emptyText, metaFormatter) {
@@ -94,6 +126,40 @@ function renderList(items, emptyText, metaFormatter) {
   `;
 }
 
+function renderBriefList(items) {
+  if (!items || !items.length) {
+    return `<p class="v2-empty">브리프가 없습니다.</p>`;
+  }
+
+  return `
+    <ul class="v2-list v2-list-compact">
+      ${items.map((item) => `
+        <li class="v2-list-item">
+          <span class="v2-item-title">${escapeHtml(item.title || "브리프")}</span>
+          <span class="v2-item-meta">${escapeHtml(summarizeBrief(item))}</span>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+}
+
+function renderSessionList(items) {
+  if (!items || !items.length) {
+    return `<p class="v2-empty">최근 세션이 없습니다.</p>`;
+  }
+
+  return `
+    <ul class="v2-list v2-list-compact">
+      ${items.map((item) => `
+        <li class="v2-list-item">
+          <span class="v2-item-title">${escapeHtml(item.title || item.project_key || "세션")}</span>
+          <span class="v2-item-meta">${escapeHtml(item.agent_name || "agent")} · ${escapeHtml(formatSessionStatus(item.status))}</span>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+}
+
 function renderMorning(state) {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
@@ -101,6 +167,7 @@ function renderMorning(state) {
   const mission = pickMainMission(state);
   const dueItems = pickDueItems(state);
   const unfinishedItems = pickUnfinishedItems(state);
+  const briefs = pickBriefs(state);
   const confirmed = state.confirmed_starting_point || null;
   const suggested = state.tomorrow_first_quest || null;
   const startPoint = confirmed || suggested;
@@ -128,6 +195,13 @@ function renderMorning(state) {
           <span class="v2-section-label">기한 임박</span>
           <div class="v2-rail-card">
             ${renderList(dueItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
+          </div>
+        </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">최근 브리프</span>
+          <div class="v2-rail-card">
+            ${renderBriefList(briefs)}
           </div>
         </section>
       </aside>
@@ -167,6 +241,9 @@ function renderInProgress(state) {
 
   const quest = pickCurrentQuest(state);
   const unfinishedItems = pickUnfinishedItems(state);
+  const dueItems = pickDueItems(state);
+  const briefs = pickBriefs(state);
+  const sessions = pickSessions(state);
   const recentVerdict = pickRecentVerdict(state);
   const nextQuest = state.recommended_next_quest || state.tomorrow_first_quest?.title || "";
   const questStatus = state.quest_status_summary || {};
@@ -202,6 +279,13 @@ function renderInProgress(state) {
           <div class="v2-rail-card v2-rail-card-accent">
             <span class="v2-item-title">오늘 진행 요약</span>
             <span class="v2-item-meta">완료 ${progress.done || 0} · 부분 ${progress.partial || 0} · 보류 ${progress.hold || 0}</span>
+          </div>
+        </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">최근 브리프</span>
+          <div class="v2-rail-card">
+            ${renderBriefList(briefs)}
           </div>
         </section>
       </aside>
@@ -241,6 +325,20 @@ function renderInProgress(state) {
             ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.bucket), isDue: false }))}
           </div>
         </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">기한 압박</span>
+          <div class="v2-rail-card">
+            ${renderList(dueItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
+          </div>
+        </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">최근 세션</span>
+          <div class="v2-rail-card">
+            ${renderSessionList(sessions)}
+          </div>
+        </section>
       </aside>
     </div>
   `;
@@ -253,6 +351,9 @@ function renderEndOfDay(state) {
   const progress = state.day_progress_summary || {};
   const doneItems = pickDoneItems(state);
   const unfinishedItems = pickUnfinishedItems(state);
+  const dueItems = pickDueItems(state);
+  const briefs = pickBriefs(state);
+  const sessions = pickSessions(state);
   const tomorrowFirst = state.tomorrow_first_quest || null;
   const confirmed = state.confirmed_starting_point || null;
   const decision = state.latest_decision_summary || null;
@@ -302,6 +403,13 @@ function renderEndOfDay(state) {
             <span class="v2-item-meta">오늘 하루의 실제 진행을 기준으로 정리합니다.</span>
           </div>
         </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">기한 압박</span>
+          <div class="v2-rail-card">
+            ${renderList(dueItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
+          </div>
+        </section>
       </aside>
 
       <main class="v2-main v2-main-progress">
@@ -334,8 +442,22 @@ function renderEndOfDay(state) {
         </section>
 
         <section class="v2-rail-section">
+          <span class="v2-section-label">최근 브리프</span>
+          <div class="v2-rail-card">
+            ${renderBriefList(briefs)}
+          </div>
+        </section>
+
+        <section class="v2-rail-section">
           <span class="v2-section-label">결정 요약</span>
           ${decisionHtml}
+        </section>
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">최근 세션</span>
+          <div class="v2-rail-card">
+            ${renderSessionList(sessions)}
+          </div>
         </section>
       </aside>
     </div>
@@ -349,12 +471,20 @@ async function loadBoardV2() {
   root.innerHTML = `<div class="v2-loading">데이터를 불러오는 중입니다...</div>`;
 
   try {
-    const response = await fetch("/api/current-state");
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    const [stateResponse, briefsResponse, sessionsResponse] = await Promise.all([
+      fetch("/api/current-state"),
+      fetch("/api/briefs/latest?limit=3"),
+      fetch("/api/sessions/recent?limit=3"),
+    ]);
+
+    if (!stateResponse.ok) {
+      throw new Error(`HTTP ${stateResponse.status}`);
     }
-    const payload = await response.json();
+
+    const payload = await stateResponse.json();
     const state = payload.current_state || {};
+    state.__briefs = briefsResponse.ok ? ((await briefsResponse.json()).briefs || []) : [];
+    state.__sessions = sessionsResponse.ok ? ((await sessionsResponse.json()).sessions || []) : [];
     const phase = state.day_phase || "morning";
 
     if (phase === "end-of-day") {

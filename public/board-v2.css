@@ -144,6 +144,14 @@ body.v2-body {
   border-bottom: 0;
 }
 
+.v2-list-compact .v2-list-item {
+  padding: 10px 0;
+}
+
+.v2-list-compact .v2-item-title {
+  font-size: 14px;
+}
+
 .v2-item-title {
   display: block;
   font-size: 15px;
