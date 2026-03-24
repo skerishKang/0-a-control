@@ -74,6 +74,27 @@ window.boardV2ClearStartingPoint = async function boardV2ClearStartingPoint() {
   }
 };
 
+window.boardV2ConfirmStartingPoint = async function boardV2ConfirmStartingPoint(title, reason, source) {
+  if (!window.confirm(`[${title}]을 내일의 첫 번째 퀘스트로 확정할까요?`)) return;
+
+  try {
+    const response = await fetch("/api/tomorrow-first-quest/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, reason, source }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "확정에 실패했습니다.");
+    }
+    await loadBoardV2();
+    window.alert("내일의 첫 번째 퀘스트로 확정되었습니다.");
+  } catch (error) {
+    console.error("Failed to confirm starting point:", error);
+    window.alert(`확정 실패: ${error.message}`);
+  }
+};
+
 window.boardV2ReportQuest = async function boardV2ReportQuest(questId) {
   const summary = document.getElementById("v2WorkSummary")?.value.trim();
   const assessment = document.getElementById("v2SelfAssessment")?.value;

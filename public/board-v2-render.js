@@ -314,6 +314,13 @@ function renderEndOfDay(state) {
         <span class="v2-start-badge">내일 첫 퀘스트</span>
         <span class="v2-item-title">${escapeHtml(tomorrowFirst.title)}</span>
         <span class="v2-item-meta">${escapeHtml(tomorrowFirst.reason || "")}</span>
+        <div class="v2-start-actions" style="margin-top: 14px;">
+          <button class="v2-btn v2-btn-primary" type="button" 
+            onclick="window.boardV2ConfirmStartingPoint('${escapeHtml(tomorrowFirst.title)}', '${escapeHtml(tomorrowFirst.reason || "")}', '${escapeHtml(tomorrowFirst.source || "suggestion")}')"
+            ${confirmed && confirmed.title ? "disabled" : ""}>
+            ${confirmed && confirmed.title ? "이미 확정됨" : "이 제안 확정"}
+          </button>
+        </div>
       </div>
     `
     : `<p class="v2-empty">내일 제안이 아직 없습니다.</p>`;
