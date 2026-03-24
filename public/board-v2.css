@@ -527,7 +527,30 @@ body.v2-body {
   }
 
   .v2-topbar-inner {
-    padding: 10px 16px;
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .v2-topbar-center {
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--v2-border);
+  }
+
+  .v2-status-label {
+    justify-content: center;
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .v2-status-reset-btn {
+    font-size: 9px;
+    padding: 1px 5px;
   }
 
   .v2-mission-title,
@@ -593,9 +616,86 @@ body.v2-body {
 }
 
 .v2-status-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--v2-text-muted);
   font-size: 12px;
   font-weight: 600;
+}
+
+.v2-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.v2-status-badge.-auto {
+  background: rgba(45, 90, 39, 0.08);
+  color: var(--v2-primary);
+}
+
+.v2-status-badge.-preview {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--v2-amber);
+}
+
+.v2-status-text {
+  color: var(--v2-text);
+  font-weight: 700;
+}
+
+.v2-status-reset-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: 3px;
+  color: var(--v2-amber);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.v2-status-reset-btn:hover {
+  background: rgba(217, 119, 6, 0.08);
+}
+
+/* ── Quick Input Styles ── */
+.v2-quick-input-card {
+  margin-bottom: 32px;
+  border: 1px solid var(--v2-primary);
+  background: var(--v2-surface);
+  padding: 14px;
+  box-shadow: var(--v2-shadow);
+}
+
+.v2-quick-input-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--v2-border);
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 3px;
+  resize: none;
+  margin-bottom: 8px;
+}
+
+.v2-quick-input-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.v2-btn-inline {
+  padding: 6px 12px;
+  font-size: 11px;
 }
 
 @media (max-width: 760px) {

@@ -9,6 +9,8 @@ function escapeHtml(value) {
 
 let _localPreviewPhase = null;
 let _cachedState = null;
+let _reportDraft = { summary: "", assessment: "partial", questId: null };
+let _quickInputDraft = "";
 
 function getDayLabel() {
   const now = new Date();

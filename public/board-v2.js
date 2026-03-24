@@ -1,8 +1,14 @@
+// ── 전역 상태 ──
+let _pollingInterval = null;
+
 async function loadBoardV2() {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
 
-  root.innerHTML = `<div class="v2-loading">데이터를 불러오는 중입니다...</div>`;
+  // 초기 로드 시에만 로딩 메시지 표시 (폴링 시에는 기존 UI 유지)
+  if (!root.querySelector(".v2-layout") && !root.querySelector(".v2-loading")) {
+    root.innerHTML = `<div class="v2-loading">데이터를 불러오는 중입니다...</div>`;
+  }
 
   try {
     const [stateResponse, briefsResponse, sessionsResponse] = await Promise.all([
@@ -27,7 +33,50 @@ async function loadBoardV2() {
     dispatchRender(state, phase);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
-    root.innerHTML = `<div class="v2-loading">데이터 로드 실패</div>`;
+    // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
+    if (!root.querySelector(".v2-layout")) {
+      root.innerHTML = `<div class="v2-loading">데이터 로드 실패</div>`;
+    }
+  }
+}
+
+function startBoardV2Polling() {
+  if (_pollingInterval) return;
+  _pollingInterval = setInterval(() => {
+    if (!isUserInteracting()) {
+      loadBoardV2();
+    }
+  }, 30000); // 30초 간격
+}
+
+function isUserInteracting() {
+  // 1. 상세 모달이 열려 있는지 확인
+  const modal = document.getElementById("v2Modal");
+  if (modal && !modal.hidden) return true;
+
+  // 2. 결과 보고 폼 입력 중인지 확인
+  const summary = document.getElementById("v2WorkSummary");
+  if (summary) {
+    const isFocused = document.activeElement === summary || document.activeElement?.id === "v2SelfAssessment";
+    const hasContent = summary.value.trim().length > 0;
+    if (isFocused || hasContent) return true;
+  }
+
+  // 3. 퀵 인풋 입력 중인지 확인
+  const quickInput = document.getElementById("v2QuickInput");
+  if (quickInput) {
+    const isFocused = document.activeElement === quickInput;
+    const hasContent = quickInput.value.trim().length > 0;
+    if (isFocused || hasContent) return true;
+  }
+
+  return false;
+}
+
+function stopBoardV2Polling() {
+  if (_pollingInterval) {
+    clearInterval(_pollingInterval);
+    _pollingInterval = null;
   }
 }
 
@@ -146,45 +195,108 @@ window.boardV2StartQuestFromMission = async function boardV2StartQuestFromMissio
       throw new Error(result.error || "퀘스트 시작에 실패했습니다.");
     }
     await loadBoardV2();
-    window.alert("퀘스트를 시작했습니다. 작업 일지를 유지하세요.");
-  } catch (error) {
-    console.error("Failed to start quest from mission:", error);
-    window.alert(`퀘스트 시작 실패: ${error.message}`);
-  }
-};
-
-window.boardV2EvaluateQuest = async function boardV2EvaluateQuest(questId, verdict) {
-  const label = { done: "완료", partial: "부분 완료", hold: "보류" }[verdict];
-  if (!window.confirm(`현재 퀘스트를 [${label}] 상태로 직접 판정할까요?`)) return;
-
-  try {
-    const response = await fetch("/api/quests/evaluate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        quest_id: questId,
-        verdict: verdict,
-        reason: "사용자 수동 판정",
-        restart_point: "",
-        next_quest_hint: "",
-        plan_impact: "",
-      }),
-    });
-
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || "판정 저장에 실패했습니다.");
+    window.alert("보고가 완료되었습니다. AI 판정을 기다려 주세요.");
+    // 제출 성공 후 초안 초기화
+    _reportDraft.summary = "";
+    _reportDraft.assessment = "partial";
+    } catch (error) {
+    console.error("Failed to report quest:", error);
+    window.alert(`보고 실패: ${error.message}`);
     }
+    };
 
-    await loadBoardV2();
-    window.alert(`퀘스트가 [${label}] 상태로 종료되었습니다.`);
-  } catch (error) {
-    console.error("Failed to evaluate quest:", error);
-    window.alert(`판정 실패: ${error.message}`);
-  }
-};
+    window.boardV2EvaluateQuest = async function boardV2EvaluateQuest(questId, verdict) {
+      const label = { done: "완료", partial: "부분 완료", hold: "보류" }[verdict];
+      if (!window.confirm(`현재 퀘스트를 [${label}] 상태로 직접 판정할까요?`)) return;
 
-window.boardV2OpenModal = function boardV2OpenModal(title, content) {
+      try {
+        const response = await fetch("/api/quests/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quest_id: questId,
+            verdict: verdict,
+            reason: "사용자 수동 판정",
+            restart_point: "",
+            next_quest_hint: "",
+            plan_impact: "",
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "판정 저장에 실패했습니다.");
+        }
+
+        await loadBoardV2();
+        window.alert(`퀘스트가 [${label}] 상태로 종료되었습니다.`);
+        // 제출 성공 후 초안 초기화
+        _reportDraft.summary = "";
+        _reportDraft.assessment = "partial";
+      } catch (error) {
+        console.error("Failed to evaluate quest:", error);
+        window.alert(`판정 실패: ${error.message}`);
+      }
+    };
+
+    window.boardV2DeferQuest = async function boardV2DeferQuest() {
+      if (!window.confirm("현재 퀘스트를 오늘 목록에서 내리고 단기 플랜으로 미룰까요?")) return;
+
+      try {
+        const response = await fetch("/api/current-quest/defer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "미루기에 실패했습니다.");
+        }
+        await loadBoardV2();
+        window.alert("퀘스트를 단기 플랜으로 이동했습니다.");
+      } catch (error) {
+        console.error("Failed to defer quest:", error);
+        window.alert(`미루기 실패: ${error.message}`);
+      }
+    };
+
+    window.boardV2SyncDraft = function boardV2SyncDraft() {
+      const summaryEl = document.getElementById("v2WorkSummary");
+      const assessmentEl = document.getElementById("v2SelfAssessment");
+      if (summaryEl) _reportDraft.summary = summaryEl.value;
+      if (assessmentEl) _reportDraft.assessment = assessmentEl.value;
+    };
+
+    window.boardV2SyncQuickInputDraft = function boardV2SyncQuickInputDraft() {
+      const el = document.getElementById("v2QuickInput");
+      if (el) _quickInputDraft = el.value;
+    };
+
+    window.boardV2SubmitQuickInput = async function boardV2SubmitQuickInput() {
+      const text = _quickInputDraft.trim();
+      if (!text) return;
+
+      try {
+        const response = await fetch("/api/bridge/quick-input", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "입력 처리에 실패했습니다.");
+        }
+
+        _quickInputDraft = "";
+        await loadBoardV2();
+        window.alert("입력이 처리되었습니다.");
+      } catch (error) {
+        console.error("Failed to submit quick input:", error);
+        window.alert(`입력 실패: ${error.message}`);
+      }
+    };
+
+    window.boardV2OpenModal = function boardV2OpenModal(title, content) {
   const modal = document.getElementById("v2Modal");
   const titleEl = document.getElementById("v2ModalTitle");
   const bodyEl = document.getElementById("v2ModalBody");
@@ -198,7 +310,15 @@ window.boardV2OpenModal = function boardV2OpenModal(title, content) {
 
 window.boardV2CloseModal = function boardV2CloseModal() {
   const modal = document.getElementById("v2Modal");
-  if (modal) modal.hidden = true;
+  if (modal) {
+    modal.hidden = true;
+    loadBoardV2(); // 모달을 닫는 즉시 최신 상태 반영
+  }
 };
 
-document.addEventListener("DOMContentLoaded", loadBoardV2);
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadBoardV2();
+  startBoardV2Polling();
+});
+
+window.addEventListener("beforeunload", stopBoardV2Polling);

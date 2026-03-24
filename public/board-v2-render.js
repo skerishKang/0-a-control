@@ -60,6 +60,20 @@ function renderSessionList(items) {
   `;
 }
 
+function renderQuickInputSection() {
+  return `
+    <section class="v2-quick-input-card">
+      <span class="v2-section-label">빠른 입력</span>
+      <textarea id="v2QuickInput" class="v2-quick-input-textarea" 
+        placeholder="오늘 할 일, 기한, 아이디어 등을 자유롭게 입력하세요 (Enter: 전송)"
+        oninput="window.boardV2SyncQuickInputDraft()">${escapeHtml(_quickInputDraft)}</textarea>
+      <div class="v2-quick-input-actions">
+        <button type="button" class="v2-btn v2-btn-primary v2-btn-inline" onclick="window.boardV2SubmitQuickInput()">전송</button>
+      </div>
+    </section>
+  `;
+}
+
 function renderMorning(state) {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
@@ -124,6 +138,8 @@ function renderMorning(state) {
       </main>
 
       <aside class="v2-rail v2-rail-right">
+        ${renderQuickInputSection()}
+
         <section class="v2-rail-section">
           <span class="v2-section-label">확정된 시작점</span>
           ${startHtml}
@@ -173,28 +189,53 @@ function renderInProgress(state) {
     ? `<div class="v2-inline-card"><span class="v2-inline-label">다음 퀘스트 후보</span><strong>${escapeHtml(nextQuest)}</strong></div>`
     : `<div class="v2-inline-card"><span class="v2-inline-label">다음 퀘스트 후보</span><strong>아직 제안이 없습니다.</strong></div>`;
 
+  const manualEvalHtml = (id) => `
+    <div class="v2-inline-card" style="margin-top: 12px;">
+      <span class="v2-inline-label">수동 판정 (강제 종료)</span>
+      <div class="v2-start-actions" style="margin-top: 0;">
+        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'done')">완료</button>
+        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'partial')">부분</button>
+        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'hold')">보류</button>
+        <button type="button" class="v2-btn v2-btn-secondary" style="border-color: rgba(217, 119, 6, 0.3); color: var(--v2-amber);" 
+          onclick="window.boardV2DeferQuest()">단기 플랜으로 미루기</button>
+      </div>
+    </div>
+  `;
+
   let reportFormHtml = "";
   if (questStatus.is_pending) {
     reportFormHtml = `
-      <div class="v2-info-box">
-        AI가 작업 결과를 분석하고 있습니다...
-      </div>
+      <section class="v2-form-card">
+        <span class="v2-section-label">결과 보고</span>
+        <div class="v2-info-box">
+          AI가 작업 결과를 분석하고 있습니다...
+        </div>
+        ${manualEvalHtml(quest.id || state.current_quest_id)}
+      </section>
     `;
   } else if (quest.id) {
+    // 퀘스트가 바뀌었으면 초안 초기화
+    if (_reportDraft.questId !== quest.id) {
+      _reportDraft.questId = quest.id;
+      _reportDraft.summary = "";
+      _reportDraft.assessment = "partial";
+    }
+
     reportFormHtml = `
       <section class="v2-form-card">
         <span class="v2-section-label">결과 보고</span>
         <div class="v2-inline-card">
           <div class="v2-form-group">
             <label class="v2-form-label" for="v2WorkSummary">작업 내용</label>
-            <textarea id="v2WorkSummary" class="v2-textarea" placeholder="무엇을 완료했나요?"></textarea>
+            <textarea id="v2WorkSummary" class="v2-textarea" placeholder="무엇을 완료했나요?" 
+              oninput="window.boardV2SyncDraft()">${escapeHtml(_reportDraft.summary)}</textarea>
           </div>
           <div class="v2-form-group">
             <label class="v2-form-label" for="v2SelfAssessment">자가 평가</label>
-            <select id="v2SelfAssessment" class="v2-select">
-              <option value="done">완료 (목표 달성)</option>
-              <option value="partial" selected>부분 완료 (진전 있음)</option>
-              <option value="hold">보류 (중단/방향 전환)</option>
+            <select id="v2SelfAssessment" class="v2-select" onchange="window.boardV2SyncDraft()">
+              <option value="done" ${_reportDraft.assessment === "done" ? "selected" : ""}>완료 (목표 달성)</option>
+              <option value="partial" ${_reportDraft.assessment === "partial" ? "selected" : ""}>부분 완료 (진전 있음)</option>
+              <option value="hold" ${_reportDraft.assessment === "hold" ? "selected" : ""}>보류 (중단/방향 전환)</option>
             </select>
           </div>
           <div class="v2-form-actions">
@@ -202,14 +243,7 @@ function renderInProgress(state) {
           </div>
         </div>
 
-        <div class="v2-inline-card" style="margin-top: 12px;">
-          <span class="v2-inline-label">수동 판정</span>
-          <div class="v2-start-actions" style="margin-top: 0;">
-            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'done')">완료</button>
-            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'partial')">부분</button>
-            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'hold')">보류</button>
-          </div>
-        </div>
+        ${manualEvalHtml(quest.id)}
       </section>
     `;
   }
@@ -261,6 +295,8 @@ function renderInProgress(state) {
       </main>
 
       <aside class="v2-rail v2-rail-right">
+        ${renderQuickInputSection()}
+
         <section class="v2-rail-section">
           <span class="v2-section-label">진행 상태</span>
           <div class="v2-rail-card">
@@ -388,6 +424,8 @@ function renderEndOfDay(state) {
       </main>
 
       <aside class="v2-rail v2-rail-right">
+        ${renderQuickInputSection()}
+
         <section class="v2-rail-section">
           <span class="v2-section-label">확정된 시작점</span>
           ${confirmedHtml}

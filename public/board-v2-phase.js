@@ -48,7 +48,20 @@ function renderStatusLabel(phase) {
   const el = document.getElementById("v2StatusLabel");
   if (!el) return;
   const isPreview = _localPreviewPhase !== null;
-  el.textContent = isPreview ? `미리보기: ${getPhaseLabel(phase)}` : `상태: ${getPhaseLabel(phase)}`;
+  const label = getPhaseLabel(phase);
+
+  if (isPreview) {
+    el.innerHTML = `
+      <span class="v2-status-badge -preview">미리보기</span>
+      <span class="v2-status-text">${label}</span>
+      <button type="button" class="v2-status-reset-btn" onclick="window.boardV2ResetPhase()">자동 상태로 복귀</button>
+    `;
+  } else {
+    el.innerHTML = `
+      <span class="v2-status-badge -auto">자동 상태</span>
+      <span class="v2-status-text">${label}</span>
+    `;
+  }
 }
 
 function dispatchRender(state, phase) {
@@ -68,5 +81,15 @@ window.boardV2SetPhase = function boardV2SetPhase(phase) {
     renderPhaseTabs(effectivePhase);
     renderStatusLabel(effectivePhase);
     dispatchRender(_cachedState, effectivePhase);
+  }
+};
+
+window.boardV2ResetPhase = function boardV2ResetPhase() {
+  _localPreviewPhase = null;
+  if (_cachedState) {
+    const autoPhase = getAutoPhase(_cachedState);
+    renderPhaseTabs(autoPhase);
+    renderStatusLabel(autoPhase);
+    dispatchRender(_cachedState, autoPhase);
   }
 };
