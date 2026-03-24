@@ -21,6 +21,20 @@
     <div class="v2-loading">데이터를 불러오는 중입니다...</div>
   </div>
 
+  <!-- ── Detail Modal ── -->
+  <div id="v2Modal" class="v2-modal" hidden>
+    <div class="v2-modal-backdrop" onclick="window.boardV2CloseModal()"></div>
+    <div class="v2-modal-content">
+      <div class="v2-modal-header">
+        <h3 id="v2ModalTitle" class="v2-modal-title">상세 정보</h3>
+        <button type="button" class="v2-modal-close" onclick="window.boardV2CloseModal()" aria-label="닫기">×</button>
+      </div>
+      <div id="v2ModalBody" class="v2-modal-body">
+        <!-- Content will be injected here -->
+      </div>
+    </div>
+  </div>
+
   <script src="board-v2-shared.js"></script>
   <script src="board-v2-selectors.js"></script>
   <script src="board-v2-phase.js"></script>

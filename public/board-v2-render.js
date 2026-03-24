@@ -5,12 +5,19 @@ function renderList(items, emptyText, metaFormatter) {
 
   return `
     <ul class="v2-list">
-      ${items.map((item) => `
-        <li class="v2-list-item">
-          <span class="v2-item-title">${escapeHtml(item.title)}</span>
-          <span class="v2-item-meta${metaFormatter(item).isDue ? ' -due' : ''}">${escapeHtml(metaFormatter(item).text)}</span>
-        </li>
-      `).join("")}
+      ${items.map((item) => {
+        const meta = metaFormatter(item);
+        const clickableClass = item.description || item.reason || item.impact_summary ? " v2-modal-clickable" : "";
+        const onclick = clickableClass 
+          ? `onclick="window.boardV2OpenModal('${escapeHtml(item.title)}', '${escapeHtml(item.description || item.reason || item.impact_summary || "")}')"` 
+          : "";
+        return `
+          <li class="v2-list-item${clickableClass}" ${onclick}>
+            <span class="v2-item-title">${escapeHtml(item.title)}</span>
+            <span class="v2-item-meta${meta.isDue ? ' -due' : ''}">${escapeHtml(meta.text)}</span>
+          </li>
+        `;
+      }).join("")}
     </ul>
   `;
 }
@@ -22,12 +29,16 @@ function renderBriefList(items) {
 
   return `
     <ul class="v2-list v2-list-compact">
-      ${items.map((item) => `
-        <li class="v2-list-item">
-          <span class="v2-item-title">${escapeHtml(item.title || "브리프")}</span>
-          <span class="v2-item-meta">${escapeHtml(summarizeBrief(item))}</span>
-        </li>
-      `).join("")}
+      ${items.map((item) => {
+        const title = item.title || "브리프";
+        const content = item.content_md || "내용이 없습니다.";
+        return `
+          <li class="v2-list-item v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(title)}', '${escapeHtml(content)}')">
+            <span class="v2-item-title">${escapeHtml(title)}</span>
+            <span class="v2-item-meta">${escapeHtml(summarizeBrief(item))}</span>
+          </li>
+        `;
+      }).join("")}
     </ul>
   `;
 }
@@ -142,11 +153,13 @@ function renderInProgress(state) {
     ? quest.title
     : state.main_mission_title || "현재 퀘스트가 없습니다.";
 
+  const verdictTitle = recentVerdict?.title || "최근 판단";
+  const verdictContent = recentVerdict?.reason || recentVerdict?.impact_summary || "최근 판단 요약이 없습니다.";
   const verdictHtml = recentVerdict
     ? `
-      <div class="v2-rail-card">
-        <span class="v2-item-title">${escapeHtml(recentVerdict.title || "최근 판단")}</span>
-        <span class="v2-item-meta">${escapeHtml(recentVerdict.reason || recentVerdict.impact_summary || "최근 판단 요약이 없습니다.")}</span>
+      <div class="v2-rail-card v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(verdictTitle)}', '${escapeHtml(verdictContent)}')">
+        <span class="v2-item-title">${escapeHtml(verdictTitle)}</span>
+        <span class="v2-item-meta">${escapeHtml(verdictContent)}</span>
       </div>
     `
     : `<div class="v2-rail-card"><p class="v2-empty">최근 판단이 없습니다.</p></div>`;
@@ -300,11 +313,13 @@ function renderEndOfDay(state) {
     `
     : `<div class="v2-rail-card"><p class="v2-empty">확정된 시작점이 없습니다.</p></div>`;
 
+  const decisionTitle = decision?.title || "오늘 결정";
+  const decisionContent = decision?.impact_summary || decision?.reason || "";
   const decisionHtml = decision
     ? `
-      <div class="v2-rail-card">
-        <span class="v2-item-title">${escapeHtml(decision.title || "오늘 결정")}</span>
-        <span class="v2-item-meta">${escapeHtml(decision.impact_summary || decision.reason || "")}</span>
+      <div class="v2-rail-card v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(decisionTitle)}', '${escapeHtml(decisionContent)}')">
+        <span class="v2-item-title">${escapeHtml(decisionTitle)}</span>
+        <span class="v2-item-meta">${escapeHtml(decisionContent)}</span>
       </div>
     `
     : `<div class="v2-rail-card"><p class="v2-empty">오늘 결정 요약이 없습니다.</p></div>`;

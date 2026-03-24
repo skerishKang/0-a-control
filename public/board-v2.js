@@ -111,4 +111,21 @@ window.boardV2ReportQuest = async function boardV2ReportQuest(questId) {
   }
 };
 
+window.boardV2OpenModal = function boardV2OpenModal(title, content) {
+  const modal = document.getElementById("v2Modal");
+  const titleEl = document.getElementById("v2ModalTitle");
+  const bodyEl = document.getElementById("v2ModalBody");
+
+  if (!modal || !titleEl || !bodyEl) return;
+
+  titleEl.textContent = title;
+  bodyEl.innerHTML = content;
+  modal.hidden = false;
+};
+
+window.boardV2CloseModal = function boardV2CloseModal() {
+  const modal = document.getElementById("v2Modal");
+  if (modal) modal.hidden = true;
+};
+
 document.addEventListener("DOMContentLoaded", loadBoardV2);
