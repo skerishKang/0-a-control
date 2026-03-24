@@ -155,6 +155,38 @@ function renderInProgress(state) {
     ? `<div class="v2-inline-card"><span class="v2-inline-label">다음 퀘스트 후보</span><strong>${escapeHtml(nextQuest)}</strong></div>`
     : `<div class="v2-inline-card"><span class="v2-inline-label">다음 퀘스트 후보</span><strong>아직 제안이 없습니다.</strong></div>`;
 
+  let reportFormHtml = "";
+  if (questStatus.is_pending) {
+    reportFormHtml = `
+      <div class="v2-info-box">
+        AI가 작업 결과를 분석하고 있습니다...
+      </div>
+    `;
+  } else if (quest.id) {
+    reportFormHtml = `
+      <section class="v2-form-card">
+        <span class="v2-section-label">결과 보고</span>
+        <div class="v2-inline-card">
+          <div class="v2-form-group">
+            <label class="v2-form-label" for="v2WorkSummary">작업 내용</label>
+            <textarea id="v2WorkSummary" class="v2-textarea" placeholder="무엇을 완료했나요?"></textarea>
+          </div>
+          <div class="v2-form-group">
+            <label class="v2-form-label" for="v2SelfAssessment">자가 평가</label>
+            <select id="v2SelfAssessment" class="v2-select">
+              <option value="done">완료 (목표 달성)</option>
+              <option value="partial" selected>부분 완료 (진전 있음)</option>
+              <option value="hold">보류 (중단/방향 전환)</option>
+            </select>
+          </div>
+          <div class="v2-form-actions">
+            <button type="button" class="v2-btn v2-btn-primary" onclick="window.boardV2ReportQuest('${escapeHtml(quest.id)}')">보고 및 판정 요청</button>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
   root.innerHTML = `
     <div class="v2-layout">
       <aside class="v2-rail v2-rail-left">
@@ -196,6 +228,8 @@ function renderInProgress(state) {
             </div>
             ${nextQuestHtml}
           </div>
+
+          ${reportFormHtml}
         </div>
       </main>
 

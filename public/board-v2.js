@@ -74,4 +74,41 @@ window.boardV2ClearStartingPoint = async function boardV2ClearStartingPoint() {
   }
 };
 
+window.boardV2ReportQuest = async function boardV2ReportQuest(questId) {
+  const summary = document.getElementById("v2WorkSummary")?.value.trim();
+  const assessment = document.getElementById("v2SelfAssessment")?.value;
+
+  if (!summary) {
+    window.alert("작업 내용을 입력해 주세요.");
+    return;
+  }
+
+  if (!window.confirm("작업 결과를 보고하고 AI 판정을 요청할까요?")) return;
+
+  try {
+    const response = await fetch("/api/quests/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        quest_id: questId,
+        work_summary: summary,
+        self_assessment: assessment,
+        remaining_work: "",
+        blocker: "",
+      }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "보고에 실패했습니다.");
+    }
+
+    await loadBoardV2();
+    window.alert("보고가 완료되었습니다. AI 판정을 기다려 주세요.");
+  } catch (error) {
+    console.error("Failed to report quest:", error);
+    window.alert(`보고 실패: ${error.message}`);
+  }
+};
+
 document.addEventListener("DOMContentLoaded", loadBoardV2);
