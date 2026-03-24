@@ -115,6 +115,11 @@ function renderMorning(state) {
             <span class="v2-mission-reason-label">이유</span>
             <p class="v2-mission-reason">${escapeHtml(mission.reason)}</p>
           </div>
+          <div class="v2-start-actions" style="margin-top: 40px; max-width: 320px;">
+            <button class="v2-btn v2-btn-primary" type="button" onclick="window.boardV2StartQuestFromMission()" ${hasCurrentQuest ? "disabled" : ""}>
+              ${hasCurrentQuest ? "진행 중인 작업 있음" : "주 임무로 퀘스트 시작"}
+            </button>
+          </div>
         </div>
       </main>
 

@@ -111,6 +111,27 @@ window.boardV2ReportQuest = async function boardV2ReportQuest(questId) {
   }
 };
 
+window.boardV2StartQuestFromMission = async function boardV2StartQuestFromMission() {
+  if (!window.confirm("오늘의 주 임무로 작업을 시작할까요?")) return;
+
+  try {
+    const response = await fetch("/api/current-quest/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "퀘스트 시작에 실패했습니다.");
+    }
+    await loadBoardV2();
+    window.alert("퀘스트를 시작했습니다. 작업 일지를 유지하세요.");
+  } catch (error) {
+    console.error("Failed to start quest from mission:", error);
+    window.alert(`퀘스트 시작 실패: ${error.message}`);
+  }
+};
+
 window.boardV2OpenModal = function boardV2OpenModal(title, content) {
   const modal = document.getElementById("v2Modal");
   const titleEl = document.getElementById("v2ModalTitle");
