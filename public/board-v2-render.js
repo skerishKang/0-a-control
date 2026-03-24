@@ -201,6 +201,15 @@ function renderInProgress(state) {
             <button type="button" class="v2-btn v2-btn-primary" onclick="window.boardV2ReportQuest('${escapeHtml(quest.id)}')">보고 및 판정 요청</button>
           </div>
         </div>
+
+        <div class="v2-inline-card" style="margin-top: 12px;">
+          <span class="v2-inline-label">수동 판정</span>
+          <div class="v2-start-actions" style="margin-top: 0;">
+            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'done')">완료</button>
+            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'partial')">부분</button>
+            <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'hold')">보류</button>
+          </div>
+        </div>
       </section>
     `;
   }

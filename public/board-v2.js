@@ -132,6 +132,37 @@ window.boardV2StartQuestFromMission = async function boardV2StartQuestFromMissio
   }
 };
 
+window.boardV2EvaluateQuest = async function boardV2EvaluateQuest(questId, verdict) {
+  const label = { done: "완료", partial: "부분 완료", hold: "보류" }[verdict];
+  if (!window.confirm(`현재 퀘스트를 [${label}] 상태로 직접 판정할까요?`)) return;
+
+  try {
+    const response = await fetch("/api/quests/evaluate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        quest_id: questId,
+        verdict: verdict,
+        reason: "사용자 수동 판정",
+        restart_point: "",
+        next_quest_hint: "",
+        plan_impact: "",
+      }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "판정 저장에 실패했습니다.");
+    }
+
+    await loadBoardV2();
+    window.alert(`퀘스트가 [${label}] 상태로 종료되었습니다.`);
+  } catch (error) {
+    console.error("Failed to evaluate quest:", error);
+    window.alert(`판정 실패: ${error.message}`);
+  }
+};
+
 window.boardV2OpenModal = function boardV2OpenModal(title, content) {
   const modal = document.getElementById("v2Modal");
   const titleEl = document.getElementById("v2ModalTitle");
