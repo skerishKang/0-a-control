@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --v2-bg: #fdfcf0;
   --v2-bg-soft: #f7f4e7;
   --v2-surface: #fffef8;
@@ -703,4 +703,39 @@ body.v2-body {
     padding: 5px 9px;
     font-size: 11px;
   }
+}
+
+/* ── History Badges ── */
+.v2-history-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+.v2-history-badge-quest {
+  background: rgba(45, 90, 39, 0.08);
+  color: var(--v2-primary);
+}
+.v2-history-badge-session {
+  background: rgba(92, 107, 92, 0.1);
+  color: var(--v2-text-muted);
+}
+.v2-history-badge-done {
+  border: 1px solid rgba(45, 90, 39, 0.2);
+  color: var(--v2-primary);
+}
+.v2-history-badge-partial {
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: var(--v2-amber);
+}
+.v2-history-item-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--v2-text-muted);
 }

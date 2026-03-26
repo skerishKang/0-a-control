@@ -467,10 +467,42 @@ function renderHistory(state) {
 
   const { todayDone, partialItems, recentDone, allDone } = pickCompletedItems(state);
 
-  const renderCompletedList = (items, emptyText) => renderList(items, emptyText, (item) => ({
-    text: `${item.type === 'Quest' ? '퀘스트' : '세션'} · ${item.verdict === 'done' ? '완료' : '부분'} · ${item.completedAt ? item.completedAt.slice(5, 16).replace('T', ' ') : ''}`,
-    isDue: false
-  }));
+  const renderHistoryList = (items, emptyText, compact = false) => {
+    if (!items || items.length === 0) {
+      return `<p class="v2-empty" style="padding: 16px; margin: 0;">${escapeHtml(emptyText)}</p>`;
+    }
+    return `
+      <ul class="v2-list" style="margin:0;">
+        ${items.map(item => {
+          const isQuest = item.type === 'Quest';
+          const typeClass = isQuest ? 'v2-history-badge-quest' : 'v2-history-badge-session';
+          const typeLabel = isQuest ? '퀘스트' : '세션';
+          
+          const isDone = item.verdict === 'done';
+          const statusClass = isDone ? 'v2-history-badge-done' : 'v2-history-badge-partial';
+          const statusLabel = isDone ? '완료' : '부분';
+          
+          const timeText = item.completedAt ? item.completedAt.slice(5, 16).replace('T', ' ') : '';
+          
+          const clickableClass = " -clickable";
+          const onclick = isQuest
+            ? `onclick="window.openQuestModal('${item.id.replace('q-', '')}')"`
+            : `onclick="window.openSessionModal('${item.id.replace('s-', '')}')"`;
+          
+          return `
+            <li class="v2-list-item${clickableClass}" ${onclick} style="padding: ${compact ? '8px 16px' : '12px 16px'}; border-bottom: 1px solid var(--v2-border);">
+              <span class="v2-item-title" style="font-size: ${compact ? '14px' : '15px'};">${escapeHtml(item.title)}</span>
+              <div class="v2-history-item-meta">
+                <span class="v2-history-badge ${typeClass}">${typeLabel}</span>
+                <span class="v2-history-badge ${statusClass}">${statusLabel}</span>
+                <span style="opacity: 0.8;">${timeText}</span>
+              </div>
+            </li>
+          `;
+        }).join("")}
+      </ul>
+    `;
+  };
 
   root.innerHTML = `
     <div class="v2-layout">
@@ -487,24 +519,24 @@ function renderHistory(state) {
       <main class="v2-main v2-main-progress">
         <span class="v2-day-label">완료 내역</span>
         <div class="v2-mission-wrap" style="padding-bottom: 60px;">
-          <span class="v2-section-label">오늘 완료</span>
+          <span class="v2-section-label">오늘 완료 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${todayDone.length ? renderCompletedList(todayDone, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">오늘 완료된 항목이 없습니다.</p>'}
+              ${renderHistoryList(todayDone, "오늘 완료된 항목이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label">부분 완료</span>
+          <span class="v2-section-label">부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${partialItems.length ? renderCompletedList(partialItems, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">부분 완료된 항목이 없습니다.</p>'}
+              ${renderHistoryList(partialItems, "부분 완료된 항목이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label">최근 완료</span>
+          <span class="v2-section-label">최근 완료 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${recentDone.length ? renderCompletedList(recentDone, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">최근 완료된 항목이 없습니다.</p>'}
+              ${renderHistoryList(recentDone, "최근 완료된 항목이 없습니다.")}
             </div>
           </div>
 
@@ -513,7 +545,7 @@ function renderHistory(state) {
             <details style="cursor: pointer; background: var(--v2-bg-elevated); border-radius: 8px; border: 1px solid var(--v2-border); overflow: hidden;">
               <summary class="v2-item-title" style="margin:0; padding: 16px; outline: none; user-select: none;">전체 리스트 펼치기 (${allDone.length}건)</summary>
               <div style="padding: 0; border-top: 1px solid var(--v2-border);">
-                ${renderCompletedList(allDone, "완료된 항목이 없습니다.")}
+                ${renderHistoryList(allDone, "완료된 항목이 없습니다.", true)}
               </div>
             </details>
           </div>
