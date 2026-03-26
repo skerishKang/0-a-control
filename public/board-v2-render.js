@@ -11,9 +11,19 @@ function renderList(items, emptyText, metaFormatter) {
         const onclick = clickableClass 
           ? `onclick="window.boardV2OpenModal('${escapeHtml(item.title)}', '${escapeHtml(item.description || item.reason || item.impact_summary || "")}')"` 
           : "";
+        
+        // Plan bucket badge logic
+        const bucket = item.bucket || item.status;
+        const bucketLabel = formatPlanLabel(bucket);
+        const hasBucketLabel = bucket && bucketLabel && bucket !== 'active' && bucket !== 'done';
+        const bucketClass = hasBucketLabel ? ` v2-plan-badge-${bucket}` : "";
+
         return `
           <li class="v2-list-item${clickableClass}" ${onclick}>
-            <span class="v2-item-title">${escapeHtml(item.title)}</span>
+            <div style="display:flex; align-items:flex-start; gap:0;">
+              ${hasBucketLabel ? `<span class="v2-plan-badge${bucketClass}">${escapeHtml(bucketLabel)}</span>` : ""}
+              <span class="v2-item-title" style="flex:1;">${escapeHtml(item.title)}</span>
+            </div>
             <span class="v2-item-meta${meta.isDue ? ' -due' : ''}">${escapeHtml(meta.text)}</span>
           </li>
         `;
@@ -146,9 +156,9 @@ function renderMorning(state) {
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">미완료 항목</span>
+          <span class="v2-section-label">전체 계획 및 보류</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.bucket), isDue: false }))}
+            ${renderList(unfinishedItems, "남은 계획 항목이 없습니다.", (item) => ({ text: item.project_key || "No Project", isDue: false }))}
           </div>
         </section>
       </aside>
@@ -306,9 +316,9 @@ function renderInProgress(state) {
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">미완료 항목</span>
+          <span class="v2-section-label">전체 계획 및 보류</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.bucket), isDue: false }))}
+            ${renderList(unfinishedItems, "남은 계획 항목이 없습니다.", (item) => ({ text: item.project_key || "No Project", isDue: false }))}
           </div>
         </section>
 
@@ -432,9 +442,9 @@ function renderEndOfDay(state) {
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">남은 전략</span>
+          <span class="v2-section-label">전체 계획 및 보류</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "미완료 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.status || item.bucket), isDue: false }))}
+            ${renderList(unfinishedItems, "남은 계획 항목이 없습니다.", (item) => ({ text: formatPlanLabel(item.status || item.bucket), isDue: false }))}
           </div>
         </section>
 
