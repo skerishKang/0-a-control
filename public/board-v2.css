@@ -808,3 +808,40 @@ body.v2-body {
   font-weight: 500;
   text-align: right;
 }
+
+/* ── End-of-Day Enhancements ── */
+.v2-start-confirmed-card {
+  background: var(--v2-surface);
+  border: 2px solid var(--v2-primary);
+  border-left: 6px solid var(--v2-primary);
+  box-shadow: var(--v2-shadow);
+  padding: 20px;
+}
+.v2-start-suggestion-card {
+  background: rgba(45, 90, 39, 0.02);
+  border: 1px dashed var(--v2-primary);
+  opacity: 0.9;
+  padding: 18px;
+}
+.v2-restart-label {
+  display: block;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--v2-border);
+  color: var(--v2-text-muted);
+  font-size: 13px;
+  font-style: italic;
+}
+.v2-restart-label b {
+  color: var(--v2-primary);
+  font-style: normal;
+  margin-right: 4px;
+}
+.v2-start-badge.-confirmed {
+  background: var(--v2-primary);
+  color: #fff;
+}
+.v2-start-badge.-suggestion {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--v2-amber);
+}

@@ -364,31 +364,37 @@ function renderEndOfDay(state) {
   const confirmed = state.confirmed_starting_point || null;
   const decision = state.latest_decision_summary || null;
 
-  const tomorrowCard = tomorrowFirst && tomorrowFirst.title
-    ? `
-      <div class="v2-start-card">
-        <span class="v2-start-badge">내일 첫 퀘스트</span>
+  let tomorrowHtml = "";
+  if (confirmed && confirmed.title) {
+    tomorrowHtml = `
+      <div class="v2-start-confirmed-card">
+        <span class="v2-start-badge -confirmed">내일 시작 확정</span>
+        <span class="v2-item-title" style="font-size: 18px; margin-bottom: 4px;">${escapeHtml(confirmed.title)}</span>
+        <span class="v2-item-meta" style="font-size: 14px; opacity: 0.9;">${escapeHtml(confirmed.reason || "")}</span>
+        ${confirmed.restart_point ? `
+          <div class="v2-restart-label">
+            <b>재시작 지점:</b> ${escapeHtml(confirmed.restart_point)}
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else if (tomorrowFirst && tomorrowFirst.title) {
+    tomorrowHtml = `
+      <div class="v2-start-suggestion-card">
+        <span class="v2-start-badge -suggestion">내일의 제안</span>
         <span class="v2-item-title">${escapeHtml(tomorrowFirst.title)}</span>
         <span class="v2-item-meta">${escapeHtml(tomorrowFirst.reason || "")}</span>
-        <div class="v2-start-actions" style="margin-top: 14px;">
+        <div class="v2-start-actions">
           <button class="v2-btn v2-btn-primary" type="button" 
-            onclick="window.boardV2ConfirmStartingPoint('${escapeHtml(tomorrowFirst.title)}', '${escapeHtml(tomorrowFirst.reason || "")}', '${escapeHtml(tomorrowFirst.source || "suggestion")}')"
-            ${confirmed && confirmed.title ? "disabled" : ""}>
-            ${confirmed && confirmed.title ? "이미 확정됨" : "이 제안 확정"}
+            onclick="window.boardV2ConfirmStartingPoint('${escapeHtml(tomorrowFirst.title)}', '${escapeHtml(tomorrowFirst.reason || "")}', '${escapeHtml(tomorrowFirst.source || "suggestion")}')">
+            이 제안으로 내일 시작 확정
           </button>
         </div>
       </div>
-    `
-    : `<p class="v2-empty">내일 제안이 아직 없습니다.</p>`;
-
-  const confirmedHtml = confirmed && confirmed.title
-    ? `
-      <div class="v2-rail-card">
-        <span class="v2-item-title">${escapeHtml(confirmed.title)}</span>
-        <span class="v2-item-meta">${escapeHtml(confirmed.reason || "")}</span>
-      </div>
-    `
-    : `<div class="v2-rail-card"><p class="v2-empty">확정된 시작점이 없습니다.</p></div>`;
+    `;
+  } else {
+    tomorrowHtml = `<p class="v2-empty" style="padding: 20px; text-align: center; border: 1px dashed var(--v2-border);">내일의 시작점이 아직 없습니다. 퀵 입력을 통해 계획을 제안해 보세요.</p>`;
+  }
 
   const decisionTitle = decision?.title || "오늘 결정";
   const decisionContent = decision?.impact_summary || decision?.reason || "";
@@ -430,26 +436,23 @@ function renderEndOfDay(state) {
       <main class="v2-main v2-main-progress">
         <span class="v2-day-label">${escapeHtml(getDayLabel())}</span>
         <div class="v2-mission-wrap">
-          <span class="v2-section-label">오늘 마감</span>
-          <h1 class="v2-mission-title v2-quest-title">오늘 한 일과 내일의 첫 단추를 정리합니다.</h1>
+          <span class="v2-section-label">오늘 마감 및 내일 준비</span>
+          <h1 class="v2-mission-title v2-quest-title">오늘의 마침표를 찍고,<br/>내일의 첫 단추를 연결합니다.</h1>
 
           <div class="v2-progress-stack">
-            <div class="v2-inline-card v2-inline-card-accent">
+            <div class="v2-inline-card">
               <span class="v2-inline-label">남은 항목</span>
               <strong>${unfinishedItems.length ? `${unfinishedItems.length}개 항목이 다시 이어갈 대상으로 남아 있습니다.` : "다시 이어갈 항목이 없습니다."}</strong>
             </div>
-            ${tomorrowCard}
+            
+            <span class="v2-section-label" style="margin-top: 12px;">내일의 시작점</span>
+            ${tomorrowHtml}
           </div>
         </div>
       </main>
 
       <aside class="v2-rail v2-rail-right">
         ${renderQuickInputSection()}
-
-        <section class="v2-rail-section">
-          <span class="v2-section-label">확정된 시작점</span>
-          ${confirmedHtml}
-        </section>
 
         <section class="v2-rail-section">
           <span class="v2-section-label">전체 계획 및 보류</span>
