@@ -31,7 +31,7 @@ async function loadBoardV2() {
     _cachedState = state;
     const phase = getEffectivePhase(state);
     renderPhaseTabs(phase);
-    renderStatusLabel(phase);
+    renderStatusLabel(state, phase);
     dispatchRender(state, phase);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);

@@ -45,22 +45,49 @@ function renderPhaseTabs(activePhase) {
     .join("");
 }
 
-function renderStatusLabel(phase) {
+function getPhaseReason(state, phase, isPreview) {
+  if (isPreview) return "사용자 선택 항목 미리보기";
+  
+  if (state.day_phase_reason && phase === state.day_phase) {
+    return state.day_phase_reason;
+  }
+
+  const mapping = {
+    morning: "하루를 계획하는 아침 브리핑 시간입니다.",
+    "in-progress": "활성 퀘스트가 있거나 집중 작업 시간대입니다.",
+    midday: "집중 작업 시간대입니다.",
+    "end-of-day": "오늘을 마무리하고 내일을 설계할 시간입니다.",
+  };
+  return mapping[phase] || "시스템 판단에 따른 현재 단계입니다.";
+}
+
+function renderStatusLabel(state, phase) {
   const el = document.getElementById("v2StatusLabel");
   if (!el) return;
   const isPreview = _localPreviewPhase !== null;
   const label = getPhaseLabel(phase);
+  const reason = getPhaseReason(state, phase, isPreview);
 
   if (isPreview) {
     el.innerHTML = `
-      <span class="v2-status-badge -preview">미리보기</span>
-      <span class="v2-status-text">${label}</span>
-      <button type="button" class="v2-status-reset-btn" onclick="window.boardV2ResetPhase()">자동 상태로 복귀</button>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="v2-status-badge -preview">미리보기</span>
+          <span class="v2-status-text">${label}</span>
+          <button type="button" class="v2-status-reset-btn" onclick="window.boardV2ResetPhase()">자동 상태로 복귀</button>
+        </div>
+        <span class="v2-status-reason">${escapeHtml(reason)}</span>
+      </div>
     `;
   } else {
     el.innerHTML = `
-      <span class="v2-status-badge -auto">자동 상태</span>
-      <span class="v2-status-text">${label}</span>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="v2-status-badge -auto">자동 상태</span>
+          <span class="v2-status-text">${label}</span>
+        </div>
+        <span class="v2-status-reason">${escapeHtml(reason)}</span>
+      </div>
     `;
   }
 }
@@ -84,7 +111,7 @@ window.boardV2SetPhase = function boardV2SetPhase(phase) {
   if (_cachedState) {
     const effectivePhase = getEffectivePhase(_cachedState);
     renderPhaseTabs(effectivePhase);
-    renderStatusLabel(effectivePhase);
+    renderStatusLabel(_cachedState, effectivePhase);
     dispatchRender(_cachedState, effectivePhase);
   }
 };
@@ -94,7 +121,7 @@ window.boardV2ResetPhase = function boardV2ResetPhase() {
   if (_cachedState) {
     const autoPhase = getAutoPhase(_cachedState);
     renderPhaseTabs(autoPhase);
-    renderStatusLabel(autoPhase);
+    renderStatusLabel(_cachedState, autoPhase);
     dispatchRender(_cachedState, autoPhase);
   }
 };
