@@ -593,31 +593,34 @@ function renderHistory(state) {
       </aside>
 
       <main class="v2-main v2-main-progress">
-        <span class="v2-day-label">완료 내역</span>
+        <span class="v2-day-label">완료된 작업 내역</span>
+        <p style="margin: 6px 0 24px 0; font-size: 13px; color: var(--v2-text-muted); line-height: 1.5;">
+          단순한 에이전트 로그가 아닌, <b>완전히 끝마친 퀘스트와 세션 결과물</b>을 돌아보는 공간입니다.
+        </p>
         <div class="v2-mission-wrap" style="padding-bottom: 60px;">
-          <span class="v2-section-label" title="오늘(KST) 완전히 끝난 퀘스트 및 세션">오늘 완료 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
+          <span class="v2-section-label" title="오늘(KST) 완전히 끝난 퀘스트 및 세션">오늘 완료한 작업 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(todayDone, "오늘 완료된 항목이 없습니다.")}
+              ${renderHistoryList(todayDone, "오늘 완료된 작업이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label" title="진행 중에 부분적으로 완료 처리된 항목">부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
+          <span class="v2-section-label" title="진행 중에 부분적으로 완료 처리된 항목">보류 및 부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(partialItems, "부분 완료된 항목이 없습니다.")}
+              ${renderHistoryList(partialItems, "보류되거나 부분 완료된 작업이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label" title="오늘을 제외한 최근 완료 항목 (최대 10개)">최근 완료 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
+          <span class="v2-section-label" title="오늘을 제외한 최근 완료 항목 (최대 10개)">최근 완료 기록 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(recentDone, "최근 완료된 항목이 없습니다.")}
+              ${renderHistoryList(recentDone, "최근 완료된 작업이 없습니다.")}
             </div>
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center;" title="기간 제한 없이 모든 완료 및 부분 완료 항목을 조회합니다.">
-            <span class="v2-section-label" style="margin:0;">전체 완료 보기</span>
+            <span class="v2-section-label" style="margin:0;">전체 완료 기록 보기</span>
             <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px;" title="목록 필터링">
               <button class="v2-btn-inline v2-history-filter-btn" data-filter="all" onclick="window.filterHistory('all')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
               <button class="v2-btn-inline v2-history-filter-btn" data-filter="Quest" onclick="window.filterHistory('Quest')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">퀘스트</button>
