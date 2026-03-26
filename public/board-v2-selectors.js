@@ -25,6 +25,8 @@ function pickCurrentQuest(state) {
   return {
     id: state.current_quest_id || quest.id || "",
     title: state.current_quest_title || quest.title || "현재 퀘스트가 없습니다.",
+    whyNow: quest.why_now || "",
+    parentTitle: quest.parent_title || "",
     completionCriteria:
       state.current_quest_completion_criteria ||
       quest.completion_criteria ||

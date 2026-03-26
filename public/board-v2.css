@@ -766,3 +766,36 @@ body.v2-body {
   color: var(--v2-text-muted);
   border: 1px solid rgba(92, 107, 92, 0.2);
 }
+
+/* ── In-Progress Enhancements ── */
+.v2-mission-context {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--v2-primary);
+  opacity: 0.85;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-left: 3px solid var(--v2-primary);
+  padding-left: 10px;
+}
+.v2-why-now-box {
+  background: rgba(217, 119, 6, 0.04);
+  border: 1px dashed rgba(217, 119, 6, 0.2);
+  border-left: 3px solid var(--v2-amber);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--v2-text-muted);
+}
+.v2-why-now-label {
+  display: block;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  color: var(--v2-amber);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}

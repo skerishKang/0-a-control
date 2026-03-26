@@ -170,6 +170,7 @@ function renderInProgress(state) {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
 
+  const mission = pickMainMission(state);
   const quest = pickCurrentQuest(state);
   const unfinishedItems = pickUnfinishedItems(state);
   const dueItems = pickDueItems(state);
@@ -285,10 +286,19 @@ function renderInProgress(state) {
       <main class="v2-main v2-main-progress">
         <span class="v2-day-label">${escapeHtml(getDayLabel())}</span>
         <div class="v2-mission-wrap">
+          ${mission.title && mission.title !== "주 임무가 없습니다." 
+            ? `<span class="v2-mission-context" title="${escapeHtml(mission.reason)}">오늘의 주 임무: ${escapeHtml(mission.title)}</span>` 
+            : ""}
           <span class="v2-section-label">현재 퀘스트</span>
           <h1 class="v2-mission-title v2-quest-title">${escapeHtml(questTitle)}</h1>
 
           <div class="v2-progress-stack">
+            ${quest.whyNow ? `
+              <div class="v2-why-now-box">
+                <span class="v2-why-now-label">실행 이유 / 맥락</span>
+                ${escapeHtml(quest.whyNow)}
+              </div>
+            ` : ""}
             <div class="v2-inline-card">
               <span class="v2-inline-label">완료 기준</span>
               <strong>${escapeHtml(quest.completionCriteria)}</strong>
