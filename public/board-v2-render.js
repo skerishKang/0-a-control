@@ -556,8 +556,11 @@ function renderHistory(state) {
       const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n')}', '${modalContent}')"`;
       
       html += `
-        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '12px 16px'}; border-bottom: 1px solid var(--v2-border);">
-          <span class="v2-item-title" style="font-size: ${compact ? '14px' : '15px'};">${escapeHtml(item.title)}</span>
+        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border);">
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <span class="v2-item-title" style="font-size: ${compact ? '14px' : '15px'};">${escapeHtml(item.title)}</span>
+            ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.85;">↳ ${escapeHtml(item.subtext)}</span>` : ''}
+          </div>
           <div class="v2-history-item-meta">
             <span class="v2-history-badge ${typeClass}">${typeLabel}</span>
             <span class="v2-history-badge ${statusClass}">${statusLabel}</span>
@@ -579,11 +582,11 @@ function renderHistory(state) {
           <div class="v2-rail-card v2-rail-card-accent">
             <span class="v2-item-title" title="오늘(KST) 완전히 끝난 항목">오늘 완료 ${todayDone.length}건</span>
             <span class="v2-item-meta" style="line-height: 1.6;">
-              <span title="완전히 끝나지 않고 보류/부분 처리된 항목">부분 완료 ${partialItems.length}건</span><br/>
-              <span title="오늘을 제외한 과거 완료 항목 전체">이전 완료 ${allDone.length - todayDone.length - partialItems.length}건</span>
+              <span title="완전히 끝나지 않고 보류/부분 처리된 항목">부분 완료<span style="opacity:0.6; font-size:0.9em; font-weight:normal;">(보류)</span> ${partialItems.length}건</span><br/>
+              <span title="오늘을 제외한 과거 완료 항목 전체">이전 완료<span style="opacity:0.6; font-size:0.9em; font-weight:normal;">(과거)</span> ${allDone.length - todayDone.length - partialItems.length}건</span>
             </span>
             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(45, 90, 39, 0.1);">
-              <span class="v2-item-meta" style="font-weight:700; color: var(--v2-primary);" title="모든 완료 및 부분 완료 기록의 총합">총 누적 ${allDone.length}건</span>
+              <span class="v2-item-meta" style="font-weight:700; color: var(--v2-primary);" title="모든 완료 및 부분 완료 기록의 총합">총 누적 기록 ${allDone.length}건</span>
             </div>
           </div>
         </section>

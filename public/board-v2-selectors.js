@@ -72,7 +72,8 @@ function pickCompletedItems(state) {
         completedAt: q.updated_at,
         type: 'Quest',
         verdict: q.status,
-        description: q.reason || "상세 내용 없음"
+        description: q.verdict_reason || q.reason || q.completion_criteria || "상세 내용 없음",
+        subtext: q.why_now || q.plan_item_id || ""
       });
     }
   });
@@ -86,7 +87,8 @@ function pickCompletedItems(state) {
         completedAt: s.ended_at || s.updated_at || s.started_at,
         type: 'Session',
         verdict: s.quest_verdict_status,
-        description: `Agent: ${s.agent_name || 'unknown'}`
+        description: s.summary_md || `Agent: ${s.agent_name || 'unknown'}`,
+        subtext: s.project_key ? `Project: ${s.project_key}` : (s.agent_name ? `Agent: ${s.agent_name}` : "")
       });
     }
   });
