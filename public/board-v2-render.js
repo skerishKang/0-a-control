@@ -460,3 +460,70 @@ function renderEndOfDay(state) {
     </div>
   `;
 }
+
+function renderHistory(state) {
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  const { todayDone, partialItems, recentDone, allDone } = pickCompletedItems(state);
+
+  const renderCompletedList = (items, emptyText) => renderList(items, emptyText, (item) => ({
+    text: `${item.type === 'Quest' ? '퀘스트' : '세션'} · ${item.verdict === 'done' ? '완료' : '부분'} · ${item.completedAt ? item.completedAt.slice(5, 16).replace('T', ' ') : ''}`,
+    isDue: false
+  }));
+
+  root.innerHTML = `
+    <div class="v2-layout">
+      <aside class="v2-rail v2-rail-left">
+        <section class="v2-rail-section">
+          <span class="v2-section-label">요약</span>
+          <div class="v2-rail-card v2-rail-card-accent">
+            <span class="v2-item-title">오늘 완료 ${todayDone.length}건</span>
+            <span class="v2-item-meta">부분 완료 ${partialItems.length}건 · 누적 ${allDone.length}건</span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="v2-main v2-main-progress">
+        <span class="v2-day-label">완료 내역</span>
+        <div class="v2-mission-wrap" style="padding-bottom: 60px;">
+          <span class="v2-section-label">오늘 완료</span>
+          <div class="v2-progress-stack" style="margin-bottom: 32px;">
+            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
+              ${todayDone.length ? renderCompletedList(todayDone, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">오늘 완료된 항목이 없습니다.</p>'}
+            </div>
+          </div>
+
+          <span class="v2-section-label">부분 완료</span>
+          <div class="v2-progress-stack" style="margin-bottom: 32px;">
+            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
+              ${partialItems.length ? renderCompletedList(partialItems, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">부분 완료된 항목이 없습니다.</p>'}
+            </div>
+          </div>
+
+          <span class="v2-section-label">최근 완료</span>
+          <div class="v2-progress-stack" style="margin-bottom: 32px;">
+            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
+              ${recentDone.length ? renderCompletedList(recentDone, "") : '<p class="v2-empty" style="padding: 16px; margin: 0;">최근 완료된 항목이 없습니다.</p>'}
+            </div>
+          </div>
+
+          <span class="v2-section-label">전체 완료 보기</span>
+          <div class="v2-progress-stack">
+            <details style="cursor: pointer; background: var(--v2-bg-elevated); border-radius: 8px; border: 1px solid var(--v2-border); overflow: hidden;">
+              <summary class="v2-item-title" style="margin:0; padding: 16px; outline: none; user-select: none;">전체 리스트 펼치기 (${allDone.length}건)</summary>
+              <div style="padding: 0; border-top: 1px solid var(--v2-border);">
+                ${renderCompletedList(allDone, "완료된 항목이 없습니다.")}
+              </div>
+            </details>
+          </div>
+        </div>
+      </main>
+
+      <aside class="v2-rail v2-rail-right">
+        ${renderQuickInputSection()}
+      </aside>
+    </div>
+  `;
+}
+

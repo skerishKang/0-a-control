@@ -54,5 +54,77 @@ function pickBriefs(state) {
 }
 
 function pickSessions(state) {
-  return Array.isArray(state.__sessions) ? state.__sessions : [];
+  return Array.isArray(state.__sessions) ? state.__sessions.slice(0, 3) : [];
+}
+
+function pickCompletedItems(state) {
+  const allQuests = state.__quests || [];
+  const allSessions = Array.isArray(state.__sessions) ? state.__sessions : [];
+
+  const completed = [];
+
+  // 1. Quests
+  allQuests.forEach(q => {
+    if (q.status === 'done' || q.status === 'partial') {
+      completed.push({
+        id: `q-${q.id}`,
+        title: q.title,
+        completedAt: q.updated_at,
+        type: 'Quest',
+        verdict: q.status,
+        description: q.reason || "상세 내용 없음"
+      });
+    }
+  });
+
+  // 2. Sessions
+  allSessions.forEach(s => {
+    if (s.quest_verdict_status === 'done' || s.quest_verdict_status === 'partial') {
+      completed.push({
+        id: `s-${s.id}`,
+        title: s.title || s.project_key || '세션',
+        completedAt: s.ended_at || s.updated_at || s.started_at,
+        type: 'Session',
+        verdict: s.quest_verdict_status,
+        description: `Agent: ${s.agent_name || 'unknown'}`
+      });
+    }
+  });
+
+  completed.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' });
+  const nowStr = formatter.format(new Date());
+  
+  const todayDone = [];
+  const partialItems = [];
+  const recentDone = [];
+  
+  completed.forEach(item => {
+    if (item.verdict === 'partial') {
+      partialItems.push(item);
+      return;
+    }
+
+    let itemDateStr = '';
+    if (item.completedAt) {
+      const d = new Date(item.completedAt);
+      if (!isNaN(d)) {
+        itemDateStr = formatter.format(d);
+      }
+    }
+    
+    if (itemDateStr === nowStr) {
+      todayDone.push(item);
+    } else {
+      recentDone.push(item);
+    }
+  });
+
+  return {
+    todayDone,
+    partialItems,
+    recentDone: recentDone.slice(0, 10),
+    allDone: completed
+  };
 }

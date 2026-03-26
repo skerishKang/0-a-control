@@ -11,10 +11,11 @@ async function loadBoardV2() {
   }
 
   try {
-    const [stateResponse, briefsResponse, sessionsResponse] = await Promise.all([
+    const [stateResponse, briefsResponse, sessionsResponse, questsResponse] = await Promise.all([
       fetch("/api/current-state"),
       fetch("/api/briefs/latest?limit=3"),
-      fetch("/api/sessions/recent?limit=3"),
+      fetch("/api/sessions/recent?limit=50"),
+      fetch("/api/quests"),
     ]);
 
     if (!stateResponse.ok) {
@@ -25,6 +26,7 @@ async function loadBoardV2() {
     const state = payload.current_state || {};
     state.__briefs = briefsResponse.ok ? ((await briefsResponse.json()).briefs || []) : [];
     state.__sessions = sessionsResponse.ok ? ((await sessionsResponse.json()).sessions || []) : [];
+    state.__quests = questsResponse.ok ? ((await questsResponse.json()).quests || []) : [];
 
     _cachedState = state;
     const phase = getEffectivePhase(state);

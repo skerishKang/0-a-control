@@ -33,6 +33,7 @@ function renderPhaseTabs(activePhase) {
     { key: "morning", label: "아침" },
     { key: "in-progress", label: "진행" },
     { key: "end-of-day", label: "마감" },
+    { key: "history", label: "완료" },
   ];
 
   el.innerHTML = tabs
@@ -69,6 +70,10 @@ function dispatchRender(state, phase) {
     renderEndOfDay(state);
   } else if (phase === "in-progress") {
     renderInProgress(state);
+  } else if (phase === "history") {
+    if (typeof renderHistory === "function") {
+      renderHistory(state);
+    }
   } else {
     renderMorning(state);
   }
