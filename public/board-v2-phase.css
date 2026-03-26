@@ -1,0 +1,95 @@
+/* ── Phase tab navigation ── */
+.v2-topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.v2-phase-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.v2-phase-tab {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--v2-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.v2-phase-tab:hover {
+  background: rgba(45, 90, 39, 0.07);
+  color: var(--v2-text);
+}
+
+.v2-phase-tab.-active {
+  background: rgba(45, 90, 39, 0.10);
+  color: var(--v2-primary);
+  border-color: rgba(45, 90, 39, 0.22);
+  font-weight: 700;
+}
+
+.v2-status-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--v2-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.v2-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.v2-status-badge.-auto {
+  background: rgba(45, 90, 39, 0.08);
+  color: var(--v2-primary);
+}
+
+.v2-status-badge.-preview {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--v2-amber);
+}
+
+.v2-status-text {
+  color: var(--v2-text);
+  font-weight: 700;
+}
+
+.v2-status-reset-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: 3px;
+  color: var(--v2-amber);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.v2-status-reset-btn:hover {
+  background: rgba(217, 119, 6, 0.08);
+}
+
+.v2-status-reason {
+  display: block;
+  font-size: 11px;
+  color: var(--v2-text-muted);
+  opacity: 0.8;
+  font-weight: 500;
+  text-align: right;
+}
