@@ -471,14 +471,27 @@ function renderHistory(state) {
   window.filterHistory = window.filterHistory || function(type) {
     const listWrap = document.getElementById('allDoneListContainer');
     if (!listWrap) return;
+    
     const items = listWrap.querySelectorAll('.v2-list-item');
+    const visibleDates = new Set();
     let count = 0;
+    
     items.forEach(li => {
       if (type === 'all' || li.dataset.type === type) {
         li.style.display = '';
+        if (li.dataset.date) visibleDates.add(li.dataset.date);
         count++;
       } else {
         li.style.display = 'none';
+      }
+    });
+
+    const dividers = listWrap.querySelectorAll('.v2-history-divider');
+    dividers.forEach(div => {
+      if (visibleDates.has(div.dataset.date)) {
+        div.style.display = '';
+      } else {
+        div.style.display = 'none';
       }
     });
     
@@ -486,6 +499,7 @@ function renderHistory(state) {
     const summarySpan = document.getElementById('allDoneCountText');
     if (summarySpan) {
       summarySpan.textContent = type === 'all' ? `(${count}건)` : `(${type === 'Quest'? '퀘스트':'세션'} ${count}건)`;
+      summarySpan.title = type === 'all' ? '전체 항목 개수' : '필터링된 항목 개수';
     }
 
     // Toggle button active state
@@ -530,7 +544,7 @@ function renderHistory(state) {
       
       if (dateStr && dateStr !== lastDateStr) {
         html += `
-          <li data-type="all" style="padding: 12px 16px 8px; background: rgba(45, 90, 39, 0.04); border-bottom: 1px solid rgba(45, 90, 39, 0.1); color: var(--v2-primary); font-size: 11px; font-weight: 800; letter-spacing: 0.04em;">
+          <li class="v2-history-divider" data-date="${dateStr}" style="padding: 12px 16px 8px; background: rgba(45, 90, 39, 0.04); border-bottom: 1px solid rgba(45, 90, 39, 0.1); color: var(--v2-primary); font-size: 11px; font-weight: 800; letter-spacing: 0.04em;">
             ${dateStr}
           </li>
         `;
@@ -542,7 +556,7 @@ function renderHistory(state) {
       const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n')}', '${modalContent}')"`;
       
       html += `
-        <li class="v2-list-item${clickableClass}" data-type="${item.type}" ${onclick} style="padding: ${compact ? '8px 16px' : '12px 16px'}; border-bottom: 1px solid var(--v2-border);">
+        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '12px 16px'}; border-bottom: 1px solid var(--v2-border);">
           <span class="v2-item-title" style="font-size: ${compact ? '14px' : '15px'};">${escapeHtml(item.title)}</span>
           <div class="v2-history-item-meta">
             <span class="v2-history-badge ${typeClass}">${typeLabel}</span>
@@ -561,10 +575,16 @@ function renderHistory(state) {
     <div class="v2-layout">
       <aside class="v2-rail v2-rail-left">
         <section class="v2-rail-section">
-          <span class="v2-section-label">요약</span>
+          <span class="v2-section-label" title="현재 집계된 완료 상태 데이터 요약">요약</span>
           <div class="v2-rail-card v2-rail-card-accent">
-            <span class="v2-item-title">오늘 완료 ${todayDone.length}건</span>
-            <span class="v2-item-meta">부분 완료 ${partialItems.length}건 · 누적 ${allDone.length}건</span>
+            <span class="v2-item-title" title="오늘(KST) 완전히 끝난 항목">오늘 완료 ${todayDone.length}건</span>
+            <span class="v2-item-meta" style="line-height: 1.6;">
+              <span title="완전히 끝나지 않고 보류/부분 처리된 항목">부분 완료 ${partialItems.length}건</span><br/>
+              <span title="오늘을 제외한 과거 완료 항목 전체">이전 완료 ${allDone.length - todayDone.length - partialItems.length}건</span>
+            </span>
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(45, 90, 39, 0.1);">
+              <span class="v2-item-meta" style="font-weight:700; color: var(--v2-primary);" title="모든 완료 및 부분 완료 기록의 총합">총 누적 ${allDone.length}건</span>
+            </div>
           </div>
         </section>
       </aside>
@@ -572,30 +592,30 @@ function renderHistory(state) {
       <main class="v2-main v2-main-progress">
         <span class="v2-day-label">완료 내역</span>
         <div class="v2-mission-wrap" style="padding-bottom: 60px;">
-          <span class="v2-section-label">오늘 완료 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
+          <span class="v2-section-label" title="오늘(KST) 완전히 끝난 퀘스트 및 세션">오늘 완료 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
               ${renderHistoryList(todayDone, "오늘 완료된 항목이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label">부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
+          <span class="v2-section-label" title="진행 중에 부분적으로 완료 처리된 항목">부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
               ${renderHistoryList(partialItems, "부분 완료된 항목이 없습니다.")}
             </div>
           </div>
 
-          <span class="v2-section-label">최근 완료 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
+          <span class="v2-section-label" title="오늘을 제외한 최근 완료 항목 (최대 10개)">최근 완료 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
               ${renderHistoryList(recentDone, "최근 완료된 항목이 없습니다.")}
             </div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center;" title="기간 제한 없이 모든 완료 및 부분 완료 항목을 조회합니다.">
             <span class="v2-section-label" style="margin:0;">전체 완료 보기</span>
-            <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px;">
+            <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px;" title="목록 필터링">
               <button class="v2-btn-inline v2-history-filter-btn" data-filter="all" onclick="window.filterHistory('all')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
               <button class="v2-btn-inline v2-history-filter-btn" data-filter="Quest" onclick="window.filterHistory('Quest')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">퀘스트</button>
               <button class="v2-btn-inline v2-history-filter-btn" data-filter="Session" onclick="window.filterHistory('Session')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">세션</button>
