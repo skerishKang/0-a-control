@@ -555,11 +555,17 @@ function renderHistory(state) {
       const modalContent = item.description ? escapeHtml(item.description).replace(/\n/g, '\\n') : "상세 내용 없음";
       const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n')}', '${modalContent}')"`;
       
+      const titleStyle = isQuest 
+          ? `font-size: ${compact ? '14px' : '15px'}; font-weight: 700; color: var(--v2-text);`
+          : `font-size: ${compact ? '13px' : '14px'}; font-weight: 500; color: var(--v2-text-muted);`;
+      const itemBg = isQuest ? 'background: #fff;' : 'background: rgba(0,0,0,0.015); border-left: 3px solid transparent;';
+      const subtextOpacity = isQuest ? '0.85' : '0.5';
+      
       html += `
-        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border);">
+        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
           <div style="display:flex; flex-direction:column; gap:2px;">
-            <span class="v2-item-title" style="font-size: ${compact ? '14px' : '15px'};">${escapeHtml(item.title)}</span>
-            ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.85;">↳ ${escapeHtml(item.subtext)}</span>` : ''}
+            <span class="v2-item-title" style="${titleStyle}">${escapeHtml(item.title)}</span>
+            ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: ${subtextOpacity};">↳ ${escapeHtml(item.subtext)}</span>` : ''}
           </div>
           <div class="v2-history-item-meta">
             <span class="v2-history-badge ${typeClass}">${typeLabel}</span>
