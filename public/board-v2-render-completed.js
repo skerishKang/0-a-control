@@ -2,43 +2,43 @@ function renderHistory(state) {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
 
-  const { todayDone, partialItems, recentDone, allDone } = pickCompletedItems(state);
+  const { todayTasks, recentTasks, todayLogs, recentLogs, allTasks, allLogs } = pickCompletedItems(state);
+  const totalCompleted = allTasks.length + allLogs.length;
 
   // Filter Helper Function
   window.filterHistory = window.filterHistory || function(type) {
-    const listWrap = document.getElementById('allDoneListContainer');
-    if (!listWrap) return;
+    const listWraps = document.querySelectorAll('.v2-history-list-container');
     
-    const items = listWrap.querySelectorAll('.v2-list-item');
-    const visibleDates = new Set();
-    let count = 0;
-    
-    items.forEach(li => {
-      if (type === 'all' || li.dataset.type === type) {
-        li.style.display = '';
-        if (li.dataset.date) visibleDates.add(li.dataset.date);
-        count++;
-      } else {
-        li.style.display = 'none';
-      }
-    });
+    listWraps.forEach(listWrap => {
+      const items = listWrap.querySelectorAll('.v2-list-item');
+      const visibleDates = new Set();
+      let count = 0;
+      
+      items.forEach(li => {
+        const itemType = li.dataset.type; // Quest, Session, Log
+        const isMatch = (type === 'all') || 
+                        (type === 'tasks' && (itemType === 'Quest' || itemType === 'Session')) ||
+                        (type === 'logs' && itemType === 'Log');
 
-    const dividers = listWrap.querySelectorAll('.v2-history-divider');
-    dividers.forEach(div => {
-      if (visibleDates.has(div.dataset.date)) {
-        div.style.display = '';
-      } else {
-        div.style.display = 'none';
-      }
+        if (isMatch) {
+          li.style.display = '';
+          if (li.dataset.date) visibleDates.add(li.dataset.date);
+          count++;
+        } else {
+          li.style.display = 'none';
+        }
+      });
+
+      const dividers = listWrap.querySelectorAll('.v2-history-divider');
+      dividers.forEach(div => {
+        if (visibleDates.has(div.dataset.date)) {
+          div.style.display = '';
+        } else {
+          div.style.display = 'none';
+        }
+      });
     });
     
-    // Update summary count if details open
-    const summarySpan = document.getElementById('allDoneCountText');
-    if (summarySpan) {
-      summarySpan.textContent = type === 'all' ? `(${count}건)` : `(${type === 'Quest'? '퀘스트':'세션'} ${count}건)`;
-      summarySpan.title = type === 'all' ? '전체 항목 개수' : '필터링된 항목 개수';
-    }
-
     // Toggle button active state
     document.querySelectorAll('.v2-history-filter-btn').forEach(btn => {
       if (btn.dataset.filter === type) {
@@ -50,7 +50,6 @@ function renderHistory(state) {
       }
     });
 
-    // Save global state across 30s polls
     window.__v2HistoryFilter = type;
   };
 
@@ -60,21 +59,22 @@ function renderHistory(state) {
     }
     
     let lastDateStr = null;
-    let html = `<ul class="v2-list" style="margin:0;">`;
+    let html = `<ul class="v2-list v2-history-list-container" style="margin:0;">`;
     
     items.forEach(item => {
       const isQuest = item.type === 'Quest';
+      const isLog = item.type === 'Log' || item.isLog;
       const typeClass = isQuest ? 'v2-history-badge-quest' : 'v2-history-badge-session';
-      const typeLabel = isQuest ? '퀘스트' : '세션';
+      const typeLabel = isQuest ? '퀘스트' : (isLog ? '로그' : '세션');
       
       const isDone = item.verdict === 'done';
       const statusClass = isDone ? 'v2-history-badge-done' : 'v2-history-badge-partial';
-      const statusLabel = isDone ? '완료' : '부분';
+      const statusLabel = isDone ? (isLog ? '기록' : '완료') : '부분';
       
       let dateStr = '';
       let timeStr = '';
       if (item.completedAt) {
-        const fullStr = String(item.completedAt); // e.g., "2026-03-26T14:30:00"
+        const fullStr = String(item.completedAt); 
         dateStr = fullStr.slice(0, 10);
         timeStr = fullStr.length > 11 ? fullStr.slice(11, 16).replace('T', ' ') : '';
       }
@@ -89,14 +89,14 @@ function renderHistory(state) {
       }
       
       const clickableClass = " v2-modal-clickable";
-      const modalContent = item.description ? escapeHtml(item.description).replace(/\n/g, '\\n') : "상세 내용 없음";
-      const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n')}', '${modalContent}')"`;
+      const modalContent = item.description ? escapeHtml(item.description).replace(/\n/g, '\\n').replace(/'/g, "\\'") : "상세 내용 없음";
+      const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n').replace(/'/g, "\\'")}', '${modalContent}')"`;
       
-      const titleStyle = isQuest 
+      const titleStyle = !isLog 
           ? `font-size: ${compact ? '14px' : '15px'}; font-weight: 700; color: var(--v2-text);`
-          : `font-size: ${compact ? '13px' : '14px'}; font-weight: 500; color: var(--v2-text-muted);`;
-      const itemBg = isQuest ? 'background: #fff;' : 'background: rgba(0,0,0,0.015); border-left: 3px solid transparent;';
-      const subtextOpacity = isQuest ? '0.85' : '0.5';
+          : `font-size: ${compact ? '13px' : '14px'}; font-weight: 500; color: var(--v2-text-muted); opacity: 0.8;`;
+      const itemBg = !isLog ? 'background: #fff;' : 'background: rgba(0,0,0,0.01); border-left: 3px solid transparent;';
+      const subtextOpacity = !isLog ? '0.85' : '0.5';
       
       html += `
         <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
@@ -105,8 +105,8 @@ function renderHistory(state) {
             ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: ${subtextOpacity};">↳ ${escapeHtml(item.subtext)}</span>` : ''}
           </div>
           <div class="v2-history-item-meta">
-            <span class="v2-history-badge ${typeClass}">${typeLabel}</span>
-            <span class="v2-history-badge ${statusClass}">${statusLabel}</span>
+            <span class="v2-history-badge ${typeClass}" style="${isLog ? 'opacity: 0.7;' : ''}">${typeLabel}</span>
+            <span class="v2-history-badge ${statusClass}" style="${isLog ? 'background: rgba(0,0,0,0.05); color: #666;' : ''}">${statusLabel}</span>
             <span style="opacity: 0.8;">${timeStr || dateStr}</span>
           </div>
         </li>
@@ -121,68 +121,60 @@ function renderHistory(state) {
     <div class="v2-layout">
       <aside class="v2-rail v2-rail-left">
         <section class="v2-rail-section">
-          <span class="v2-section-label" title="현재 집계된 완료 상태 데이터 요약">요약</span>
+          <span class="v2-section-label">이력 요약</span>
           <div class="v2-rail-card v2-rail-card-accent">
-            <span class="v2-item-title" title="오늘(KST) 완전히 끝난 항목">오늘 완료 ${todayDone.length}건</span>
-            <span class="v2-item-meta" style="line-height: 1.6;">
-              <span title="완전히 끝나지 않고 보류/부분 처리된 항목">부분 완료<span style="opacity:0.6; font-size:0.9em; font-weight:normal;">(보류)</span> ${partialItems.length}건</span><br/>
-              <span title="오늘을 제외한 과거 완료 항목 전체">이전 완료<span style="opacity:0.6; font-size:0.9em; font-weight:normal;">(과거)</span> ${allDone.length - todayDone.length - partialItems.length}건</span>
-            </span>
-            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(45, 90, 39, 0.1);">
-              <span class="v2-item-meta" style="font-weight:700; color: var(--v2-primary);" title="모든 완료 및 부분 완료 기록의 총합">총 누적 기록 ${allDone.length}건</span>
+            <span class="v2-item-title">완료된 작업 ${allTasks.length}건</span>
+            <span class="v2-item-meta">오늘 ${todayTasks.length}건 / 최근 ${recentTasks.length}건</span>
+            <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(45, 90, 39, 0.1);">
+              <span class="v2-item-title" style="font-size:12px; opacity:0.8;">참고 세션 로그 ${allLogs.length}건</span>
+              <span class="v2-item-meta" style="font-size:11px;">전체 누적 기록 ${totalCompleted}건</span>
             </div>
           </div>
         </section>
       </aside>
 
       <main class="v2-main v2-main-progress">
-        <span class="v2-day-label">완료된 작업 내역</span>
-        <p style="margin: 6px 0 24px 0; font-size: 13px; color: var(--v2-text-muted); line-height: 1.5;">
-          단순한 에이전트 로그가 아닌, <b>완전히 끝마친 퀘스트와 세션 결과물</b>을 돌아보는 공간입니다.
-        </p>
-        <div class="v2-mission-wrap" style="padding-bottom: 60px;">
-          <span class="v2-section-label" title="오늘(KST) 완전히 끝난 퀘스트 및 세션">오늘 완료한 작업 <span style="font-weight:normal; opacity:0.8;">${todayDone.length}건</span></span>
-          <div class="v2-progress-stack" style="margin-bottom: 32px;">
-            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(todayDone, "오늘 완료된 작업이 없습니다.")}
-            </div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 24px;">
+          <div>
+            <span class="v2-day-label">완료 및 기록</span>
+            <p style="margin: 6px 0 0 0; font-size: 13px; color: var(--v2-text-muted); line-height: 1.5;">
+              실행된 퀘스트 결과와 기술적인 세션 로그를 구분하여 관리합니다.
+            </p>
           </div>
-
-          <span class="v2-section-label" title="진행 중에 부분적으로 완료 처리된 항목">보류 및 부분 완료 <span style="font-weight:normal; opacity:0.8;">${partialItems.length}건</span></span>
-          <div class="v2-progress-stack" style="margin-bottom: 32px;">
-            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(partialItems, "보류되거나 부분 완료된 작업이 없습니다.")}
-            </div>
-          </div>
-
-          <span class="v2-section-label" title="오늘을 제외한 최근 완료 항목 (최대 10개)">최근 완료 기록 <span style="font-weight:normal; opacity:0.8;">${recentDone.length}건</span></span>
-          <div class="v2-progress-stack" style="margin-bottom: 32px;">
-            <div class="v2-rail-card" style="padding: 0; overflow: hidden;">
-              ${renderHistoryList(recentDone, "최근 완료된 작업이 없습니다.")}
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center;" title="기간 제한 없이 모든 완료 및 부분 완료 항목을 조회합니다.">
-            <span class="v2-section-label" style="margin:0;">전체 완료 기록 보기</span>
-            <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px;" title="목록 필터링">
-              <button class="v2-btn-inline v2-history-filter-btn" data-filter="all" onclick="window.filterHistory('all')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
-              <button class="v2-btn-inline v2-history-filter-btn" data-filter="Quest" onclick="window.filterHistory('Quest')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">퀘스트</button>
-              <button class="v2-btn-inline v2-history-filter-btn" data-filter="Session" onclick="window.filterHistory('Session')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">세션</button>
-            </div>
-          </div>
-          <div class="v2-progress-stack" style="margin-top: 14px;">
-            <details style="cursor: pointer; background: var(--v2-bg-elevated); border-radius: 8px; border: 1px solid var(--v2-border); overflow: hidden;">
-              <summary class="v2-item-title" style="margin:0; padding: 16px; outline: none; user-select: none;">
-                전체 리스트 펼치기 <span id="allDoneCountText" style="opacity: 0.8; font-weight: normal;">(${allDone.length}건)</span>
-              </summary>
-              <div id="allDoneListContainer" style="padding: 0; border-top: 1px solid var(--v2-border);">
-                ${renderHistoryList(allDone, "완료된 항목이 없습니다.", true)}
-              </div>
-            </details>
+          <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px; margin-top: 4px;">
+            <button class="v2-btn-inline v2-history-filter-btn" data-filter="all" onclick="window.filterHistory('all')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
+            <button class="v2-btn-inline v2-history-filter-btn" data-filter="tasks" onclick="window.filterHistory('tasks')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">작업</button>
+            <button class="v2-btn-inline v2-history-filter-btn" data-filter="logs" onclick="window.filterHistory('logs')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">로그</button>
           </div>
         </div>
-      </main>
 
+        <div class="v2-mission-wrap" style="padding-bottom: 60px;">
+          <!-- 1. Completed Tasks Section -->
+          <span class="v2-section-label" style="color: var(--v2-primary);">완료된 작업 (Quests/Sessions)</span>
+          <div class="v2-progress-stack" style="margin-bottom: 32px;">
+            <div class="v2-rail-card" style="padding: 0; overflow: hidden; border-top: 2px solid var(--v2-primary);">
+              ${renderHistoryList([...todayTasks, ...recentTasks], "완료된 작업이 없습니다.")}
+            </div>
+          </div>
+
+          <!-- 2. Session Logs Section -->
+          <span class="v2-section-label">참고 기록 / 세션 로그</span>
+          <div class="v2-progress-stack" style="margin-bottom: 32px;">
+            <div class="v2-rail-card" style="padding: 0; overflow: hidden; opacity: 0.9;">
+              ${renderHistoryList([...todayLogs, ...recentLogs], "참가 기록이 없습니다.")}
+            </div>
+          </div>
+
+          <!-- 3. Overall History Details -->
+          <div style="margin-top: 40px;">
+            <details style="cursor: pointer; background: var(--v2-bg-elevated); border-radius: 8px; border: 1px solid var(--v2-border); overflow: hidden;">
+              <summary class="v2-item-title" style="margin:0; padding: 16px; outline: none; user-select: none; font-size: 13px;">
+                전체 누적 리스트 펼치기 <span style="opacity: 0.6; font-weight: normal;">(총 ${totalCompleted}건)</span>
+              </summary>
+              <div style="padding: 0; border-top: 1px solid var(--v2-border);">
+                ${renderHistoryList([...allTasks, ...allLogs], "데이터가 없습니다.", true)}
+              </div>
+            </details>
       <aside class="v2-rail v2-rail-right">
         ${renderQuickInputSection()}
       </aside>

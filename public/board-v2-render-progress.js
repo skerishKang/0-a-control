@@ -5,7 +5,8 @@ function renderInProgress(state) {
   const mission = pickMainMission(state);
   const quest = pickCurrentQuest(state);
   const unfinishedItems = pickUnfinishedItems(state);
-  const dueItems = pickDueItems(state);
+  const urgentItems = pickUrgentUpcoming(state);
+  const overdueItems = pickOverdue(state);
   const briefs = pickBriefs(state);
   const sessions = pickSessions(state);
   const recentVerdict = pickRecentVerdict(state);
@@ -157,17 +158,26 @@ function renderInProgress(state) {
           </div>
         </section>
 
+        ${overdueItems.length > 0 ? `
         <section class="v2-rail-section">
-          <span class="v2-section-label">전체 계획 및 보류</span>
+          <span class="v2-section-label" style="color: var(--v2-amber);">기한 지남 / 검토 필요</span>
+          <div class="v2-rail-card" style="border-left: 3px solid var(--v2-amber);">
+            ${renderList(overdueItems, "", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }), renderOverdueActions)}
+          </div>
+        </section>
+        ` : ""}
+
+        <section class="v2-rail-section">
+          <span class="v2-section-label">기한 임박</span>
           <div class="v2-rail-card">
-            ${renderList(unfinishedItems, "남은 계획 항목이 없습니다.", (item) => ({ text: item.project_key || "No Project", isDue: false }))}
+            ${renderList(urgentItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
           </div>
         </section>
 
         <section class="v2-rail-section">
-          <span class="v2-section-label">기한 압박</span>
+          <span class="v2-section-label">전체 계획 및 보류</span>
           <div class="v2-rail-card">
-            ${renderList(dueItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
+            ${renderList(unfinishedItems, "남은 계획 항목이 없습니다.", (item) => ({ text: item.project_key || "No Project", isDue: false }))}
           </div>
         </section>
 

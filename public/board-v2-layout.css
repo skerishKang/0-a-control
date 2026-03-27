@@ -51,10 +51,20 @@ body.v2-body {
 
 .v2-topbar-title {
   color: var(--v2-text-muted);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.v2-clock {
+  font-size: 11px;
+  color: var(--v2-text-muted);
+  font-weight: 600;
+  background: rgba(45, 90, 39, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 .v2-topbar-link {
@@ -103,6 +113,6 @@ body.v2-body {
   grid-area: main;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 40px 56px;
+  justify-content: flex-start;
+  padding: 60px 56px 40px;
 }

@@ -3,7 +3,8 @@ function renderMorning(state) {
   if (!root) return;
 
   const mission = pickMainMission(state);
-  const dueItems = pickDueItems(state);
+  const urgentItems = pickUrgentUpcoming(state);
+  const overdueItems = pickOverdue(state);
   const unfinishedItems = pickUnfinishedItems(state);
   const briefs = pickBriefs(state);
   const confirmed = state.confirmed_starting_point || null;
@@ -29,10 +30,19 @@ function renderMorning(state) {
   root.innerHTML = `
     <div class="v2-layout">
       <aside class="v2-rail v2-rail-left">
+        ${overdueItems.length > 0 ? `
+        <section class="v2-rail-section">
+          <span class="v2-section-label" style="color: var(--v2-amber);">기한 지남 / 검토 필요</span>
+          <div class="v2-rail-card" style="border-left: 3px solid var(--v2-amber);">
+            ${renderList(overdueItems, "", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }), renderOverdueActions)}
+          </div>
+        </section>
+        ` : ""}
+
         <section class="v2-rail-section">
           <span class="v2-section-label">기한 임박</span>
           <div class="v2-rail-card">
-            ${renderList(dueItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
+            ${renderList(urgentItems, "마감 기한이 있는 항목이 없습니다.", (item) => ({ text: item.due_at || "기한 정보 없음", isDue: true }))}
           </div>
         </section>
 

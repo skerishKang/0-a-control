@@ -318,7 +318,85 @@ window.boardV2CloseModal = function boardV2CloseModal() {
   }
 };
 
+window.boardV2Refresh = async () => {
+  await loadBoardV2();
+};
+
+window.boardV2ActionOverdueDone = async (id, title) => {
+  // Mechanism: Send command like "done [title]" to natural language parser
+  try {
+    const text = `done ${title}`;
+    const resp = await fetch('/api/bridge/quick-input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (resp.ok) await window.boardV2Refresh();
+  } catch (err) {
+    console.error("Action Done failed:", err);
+  }
+};
+
+window.boardV2ActionOverdueReschedule = async (id, title) => {
+  // Move to today: "today [title]"
+  try {
+    const text = `today ${title}`;
+    const resp = await fetch('/api/bridge/quick-input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (resp.ok) await window.boardV2Refresh();
+  } catch (err) {
+    console.error("Action Reschedule failed:", err);
+  }
+};
+
+window.boardV2ActionOverdueHold = async (id, title) => {
+  // Move to hold: "hold [title]"
+  try {
+    const text = `hold ${title}`;
+    const resp = await fetch('/api/bridge/quick-input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (resp.ok) await window.boardV2Refresh();
+  } catch (err) {
+    console.error("Action Hold failed:", err);
+  }
+};
+
+function startClock() {
+  const clockEl = document.getElementById("v2Clock");
+  if (!clockEl) return;
+
+  function update() {
+    const now = new Date();
+    // Asia/Seoul formatting
+    const dateStr = now.toLocaleDateString('ko-KR', { 
+      timeZone: 'Asia/Seoul', 
+      month: 'long', 
+      day: 'numeric', 
+      weekday: 'short' 
+    });
+    const timeStr = now.toLocaleTimeString('ko-KR', { 
+      timeZone: 'Asia/Seoul', 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit',
+      hour12: false 
+    });
+    clockEl.textContent = `${dateStr} ${timeStr}`;
+  }
+
+  console.log("Board V2 Clock started.");
+  update();
+  setInterval(update, 1000);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  startClock();
   await loadBoardV2();
   startBoardV2Polling();
 });

@@ -1,4 +1,4 @@
-function renderList(items, emptyText, metaFormatter) {
+function renderList(items, emptyText, metaFormatter, itemActionsRenderer) {
   if (!items || !items.length) {
     return `<p class="v2-empty">${escapeHtml(emptyText)}</p>`;
   }
@@ -18,6 +18,8 @@ function renderList(items, emptyText, metaFormatter) {
         const hasBucketLabel = bucket && bucketLabel && bucket !== 'active' && bucket !== 'done';
         const bucketClass = hasBucketLabel ? ` v2-plan-badge-${bucket}` : "";
 
+        const actionsHtml = itemActionsRenderer ? itemActionsRenderer(item) : "";
+
         return `
           <li class="v2-list-item${clickableClass}" ${onclick}>
             <div style="display:flex; align-items:flex-start; gap:0;">
@@ -25,6 +27,7 @@ function renderList(items, emptyText, metaFormatter) {
               <span class="v2-item-title" style="flex:1;">${escapeHtml(item.title)}</span>
             </div>
             <span class="v2-item-meta${meta.isDue ? ' -due' : ''}">${escapeHtml(meta.text)}</span>
+            ${actionsHtml}
           </li>
         `;
       }).join("")}
@@ -81,5 +84,16 @@ function renderQuickInputSection() {
         <button type="button" class="v2-btn v2-btn-primary v2-btn-inline" onclick="window.boardV2SubmitQuickInput()">전송</button>
       </div>
     </section>
+  `;
+}
+
+function renderOverdueActions(item) {
+  const titleEscaped = escapeHtml(item.title).replace(/'/g, "\\'");
+  return `
+    <div class="v2-item-actions">
+      <button class="v2-action-btn -done" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueDone('${item.id}', '${titleEscaped}')">완료</button>
+      <button class="v2-action-btn -move" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueReschedule('${item.id}', '${titleEscaped}')">재배치</button>
+      <button class="v2-action-btn -hold" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueHold('${item.id}', '${titleEscaped}')">보류</button>
+    </div>
   `;
 }
