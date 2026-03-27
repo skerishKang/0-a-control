@@ -84,16 +84,21 @@ function pickOverdue(state) {
 function pickCompletedItems(state) {
   const allQuests = state.__quests || [];
   const allSessions = Array.isArray(state.__sessions) ? state.__sessions : [];
+  const allPlans = state.__plans || [];
   const todayDoneQuestsRaw = state.today_done_quests || [];
 
   const tasks = [];
   const logs = [];
 
-  // 1. Quests from __quests (Detailed)
   const questIdsInCompleted = new Set();
+  const planIdsInCompleted = new Set();
+
+  // 1. Quests from __quests
   allQuests.forEach(q => {
     if (q.status === 'done' || q.status === 'partial') {
       questIdsInCompleted.add(q.id);
+      if (q.plan_item_id) planIdsInCompleted.add(q.plan_item_id);
+      
       let subtextVal = q.why_now || q.parent_title || "";
       if (!subtextVal && q.completion_criteria) {
         subtextVal = q.completion_criteria.length > 28 ? q.completion_criteria.slice(0, 28) + "..." : q.completion_criteria;
@@ -105,13 +110,30 @@ function pickCompletedItems(state) {
         completedAt: q.updated_at,
         type: 'Quest',
         verdict: q.status,
+        priority: q.status === 'done' ? 10 : 30, // 10: Done Quest, 30: Partial
         description: q.verdict_reason || q.reason || q.completion_criteria || "상세 내용 없음",
         subtext: subtextVal
       });
     }
   });
 
-  // 2. Fallback to today_done_quests (Raw)
+  // 2. Plan Items from __plans (that are NOT already represented by a quest)
+  allPlans.forEach(p => {
+    if ((p.status === 'done' || p.status === 'completed') && !planIdsInCompleted.has(p.id)) {
+      tasks.push({
+        id: `p-${p.id}`,
+        title: p.title,
+        completedAt: p.updated_at || p.created_at,
+        type: 'Plan',
+        verdict: 'done',
+        priority: 20, // 20: Done Plan Item
+        description: p.description || p.priority_reason || "플랜 항목 완료",
+        subtext: p.project_key ? `[${p.project_key}] Plan Item` : "Plan Item"
+      });
+    }
+  });
+
+  // 3. Fallback to today_done_quests (Raw)
   todayDoneQuestsRaw.forEach(q => {
     if (!questIdsInCompleted.has(q.id)) {
       tasks.push({
@@ -120,13 +142,14 @@ function pickCompletedItems(state) {
         completedAt: q.done_at || q.updated_at || new Date().toISOString(),
         type: 'Quest',
         verdict: 'done',
+        priority: 10,
         description: q.summary || "상세 내용 없음",
         subtext: "Today's Done List"
       });
     }
   });
 
-  // 3. Sessions
+  // 4. Sessions
   allSessions.forEach(s => {
     const hasVerdict = s.quest_verdict_status === 'done' || s.quest_verdict_status === 'partial';
     const isClosed = s.status === 'closed';
@@ -145,6 +168,7 @@ function pickCompletedItems(state) {
         completedAt: s.ended_at || s.updated_at || s.started_at,
         type: 'Session',
         verdict: s.quest_verdict_status,
+        priority: s.quest_verdict_status === 'done' ? 15 : 35, // Session versions of tasks
         description: s.summary_md || `Agent: ${s.agent_name || 'unknown'}`,
         subtext: subtextVal
       });
@@ -161,6 +185,7 @@ function pickCompletedItems(state) {
         completedAt: s.ended_at || s.updated_at || s.started_at,
         type: 'Log',
         verdict: 'done',
+        priority: 100, // 100: Logs (last)
         description: s.summary_md || `Agent: ${s.agent_name || 'unknown'}`,
         subtext: `(기록) ${subtextVal}`,
         isLog: true
@@ -169,9 +194,14 @@ function pickCompletedItems(state) {
   });
 
   // Sort and Partition
-  const sortByDate = (a, b) => new Date(b.completedAt) - new Date(a.completedAt);
-  tasks.sort(sortByDate);
-  logs.sort(sortByDate);
+  // Primary: Priority (ascending), Secondary: Date (descending)
+  const masterSort = (a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return new Date(b.completedAt) - new Date(a.completedAt);
+  };
+  
+  tasks.sort(masterSort);
+  logs.sort(masterSort);
 
   const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' });
   const nowStr = formatter.format(new Date());

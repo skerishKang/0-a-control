@@ -17,7 +17,7 @@ function renderHistory(state) {
       items.forEach(li => {
         const itemType = li.dataset.type; // Quest, Session, Log
         const isMatch = (type === 'all') || 
-                        (type === 'tasks' && (itemType === 'Quest' || itemType === 'Session')) ||
+                        (type === 'tasks' && (itemType === 'Quest' || itemType === 'Session' || itemType === 'Plan')) ||
                         (type === 'logs' && itemType === 'Log');
 
         if (isMatch) {
@@ -63,9 +63,10 @@ function renderHistory(state) {
     
     items.forEach(item => {
       const isQuest = item.type === 'Quest';
+      const isPlan = item.type === 'Plan';
       const isLog = item.type === 'Log' || item.isLog;
-      const typeClass = isQuest ? 'v2-history-badge-quest' : 'v2-history-badge-session';
-      const typeLabel = isQuest ? '퀘스트' : (isLog ? '로그' : '세션');
+      const typeClass = isQuest ? 'v2-history-badge-quest' : (isPlan ? 'v2-history-badge-plan' : 'v2-history-badge-session');
+      const typeLabel = isQuest ? '퀘스트' : (isPlan ? '플랜' : (isLog ? '로그' : '세션'));
       
       const isDone = item.verdict === 'done';
       const statusClass = isDone ? 'v2-history-badge-done' : 'v2-history-badge-partial';
@@ -124,7 +125,7 @@ function renderHistory(state) {
           <span class="v2-section-label">이력 요약</span>
           <div class="v2-rail-card v2-rail-card-accent">
             <span class="v2-item-title">완료된 작업 ${allTasks.length}건</span>
-            <span class="v2-item-meta">오늘 ${todayTasks.length}건 / 최근 ${recentTasks.length}건</span>
+            <span class="v2-item-meta">퀘스트 및 플랜 항목 포함</span>
             <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(45, 90, 39, 0.1);">
               <span class="v2-item-title" style="font-size:12px; opacity:0.8;">참고 세션 로그 ${allLogs.length}건</span>
               <span class="v2-item-meta" style="font-size:11px;">전체 누적 기록 ${totalCompleted}건</span>
@@ -150,7 +151,7 @@ function renderHistory(state) {
 
         <div class="v2-mission-wrap" style="padding-bottom: 60px;">
           <!-- 1. Completed Tasks Section -->
-          <span class="v2-section-label" style="color: var(--v2-primary);">완료된 작업 (Quests/Sessions)</span>
+          <span class="v2-section-label" style="color: var(--v2-primary);">완료된 작업 (Quest / Plan / Session)</span>
           <div class="v2-progress-stack" style="margin-bottom: 32px;">
             <div class="v2-rail-card" style="padding: 0; overflow: hidden; border-top: 2px solid var(--v2-primary);">
               ${renderHistoryList([...todayTasks, ...recentTasks], "완료된 작업이 없습니다.")}

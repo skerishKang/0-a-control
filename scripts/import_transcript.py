@@ -100,7 +100,7 @@ def main() -> None:
     if not transcript_path.exists():
         raise SystemExit(f"transcript file not found: {transcript_path}")
 
-    raw = transcript_path.read_text(errors="replace")
+    raw = transcript_path.read_text(encoding="utf-8", errors="replace")
     content = strip_ansi(raw).strip()
     if not content:
         raise SystemExit(0)
