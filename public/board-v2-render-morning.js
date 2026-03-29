@@ -55,17 +55,17 @@ function renderMorning(state) {
       </aside>
 
       <main class="v2-main">
-        <span class="v2-day-label">${escapeHtml(getDayLabel())}</span>
-        <div class="v2-mission-wrap">
-          <span class="v2-section-label">오늘의 주 임무</span>
-          <h1 class="v2-mission-title">${escapeHtml(mission.title)}</h1>
-          <div class="v2-mission-reason-wrap">
-            <span class="v2-mission-reason-label">이유</span>
-            <p class="v2-mission-reason">${escapeHtml(mission.reason)}</p>
+        <span class="v2-day-label">${escapeHtml(getDayLabel())} 아침 작전 회의</span>
+        <div class="v2-mission-wrap" style="border-top: 4px solid var(--v2-brand); padding-top: 24px;">
+          <span class="v2-section-label" style="font-size: 16px; margin-bottom: 12px; display: inline-block;">오늘 가장 전략적인 목표 한 가지</span>
+          <h1 class="v2-mission-title" style="font-size: 36px; line-height: 1.3; margin-bottom: 24px;">${escapeHtml(mission.title)}</h1>
+          <div class="v2-mission-reason-wrap" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 8px;">
+            <span class="v2-mission-reason-label" style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--v2-brand);">왜 이 목표를 가장 먼저 해야 하나? (우선순위 이유)</span>
+            <p class="v2-mission-reason" style="font-size: 16px; line-height: 1.6; color: var(--v2-foreground); margin: 0;">${escapeHtml(mission.reason)}</p>
           </div>
-          <div class="v2-start-actions" style="margin-top: 40px; max-width: 320px;">
-            <button class="v2-btn v2-btn-primary" type="button" onclick="window.boardV2StartQuestFromMission()" ${hasCurrentQuest ? "disabled" : ""}>
-              ${hasCurrentQuest ? "진행 중인 작업 있음" : "주 임무로 퀘스트 시작"}
+          <div class="v2-start-actions" style="margin-top: 40px;">
+            <button class="v2-btn v2-btn-primary" type="button" style="font-size: 18px; padding: 16px 32px;" onclick="window.boardV2StartQuestFromMission()" ${hasCurrentQuest ? "disabled" : ""}>
+              ${hasCurrentQuest ? "진행 중인 활성 작업 존재" : "이 목표를 현재 퀘스트로 올려서 실행 개시"}
             </button>
           </div>
         </div>
