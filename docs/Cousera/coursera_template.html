@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coursera Style Lecture Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --coursera-blue: #0056D2;
+            --coursera-bg: #F5F7F8;
+            --text-main: #1F1F1F;
+            --text-muted: #636363;
+            --sidebar-bg: #FFFFFF;
+            --border-color: #D3D3D3;
+            --active-item-bg: #E8F0FE;
+            --accent-green: #2D8A2D;
+            --accent-orange: #D97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--coursera-bg);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--coursera-blue);
+        }
+
+        .course-nav {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: #F0F0F0;
+        }
+
+        .nav-item.active {
+            background-color: var(--active-item-bg);
+            border-left-color: var(--coursera-blue);
+            font-weight: 600;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .header {
+            background-color: #FFF;
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .study-card {
+            background: #FFF;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--coursera-blue);
+        }
+
+        .takeaway {
+            border-left: 5px solid var(--coursera-blue);
+            background: #F0F7FF;
+            padding: 20px;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .concept-card {
+            padding: 15px;
+            border: 1px solid #EEE;
+            border-radius: 8px;
+            background: #FAFAFA;
+        }
+
+        .concept-card h4 {
+            margin-bottom: 8px;
+            color: var(--coursera-blue);
+        }
+
+        .quiz-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #FFF9F0;
+            border: 1px solid #FFE4B5;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .quiz-answer {
+            color: var(--accent-orange);
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .quiz-answer span {
+            filter: blur(4px);
+            transition: filter 0.3s;
+        }
+
+        .quiz-answer:hover span {
+            filter: blur(0);
+        }
+
+        .transcript-container {
+            margin-top: 20px;
+        }
+
+        .transcript-line {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">Study Modules</div>
+        <nav class="course-nav">
+            <div class="nav-item active">Lecture 1: Overview</div>
+            <div class="nav-item">Lecture 2: Key Mechanics</div>
+            <div class="nav-item">Lecture 3: Deep Dive</div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="header">
+            <h1>Course Study Guide</h1>
+            <div class="coursera-logo" style="width: 100px; height: 20px; background: var(--coursera-blue); border-radius: 2px; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">STUDY MODE</div>
+        </header>
+
+        <div class="content-container">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">[Insert Lecture Title]</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Summary and Key Insights</p>
+
+            <!-- Key Takeaway -->
+            <div class="takeaway">
+                <strong>핵심 요약:</strong> 이 섹션에는 강의의 가장 중요한 결론이나 핵심 메시지가 들어갑니다.
+            </div>
+
+            <!-- Concept Breakdown -->
+            <div class="study-card">
+                <div class="section-title">💡 주요 개념 정리</div>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>개념 A</h4>
+                        <p>이 개념의 정의와 핵심적인 설명이 여기에 들어갑니다.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>개념 B</h4>
+                        <p>두 번째 핵심 개념에 대한 설명입니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Summary -->
+            <div class="study-card">
+                <div class="section-title">📝 강의 세부 내용</div>
+                <div class="transcript-container">
+                    <p class="transcript-line">• <strong>포인트 1:</strong> 강의에서 중요하게 다룬 첫 번째 세부 사항입니다.</p>
+                    <p class="transcript-line">• <strong>포인트 2:</strong> 두 번째 세부 사항이며, 관련 예시를 포함할 수 있습니다.</p>
+                    <p class="transcript-line">• <strong>결론:</strong> 해당 단락의 결론입니다.</p>
+                </div>
+            </div>
+
+            <!-- Quiz / Review -->
+            <div class="study-card">
+                <div class="section-title">❓ 복습 퀴즈</div>
+                <div class="quiz-item">
+                    <div class="quiz-question">Q: 강의에서 강조한 가장 중요한 원칙은 무엇인가요?</div>
+                    <div class="quiz-answer">A: <span>이 부분에 마우스를 올리면 정답이 보입니다.</span></div>
+                </div>
+            </div>
+
+            <!-- Original Content (Collapsible) -->
+            <div class="study-card" style="background: #F9F9F9; opacity: 0.8;">
+                <details>
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-muted);">전체 원문 보기 (Original Transcript)</summary>
+                    <div class="transcript-container" style="margin-top: 15px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; color: #444;">
+[사용자가 제공한 원문 텍스트가 여기에 그대로 들어갑니다]
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

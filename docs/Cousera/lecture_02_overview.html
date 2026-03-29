@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Guide: 1. Introduction to Google AI Essentials - 1.2 Google AI Essentials Overview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --coursera-blue: #0056D2;
+            --coursera-bg: #F5F7F8;
+            --text-main: #1F1F1F;
+            --text-muted: #636363;
+            --sidebar-bg: #FFFFFF;
+            --border-color: #D3D3D3;
+            --active-item-bg: #E8F0FE;
+            --accent-green: #2D8A2D;
+            --accent-orange: #D97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--coursera-bg);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--coursera-blue);
+        }
+
+        .course-nav {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: block;
+        }
+
+        .nav-item:hover {
+            background-color: #F0F0F0;
+        }
+
+        .nav-item.active {
+            background-color: var(--active-item-bg);
+            border-left-color: var(--coursera-blue);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .header {
+            background-color: #FFF;
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .study-card {
+            background: #FFF;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--coursera-blue);
+        }
+
+        .takeaway {
+            border-left: 5px solid var(--coursera-blue);
+            background: #F0F7FF;
+            padding: 20px;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .concept-card {
+            padding: 15px;
+            border: 1px solid #EEE;
+            border-radius: 8px;
+            background: #FAFAFA;
+        }
+
+        .concept-card h4 {
+            margin-bottom: 8px;
+            color: var(--coursera-blue);
+        }
+
+        .quiz-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #FFF9F0;
+            border: 1px solid #FFE4B5;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .quiz-answer {
+            color: var(--accent-orange);
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .quiz-answer span {
+            filter: blur(4px);
+            transition: filter 0.3s;
+        }
+
+        .quiz-answer:hover span {
+            filter: blur(0);
+        }
+
+        .transcript-container {
+            margin-top: 20px;
+        }
+
+        .transcript-line {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">1. Introduction to Google AI Essentials</div>
+        <nav class="course-nav">
+            <a href="lecture_01_intro.html" class="nav-item">1.1 Welcome to the Course</a>
+            <div class="nav-item active">1.2 Google AI Essentials Overview</div>
+            <a href="lecture_03_ai_definition.html" class="nav-item">1.3 AI and the Future of Work</a>
+            <div class="nav-item disabled" style="opacity: 0.5;">Next (Upcoming)</div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="header">
+            <h1>Course 1: Introduction to AI</h1>
+            <div class="coursera-logo" style="width: 100px; height: 20px; background: var(--coursera-blue); border-radius: 2px; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">STUDY MODE</div>
+        </header>
+
+        <div class="content-container">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">1.2 Google AI Essentials Overview</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Curriculum Roadmap</p>
+
+            <!-- 1. SUMMARY -->
+            <div class="takeaway">
+                <strong>프로그램 로드맵:</strong> 전 직종 전문가를 대상으로 생성형 AI 활용 능력을 5개 코스(입문, 생산성, 프롬프트, 윤리, 미래 전략)에 걸쳐 체계적으로 교육하는 프로그램입니다.
+            </div>
+
+            <div class="study-card">
+                <div class="section-title">📝 강의 요약 (Summary)</div>
+                <div class="transcript-container">
+                    <p class="transcript-line">• <strong>전직종 대상 전문가 교육:</strong> 배경 지식이나 기술적 경험이 없어도 모든 산업군에서 생성형 AI(Gen AI)를 즉각 활용할 수 있도록 돕습니다.</p>
+                    <p class="transcript-line">• <strong>5단계 핵심 커리큘럼:</strong> 기초 개념부터 생산성 향상 도구, 프롬프트 최적화 기법, 책임감 있는 AI 사용법, 그리고 진화하는 기술 트렌드 대응까지 포함합니다.</p>
+                    <p class="transcript-line">• <strong>실무 중심 학습 방식:</strong> 구글 전문가의 영상과 리딩뿐만 아니라, Coursera Coach(AI 어시스턴트)와의 대화 및 실습 활동을 통해 실력을 배양합니다.</p>
+                    <p class="transcript-line">• <strong>평가 및 인증:</strong> 각 과정마다 80% 이상의 통과 기준을 가진 퀴즈가 제공되며, 전체 수료 시 공식 Google 수료 인증서(Certificate)를 획득합니다.</p>
+                </div>
+            </div>
+
+            <!-- 2. CORE -->
+            <div class="study-card">
+                <div class="section-title">💡 학습 포인트 (Study Core)</div>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Generative AI (생성형 AI)</h4>
+                        <p>텍스트, 이미지, 비디오, 코드 등 새로운 콘텐츠를 생성하는 AI의 한 분야로, 업무 효율화와 창의적 영감을 제공합니다.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>5 Courses Curriculum</h4>
+                        <p>1) Introduction, 2) Productivity, 3) Prompt Artistry, 4) Responsible AI, 5) Future Trends로 구성됩니다.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Learning Methods</h4>
+                        <p>전문가 가이드 영상, 실무 적용 실습(Activities), 그리고 Coursera Coach와의 상호작용형 학습 콘텐츠.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="study-card">
+                <div class="section-title">❓ 복습 퀴즈</div>
+                <div class="quiz-item">
+                    <div class="quiz-question">Q: 전체 과정을 완료했을 때 얻게 되는 혜택은 무엇인가요?</div>
+                    <div class="quiz-answer">A: <span>이력서나 소셜 네트워크에 공유 가능한 Google 공식 인증서(Certificate).</span></div>
+                </div>
+                <div class="quiz-item">
+                    <div class="quiz-question">Q: 코스 내 퀴즈 통과를 위한 최소 점수 기준은?</div>
+                    <div class="quiz-answer">A: <span>80% 이상의 점수가 필요하며, 필요한 경우 여러 번 재응시가 가능합니다.</span></div>
+                </div>
+            </div>
+
+            <!-- 3. ORIGINAL & TRANSLATION -->
+            <div class="study-card" style="background: #F9F9F9; opacity: 0.8;">
+                <details>
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-muted);">전체 원문 및 번역 보기 (Original & Translation)</summary>
+                    <div class="transcript-container" style="margin-top: 15px; font-size: 0.95rem; line-height: 1.8; color: #444;">
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #CCC;">
+                            <strong>[English Original]</strong><br>
+                            <strong>Google AI Essentials overview / Welcome to Google AI Essentials</strong><br>
+                            Ready to enhance your productivity and bring your best ideas to life? Artificial intelligence (AI) is quickly transforming today’s workplace, and developing a strong understanding of the technology can give you a competitive edge. Here, we teach you how to put AI to work for you. <br><br>
+                            It's designed for professionals across all industries—no experience required. You'll get hands-on experience using generative AI (gen AI), a specific type of AI that can create new content like text, images, video, code and more. By learning to use gen AI, you can tackle routine tasks more efficiently, get creative inspiration, and enhance the quality of your work.<br><br>
+                            <strong>What you'll learn</strong><br>
+                            The Google AI Essentials consists of five courses:<br>
+                            1. Introduction to AI (current course): Discover how AI works and explore foundational AI concepts, such as machine learning. Learn about the rise of generative AI and how to perform tasks with it. By the end of this course, you’ll have an understanding of the capabilities and limitations of AI tools and how to integrate generative AI in the workplace.<br>
+                            2. Maximize Productivity With AI Tools: Leverage generative AI tools to speed up work tasks and boost your productivity. Examine the important role humans play in the effective use of AI, and understand the types of workplace tasks you can augment with AI.<br>
+                            3. Discover the Art of Prompting: Write effective prompts to get the output you want. Learn how to incorporate prompting techniques, such as few-shot prompting, into your work.<br>
+                            4. Use AI Responsibly: Use AI responsibly by mitigating unfair biases and inaccuracies. Learn how to apply a framework of AI harms to sample workplace scenarios.<br>
+                            5. Stay Ahead of the AI Curve: Continue developing your skills within the current and emerging AI landscape. Learn about the ways organizations have leveraged AI.<br><br>
+                            <strong>How you learn</strong><br>
+                            Each of the five courses offers a variety of content, including:<br>
+                            • Videos taught by AI experts at Google.<br>
+                            • Readings to deepen your understanding.<br>
+                            • Activities that help you practice the skills.<br>
+                            • Dialogues with Coursera's Coach.<br>
+                            • Graded quizzes with a passing score of 80% or higher.
+                        </div>
+                        <div>
+                            <strong>[Korean 번역]</strong><br>
+                            <strong>Google AI Essentials 개요 / 코스에 오신 것을 환영합니다</strong><br>
+                            생산성을 높이고 최고의 아이디어를 실현할 준비가 되셨나요? 인공지능(AI)은 오늘날의 직장을 빠르게 변화시키고 있으며, 이 기술에 대한 깊은 이해를 갖추는 것은 여러분에게 경쟁력을 제공할 것입니다. 여기에서 우리는 AI가 여러분을 위해 일하도록 만드는 방법을 가르쳐 드립니다.<br><br>
+                            이 코스는 모든 산업 분야의 전문가들을 위해 설계되었으며, 사전 경험이 필요하지 않습니다. 여러분은 텍스트, 이미지, 비디오, 코드 등 새로운 콘텐츠를 만들 수 있는 특정 유형의 AI인 '생성형 AI(Gen AI)' 활용에 대한 직접적인 실무 경험을 쌓게 됩니다. 생성형 AI 사용법을 배움으로써 일상적인 업무를 더 효율적으로 처리하고, 창의적인 영감을 얻으며, 작업물의 질을 향상시킬 수 있습니다.<br><br>
+                            <strong>무엇을 배우게 되나요?</strong><br>
+                            Google AI Essentials는 5개의 코스로 구성되어 있습니다:<br>
+                            1. AI 입문(현재 코스): AI의 작동 원리를 파악하고 머신러닝과 같은 기초 개념을 탐구합니다. 생성형 AI의 부상과 이를 활용한 작업 수행 방법을 배웁니다. 이 과정을 마칠 때쯤이면 AI 도구의 역량과 한계를 이해하고 직장에서 생성형 AI를 통합하는 방법을 익히게 됩니다.<br>
+                            2. AI 도구로 생산성 극대화하기: 생성형 AI 도구를 활용하여 업무 속도를 높이고 생산성을 증대시킵니다. AI의 효과적인 사용에 있어 인간이 수행하는 중요한 역할을 검토하고, AI로 증강할 수 있는 실무 작업 유형을 이해합니다.<br>
+                            3. 프롬프트의 기술 탐구하기: 원하는 결과를 얻기 위해 효과적인 프롬프트를 작성하는 법을 배웁니다. 퓨샷(few-shot) 프롬프팅과 같은 기법을 업무에 통합하는 방법을 익힙니다.<br>
+                            4. 책임감 있게 AI 사용하기: 불공정한 편향과 부정확성을 완화하여 AI를 책임감 있게 사용합니다. 샘플 업무 시나리오에 AI 위해성 프레임워크를 적용하는 법을 배웁니다.<br>
+                            5. AI 변화의 흐름에서 앞서 나가기: 현재와 새롭게 등장하는 AI 환경 속에서 지속적으로 스킬을 개발합니다. 조직들이 AI를 활용하는 방식을 배우고 이러한 혁신이 여러분 자신의 AI 기반 해결책에 어떤 영감을 줄 수 있는지 고찰합니다.<br><br>
+                            <strong>어떻게 학습하나요?</strong><br>
+                            5개의 각 코스는 다음과 같은 다양한 콘텐츠를 제공합니다:<br>
+                            • 새로운 개념과 가이드를 공유하는 구글 AI 전문가들의 영상.<br>
+                            • AI 활용법에 대한 아이디어를 자극하고 이해를 넓히는 읽기 자료.<br>
+                            • 학습 중인 기술을 연습할 수 있는 실습 활동.<br>
+                            • Coursera의 Coach(AI 기반 학습 어시스턴트)와의 대화.<br>
+                            • 학습 진척도를 측정하고 피드백을 주는 성적 부여 퀴즈(통과 기준 80% 이상).
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

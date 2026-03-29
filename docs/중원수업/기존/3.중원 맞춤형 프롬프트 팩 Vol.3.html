@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중원로지스 수업용 프롬프트 팩 Vol.3 (판타지 확장팩)</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #059669; /* Vol.3 테마: 에메랄드 그린 */
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #4b5563;
+            --border: #e5e7eb;
+            --highlight: #d1fae5; /* 연한 그린 */
+            --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* 기본 설정 */
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* 레이아웃 컨테이너 */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        /* 헤더 디자인 */
+        header {
+            border-bottom: 3px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            color: #064e3b;
+        }
+        .desc {
+            font-size: 16px;
+            color: var(--text-sub);
+        }
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            vertical-align: middle;
+            margin-bottom: 5px;
+            margin-right: 5px;
+        }
+
+        /* 팁 박스 */
+        .info-box {
+            background: #ecfdf5;
+            border-left: 5px solid var(--primary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            color: #065f46;
+        }
+        .info-box strong { color: #047857; font-size: 1.1em; }
+
+        /* 섹션 공통 */
+        section {
+            margin-bottom: 50px;
+            break-inside: avoid;
+        }
+        h2 {
+            font-size: 22px;
+            border-left: 6px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 20px;
+            color: #111827;
+        }
+        h3 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            color: #374151;
+        }
+
+        /* 프롬프트 카드 디자인 */
+        .prompt-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #fff;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .prompt-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* 코드 블록 (복사 영역) */
+        .code-block {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            color: #334155;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 10px;
+            cursor: pointer;
+            position: relative;
+            line-height: 1.5;
+        }
+        .code-block:hover {
+            background: var(--highlight);
+            border-color: var(--primary);
+        }
+
+        /* 복사 버튼 */
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 그리드 (테마 영역) */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* 태그 */
+        .tag {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            color: #4b5563;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .tag.new { background: #d1fae5; color: #065f46; }
+
+        /* 인쇄 설정 */
+        @media print {
+            body { background: white; padding: 0; font-size: 12pt; }
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+            .copy-btn { display: none; }
+            .code-block { border: 1px solid #999; background: none; }
+            h2 { border-left-color: #000; }
+            .info-box { background: none; border: 1px solid #000; color: #000; }
+            .grid { display: block; }
+            .prompt-card { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div style="margin-bottom: 10px;">
+            <span class="badge" style="background:#1d4ed8;">중원로지스</span>
+            <span class="badge" style="background:#059669;">Vol. 3 판타지 확장팩</span>
+        </div>
+        <h1>AI 내 얼굴 아바타 프롬프트 팩 Vol. 3</h1>
+        <p class="desc">
+            1, 2탄과는 완전히 다른 <b>이색적인 판타지 & 테크 컨셉 8종</b>입니다.<br>
+            원하는 AI 툴(GPT, Gemini, Mixboard, Qwen 등)에 사진과 함께 붙여넣으세요.
+        </p>
+    </header>
+
+    <div class="info-box">
+        <strong>💡 Vol. 3 사용 팁</strong>
+        <ul>
+            <li>사용법: <b>[1. 공통 접두어] + [2. 원하는 테마 본문] + [3. 금지문]</b></li>
+            <li>이번 테마는 상상력이 가미된 '레고, 우주선, 애니메이션' 등이 포함되어 있어 직원들의 흥미 유발에 아주 좋습니다.</li>
+        </ul>
+    </div>
+
+    <section>
+        <h2>STEP 1. 공통 접두어 (얼굴 고정용 필수)</h2>
+        <p class="desc">모든 프롬프트의 <strong>맨 앞</strong>에 무조건 붙여주세요.</p>
+        
+        <div class="prompt-card">
+            <h3>🇰🇷 한국어 공통 접두어</h3>
+            <div class="code-block" id="prefix_kr" onclick="copyText('prefix_kr')">업로드한 인물 사진을 완벽하게 참조해 주세요. 얼굴의 고유한 특징, 눈/코/입 비율, 피부톤, 헤어스타일을 그대로 유지하여 본인임을 확실히 알아볼 수 있어야 합니다. 추가 인물을 생성하지 마세요. 손가락이 어색하게 나오지 않도록 주의해 주세요. 여백을 충분히 확보하세요.</div>
+            <button class="copy-btn" onclick="copyText('prefix_kr')">복사</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 2. 새로운 테마 선택 (8종)</h2>
+        <p class="desc">원하는 스타일 <strong>하나만 골라</strong> 접두어 뒤에 붙이세요.</p>
+
+        <div class="grid">
+            <div class="prompt-card">
+                <h3>1) SF 우주 화물선 선장 <span class="tag new">미래물류</span></h3>
+                <div class="code-block" id="t1" onclick="copyText('t1')">SF 블록버스터 영화 스타일. 인물은 세련되고 미래지향적인 '우주 화물선 선장' 유니폼을 입고 있습니다. 배경은 별이 빛나는 우주 정거장의 거대한 하이테크 물류 센터입니다. 허공에 떠 있는 홀로그램 패널과 사이버틱한 조명이 인물을 비춥니다. 웅장하고 신비로운 분위기 연출.</div>
+                <button class="copy-btn" onclick="copyText('t1')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>2) 레고 월드 미니피규어 <span class="tag new">이색잼</span></h3>
+                <div class="code-block" id="t2" onclick="copyText('t2')">모든 것이 블록으로 이루어진 3D 레고 세상. 업로드한 인물을 귀여운 '레고 미니피규어' 스타일로 변환해 주세요. 인물의 얼굴 특징은 살리되 플라스틱 장난감 재질감을 강조합니다. 배경에는 파란색과 오렌지색이 섞인 귀여운 레고 물류 트럭이 세워져 있습니다. (텍스트 생성 금지)</div>
+                <button class="copy-btn" onclick="copyText('t2')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>3) 디즈니 픽사 애니메이션 <span class="tag new">따뜻함</span></h3>
+                <div class="code-block" id="t3" onclick="copyText('t3')">디즈니 픽사(Pixar) 3D 애니메이션 스타일. 눈이 소복하게 쌓인 따뜻하고 아기자기한 동화 속 마을. 인물은 포근한 겨울 코트를 입고 환하게 웃으며 예쁜 택배 상자를 들고 있습니다. 감성적이고 따뜻한 스튜디오 조명, 눈송이가 흩날리는 아름다운 풍경.</div>
+                <button class="copy-btn" onclick="copyText('t3')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>4) 드론 배송 마스터 <span class="tag new">첨단기술</span></h3>
+                <div class="code-block" id="t4" onclick="copyText('t4')">최첨단 무인 드론 배송 컨셉의 고화질 실사. 인물은 세련된 스마트 글래스를 착용하고 여유롭게 하늘을 가리키고 있습니다. 머리 위 청명한 파란 하늘로 날렵한 디자인의 화물 운송용 드론 여러 대가 날아가고 있습니다. 태양광이 눈부시게 비치는 역동적인 로우 앵글 샷.</div>
+                <button class="copy-btn" onclick="copyText('t4')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>5) 아이언맨 무쇠 슈트 <span class="tag new">강력추천</span></h3>
+                <div class="code-block" id="t5" onclick="copyText('t5')">할리우드 히어로 영화 스타일. 인물이 '아이언맨'처럼 최첨단 근력 보조 로봇 슈트(메카닉 아머)를 장착하고 있습니다. 무거운 은색 물류 박스를 한 손으로 가볍게 들고 여유로운 미소를 짓고 있습니다. 금속의 정교한 질감과 가슴에서 빛나는 LED 빛이 돋보이는 퀄리티.</div>
+                <button class="copy-btn" onclick="copyText('t5')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>6) 미국 팝아트 코믹북 <span class="tag new">힙함</span></h3>
+                <div class="code-block" id="t6" onclick="copyText('t6')">빈티지 아메리칸 코믹북 표지 스타일. 강렬한 원색(빨강, 노랑, 파랑)과 굵은 검은색 외곽선, 벤데이 점(망점) 효과. 인물은 슈퍼히어로처럼 역동적인 포즈로 달려가는 모습입니다. 배경에는 속도감을 나타내는 집중선 효과가 있습니다. 말풍선 없이 이미지만 힙하게 생성.</div>
+                <button class="copy-btn" onclick="copyText('t6')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>7) 8비트 레트로 게임 <span class="tag new">고전오락</span></h3>
+                <div class="code-block" id="t7" onclick="copyText('t7')">90년대 고전 오락실 아케이드 게임 느낌의 정교한 16비트 픽셀 아트(Pixel Art). 인물과 물류 트럭을 귀여운 도트 그래픽으로 변환해 주세요. 배경은 게임 속 첫 번째 스테이지 같은 맑은 날의 항구 물류 센터입니다. 선명한 색감, 레트로하고 아기자기한 감성 극대화.</div>
+                <button class="copy-btn" onclick="copyText('t7')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>8) 수채화 명화 감성 <span class="tag new">예술</span></h3>
+                <div class="code-block" id="t8" onclick="copyText('t8')">클래식한 인상파 수채화 스타일. 맑고 투명한 물감의 부드러운 번짐 효과. 화창한 해안가 도로에 정차된 대형 트럭 옆에서, 인물이 시원한 바람을 맞으며 서 있는 감성적이고 아름다운 풍경. 부드러운 파스텔 톤 색감이 마음을 편안하게 만듭니다. (텍스트 생성 금지)</div>
+                <button class="copy-btn" onclick="copyText('t8')">복사</button>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 3. 금지문 (실패 방지용)</h2>
+        <p class="desc">실패 확률을 낮추기 위해 프롬프트 <strong>맨 마지막</strong>에 붙여주세요.</p>
+        
+        <div class="prompt-card" style="border-left: 5px solid #ef4444;">
+            <h3>🚫 필수 금지 사항 (Negative)</h3>
+            <div class="code-block" id="neg" onclick="copyText('neg')">금지: 얼굴 왜곡, 두 개 얼굴, 여러 명의 인물 생성, 손가락 이상/6개, 과한 블러, 저화질, 텍스트 깨짐, 워터마크, 의미 없는 알파벳 생성, 불쾌한 표정, 과밀한 배경.</div>
+            <button class="copy-btn" onclick="copyText('neg')">복사</button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function copyText(elementId) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        const btn = document.querySelector(`button[onclick="copyText('${elementId}')"]`);
+        const originalText = btn.innerText;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // 버튼 피드백
+            btn.innerText = "복사 완료!";
+            btn.style.background = "#059669"; // Vol.3 테마색
+            btn.style.color = "white";
+            btn.style.borderColor = "#059669";
+            
+            // 박스 피드백
+            const block = document.getElementById(elementId);
+            block.style.background = "#ecfdf5";
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "white";
+                btn.style.color = "#4b5563";
+                btn.style.borderColor = "#d1d5db";
+                block.style.background = "#f8fafc";
+            }, 1500);
+        }).catch(err => {
+            console.error('복사 실패:', err);
+            alert('복사에 실패했습니다. 텍스트를 드래그해서 복사해주세요.');
+        });
+    }
+</script>
+
+</body>
+</html>

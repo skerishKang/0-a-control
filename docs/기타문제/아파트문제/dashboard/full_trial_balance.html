@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>합계잔액시산표 - 방림 명지로드힐 (완전판)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 5px; font-size: 24px; }
+        .info { text-align: right; margin-bottom: 15px; font-size: 13px; color: #666; }
+        table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #333; }
+        th, td { border: 1px solid #999; padding: 4px 6px; font-size: 11px; height: 1.8em; }
+        th { background: #f2f2f2; font-weight: 700; text-align: center; }
+        .header-main { background: #e0e0e0; }
+        .num { text-align: right; font-family: 'Pretendard', sans-serif; letter-spacing: -0.01em; }
+        .group-row { background: #f1f3f5; font-weight: 800; }
+        .subgroup-row { background: #f8f9fa; font-weight: 700; }
+        .indent-1 { padding-left: 20px !important; }
+        .indent-2 { padding-left: 40px !important; }
+        .indent-3 { padding-left: 60px !important; }
+        .footer { margin-top: 20px; font-size: 11px; color: #888; text-align: center; }
+        .back-btn { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #1e3a8a; font-weight: 700; font-size: 14px; }
+        tr:hover { background-color: #f1f8ff; }
+        .negative { color: #d32f2f; }
+        .summary-row { background: #fff9db; font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← 대시보드로 돌아가기</a>
+        <h1>[ 합 계 잔 액 시 산 표 ]</h1>
+        <div class="info">
+            제12기 : 2026년 01월 01일 ~ 2026년 03월 26일 (단위 : 원)
+        </div>
+        <table>
+            <thead>
+                <tr class="header-main">
+                    <th colspan="3">차 변 (Debit)</th>
+                    <th rowspan="2">계 정 과 목 명</th>
+                    <th colspan="3">대 변 (Credit)</th>
+                </tr>
+                <tr class="header-main">
+                    <th width="12%">잔 액</th>
+                    <th width="12%">합 계</th>
+                    <th width="12%">당 월</th>
+                    <th width="12%">당 월</th>
+                    <th width="12%">합 계</th>
+                    <th width="12%">잔 액</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ASSETS PAGE 1 -->
+                <tr class="group-row">
+                    <td class="num">648,273,702</td>
+                    <td class="num">1,129,855,718</td>
+                    <td class="num">127,109,020</td>
+                    <td>자 산</td>
+                    <td class="num">162,905,048</td>
+                    <td class="num">481,582,016</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">56,711,739</td>
+                    <td class="num">535,471,155</td>
+                    <td class="num">123,365,020</td>
+                    <td class="indent-1">유동자산</td>
+                    <td class="num">160,463,048</td>
+                    <td class="num">478,759,416</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">56,689,739</td>
+                    <td class="num">535,445,155</td>
+                    <td class="num">123,365,020</td>
+                    <td class="indent-2">당좌자산</td>
+                    <td class="num">160,463,048</td>
+                    <td class="num">478,755,416</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">500,000</td>
+                    <td class="num">1,353,530</td>
+                    <td class="num">177,500</td>
+                    <td class="indent-3">현금</td>
+                    <td class="num">177,500</td>
+                    <td class="num">853,530</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">16,405,006</td>
+                    <td class="num">233,683,976</td>
+                    <td class="num">79,913,480</td>
+                    <td class="indent-3">예금</td>
+                    <td class="num">73,865,030</td>
+                    <td class="num">217,278,970</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">7,694,836</td>
+                    <td class="num">127,452,386</td>
+                    <td class="num">42,292,090</td>
+                    <td class="indent-3">제예금(광은)</td>
+                    <td class="num">38,943,670</td>
+                    <td class="num">119,757,550</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">4,890</td>
+                    <td class="num">4,890</td>
+                    <td class="num"></td>
+                    <td class="indent-3">제예금(선수금)</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">710,000</td>
+                    <td class="num">710,000</td>
+                    <td class="num"></td>
+                    <td class="indent-3">관리비예치금 미수금</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">4,907,446</td>
+                    <td class="num">101,328,866</td>
+                    <td class="num">35,119,440</td>
+                    <td class="indent-3">제예금(농협)</td>
+                    <td class="num">34,921,360</td>
+                    <td class="num">96,421,420</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">3,797,834</td>
+                    <td class="num">4,897,834</td>
+                    <td class="num">2,501,950</td>
+                    <td class="indent-3">제예금 (광은잡수익)</td>
+                    <td class="num"></td>
+                    <td class="num">1,100,000</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num">128,647,666</td>
+                    <td class="num"></td>
+                    <td class="indent-3">미부과관리비</td>
+                    <td class="num">43,272,228</td>
+                    <td class="num">128,647,666</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">17,622,243</td>
+                    <td class="num">143,925,273</td>
+                    <td class="num">43,274,040</td>
+                    <td class="indent-3">관리비미수금</td>
+                    <td class="num">43,148,290</td>
+                    <td class="num">126,303,030</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">20,859,390</td>
+                    <td class="num">26,531,610</td>
+                    <td class="num"></td>
+                    <td class="indent-3">선급비용</td>
+                    <td class="num"></td>
+                    <td class="num">5,672,220</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">593,100</td>
+                    <td class="num">593,100</td>
+                    <td class="num"></td>
+                    <td class="indent-3">가지급금</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">22,000</td>
+                    <td class="num">26,000</td>
+                    <td class="num"></td>
+                    <td class="indent-2">재고자산</td>
+                    <td class="num"></td>
+                    <td class="num">4,000</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">22,000</td>
+                    <td class="num">26,000</td>
+                    <td class="num"></td>
+                    <td class="indent-3">저장품</td>
+                    <td class="num"></td>
+                    <td class="num">4,000</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">591,561,963</td>
+                    <td class="num">594,384,563</td>
+                    <td class="num">3,744,000</td>
+                    <td class="indent-1">비유동자산</td>
+                    <td class="num">2,442,000</td>
+                    <td class="num">2,822,600</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">591,561,963</td>
+                    <td class="num">594,384,563</td>
+                    <td class="num">3,744,000</td>
+                    <td class="indent-2">투자자산</td>
+                    <td class="num">2,442,000</td>
+                    <td class="num">2,822,600</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">370,422,815</td>
+                    <td class="num">370,422,815</td>
+                    <td class="num">3,744,000</td>
+                    <td class="indent-3">장기수선충당예치금</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">221,139,148</td>
+                    <td class="num">223,961,748</td>
+                    <td class="num"></td>
+                    <td class="indent-3">하자보수충당예치금</td>
+                    <td class="num">2,442,000</td>
+                    <td class="num">2,822,600</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">유형자산</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">11,924,040</td>
+                    <td class="num">11,924,040</td>
+                    <td class="num"></td>
+                    <td class="indent-3">집기비품</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num negative">-11,924,040</td>
+                    <td class="num negative">-11,924,040</td>
+                    <td class="num"></td>
+                    <td class="indent-3">집기비품감가상각누계액</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">6,376,140</td>
+                    <td class="num">6,376,140</td>
+                    <td class="num"></td>
+                    <td class="indent-3">공구기구</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num negative">-6,376,140</td>
+                    <td class="num negative">-6,376,140</td>
+                    <td class="num"></td>
+                    <td class="indent-3">공구기구감가상각누계액</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">기타비유동자산</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+
+                <!-- LIABILITIES PAGE 1 -->
+                <tr class="group-row">
+                    <td class="num"></td>
+                    <td class="num">28,697,534</td>
+                    <td class="num">10,674,340</td>
+                    <td>부 채</td>
+                    <td class="num">3,744,020</td>
+                    <td class="num">688,422,524</td>
+                    <td class="num">659,724,990</td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num"></td>
+                    <td class="num">25,874,934</td>
+                    <td class="num">8,232,340</td>
+                    <td class="indent-1">유동부채</td>
+                    <td class="num">20</td>
+                    <td class="num">25,877,961</td>
+                    <td class="num">3,027</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num">23,926,920</td>
+                    <td class="num">7,955,130</td>
+                    <td class="indent-2">미지급비용</td>
+                    <td class="num"></td>
+                    <td class="num">23,926,920</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num">1,922,294</td>
+                    <td class="num">277,210</td>
+                    <td class="indent-2">가수금</td>
+                    <td class="num">20</td>
+                    <td class="num">1,925,294</td>
+                    <td class="num">3,000</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">선수전기료</td>
+                    <td class="num"></td>
+                    <td class="num">27</td>
+                    <td class="num">27</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num">25,720</td>
+                    <td class="num"></td>
+                    <td class="indent-2">선수수도료</td>
+                    <td class="num"></td>
+                    <td class="num">25,720</td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num"></td>
+                    <td class="num">2,822,600</td>
+                    <td class="num">2,442,000</td>
+                    <td class="indent-1">비유동부채</td>
+                    <td class="num">3,744,000</td>
+                    <td class="num">662,544,563</td>
+                    <td class="num">659,721,963</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">관리비예치금</td>
+                    <td class="num"></td>
+                    <td class="num">68,160,000</td>
+                    <td class="num">68,160,000</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num">2,822,600</td>
+                    <td class="num">2,442,000</td>
+                    <td class="indent-2">하자보수충당부채</td>
+                    <td class="num">223,961,748</td>
+                    <td class="num">221,139,148</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">장기수선충당금</td>
+                    <td class="num">3,744,000</td>
+                    <td class="num">374,166,815</td>
+                    <td class="num">370,422,815</td>
+                </tr>
+
+                <!-- EQUITY PAGE 1 -->
+                <tr class="group-row">
+                    <td class="num">8,567,606</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td>순 자 산</td>
+                    <td class="num"></td>
+                    <td class="num">24,478,844</td>
+                    <td class="num">15,911,238</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-1">적립금</td>
+                    <td class="num"></td>
+                    <td class="num">15,911,238</td>
+                    <td class="num">15,911,238</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">예비비적립금</td>
+                    <td class="num"></td>
+                    <td class="num">15,911,238</td>
+                    <td class="num">15,911,238</td>
+                </tr>
+                <tr>
+                    <td class="num">8,567,606</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-1">미처분이익잉여금</td>
+                    <td class="num"></td>
+                    <td class="num">8,567,606</td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">8,567,606</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">전기이월이익잉여금</td>
+                    <td class="num"></td>
+                    <td class="num">8,567,606</td>
+                    <td class="num"></td>
+                </tr>
+
+                <!-- REVENUE & EXPENSES -->
+                <tr class="group-row">
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td>수 익</td>
+                    <td class="num">2,544,172</td>
+                    <td class="num">91,237,060</td>
+                    <td class="num">91,237,060</td>
+                </tr>
+                <!-- Page 2 sub items (Revenue) -->
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-1">관리수익</td>
+                    <td class="num">86,830,006</td>
+                    <td class="num">86,830,006</td>
+                    <td class="num">86,830,006</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">관리비수익</td>
+                    <td class="num">86,830,006</td>
+                    <td class="num">86,830,006</td>
+                    <td class="num">86,830,006</td>
+                </tr>
+
+                <tr class="group-row">
+                    <td class="num">118,599,586</td>
+                    <td class="num">118,599,586</td>
+                    <td class="num">31,409,880</td>
+                    <td>비 용</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <!-- Page 2 sub items (Expenses) -->
+                <tr class="subgroup-row">
+                    <td class="num">118,060,036</td>
+                    <td class="num">118,060,036</td>
+                    <td class="num">31,230,030</td>
+                    <td class="indent-1">관리비용</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">56,786,300</td>
+                    <td class="num">56,786,300</td>
+                    <td class="num">18,489,260</td>
+                    <td class="indent-2">공용관리비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">20,622,010</td>
+                    <td class="num">20,622,010</td>
+                    <td class="num">6,878,050</td>
+                    <td class="indent-3">일반관리비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">18,410,600</td>
+                    <td class="num">18,410,600</td>
+                    <td class="num">6,319,330</td>
+                    <td class="indent-3">인건비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">11,852,670</td>
+                    <td class="num">11,852,670</td>
+                    <td class="num">4,045,440</td>
+                    <td class="leaf" style="padding-left: 80px !important;">급여</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <!-- ... (Many more rows omitted for brevity in previous, but now fully restored) ... -->
+                <!-- Adding more rows as transcribed from JPG Page 2 -->
+                <tr>
+                    <td class="num">3,516,010</td>
+                    <td class="num">3,516,010</td>
+                    <td class="num">1,307,010</td>
+                    <td class="leaf" style="padding-left: 80px !important;">제수당</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">1,252,700</td>
+                    <td class="num">1,252,700</td>
+                    <td class="num">428,350</td>
+                    <td class="leaf" style="padding-left: 80px !important;">퇴직급여</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">155,120</td>
+                    <td class="num">155,120</td>
+                    <td class="num">53,040</td>
+                    <td class="leaf" style="padding-left: 80px !important;">산재보험료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">188,500</td>
+                    <td class="num">188,500</td>
+                    <td class="num">64,450</td>
+                    <td class="leaf" style="padding-left: 80px !important;">고용보험료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">290,490</td>
+                    <td class="num">290,490</td>
+                    <td class="num">96,830</td>
+                    <td class="leaf" style="padding-left: 80px !important;">국민연금</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">582,630</td>
+                    <td class="num">582,630</td>
+                    <td class="num">194,210</td>
+                    <td class="leaf" style="padding-left: 80px !important;">건강보험료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">572,480</td>
+                    <td class="num">572,480</td>
+                    <td class="num">130,000</td>
+                    <td class="leaf" style="padding-left: 80px !important;">식대등복리후생비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">548,950</td>
+                    <td class="num">548,950</td>
+                    <td class="num">222,410</td>
+                    <td class="indent-2">제사무비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">238,450</td>
+                    <td class="num">238,450</td>
+                    <td class="num">121,410</td>
+                    <td class="indent-3">사무용품소모품비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">288,000</td>
+                    <td class="num">288,000</td>
+                    <td class="num">96,000</td>
+                    <td class="indent-3">도서인쇄비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">22,500</td>
+                    <td class="num">22,500</td>
+                    <td class="num">5,000</td>
+                    <td class="indent-3">여비교통비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">595,780</td>
+                    <td class="num">595,780</td>
+                    <td class="num">200,720</td>
+                    <td class="indent-3">제세공과금</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">198,160</td>
+                    <td class="num">198,160</td>
+                    <td class="num">67,540</td>
+                    <td class="indent-3">통신료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">36,630</td>
+                    <td class="num">36,630</td>
+                    <td class="num">12,850</td>
+                    <td class="indent-3">우편료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">360,990</td>
+                    <td class="num">360,990</td>
+                    <td class="num">120,330</td>
+                    <td class="indent-3">위탁관리사운영비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">60,000</td>
+                    <td class="num">60,000</td>
+                    <td class="num">20,000</td>
+                    <td class="indent-3">피복비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">168,000</td>
+                    <td class="num">168,000</td>
+                    <td class="num">20,000</td>
+                    <td class="indent-3">교육훈련비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">838,680</td>
+                    <td class="num">838,680</td>
+                    <td class="num">95,590</td>
+                    <td class="indent-3">그밖의부대비용</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">514,190</td>
+                    <td class="num">514,190</td>
+                    <td class="num"></td>
+                    <td class="indent-3">관리용품소모품비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">156,000</td>
+                    <td class="num">156,000</td>
+                    <td class="num"></td>
+                    <td class="indent-3">전문가자문비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">168,490</td>
+                    <td class="num">168,490</td>
+                    <td class="num">95,590</td>
+                    <td class="indent-3">잡비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">12,668,440</td>
+                    <td class="num">12,668,440</td>
+                    <td class="num">4,189,480</td>
+                    <td class="indent-2">청소비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">17,501,570</td>
+                    <td class="num">17,501,570</td>
+                    <td class="num">5,870,630</td>
+                    <td class="indent-2">경비비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">252,000</td>
+                    <td class="num">252,000</td>
+                    <td class="num"></td>
+                    <td class="indent-2">소독비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">1,200,030</td>
+                    <td class="num">1,200,030</td>
+                    <td class="num">399,850</td>
+                    <td class="indent-2">승강기유지비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">3,329,500</td>
+                    <td class="num">3,329,500</td>
+                    <td class="num">747,000</td>
+                    <td class="indent-2">수선유지비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">630,600</td>
+                    <td class="num">630,600</td>
+                    <td class="num">57,000</td>
+                    <td class="indent-2">선전비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">2,442,240</td>
+                    <td class="num">2,442,240</td>
+                    <td class="num">690,000</td>
+                    <td class="indent-2">시설유지비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">256,660</td>
+                    <td class="num">256,660</td>
+                    <td class="num"></td>
+                    <td class="indent-2">안전점검비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">1,212,750</td>
+                    <td class="num">1,212,750</td>
+                    <td class="num">404,250</td>
+                    <td class="indent-2">위탁관리수수료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr class="subgroup-row">
+                    <td class="num">61,273,736</td>
+                    <td class="num">61,273,736</td>
+                    <td class="num">12,740,770</td>
+                    <td class="indent-1">개별사용료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">39,523,286</td>
+                    <td class="num">39,523,286</td>
+                    <td class="num">12,031,990</td>
+                    <td class="indent-2">전기료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">8,266,310</td>
+                    <td class="num">8,266,310</td>
+                    <td class="num"></td>
+                    <td class="indent-2">수도료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">544,640</td>
+                    <td class="num">544,640</td>
+                    <td class="num">70,400</td>
+                    <td class="indent-2">생활폐기물수수료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">1,432,400</td>
+                    <td class="num">1,432,400</td>
+                    <td class="num">300,000</td>
+                    <td class="indent-2">입주자대표회의운영비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">3,680,720</td>
+                    <td class="num">3,680,720</td>
+                    <td class="num"></td>
+                    <td class="indent-2">건물보험료</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">338,380</td>
+                    <td class="num">338,380</td>
+                    <td class="num">338,380</td>
+                    <td class="indent-2">선거관리위원회운영비</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">7,488,000</td>
+                    <td class="num">7,488,000</td>
+                    <td class="num"></td>
+                    <td class="indent-2">장기수선충당금전입액</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+
+                <!-- NON-MANAGEMENT REVENUE -->
+                <tr class="group-row">
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td>관 리 외 수 익</td>
+                    <td class="num">2,544,172</td>
+                    <td class="num">4,407,054</td>
+                    <td class="num">4,407,054</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-1">공동기여수익</td>
+                    <td class="num">2,544,172</td>
+                    <td class="num">4,407,054</td>
+                    <td class="num">4,407,054</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">주차수익</td>
+                    <td class="num"></td>
+                    <td class="num">390,000</td>
+                    <td class="num">390,000</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">승강기사용료수입</td>
+                    <td class="num">100,000</td>
+                    <td class="num">300,000</td>
+                    <td class="num">300,000</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">연체료수입</td>
+                    <td class="num">40,410</td>
+                    <td class="num">136,410</td>
+                    <td class="num">136,410</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">부과차익</td>
+                    <td class="num">1,812</td>
+                    <td class="num">3,694</td>
+                    <td class="num">3,694</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="indent-2">잡수입</td>
+                    <td class="num">2,401,950</td>
+                    <td class="num">3,576,950</td>
+                    <td class="num">3,576,950</td>
+                </tr>
+
+                <!-- NON-MANAGEMENT EXPENSES -->
+                <tr class="group-row">
+                    <td class="num">539,550</td>
+                    <td class="num">539,550</td>
+                    <td class="num">179,850</td>
+                    <td>관 리 외 비 용</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+                <tr>
+                    <td class="num">539,550</td>
+                    <td class="num">539,550</td>
+                    <td class="num">179,850</td>
+                    <td class="indent-1">잡지출</td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                    <td class="num"></td>
+                </tr>
+
+                <!-- SUMMARY TOTAL -->
+                <tr class="summary-row">
+                    <td class="num">766,873,288</td>
+                    <td class="num">1,285,720,444</td>
+                    <td class="num">169,193,240</td>
+                    <td style="text-align: center;">합 계</td>
+                    <td class="num">169,193,240</td>
+                    <td class="num">1,285,720,444</td>
+                    <td class="num">766,873,288</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="footer">
+            방림 명지로드힐 - 2026.03.26 기준 내부 관리용 자료 (PDF 1-3페이지 전문 복원 완료)
+        </div>
+    </div>
+</body>
+</html>

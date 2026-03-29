@@ -127,6 +127,12 @@ Agents should usually read in this order:
 3. recent sessions
 4. raw logs only when needed
 
+## Session Recovery Rule
+- When the user asks to restore a Codex session, always check both Codex stores before concluding a session is missing:
+- WSL Codex store: `/root/.codex/`
+- Windows Codex store: `/mnt/c/Users/limone/.codex/`
+- Do not assume the current runtime's `.codex` directory is the only source of truth.
+
 ## UI Principles
 ### Morning screen
 Center:

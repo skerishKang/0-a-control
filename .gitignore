@@ -72,6 +72,12 @@ nul
 server.pid
 *.bat
 
+# temp workspace holding area
+temp/**
+!temp/
+!temp/.gitkeep
+!temp/README.md
+
 # blobs
 data/blobs/
 sessions_html/

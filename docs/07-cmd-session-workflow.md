@@ -39,6 +39,12 @@ bash scripts/workdone.sh "0-myplan 구조 점검 완료"
 - this is a local convenience pointer, not the canonical source of truth
 - the canonical source of truth remains SQLite
 
+## Codex Session Recovery Note
+- When restoring a Codex session, check both Codex stores before deciding a session is missing.
+- WSL Codex store: `/root/.codex/`
+- Windows Codex store: `/mnt/c/Users/limone/.codex/`
+- The current runtime's `.codex` directory is not always the only source of truth.
+
 ## Next Step
 Wrap real tools like `codex`, `gemini`, or `kilo` with these commands so session logging happens automatically.
 

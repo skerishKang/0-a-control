@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중원로지스 7주차 - 실전 프롬프트 팩</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>7주차 실전 프롬프트 팩</h1>
+            <p>마우스로 드래그하여 복사(Ctrl+C)한 뒤 각 AI의 Canvas에 붙여넣으세요.</p>
+        </header>
+
+        <section>
+            <div class="period-tag">1교시: 기초 및 미니 실습</div>
+            <h2>[실습 1-1] 동절기 안전 운행 공지</h2>
+            <div class="prompt-item">
+                <div class="prompt-info">
+                    <span>권장 도구: ChatGPT 또는 Gemini</span>
+                    <span class="tool-badge badge-any">공통</span>
+                </div>
+                <div class="code-block">당신은 실무 문서 작성 도우미입니다.
+주제: 차주 기사님 대상 동절기 결빙 구간 안전 운행 및 상차 확인 요청 공지
+내용:
+- 동절기 결빙 구간 주의
+- 상차 전 안전 확인 요청
+- 운행 중 안전운전 당부
+형식: 3~5문장 이내의 공지문 형태</div>
+                <div class="tip"><strong>수정 팁:</strong> "결빙 위험이 높은 구간 3곳을 예시로 추가해줘"라고 요청해보세요.</div>
+            </div>
+        </section>
+
+        <section>
+            <div class="period-tag">2교시: 비교 실습</div>
+            <h2>[실습 2-1] 고객 응대 매뉴얼 비교</h2>
+            <div class="prompt-item">
+                <div class="prompt-info">
+                    <span>권장 도구: ChatGPT와 Gemini 두 곳 모두 입력</span>
+                    <span class="tool-badge badge-any">비교용</span>
+                </div>
+                <div class="code-block">당신은 실무 문서 작성 도우미입니다.
+주제: 중원로지스 화물 운송 지연 발생 시 단계별 고객 응대 매뉴얼
+대상: 배차 및 CS 담당 직원
+형식: 아래 순서 포함
+1. 상황 파악 및 사과
+2. 예상 지연 시간 안내
+3. 보상 및 후속 조치 안내
+4. 재발 방지 약속</div>
+                <div class="tip"><strong>비교 포인트:</strong> ChatGPT는 문장이 얼마나 자연스러운지, Gemini는 단계가 얼마나 체계적인지 확인하세요.</div>
+            </div>
+        </section>
+
+        <section>
+            <div class="period-tag">3~4교시: 실무 문서 4단계 완성 (Pipeline)</div>
+            <h2>[실습 3] 주제별 4단계 프롬프트 세트</h2>
+
+            <div class="grid">
+                <!-- 주제 1 -->
+                <div class="topic-card">
+                    <h3>주제 1: 최적 배차 노선 제안서</h3>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-gemini">1단계: Gemini</span></div>
+                        <div class="code-block">신규 대형 화주사 대상 최적 배차 노선 제안서의 목차를 설계해 주세요. 현황 진단 및 솔루션이 포함된 전문적인 구조로 만들어주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-chatgpt">2단계: ChatGPT</span></div>
+                        <div class="code-block">위 목차 중 '배차 효율화 솔루션' 섹션을 윙바디 차량 보유 강점을 활용해 상세히 작성해 주세요. 설득력 있는 문체로 풀어주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-gemini">3단계: Gemini</span></div>
+                        <div class="code-block">작성된 내용을 바탕으로 고객사 제출용 핵심 요약 표를 만들어주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-chatgpt">4단계: ChatGPT</span></div>
+                        <div class="code-block">전체 내용을 격식 있는 비즈니스 영어 톤으로(혹은 아주 정중한 한국어) 최종 다듬어 주세요.</div>
+                    </div>
+                </div>
+
+                <!-- 주제 2 -->
+                <div class="topic-card">
+                    <h3>주제 2: 차량 점검 및 안전 안내문</h3>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-chatgpt">1단계: ChatGPT</span></div>
+                        <div class="code-block">동절기 차량 소모품 점검 항목과 빙판길 안전 운전 수칙을 친근한 어조의 안내문 초안으로 작성해 주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-gemini">2단계: Gemini</span></div>
+                        <div class="code-block">위 안내문의 내용을 바탕으로 차주님들이 운전석에 붙여놓고 볼 수 있는 '5분 체크리스트'로 재구성해 주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-chatgpt">3단계: ChatGPT</span></div>
+                        <div class="code-block">체크리스트 각 항목에 대해 왜 중요한지 짧고 강력한 경고 문구를 한 문장씩 덧붙여 주세요.</div>
+                    </div>
+                    <div class="prompt-item">
+                        <div class="prompt-info"><span class="tool-badge badge-gemini">4단계: Gemini</span></div>
+                        <div class="code-block">전체 내용을 바탕으로 기사님 대상 카카오톡 공지용 요약 버전을 만들어 주세요.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>[도구] 보조 프롬프트 (언제든 사용 가능)</h2>
+            <div class="grid">
+                <div class="prompt-item">
+                    <div class="prompt-info"><span>구조 변경</span></div>
+                    <div class="code-block">"위 내용을 불렛 포인트(항목형)로 다시 정리해 줘."</div>
+                    <div class="tip"><strong>다음 단계:</strong> "너무 길어. 각 항목당 딱 2문장씩으로만 요약해줘."</div>
+                </div>
+                <div class="prompt-item">
+                    <div class="prompt-info"><span>표 변환</span></div>
+                    <div class="code-block">"이 내용을 표 형식으로 변환해 줘. 열 제목은 [순번, 항목, 내용]으로 해줘."</div>
+                    <div class="tip"><strong>다음 단계:</strong> "마지막에 [비고] 열을 추가하고 핵심 주의사항을 한 칸씩 더 써줘."</div>
+                </div>
+                <div class="prompt-item">
+                    <div class="prompt-info"><span>톤 조정</span></div>
+                    <div class="code-block">"이 문서를 신입 사원이 읽는다고 생각하고 용어를 더 쉽게 풀어서 써 줘."</div>
+                    <div class="tip"><strong>다음 단계:</strong> "중요한 경고 문구는 빨간색 볼드체 느낌이 나게 강조해서 다시 써줘."</div>
+                </div>
+                <div class="prompt-item">
+                    <div class="prompt-info"><span>요약</span></div>
+                    <div class="code-block">"전체 내용을 3줄로 요약하고, 가장 중요한 핵심 메시지 하나를 뽑아 줘."</div>
+                    <div class="tip"><strong>다음 단계:</strong> "이 요약본을 토대로 5분 발표용 대본을 써줘."</div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; color: #a0aec0; font-size: 0.8rem; margin-top: 50px; border-top: 1px solid var(--border); padding-top: 20px;">
+            중원로지스 AI 실무 역량 강화 교육 - 7주차 교재
+        </footer>
+    </div>
+    <script>
+        (function() {
+            
+
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024년 감사보고서 재무제표 - 방림 명지로드힐</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        td:first-child, th:first-child {
+            text-align: left;
+            width: 40%;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .group-header {
+            background: rgba(99, 102, 241, 0.1);
+            font-weight: 700;
+            color: #818cf8;
+        }
+
+        .sub-group {
+            padding-left: 40px !important;
+            color: var(--text-muted);
+        }
+
+        .total-row {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #f8fafc;
+            border-top: 2px solid var(--primary);
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--secondary);
+            transform: translateX(-4px);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 99px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-link">← 대시보드로 돌아가기</a>
+        
+        <header>
+            <h1>2024년 감사보고서 재무제표</h1>
+            <p class="subtitle">광주 방림 명지로드힐 아파트 · 제 10기 결산서 (전문 추출)</p>
+        </header>
+
+        <!-- 재무상태표 -->
+        <div class="card">
+            <h2>재무상태표 <span class="badge">Page 6</span></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>계정과목</th>
+                        <th>제 10(당) 기 (2024.12.31)</th>
+                        <th>제 9(전) 기 (2023.12.31)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="group-header">
+                        <td>I. 유동자산</td>
+                        <td>82,685,942</td>
+                        <td>77,912,094</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">1. 당좌자산</td>
+                        <td>82,629,942</td>
+                        <td>77,888,094</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group" style="padding-left: 60px !important;">현금 및 예금</td>
+                        <td>13,119,217</td>
+                        <td>16,082,452</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group" style="padding-left: 60px !important;">관리비예치금미수금</td>
+                        <td>710,000</td>
+                        <td>710,000</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group" style="padding-left: 60px !important;">미부과관리비</td>
+                        <td>39,022,892</td>
+                        <td>38,620,150</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group" style="padding-left: 60px !important;">관리비미수금</td>
+                        <td>18,682,403</td>
+                        <td>14,470,382</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group" style="padding-left: 60px !important;">선급비용</td>
+                        <td>11,095,430</td>
+                        <td>8,005,110</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">2. 재고자산 (저장품)</td>
+                        <td>56,000</td>
+                        <td>24,000</td>
+                    </tr>
+                    <tr class="group-header">
+                        <td>II. 비유동자산</td>
+                        <td>609,686,931</td>
+                        <td>592,291,599</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">1. 투자자산 (장기수선/하자보수충당예치금)</td>
+                        <td>609,686,931</td>
+                        <td>592,291,599</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>자산총계</td>
+                        <td>692,372,873</td>
+                        <td>670,203,693</td>
+                    </tr>
+                    <tr style="height: 30px;"></tr>
+                    <tr class="group-header">
+                        <td>I. 유동부채</td>
+                        <td>7,182,310</td>
+                        <td>7,865,290</td>
+                    </tr>
+                    <tr class="group-header">
+                        <td>II. 비유동부채</td>
+                        <td>677,846,931</td>
+                        <td>660,451,599</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">1. 장기수선충당금 등</td>
+                        <td>677,846,931</td>
+                        <td>660,451,599</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>부채총계</td>
+                        <td>685,029,241</td>
+                        <td>668,316,889</td>
+                    </tr>
+                    <tr style="height: 30px;"></tr>
+                    <tr class="group-header">
+                        <td>순 자 산</td>
+                        <td>7,343,632</td>
+                        <td>1,886,804</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">I. 적립금 (예비비적립금)</td>
+                        <td>1,886,804</td>
+                        <td>124,233</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">II. 미처분이익잉여금 (당기순이익)</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>부채와순자산총계</td>
+                        <td>692,372,873</td>
+                        <td>670,203,693</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 운영성과표 -->
+        <div class="card">
+            <h2>운영성과표 <span class="badge">Page 7</span></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>계정과목</th>
+                        <th>제 10(당) 기 (2024년)</th>
+                        <th>제 9(전) 기 (2023년)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="group-header">
+                        <td>I. 관리수익 (관리비수익)</td>
+                        <td>489,453,864</td>
+                        <td>477,661,545</td>
+                    </tr>
+                    <tr class="group-header">
+                        <td>II. 관리비용</td>
+                        <td>489,453,864</td>
+                        <td>477,661,545</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">1. 공용관리비</td>
+                        <td>218,960,680</td>
+                        <td>224,742,090</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">2. 개별사용료</td>
+                        <td>233,629,184</td>
+                        <td>216,055,455</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">3. 장기수선충당금적립액</td>
+                        <td>36,864,000</td>
+                        <td>36,864,000</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>III. 관리손익</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr style="height: 20px;"></tr>
+                    <tr class="group-header">
+                        <td>IV. 관리외수익</td>
+                        <td>29,372,233</td>
+                        <td>49,210,381</td>
+                    </tr>
+                    <tr class="group-header">
+                        <td>V. 관리외비용</td>
+                        <td>23,915,405</td>
+                        <td>47,447,810</td>
+                    </tr>
+                    <tr class="total-row" style="color: #c084fc;">
+                        <td>VI. 당기순이익</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 이익잉여금처분계산서 -->
+        <div class="card" style="margin-bottom: 0;">
+            <h2>이익잉여금처분계산서 <span class="badge">Page 8</span></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>계정과목</th>
+                        <th>제 10(당) 기 (2024년)</th>
+                        <th>제 9(전) 기 (2023년)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="group-header">
+                        <td>I. 미처분이익잉여금</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">당기순이익</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr class="group-header">
+                        <td>II. 이익잉여금입액</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>합계 (I + II)</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr style="height: 20px;"></tr>
+                    <tr class="group-header">
+                        <td>III. 이익잉여금처분액</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-group">예비비적립금</td>
+                        <td>5,456,828</td>
+                        <td>1,762,571</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>IV. 차기이월이익잉여금</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            2024년 12월 31일 종료되는 회계연도에 대한 외부회계감사 결과 보고서 추출 자료입니다.
+        </div>
+    </div>
+</body>
+</html>

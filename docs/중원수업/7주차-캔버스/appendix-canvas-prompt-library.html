@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7주차 Canvas 실전 프롬프트 라이브러리</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; background: #f8fafc; padding: 15px; border-radius: 10px; }
+        nav a { text-decoration: none; color: var(--text-sub); font-size: 14px; padding: 5px 12px; border-radius: 6px; transition: 0.2s; }
+        nav a:hover { background: var(--primary); color: white; }
+        .prompt-card { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 25px; overflow: hidden; background: white; }
+        .prompt-header { background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .prompt-header h3 { margin: 0; font-size: 1.05rem; color: var(--primary); }
+        .tool-tag { font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+        .tool-tag.gemini { background: #ebf8ff; color: #3182ce; }
+        .tool-tag.chatgpt { background: #f0fff4; color: #38a169; }
+        .prompt-body { border: none; margin-top: 0; border-radius: 0; }
+        .follow-up { padding: 15px 20px; background: #fffbeb; border-top: 1px solid #fef3c7; font-size: 0.9rem; color: #92400e; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>7주차 Canvas 실전 프롬프트 라이브러리</h1>
+            <p>중원로지스 실무 맞춤형 24+ 복붙 프롬프트 저장소</p>
+        </header>
+
+        <nav>
+            <a href="#drafting">초안 생성</a>
+            <a href="#structuring">구조/편집</a>
+            <a href="#data">데이터/표</a>
+            <a href="#tone">문체/톤</a>
+            <a href="#strategy">전략/분석</a>
+            <a href="#misc">기타 실무</a>
+        </nav>
+
+        <!-- 1. 초안 생성 -->
+        <section id="drafting">
+            <h2>1. 초안 생성 (Drafting)</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>01. 물류 운영 주간 보고서 초안</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">지난주 중원로지스 경기 동부권역 배차 현황과 주요 지연 사유, 개선 조치 사항을 포함한 주간 운영 보고서 목차와 초안을 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 각 지연 사유별로 구체적인 재발 방지 대책을 한 문장씩 추가해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>02. 신규 화주사 제안 요약서 (One-pager)</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">대형 유통사를 대상으로 우리 회사의 풀필먼트 서비스 강점을 강조한 1페이지 분량의 제안 요약서(One-pager)를 설득력 있게 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 임원진이 읽을 예정이야. 조금 더 격식 있고 전문적인 용어를 사용해서 다듬어줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>03. 사내 안전 캠페인 공고문</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">전 직원을 대상으로 하는 '안전 상하차 릴레이 캠페인' 참여 독려 공고문을 밝고 긍정적인 톤으로 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 참여 시 지급되는 '우수 사원 포상' 내용을 강조해서 문구를 수정해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>04. 차주 정기 점검 안내문</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">소속 차주님들께 엔진오일 및 타이어 정기 점검 시기임을 알리고 예약 방법을 안내하는 이메일 초안을 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 모바일에서 보기 편하게 중요한 정보만 불렛 포인트로 다시 정리해줘.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 구조 및 편집 -->
+        <section id="structuring">
+            <h2>2. 구조 및 편집 (Structuring & Editing)</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>05. 긴 보고서 5줄 핵심 요약</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">아래 긴 문장들을 핵심 내용 위주로 5가지 항목으로 요약하고, 각 항목에 적절한 소제목을 달아줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 가장 시급하게 처리해야 할 항목에 [중요] 표시를 해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>06. 난해한 용어 쉬운 풀이</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">물류 용어가 많이 섞인 이 설명문을 물류를 처음 접하는 아르바이트생도 이해할 수 있게 아주 쉽게 고쳐줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 이해가 더 잘 되도록 적절한 비유를 한두 개 섞어줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>07. 문서 논리 구조 재배치</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">현재 작성된 제안서의 순서를 [기대효과 - 해결책 - 실행방안] 순서로 논리 구조를 다시 짜줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 각 섹션 사이의 연결 문장을 자연스럽게 다듬어줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>08. 현장용 체크리스트 변환</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">이 지침서 내용을 바탕으로 현장에서 1분 안에 확인할 수 있는 체크리스트(Checklist)로 변환해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 필수 확인 항목과 권장 확인 항목을 구분해서 표시해줘.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 데이터 처리 -->
+        <section id="data">
+            <h2>3. 데이터 처리 및 표 (Data & Tables)</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>09. 팀별 성과 분석 비교표</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">데이터: 1팀(매출 1억, 효율 80%), 2팀(매출 1.2억, 효율 85%). 이 데이터를 팀별 성과 비교표로 만들고 전월 대비 성장률(10%) 열을 추가해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 효율이 85% 이상인 팀은 셀 배경색을 연한 녹색 느낌으로 강조해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>10. 일일 운행 기록 관리 대장</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">차량번호, 기사성함, 출발지, 목적지, 운행거리, 소요시간 항목을 포함한 일일 운행 기록표를 디자인해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 장거리 운행(300km 이상) 여부를 판단하는 [비고]란을 추가해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>11. 고객 클레임 유형별 통계표</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">최근 클레임 리스트를 [지연, 파손, 오배송, 불친절] 카테고리로 분류하여 표로 정리해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 비중이 가장 높은 유형에 대해 즉각적인 개선 방안을 써줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>12. 정산 증빙 서류 누락 체크표</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">매월 정산 필수 서류(인수증, 유가보조금 확인서 등) 리스트를 담당자 확인란이 있는 표로 만들어줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 제출 기한이 지난 경우 경고 표시를 하는 규칙을 추가해줘.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 문체 및 톤 -->
+        <section id="tone">
+            <h2>4. 문체 및 톤 (Style & Tone)</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>13. 격식 있는 임원 보고용 톤</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">이 메모는 내가 거칠게 적은 내용이야. 이걸 대표님께 보고할 수 있도록 격식 있고 간결한 비즈니스 문체로 바꿔줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 결론이 가장 먼저 보이도록 두괄식으로 순서를 조정해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>14. 거절 메인 (정중한 대안 제시)</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">가용 차량 부족으로 이번 긴급 배차 요청이 어려워. 정중하게 거절하면서 대안(내일 오전 배차)을 제시하는 메일을 써줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 향후 협력 관계를 강조하는 맺음말을 따뜻하게 보완해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>15. 가독성 높은 카톡 단톡방 공지</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">터미널 입구 공사로 우회로를 이용해야 한다는 내용을 기사님 단톡방에 올릴 짧고 강력한 메시지로 써줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 이모지를 섞어주고 핵심 시간대를 볼드체로 강조해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>16. 물류 트렌드 칼럼 (전문가 스타일)</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">최근 '라스트마일 로봇 배송' 트렌드에 대해 물류 전문가가 쓴 블로그 칼럼 스타일로 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 마지막에 독자들에게 생각할 거리를 던지는 질문을 추가해줘.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 전략 및 분석 -->
+        <section id="strategy">
+            <h2>5. 전략 및 분석 (Strategy & Analysis)</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>17. 중원로지스 SWOT 분석</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">현재 시장 환경에서 중원로지스의 SWOT(강점, 약점, 기회, 위협) 분석보고서를 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 약점인 'IT 인프라'를 보완할 실질적인 아이디어를 제안해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>18. 신규 노선 수익성 시나리오</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">충청권-영남권 고정 노선을 만들려고 해. 수익성을 판단하기 위한 5가지 지표와 분석 방법을 알려줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 공차 회송율을 낮추기 위한 백하울(Back-haul) 전략도 포함해줘.</div>
+                </div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><h3>19. 물류 프로세스 병목 제거 전략</h3><span class="tool-tag gemini">Gemini</span></div>
+                <div class="prompt-body">
+                    <div class="code-area">입고부터 출고까지 소요시간 단축을 위해 프로세스를 쪼개고, 낭비 제거 방안을 가상 시나리오로 작성해줘.</div>
+                    <div class="follow-up"><strong>[후속 수정]</strong> 이 해결책의 예상 비용과 ROI를 추정해줘.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 기타 실무 -->
+        <section id="misc">
+            <h2>6. 기타 실무 (Misc)</h2>
+            <div class="grid" style="display: block;">
+                <div class="prompt-card">
+                    <div class="prompt-header"><h3>20. 영문 메일 뉘앙스 교정</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                    <div class="prompt-body"><div class="code-area">이 영문 이메일이 너무 공격적이지 않은지 확인하고, 더 협력적인 뉘앙스로 고쳐줘.</div></div>
+                </div>
+                <div class="prompt-card">
+                    <div class="prompt-header"><h3>21. 엑셀 난제 해결 (IFERROR + VLOOKUP)</h3><span class="tool-tag gemini">Gemini</span></div>
+                    <div class="prompt-body"><div class="code-area">VLOOKUP으로 값을 찾을 때 없으면 '미등록'이라고 표시되게 하는 수식을 알려줘.</div></div>
+                </div>
+                <div class="prompt-card">
+                    <div class="prompt-header"><h3>22. 녹취록 기반 회의록 요약</h3><span class="tool-tag gemini">Gemini</span></div>
+                    <div class="prompt-body"><div class="code-area">배차 회의 메모야. 결정 사항, 담당자, 마감 기한을 핵심만 뽑아서 표로 정리해줘.</div></div>
+                </div>
+                <div class="prompt-card">
+                    <div class="prompt-header"><h3>23. 신규 차주 복지 브레인스토밍</h3><span class="tool-tag chatgpt">ChatGPT</span></div>
+                    <div class="prompt-body"><div class="code-area">차주님들의 장기 근속을 유도할 수 있는 참신한 복지 혜택 아이디어 10가지를 던져줘.</div></div>
+                </div>
+                <div class="prompt-card">
+                    <div class="prompt-header"><h3>24. 빈번 질문 FAQ 자동 생성</h3><span class="tool-tag gemini">Gemini</span></div>
+                    <div class="prompt-body"><div class="code-area">신규 화주사들이 가장 많이 묻는 질문 5가지와 모범 답안을 작성해줘.</div></div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            중원로지스 AI 실무 역량 강화 교육 - 실전 프롬프트 라이브러리
+        </footer>
+    </div>
+    <script>
+        (function() {
+            
+
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4.중원 맞춤형 프롬프트 팩 Vol.4</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8; /* 중원 블루 */
+            --accent: #f97316; /* 포인트 오렌지 */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --highlight: #f0f9ff;
+            --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* 기본 설정 */
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* 레이아웃 컨테이너 */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        /* 헤더 디자인 */
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 30px;
+            margin: 0 0 10px 0;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        .desc {
+            font-size: 16px;
+            color: var(--text-sub);
+        }
+        .badge-group { margin-bottom: 15px; }
+        .badge {
+            display: inline-block;
+            background: var(--text-sub);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+
+        /* 팁 박스 */
+        .info-box {
+            background: #fffbeb;
+            border-left: 5px solid var(--accent);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            color: #92400e;
+        }
+        .info-box strong { color: #b45309; font-size: 1.1em; }
+
+        /* 섹션 공통 */
+        section {
+            margin-bottom: 50px;
+            break-inside: avoid;
+        }
+        h2 {
+            font-size: 24px;
+            border-left: 6px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            color: #1e293b;
+        }
+        h3 {
+            font-size: 19px;
+            margin: 0 0 12px 0;
+            color: #334155;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 프롬프트 카드 디자인 */
+        .prompt-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            background: #fff;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .prompt-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(29, 78, 216, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* 코드 블록 (복사 영역) */
+        .code-block {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 18px;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #334155;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 10px;
+            cursor: pointer;
+            position: relative;
+            line-height: 1.6;
+        }
+        .code-block:hover {
+            background: var(--highlight);
+            border-color: var(--primary);
+        }
+
+        /* 복사 버튼 */
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 7px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 그리드 (테마 영역) */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* 태그 */
+        .tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #475569;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .tag.hot { background: #fee2e2; color: #b91c1c; }
+        .tag.new { background: #dcfce7; color: #166534; }
+
+        /* 인쇄 설정 */
+        @media print {
+            body { background: white; padding: 0; font-size: 12pt; }
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+            .copy-btn { display: none; }
+            .code-block { border: 1px solid #999; background: none; }
+            .grid { display: block; }
+            .prompt-card { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 25px; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 20px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="badge-group">
+            <span class="badge main">중원로지스</span>
+            <span class="badge accent">Vol.4 뉴 트렌드</span>
+            <span class="badge">GPT</span>
+            <span class="badge">Gemini</span>
+            <span class="badge">Mixboard</span>
+            <span class="badge">Qwen</span>
+        </div>
+        <h1>4.중원 맞춤형 프롬프트 팩 Vol.4</h1>
+        <p class="desc">
+            중원 1~3탄에서 다루지 않은 <b>완전히 새로운 트렌디 컨셉 8종</b>입니다.<br>
+            원하는 AI 툴에 사진과 함께 붙여넣어 멋진 이미지를 생성해보세요!
+        </p>
+    </header>
+
+    <div class="info-box">
+        <strong>💡 조합 공식 (필독)</strong>
+        <p>1. [공통 접두어] 복사 -> AI 입력창에 붙여넣기</p>
+        <p>2. [원하는 테마] 복사 -> AI 입력창에 <b>이어서</b> 붙여넣기</p>
+        <p>3. [금지문] 복사 -> AI 입력창에 <b>마지막으로</b> 붙여넣기</p>
+        <p style="margin-top: 10px;">* 본인 얼굴 사진을 1장 꼭 첨부해야 특징이 유지됩니다.</p>
+    </div>
+
+    <section>
+        <h2>STEP 1. 공통 접두어 (얼굴 특징 유지)</h2>
+        <p class="desc">어떤 테마를 고르든 <strong>맨 앞</strong>에 반드시 이 문장을 붙여주세요.</p>
+        
+        <div class="prompt-card">
+            <h3>🇰🇷 한국어 공통 접두어</h3>
+            <div class="code-block" id="prefix_kr" onclick="copyText('prefix_kr')">업로드한 인물 사진을 완벽하게 참조해 주세요. 얼굴의 고유한 특징, 눈코입 비율, 피부톤, 헤어스타일을 그대로 유지하여 본인임을 알아볼 수 있어야 합니다. 추가 인물을 생성하지 마세요. 손가락이 어색하게 나오지 않도록 주의해 주세요. 여백을 충분히 확보하세요.</div>
+            <button class="copy-btn" onclick="copyText('prefix_kr')">복사</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 2. 중원 새로운 테마 선택 (8종)</h2>
+        <p class="desc">자신이 원하는 컨셉을 <strong>하나만 골라</strong> 접두어 뒤에 붙이세요.</p>
+
+        <div class="grid">
+            <div class="prompt-card">
+                <h3>1) 광주 AI 물류 클러스터 프로 <span class="tag new">전문성</span></h3>
+                <div class="code-block" id="t1" onclick="copyText('t1')">전문적인 비즈니스 프로필 사진 스타일. 인물은 세련된 네이비 정장을 입고 자신감 있게 웃고 있습니다. 배경은 창너머로 첨단 지게차와 로봇이 움직이는 '광주 AI 물류 클러스터' 전경이 은은하게 블러 처리(보케)되어 있습니다. 신뢰감 넘치는 스튜디오 조명, 고화질 사진.</div>
+                <button class="copy-btn" onclick="copyText('t1')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>2) 사이버 배송 요원 (미래도시) <span class="tag hot">인기</span></h3>
+                <div class="code-block" id="t2" onclick="copyText('t2')">사이버펑크 스타일. 네온 블루와 오렌지 조명이 비치는 비 오는 미래 도시의 밤 거리. 인물은 하이테크 물류 장비가 부착된 세련된 가죽 자켓을 입고 스마트 패드를 들고 있습니다. 영화적인 조명, 반사되는 바닥, 미래지향적 분위기.</div>
+                <button class="copy-btn" onclick="copyText('t2')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>3) 전통 민화 초상화 <span class="tag new">예술</span></h3>
+                <div class="code-block" id="t3" onclick="copyText('t3')">한국 전통 민화(Minhwa) 스타일의 초상화. 얼굴의 특징은 유지하되 붓 터치와 색감을 전통 방식으로 표현. 배경은 은은한 한지 질감에 안전과 장수를 상징하는 호랑이와 소나무 그림이 미니멀하게 그려져 있습니다. 오방색 위주의 한국적인 색감. (텍스트 금지)</div>
+                <button class="copy-btn" onclick="copyText('t3')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>4) 스톱모션 클레이 요정 <span class="tag">귀여움</span></h3>
+                <div class="code-block" id="t4" onclick="copyText('t4')">귀여운 스톱모션 애니메이션 스타일. 인물은 부드럽고 둥글둥글한 지점토(클레이) 질감으로 변환되었지만 본인임을 알아볼 수 있습니다. 손에는 작은 클레이 택배 상자를 들고 있습니다. 따뜻하고 부드러운 스튜디오 조명, 파스텔 톤의 단순한 배경.</div>
+                <button class="copy-btn" onclick="copyText('t4')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>5) 반 고흐 '별이 빛나는 밤' <span class="tag">명화</span></h3>
+                <div class="code-block" id="t5" onclick="copyText('t5')">빈센트 반 고흐 스타일의 유화. 두껍고 거친 붓터치(Impasto), 소용돌이치는 노란색과 파란색의 배경 패턴. 인물은 고전 명화 속 주인공처럼 품위 있게 표현되었으며, 배경에는 작은 물류 트럭 도트가 소용돌이치며 그려져 있습니다. 감성적이고 예술적인 분위기.</div>
+                <button class="copy-btn" onclick="copyText('t5')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>6) K-물류 무대 주인공 <span class="tag hot">MZ추천</span></h3>
+                <div class="code-block" id="t6" onclick="copyText('t6')">K-POP 무대 컨셉. 화려한 네온 조명과 스포트라이트 빔이 인물을 비춥니다. 인물은 세련된 블랙 테크웨어 유니폼을 입고 무대 중앙에서 자신감 있는 포즈를 취하고 있습니다. 배경의 대형 LED 스크린에는 '중원로지스 AGI' 로고가 화려한 그래픽으로 떠 있습니다. (텍스트 생성 금지)</div>
+                <button class="copy-btn" onclick="copyText('t6')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>7) 겨울 배송 감성 카드 <span class="tag new">시즌</span></h3>
+                <div class="code-block" id="t7" onclick="copyText('t7')">포근한 겨울 여행 느낌의 그리팅 카드 스타일. 함박눈이 부드럽게 내리는 배경, 인물은 따뜻한 주황색 목도리와 코트를 입고 환하게 웃고 있습니다. 손에는 크리스마스 선물처럼 포장된 택배 상자를 들고 있습니다. 따뜻하고 감성적인 분위기, 상단 여백 필수. (텍스트 생성 금지)</div>
+                <button class="copy-btn" onclick="copyText('t7')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>8) 흑백 느와르 영화 포스터 <span class="tag">분위기</span></h3>
+                <div class="code-block" id="t8" onclick="copyText('t8')">고전 흑백 느와르 영화 스틸컷 스타일. 강렬한 명암 대비(Chiaroscuro), 그림자 효과. 인물은 짙은 그림자 속에 클래식한 코트를 입고 진지하고 미스터리한 표정으로 어딘가를 응시합니다. 배경에는 야간 물류 창고의 실루엣이 보입니다. 거친 필름 그레인 효과 추가.</div>
+                <button class="copy-btn" onclick="copyText('t8')">복사</button>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 3. 금지문 (실패 방지용)</h2>
+        <p class="desc">이상한 이미지가 생성되는 것을 막기 위해 프롬프트 <strong>맨 마지막</strong>에 붙여주세요.</p>
+        
+        <div class="prompt-card" style="border-left: 5px solid #ef4444;">
+            <h3>🚫 필수 금지 사항 (Negative)</h3>
+            <div class="code-block" id="neg" onclick="copyText('neg')">금지: 얼굴 왜곡, 일그러진 눈, 여러 명의 인물 생성, 손가락 기형/6개, 과도한 블러, 깨진 텍스트, 의미 없는 알파벳 생성, 워터마크, 불쾌한 표정, 과밀한 배경.</div>
+            <button class="copy-btn" onclick="copyText('neg')">복사</button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function copyText(elementId) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        const btn = document.querySelector(`button[onclick="copyText('${elementId}')"]`);
+        const originalText = btn.innerText;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            btn.innerText = "복사 완료!";
+            btn.style.background = "#10b981"; // 그린
+            btn.style.color = "white";
+            btn.style.borderColor = "#10b981";
+            
+            const block = document.getElementById(elementId);
+            block.style.background = "#dcfce7"; // 연한 그린
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "white";
+                btn.style.color = "#475569";
+                btn.style.borderColor = "#cbd5e1";
+                block.style.background = "#f1f5f9";
+            }, 1500);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>심화: Canvas 확장 활용 워크숍 실습지</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        .check-item { margin-bottom: 15px; display: flex; align-items: flex-start; }
+        .check-item input { margin-top: 6px; margin-right: 12px; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">Advanced Worksheet</div>
+            <h1>심화: Canvas 확장 활용 워크숍 실습지</h1>
+            <p>데이터 정리, PPT 기획, 화면 설계, 실무 도구 제작 실습 활동지</p>
+        </header>
+
+        <section>
+            <h2>1교시: 데이터 마스터링 (표 활용)</h2>
+            <div class="card">
+                <h3>[과제 1] 흩어진 배차 정보 정리하기</h3>
+                <div class="check-item"><input type="checkbox"> Gemini Canvas를 열고, 제공된 난잡한 배차 텍스트를 붙여넣습니다.</div>
+                <div class="check-item"><input type="checkbox"> 프롬프트를 사용하여 [차량번호, 이름, 노선, 운송비]가 포함된 깔끔한 표로 변환합니다.</div>
+                <div class="check-item"><input type="checkbox"> <strong>심화 지시:</strong> "운송비가 높은 순으로 정렬하고, 총합계 행을 추가해줘"라고 요청해봅니다.</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>2교시: 비주얼 기획 (PPT 스토리보드)</h2>
+            <div class="card">
+                <h3>[과제 2] 보고서를 발표 슬라이드로 구성하기</h3>
+                <div class="check-item"><input type="checkbox"> ChatGPT Canvas를 열고, 긴 텍스트 보고서를 입력합니다.</div>
+                <div class="check-item"><input type="checkbox"> "슬라이드 5장 분량의 PPT 스토리보드로 짜줘"라고 요청합니다.</div>
+                <div class="check-item"><input type="checkbox"> <strong>심화 지시:</strong> "3번 슬라이드에 어울리는 추천 이미지나 도표 구성을 설명해줘"라고 요청해봅니다.</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>3교시: 디지털 화면 설계 (레이아웃)</h2>
+            <div class="card">
+                <h3>[과제 3] 우리 팀만의 화면 구조 잡기</h3>
+                <div class="check-item"><input type="checkbox"> Gemini Canvas에서 "현장 기사님용 배차 확인 화면 구조를 잡아줘"라고 요청합니다.</div>
+                <div class="check-item"><input type="checkbox"> 브랜드 색상(Navy, White)과 가장 중요한 버튼(배차 수락)을 강조해달라고 합니다.</div>
+                <div class="check-item"><input type="checkbox"> <strong>심화 지시:</strong> "모바일에서 볼 때 더 편하도록 버튼 크기를 키우고 문구를 다듬어줘"라고 요청합니다.</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>4교시: 나만의 실무 계산기 (도구 제작)</h2>
+            <div class="card">
+                <h3>[과제 4] 자동 운임 계산기 만들기</h3>
+                <div class="check-item"><input type="checkbox"> Canvas에게 우리 회사만의 운임 계산 로직(거리당 단가, 할증 등)을 설명합니다.</div>
+                <div class="check-item"><input type="checkbox"> "실제로 작동하는 계산 도구로 만들어줘"라고 요청합니다.</div>
+                <div class="check-item"><input type="checkbox"> <strong>심화 지시:</strong> 기사님 성함을 입력하면 해당 기사님의 최종 정산액이 나오도록 기능을 추가해봅니다.</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>최종 체크리스트</h2>
+            <div class="card" style="background: #f8fafc;">
+                <div class="check-item"><input type="checkbox"> 텍스트를 표로 변환해본 경험이 있는가?</div>
+                <div class="check-item"><input type="checkbox"> 보고서를 PPT 구조로 바꾸어 보았는가?</div>
+                <div class="check-item"><input type="checkbox"> 코딩을 몰라도 화면 기획이 가능하다는 것을 체감했는가?</div>
+                <div class="check-item"><input type="checkbox"> 나만의 작은 업무 도구(계산기 등)를 하나 완성했는가?</div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; color: #64748b; font-size: 0.85rem; padding-top: 30px; border-top: 1px solid var(--border); margin-top: 50px;">
+            중원로지스 AI 실무 역량 강화 교육 - 심화 실습 활동지
+        </footer>
+    </div>
+</body>
+</html>

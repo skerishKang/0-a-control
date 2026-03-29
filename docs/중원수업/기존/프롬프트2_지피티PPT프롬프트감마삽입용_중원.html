@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중원로지스 AI 교육 통합 교재: GPT 프롬프트 모음</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        :root {
+            --primary: #0f172a; /* 중원로지스 느낌의 진한 네이비/블랙 */
+            --accent: #2563eb;  /* 신뢰의 블루 */
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            word-break: keep-all;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            margin-top: 60px;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+            font-size: 1.8rem;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        /* 셋업 박스 스타일 */
+        .setup-box {
+            background: #eff6ff; /* 아주 연한 파랑 */
+            border: 2px solid #3b82f6;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .setup-title {
+            font-weight: 800;
+            color: #1e40af;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* 그리드 레이아웃 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        /* 카드 스타일 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .badge.personal { background: #dbeafe; color: #1e40af; }
+        .badge.work { background: #dcfce7; color: #166534; }
+
+        .prompt-area {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            color: #334155;
+            white-space: pre-line;
+            border: 1px solid #cbd5e1;
+            flex-grow: 1; /* 높이 맞춤 */
+            margin-bottom: 15px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #334155;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .copy-alert {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>중원로지스 & BH AI 교육: GPT 프롬프트 통합본</h1>
+        <p class="subtitle">개인 주제 15개 + 물류/운송 업무 주제 16개 (총 31개)</p>
+    </header>
+
+    <div class="setup-box">
+        <span class="setup-title">📢 STEP 0. AI 작가 세팅 (가장 먼저 입력하세요!)</span>
+        <p style="margin-bottom:15px; color:#475569;">GPT나 Gemini 채팅창에 아래 내용을 먼저 복사해서 붙여넣으세요.</p>
+        <div class="prompt-area" id="setupPrompt" style="background:white; border-color:#3b82f6;">나는 [본인 영어이름]야.
+지금부터 너는 내가 고용한 ‘PPT 전문 작가’야.
+
+내가 주는 정보는 발표용 PPT 안에 들어갈 내용이고,
+너는 그 내용을 바탕으로 슬라이드용 텍스트를 작성하는 역할이야.
+
+규칙은 아래와 같아.
+1. 설명문이나 장황한 글은 쓰지 말 것
+2. 슬라이드 단위로 구성할 것
+3. 각 슬라이드는 '제목 1줄'과 '핵심 설명 3~5줄(개조식)'로 구성할 것
+4. 분량은 6~8장으로 할 것
+5. 추가 질문은 절대 하지 말 것. (정보가 부족해도 작가의 판단으로 완성할 것)
+
+이해했으면 “준비 완료”라고만 답해.</div>
+        <button onclick="copyToClipboard('setupPrompt')">세팅 프롬프트 복사하기</button>
+    </div>
+
+    <h2>PART 1. 개인/취미 주제 (15개)</h2>
+    <div class="grid-container" id="personalGrid"></div>
+
+    <h2>PART 2. 물류/화물 업무 주제 (16개)</h2>
+    <div class="grid-container" id="workGrid"></div>
+
+</div>
+
+<div class="copy-alert" id="copyAlert">복사되었습니다! GPT에 붙여넣으세요.</div>
+
+<script>
+    // 개인 주제 데이터 (15개) - 변경 없음 (범용)
+    const personalData = [
+        { title: "우리 가족 소개", prompt: "아래 정보를 바탕으로 '우리 가족 소개' PPT 원고를 작성해줘.\n\n1. 가족 수: [예: 4명 + 강아지 1마리]\n2. 가족 구성원 특징: [예: 낚시 좋아하는 아빠, 요리왕 엄마]\n3. 우리 가족 분위기: [예: 시끌벅적하고 웃음이 많음]\n4. 가장 기억에 남는 추억: [예: 작년 제주도 여행]\n5. PPT 톤앤매너: [따뜻하고 감성적으로]" },
+        { title: "나의 취미 소개", prompt: "아래 정보를 바탕으로 '나의 취미 소개' PPT 원고를 작성해줘.\n\n1. 취미 이름: [예: 드라이브/등산/낚시]\n2. 경력/실력: [예: 3년차, 아직 초보]\n3. 좋아하는 이유: [예: 잡념이 사라지고 힐링됨]\n4. 목표: [예: 전국 일주/대어 낚기]\n5. PPT 톤앤매너: [활기차고 전문적인 느낌]" },
+        { title: "나를 설명하는 키워드 3", prompt: "아래를 바탕으로 '나를 소개하는 키워드 3가지' PPT 원고를 작성해줘.\n\n1. 나를 대표하는 키워드 3개: [예: 성실, 안전, 유머]\n2. 각 키워드가 생긴 이유(짧게):\n3. 내가 자랑하고 싶은 나의 강점:\n4. 앞으로의 다짐(마지막 장):\n5. PPT 톤앤매너: [진솔하고 간결하게]" },
+        { title: "가족 여행 계획", prompt: "아래 정보를 바탕으로 '여행 계획' PPT 원고를 작성해줘.\n\n1. 여행지: [예: 베트남 다낭]\n2. 누구랑: [예: 부모님 모시고 효도여행]\n3. 여행 컨셉: [예: 맛집 투어와 휴식]\n4. 꼭 가고 싶은 곳: [예: 바나힐]\n5. PPT 톤앤매너: [설레고 즐거운 느낌]" },
+        { title: "나만의 맛집 리스트", prompt: "아래 정보를 바탕으로 '내 돈 내산 맛집 추천' PPT 원고를 작성해줘.\n\n1. 지역: [예: 광양/여수 맛집]\n2. 추천 메뉴: [예: 광양불고기, 서대회]\n3. 식당 이름(가칭 가능): [예: 중원식당]\n4. 추천 이유: [예: 기사님들도 줄 서는 찐맛집]\n5. PPT 톤앤매너: [맛깔나고 침 고이는 느낌]" },
+        { title: "좋아하는 음식 3가지", prompt: "아래 정보를 바탕으로 '내가 좋아하는 음식 3가지' PPT 원고를 작성해줘.\n\n1. 음식 3가지: [예: 김치찌개, 삼겹살, 국밥]\n2. 각 음식이 좋은 이유:\n3. 추천 상황: [예: 비 오는 날 소주랑]\n4. 더 맛있게 먹는 꿀팁:\n5. 마지막 장: '오늘 뭐 먹지?' 결론\n6. PPT 톤앤매너: [밝고 친근하게]" },
+        { title: "반려동물 자랑", prompt: "아래 정보를 바탕으로 '반려동물 소개' PPT 원고를 작성해줘.\n\n1. 이름/종류: [예: 뭉치 / 진돗개]\n2. 나이/성별: [예: 3살 / 수컷]\n3. 특기/자랑거리: [예: 집을 잘 지킴, 산책 매니아]\n4. 나에게 어떤 존재?: [예: 퇴근길 비타민]\n5. PPT 톤앤매너: [귀엽고 사랑스럽게]" },
+        { title: "나의 버킷리스트", prompt: "아래 정보를 바탕으로 '죽기 전에 하고 싶은 일' PPT 원고를 작성해줘.\n\n1. 가장 하고 싶은 일: [예: 캠핑카로 전국 일주]\n2. 배우고 싶은 것: [예: 색소폰, 영어회화]\n3. 가고 싶은 곳: [예: 스위스 알프스]\n4. 목표 시기: [예: 은퇴 후 1년 안에]\n5. PPT 톤앤매너: [희망차고 벅찬 느낌]" },
+        { title: "초보 가이드 (취미 입문)", prompt: "아래 정보를 바탕으로 '초보자를 위한 가이드' PPT 원고를 작성해줘.\n\n1. 종목: [예: 낚시/골프/등산]\n2. 초보가 제일 어려워하는 것:\n3. 시작 준비물 TOP 3:\n4. 추천하는 첫 단계(루틴):\n5. 안전/매너 수칙:\n6. PPT 톤앤매너: [친절하고 알기 쉽게]" },
+        { title: "건강 관리 비법", prompt: "아래 정보를 바탕으로 '나의 건강 관리 루틴' PPT 원고를 작성해줘.\n\n1. 운동: [예: 매일 걷기 1만보]\n2. 식단: [예: 믹스커피 줄이기, 야채 먹기]\n3. 영양제: [예: 오메가3, 비타민C]\n4. 다짐: [예: 99세까지 88하게 살자]\n5. PPT 톤앤매너: [건강하고 에너지 넘치게]" },
+        { title: "나의 하루 루틴", prompt: "아래 정보를 바탕으로 '나의 하루 루틴(Daily Routine)' PPT 원고를 작성해줘.\n\n1. 아침/점심/저녁 주요 루틴:\n2. 하루의 핵심 습관 3개: [예: 아침 뉴스 보기, 스트레칭]\n3. 내가 중요하게 생각하는 태도:\n4. 루틴을 유지하는 비결:\n5. PPT 톤앤매너: [차분하고 세련되게]" },
+        { title: "인생 영화/책 추천", prompt: "아래 정보를 바탕으로 '인생 작품 추천' PPT 원고를 작성해줘.\n\n1. 제목: [예: 영화 '범죄도시' or '명량']\n2. 장르: [예: 액션/드라마]\n3. 추천 이유: [예: 통쾌하고 스트레스 풀림]\n4. 명대사/명장면:\n5. PPT 톤앤매너: [진지하고 감동적인 느낌]" },
+        { title: "나의 장점/강점 PR", prompt: "아래 정보를 바탕으로 '나의 강점 PR' PPT 원고를 작성해줘.\n\n1. 나의 핵심 강점 3개: [예: 책임감, 운전 실력, 긍정]\n2. 주변이 자주 말하는 나의 특징:\n3. 일/생활에서 도움이 된 사례:\n4. 앞으로 더 키우고 싶은 역량:\n5. PPT 톤앤매너: [단정하고 자신감 있게]" },
+        { title: "주말 농장/텃밭 가꾸기", prompt: "아래 정보를 바탕으로 '나의 텃밭 일기' PPT 원고를 작성해줘.\n\n1. 키우는 작물: [예: 상추, 고추, 깻잎]\n2. 힘든 점: [예: 잡초 뽑기]\n3. 보람찬 순간: [예: 수확해서 삼겹살 파티할 때]\n4. 텃밭의 의미: [예: 마음의 휴식처]\n5. PPT 톤앤매너: [초록초록하고 싱그러운 느낌]" },
+        { title: "은퇴 후 라이프 플랜", prompt: "아래 정보를 바탕으로 '제2의 인생 계획' PPT 원고를 작성해줘.\n\n1. 살고 싶은 곳: [예: 공기 좋은 전원주택]\n2. 소일거리: [예: 텃밭 가꾸기, 여행 가이드]\n3. 봉사활동: [예: 재능 기부]\n4. 경제 계획: [예: 연금과 소박한 생활]\n5. PPT 톤앤매너: [여유롭고 평화로운 느낌]" }
+    ];
+
+    // 업무 주제 데이터 (16개) - 중원로지스(화물/물류) 맞춤형
+    const workData = [
+        { title: "중원로지스 회사 소개", prompt: "아래 정보를 바탕으로 '회사 소개서' PPT 원고를 작성해줘.\n\n1. 회사명: 중원로지스 & BH인더스트리\n2. 주요 사업: [예: 일반 화물 자동차 운송업, 기업 물류 대행]\n3. 규모: [예: 연매출 260억, 임직원 50명 규모의 알짜 기업]\n4. 비전: [예: 아날로그 물류를 넘어 AI 기반 스마트 물류 기업으로 도약]\n5. PPT 톤앤매너: [신뢰감 있는 네이비/블루 컬러, 웅장하게]" },
+        { title: "나의 업무 1장 요약", prompt: "아래 정보를 바탕으로 '내 담당 업무 소개' PPT 원고를 작성해줘.\n\n1. 내 소속/직함: [예: 배차팀 / 과장]\n2. 주요 담당 업무 3가지: [예: 화물 배차 관리, 기사님 정산, 화주 응대]\n3. 가장 신경 쓰는 부분: [예: 배차 공백 최소화]\n4. 업무상 고충과 해결책:\n5. 마지막 장: '내 업무 한 문장 정의'\n6. PPT 톤앤매너: [실무용, 간결, 명확하게]" },
+        { title: "AI 물류 혁신 전략", prompt: "아래 정보를 바탕으로 '미래 경영 전략' PPT 원고를 작성해줘.\n\n1. 주제: 중원로지스의 디지털 전환(DX) 전략\n2. 현재의 문제: [예: 수기 배차, 엑셀 의존, 정보 공유 지연]\n3. 해결 방안: [예: AI 배차 시스템 도입, 업무 자동화]\n4. 기대 효과: [예: 업무 속도 2배 향상, 매출 300억 달성]\n5. PPT 톤앤매너: [혁신적이고 미래지향적인 느낌]" },
+        { title: "신규 화주사 제안서", prompt: "아래 정보를 바탕으로 '화물 운송 제안서' PPT 원고를 작성해줘.\n\n1. 제안 대상: [예: 신규 제조 공장]\n2. 제안 서비스: [예: 고정 화물 운송 계약]\n3. 우리의 강점: [예: 15년 무사고, 긴급 배차 100% 대응]\n4. 기대 이익: [예: 물류비 절감 및 안정적 공급망 확보]\n5. 마지막 장: 파트너십 제안\n6. PPT 톤앤매너: [성공적인 비즈니스 느낌]" },
+        { title: "보유 차량/서비스 소개", prompt: "아래 정보를 바탕으로 '운송 서비스 소개' PPT 원고를 작성해줘.\n\n1. 보유 차종: [예: 5톤 윙바디, 25톤 카고, 추레라]\n2. 운송 가능 품목: [예: 철강, 일반 자재, 대형 화물]\n3. 중원로지스만의 특징: [예: 전국 네트워크 보유, 실시간 관제]\n4. 고객 혜택: [예: 정확한 납기 준수]\n5. PPT 톤앤매너: [차량 사진 위주, 듬직하고 강하게]" },
+        { title: "신입 배차/정산 매뉴얼", prompt: "아래 정보를 바탕으로 '신입사원 OJT 매뉴얼' PPT 원고를 작성해줘.\n\n1. 대상: 신입사원\n2. 교육 내용: [예: 운송장 입력 및 세금계산서 발행]\n3. 핵심 주의사항: [예: 거리별 운임 단가 확인 필수]\n4. 자주 하는 실수: [예: 차량 톤수 기재 오류]\n5. PPT 톤앤매너: [친절하고 알기 쉽게 일러스트 활용]" },
+        { title: "주간 배차/매출 보고", prompt: "아래 정보를 바탕으로 '주간 업무 보고' PPT 원고를 작성해줘.\n\n1. 부서: [예: 운송관리팀]\n2. 이번 주 실적: [예: 배차 150건, 매출 0000만원 달성]\n3. 특이 사항: [예: 우천으로 인한 배송 지연 발생]\n4. 다음 주 계획: [예: 신규 거래처 물량 확보]\n5. 요청 사항:\n6. PPT 톤앤매너: [그래프와 숫자가 돋보이는 스타일]" },
+        { title: "기사님 단합대회 기획", prompt: "아래 정보를 바탕으로 '워크샵 기획안' PPT 원고를 작성해줘.\n\n1. 행사명: [예: 중원로지스 안전기원 단합대회]\n2. 대상: [예: 소속 차주 및 임직원]\n3. 주요 프로그램: [예: 안전 교육, 우수 기사 시상, 회식]\n4. 기대 효과: [예: 소속감 고취 및 안전 의식 강화]\n5. PPT 톤앤매너: [즐겁고 활기찬 축제 분위기]" },
+        { title: "운송 안전 교육 자료", prompt: "아래 정보를 바탕으로 '현장 안전 교육' PPT 원고를 작성해줘.\n\n1. 교육 주제: [예: 겨울철 블랙아이스 및 졸음운전 예방]\n2. 위험 요소: [예: 새벽 운행 시 결빙 구간]\n3. 필수 수칙: [예: 감속 운행, 휴게소 2시간마다 들르기]\n4. 사고 시 대처: [예: 2차 사고 방지 조치]\n5. PPT 톤앤매너: [경고색(빨강/노랑) 사용, 눈에 확 띄게]" },
+        { title: "차량 점검 체크리스트", prompt: "아래 정보를 바탕으로 '차량 안전 점검표' PPT 원고를 작성해줘.\n\n1. 점검 대상: 화물 차량\n2. 운행 전 확인: [예: 타이어 마모도, 브레이크, 적재함 체결]\n3. 운행 후 확인: [예: 유류 잔량, 차량 이상 소음]\n4. 정기 점검 주기:\n5. 마지막 장: '안전이 곧 수익이다' 문구\n6. PPT 톤앤매너: [명확하고 직관적인 체크리스트 형태]" },
+        { title: "화물 적재 가이드", prompt: "아래 정보를 바탕으로 '안전 적재 가이드' PPT 원고를 작성해줘.\n\n1. 주제: 올바른 화물 적재 및 결박(고박) 방법\n2. 중요성: [예: 낙하 사고 방지, 편중 적재 금지]\n3. 품목별 요령: [예: 코일, 파이프, 박스 화물별 고정법]\n4. 위반 시 제재:\n5. PPT 톤앤매너: [현장 사진이나 도식 위주로 설명]" },
+        { title: "화주/기사 응대 매뉴얼", prompt: "아래 정보를 바탕으로 'CS 매뉴얼' PPT 원고를 작성해줘.\n\n1. 상황: [예: 배송 지연에 따른 화주 불만 접수]\n2. 응대 원칙: [예: 신속한 상황 파악과 정확한 도착 예정 시간 안내]\n3. 금지어: [예: \"저희 잘못 아닙니다\", \"기사님이 안 받아요\"]\n4. 해결 프로세스: [예: 사과 -> 위치 관제 -> 대안 제시]\n5. PPT 톤앤매너: [차분하고 정중한 서비스 느낌]" },
+        { title: "배차/정산 프로세스", prompt: "아래 정보를 바탕으로 '업무 흐름도 안내' PPT 원고를 작성해줘.\n\n1. 전체 흐름: [예: 주문 접수 -> 배차 -> 운송 -> 하차확인서 회수 -> 세금계산서 -> 입금]\n2. 단계별 필요 서류:\n3. 마감 기한: [예: 매월 말일 마감]\n4. 담당자 연락처:\n5. PPT 톤앤매너: [프로세스형, 도식화 추천]" },
+        { title: "업무 자동화 아이디어", prompt: "아래 정보를 바탕으로 '스마트 워크 아이디어' PPT 원고를 작성해줘.\n\n1. 현재의 비효율: [예: 종이 인수증 정리, 전화 배차 업무 과다]\n2. 개선 아이디어: [예: 카카오톡 배차 알림봇, 인수증 OCR 자동 인식]\n3. 벤치마킹 사례:\n4. 기대 효과: [예: 단순 업무 50% 감소, 워라밸 보장]\n5. PPT 톤앤매너: [IT 기업처럼 스마트한 느낌]" },
+        { title: "물류비 절감 제안", prompt: "아래 정보를 바탕으로 '비용 효율화 제안' PPT 원고를 작성해줘.\n\n1. 제안 배경: [예: 유가 상승에 따른 운송 원가 부담]\n2. 분석: [예: 공차 운행 비율이 높음]\n3. 개선안: [예: 연계 배차 확대, 최적 경로 안내 도입]\n4. 예상 절감액:\n5. PPT 톤앤매너: [논리적이고 임원 보고 가능한 스타일]" },
+        { title: "운송업 워라밸 노하우", prompt: "아래 정보를 바탕으로 '나만의 업무 관리 팁' PPT 원고를 작성해줘.\n\n1. 고충: [예: 24시간 걸려오는 전화]\n2. 나만의 노하우: [예: 업무 폰 분리, 시간대별 집중 업무]\n3. 도구 활용: [예: AI 통화 비서 활용]\n4. 목표: [예: 건강하고 오래 일하기]\n5. PPT 톤앤매너: [편안하고 공감가는 스타일]" }
+    ];
+
+    function renderCards(data, containerId, badgeClass, badgeText) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            // 고유 ID 생성
+            const promptId = `${containerId}-prompt-${index}`;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${item.title}</span>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="prompt-area" id="${promptId}">${item.prompt}</div>
+                <button onclick="copyToClipboard('${promptId}')">프롬프트 복사</button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const alertBox = document.getElementById('copyAlert');
+            alertBox.style.opacity = '1';
+            setTimeout(() => {
+                alertBox.style.opacity = '0';
+            }, 2000);
+        }).catch(err => {
+            alert('복사 실패: ' + err);
+        });
+    }
+
+    // 렌더링 실행
+    renderCards(personalData, 'personalGrid', 'personal', '개인/취미');
+    renderCards(workData, 'workGrid', 'work', '물류/화물 업무');
+
+</script>
+
+</body>
+</html>

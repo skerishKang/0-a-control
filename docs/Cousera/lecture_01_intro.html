@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Guide: 1. Introduction to Google AI Essentials - 1.1 Welcome to the Course</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --coursera-blue: #0056D2;
+            --coursera-bg: #F5F7F8;
+            --text-main: #1F1F1F;
+            --text-muted: #636363;
+            --sidebar-bg: #FFFFFF;
+            --border-color: #D3D3D3;
+            --active-item-bg: #E8F0FE;
+            --accent-green: #2D8A2D;
+            --accent-orange: #D97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--coursera-bg);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--coursera-blue);
+        }
+
+        .course-nav {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: #F0F0F0;
+        }
+
+        .nav-item.active {
+            background-color: var(--active-item-bg);
+            border-left-color: var(--coursera-blue);
+            font-weight: 600;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .header {
+            background-color: #FFF;
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .study-card {
+            background: #FFF;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--coursera-blue);
+        }
+
+        .takeaway {
+            border-left: 5px solid var(--coursera-blue);
+            background: #F0F7FF;
+            padding: 20px;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .concept-card {
+            padding: 15px;
+            border: 1px solid #EEE;
+            border-radius: 8px;
+            background: #FAFAFA;
+        }
+
+        .concept-card h4 {
+            margin-bottom: 8px;
+            color: var(--coursera-blue);
+        }
+
+        .quiz-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #FFF9F0;
+            border: 1px solid #FFE4B5;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .quiz-answer {
+            color: var(--accent-orange);
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .quiz-answer span {
+            filter: blur(4px);
+            transition: filter 0.3s;
+        }
+
+        .quiz-answer:hover span {
+            filter: blur(0);
+        }
+
+        .transcript-container {
+            margin-top: 20px;
+        }
+
+        .transcript-line {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">1. Introduction to Google AI Essentials</div>
+        <nav class="course-nav">
+            <div class="nav-item active">1.1 Welcome to the Course</div>
+            <a href="lecture_02_overview.html" class="nav-item">1.2 Google AI Essentials Overview</a>
+            <a href="lecture_03_ai_definition.html" class="nav-item">1.3 AI and the Future of Work</a>
+            <div class="nav-item disabled" style="opacity: 0.5;">Next (Upcoming)</div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="header">
+            <h1>Course 1: Introduction to AI</h1>
+            <div class="coursera-logo" style="width: 100px; height: 20px; background: var(--coursera-blue); border-radius: 2px; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">STUDY MODE</div>
+        </header>
+
+        <div class="content-container">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">1.1 Welcome to the Course</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Guide: Maya (VP, Google Research)</p>
+
+            <!-- 1. SUMMARY -->
+            <div class="takeaway">
+                <strong>핵심 요약:</strong> AI는 인터넷 혁명에 비견되는 거대한 변화의 흐름이며, 반복적인 실무 업무를 초 단위로 단축하여 커리어 성장을 돕는 강력한 파트너입니다.
+            </div>
+
+            <div class="study-card">
+                <div class="section-title">📝 강의 요약 (Summary)</div>
+                <div class="transcript-container">
+                    <p class="transcript-line">• <strong>거대한 변화의 물결:</strong> AI는 인터넷이 그랬던 것처럼 우리의 일과 삶의 방식을 근본적으로 재편하고 있습니다.</p>
+                    <p class="transcript-line">• <strong>실무 생산성 혁신:</strong> 수 시간 걸리던 스프레드시트 분석을 수 초 만에 끝내고, 보고서 초안 작성 및 일정 관리를 자동화합니다.</p>
+                    <p class="transcript-line">• <strong>구글 전문가의 가이드:</strong> VP Maya와 다수의 구글 AI 전문가들이 실무 경험이 없는 초보자도 바로 적용할 수 있는 지식을 공유합니다.</p>
+                    <p class="transcript-line">• <strong>커리어 자산화:</strong> 온라인으로 자율 학습을 완료하면 이력서와 소셜 미디어에 활용 가능한 스킬 배지를 획득할 수 있습니다.</p>
+                    <p class="transcript-line">• <strong>학습 질문들:</strong> 어떻게 AI로 도구의 생산성을 높일지, 책임감 있게 적용할지, 미래를 어떻게 준비할지를 다룹니다.</p>
+                </div>
+            </div>
+
+            <!-- 2. CORE -->
+            <div class="study-card">
+                <div class="section-title">💡 학습 포인트 (Study Core)</div>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>AI (인공지능)</h4>
+                        <p>일상적이고 반복적인 작업을 자동화하여 시간을 절약해주는 실용적인 기술 솔루션입니다.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Google AI Essentials</h4>
+                        <p>이전 경험이 필요 없는 온라인 자율 학습 코스로, 실무 기술 습득과 스킬 배지 획득에 초점을 맞춥니다.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>실무 적용 예시</h4>
+                        <p>스프레드시트 분석, 판매 보고서 초안 작성, 회의 예약, 브레인스토밍 강화 등.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="study-card">
+                <div class="section-title">❓ 복습 퀴즈</div>
+                <div class="quiz-item">
+                    <div class="quiz-question">Q: 강의에서 AI의 영향력을 무엇에 비유했나요?</div>
+                    <div class="quiz-answer">A: <span>인터넷(Internet)의 도입과 비견되는 변화로 설명했습니다.</span></div>
+                </div>
+                <div class="quiz-item">
+                    <div class="quiz-question">Q: 이 코스를 완료했을 때 얻을 수 있는 구체적인 결과물은?</div>
+                    <div class="quiz-answer">A: <span>이력서나 이메일 서명에 표시 가능한 스킬 배지(Skill Badge).</span></div>
+                </div>
+            </div>
+
+            <!-- 3. ORIGINAL & TRANSLATION -->
+            <div class="study-card" style="background: #F9F9F9; opacity: 0.8;">
+                <details>
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-muted);">전체 원문 및 번역 보기 (Original & Translation)</summary>
+                    <div class="transcript-container" style="margin-top: 15px; font-size: 0.95rem; line-height: 1.8; color: #444;">
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #CCC;">
+                            <strong>[English Original]</strong><br>
+                            - Join me as we uncover the ways AI can enhance your career and life. There's a big shift happening in the modern workplace, and AI is at the forefront of this exciting transformation. Just as the internet forever changed the way we approach everyday tasks, AI has the potential to transform the way we work and live. AI stands for artificial intelligence. It's a practical solution for making routine tasks less time consuming. Learning to use AI effectively in your job can help you to accomplish your goals and set you up for success in the evolving work landscape. For example, consider a typical day at your work. <br><br>
+                            If it's anything like mine, you have a lot of tasks to complete. Some days your to-do list might seem never ending, but what if AI could help? For instance, instead of spending hours reviewing spreadsheets, AI can help you analyze the information in seconds. It can also draft a detailed sales report highlighting key insights to share with your team. AI can schedule meetings for you, create engaging presentations, enhance your brainstorming sessions, and take on a variety of other tasks that will shorten your to-do list. Whether you're curious to learn the basics of AI, interested in making routine tasks easier or focused on enhancing your skillset. We've designed Google AI Essentials to help. <br><br>
+                            Hi, my name is Maya and I'm the Vice President of Strategy and Operations at Google Research. In my role, I lead a team that helps Google achieve its mission by accelerating research and fostering an exceptional research environment. I'm thrilled to be your guide on this journey to explore this technology that's reshaping the business world, AI. Throughout the course, you'll have the opportunity to learn from a diverse group of AI experts at Google whose role span from program management to directors of AI products and services. They'll each share their insights into AI and how it can elevate your work and advance your career. Google AI Essentials is designed to fit your schedule. You can complete it at your own pace all online and no previous AI experience is necessary. <br><br>
+                            This course will include videos from Google employees who work in AI, readings to help deepen your understanding of concepts, and interactive activities that give you practical experience working with AI. At the end of the course, you'll have the opportunity to earn a skill badge that can be displayed on your resume, social media profiles, and email signature. If you're new to AI, you may have many unanswered questions. You might wonder, "How do I engage with AI tools to boost my productivity? How do I apply AI responsibly in my job? Or how should I prepare for the future of AI in the workplace?" In Google AI Essentials, we'll address each of those questions and more. <br><br>
+                            I hope you're excited to join me as we uncover the ways AI can enhance your career in life. Let's get started.
+                        </div>
+                        <div>
+                            <strong>[Korean 번역]</strong><br>
+                            AI가 여러분의 커리어와 삶을 어떻게 개선할 수 있는지 알아가는 여정에 함께 하세요. 현대의 직장에서는 큰 변화가 일어나고 있으며, AI는 이 흥미로운 변화의 최전선에 있습니다. 인터넷이 일상적인 업무에 접근하는 방식을 영원히 바꾼 것처럼, AI는 우리가 일하고 살아가는 방식을 변화시킬 잠재력을 가지고 있습니다.<br><br>
+                            AI는 인공지능을 의미하며, 일상적인 업무를 덜 소모적으로 만들어주는 실용적인 해결책입니다. 직무에서 AI를 효과적으로 사용하는 법을 배우면 여러분의 목표를 달성하고 변화하는 업무 환경에서 성공할 준비를 할 수 있습니다. 예를 들어, 여러분의 일반적인 업무 하루를 생각해보세요.<br><br>
+                            만약 저와 비슷하다면, 완료해야 할 업무가 아주 많을 것입니다. 어떤 날은 할 일 목록이 끝이 없어 보일 수도 있지만, AI가 도와준다면 어떨까요? 예를 들어, 스프레드시트를 검토하는 데 수 시간을 쓰는 대신, AI는 몇 초 만에 정보를 분석하도록 도와줄 수 있습니다. 또한 팀과 공유할 핵심 통찰력을 강조하는 상세한 판매 보고서 초안을 작성할 수도 있습니다. AI는 여러분을 대신해 회의를 예약하고, 매력적인 프레젠테이션을 만들고, 브레인스토밍 세션을 강화하며, 할 일 목록을 줄여줄 다양한 업무를 맡을 수 있습니다.<br><br>
+                            AI의 기초를 배우고 싶거나, 일상 업무를 더 쉽게 만들고 싶거나, 기술력을 강화하는 데 관심이 있다면, 저희는 이를 돕기 위해 'Google AI Essentials'를 설계했습니다.<br><br>
+                            안녕하세요, 제 이름은 Maya이고 구글 리서치의 전략 및 운영 부사장입니다. 제 역할은 연구를 가속화하고 뛰어난 연구 환경을 조성함으로써 구글이 미션을 달성하도록 돕는 팀을 이끄는 것입니다. 비즈니스 세계를 재편하고 있는 이 기술인 AI를 탐구하는 여정에 여러분의 가이드가 되어 기쁘기 그지없습니다. 이 과정 전반에 걸쳐, 프로그램 관리부터 AI 제품 및 서비스 디렉터에 이르기까지 구글의 다양한 AI 전문가 그룹으로부터 배울 기회를 갖게 될 것입니다. 그들은 각각 AI에 대한 통찰력을 공유하고 AI가 어떻게 여러분의 업무를 고양하고 커리어를 발전시킬 수 있는지 알려줄 것입니다.<br><br>
+                            Google AI Essentials는 여러분의 일정에 맞게 설계되었습니다. 온라인으로 원하는 속도에 맞춰 완료할 수 있으며, 이전의 AI 경험은 필요하지 않습니다. 이 과정에는 AI 분야에서 일하는 구글 직원들의 영상, 개념 이해를 돕는 읽기 자료, AI를 직접 다뤄보는 실용적인 대화형 활동이 포함됩니다. 과정이 끝나면 이력서, 소셜 미디어 프로필, 이메일 서명에 표시할 수 있는 스킬 배지를 얻을 기회가 주어집니다.<br><br>
+                            AI가 처음이라면 아직 답을 얻지 못한 질문이 많을 것입니다. "생산성을 높이기 위해 AI 도구를 어떻게 활용해야 할까? 업무에 AI를 어떻게 책임감 있게 적용할까? 또는 직장에서 AI의 미래를 어떻게 준비해야 할까?"와 같은 궁금증이 생길 수 있습니다. 'Google AI Essentials'에서 우리는 이러한 질문과 그 이상의 것들을 다룰 것입니다.<br><br>
+                            AI가 여러분의 커리어와 삶을 어떻게 발전시킬 수 있는지 함께 알아가게 되어 기쁩니다. 이제 시작해 봅시다.
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

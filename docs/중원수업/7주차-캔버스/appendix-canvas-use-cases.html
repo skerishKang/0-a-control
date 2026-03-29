@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7주차 Canvas 확장 활용 예시집</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        .grid, .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        .case-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 25px; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
+        .case-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .category-tag { font-size: 0.75rem; font-weight: bold; color: white; padding: 3px 10px; border-radius: 4px; margin-bottom: 15px; display: inline-block; width: fit-content; }
+        .category-tag.doc { background: #3182ce; }
+        .category-tag.table { background: #38a169; }
+        .category-tag.ppt { background: #d69e2e; }
+        .category-tag.web { background: #805ad5; }
+        .category-tag.code { background: #e53e3e; }
+        .case-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--primary); }
+        .case-card .meta { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px; line-height: 1.4; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>7주차 Canvas 확장 활용 예시집</h1>
+            <p>실제 물류 현장과 사무 업무에서 활용 가능한 16가지 시나리오</p>
+        </header>
+
+        <div class="section-intro">
+            본 예시집은 단순한 문서 작성을 넘어 <strong>표 변환, PPT 기획, 웹 디자인, 코드 생성</strong> 등 Canvas의 강력한 확장 기능을 중원로지스 업무에 맞춰 정리한 자료입니다.
+        </div>
+
+        <div class="grid">
+            <!-- 1. 문서 작성 -->
+            <div class="case-card">
+                <span class="category-tag doc">문서 작성</span>
+                <h3>01. 고객 대응 표준 매뉴얼</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#d69e2e">Gemini(구조) + ChatGPT(톤)</span><br>
+                    <strong>상황:</strong> 신입 사원용 화물 운송 지연 대응 가이드라인 제작
+                </div>
+                <div class="prompt-box">중원로지스 고객센터 직원을 위한 '화물 운송 지연 대응 표준 매뉴얼' 목차를 단계별로 설계해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag doc">문서 작성</span>
+                <h3>02. 동절기 차량 관리 안전 지침서</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#10b981">ChatGPT</span><br>
+                    <strong>상황:</strong> 차주 기사님들 대상 겨울철 안전 수칙 배포
+                </div>
+                <div class="prompt-box">현장 기사님들이 겨울철에 반드시 확인해야 할 차량 점검 항목 5가지를 아주 쉽고 친절한 말투로 작성해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag doc">문서 작성</span>
+                <h3>03. 물류 터미널 효율 개선 보고서</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 상하차 병목 현상 해결을 위한 상사 보고용 아이디어 정리
+                </div>
+                <div class="prompt-box">물류 터미널 상하차 대기 시간을 20% 단축하기 위한 운영 개선 아이디어를 3가지 관점에서 제안해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag doc">문서 작성</span>
+                <h3>04. 저온 창고 확장 사업 제안서</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#d69e2e">Gemini(분석) + ChatGPT(카피라이팅)</span><br>
+                    <strong>상황:</strong> 대형 화주사 유치를 위한 사업 타당성 제안서
+                </div>
+                <div class="prompt-box">수도권 콜드체인 물류 창고 확장 사업의 타당성을 분석한 제안서 초안을 전문적인 어조로 작성해줘.</div>
+            </div>
+
+            <!-- 2. 표 및 체크리스트 -->
+            <div class="case-card">
+                <span class="category-tag table">표/체크리스트</span>
+                <h3>05. 주간 배차 효율 분석표</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 노선별 수익성 분석 데이터를 표로 시각화
+                </div>
+                <div class="prompt-box">지난주 경기-부산 노선의 운임, 유류비, 통행료 데이터를 바탕으로 한 노선별 수익성 분석표를 출력해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag table">표/체크리스트</span>
+                <h3>06. 일일 차량 안전 점검 체크박스</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 기사님이 스마트폰으로 바로 체크하는 일일 리스트
+                </div>
+                <div class="prompt-box">상차 시작 10분 전 기사님이 반드시 확인해야 할 윙바디 차량 안전 점검 리스트를 체크박스 형태로 만들어줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag table">표/체크리스트</span>
+                <h3>07. 화주사 계약 갱신 대장</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 다수 거래처의 계약 일정을 한눈에 관리
+                </div>
+                <div class="prompt-box">10개 대형 화주사의 계약 종료일과 주요 위탁 품목을 포함한 관리표를 설계해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag table">표/체크리스트</span>
+                <h3>08. 소모품 예상 교체 주기표</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#10b981">ChatGPT</span><br>
+                    <strong>상황:</strong> 타이어, 오일 등 차량 부품 관리 안내용
+                </div>
+                <div class="prompt-box">대형 화물차 주요 소모품별 표준 교체 주기와 실제 교체 신호를 설명하는 표를 작성해줘.</div>
+            </div>
+
+            <!-- 3. 발표자료 -->
+            <div class="case-card">
+                <span class="category-tag ppt">발표자료</span>
+                <h3>09. 연간 운영 전략 PPT 목차</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 전사 회의용 발표자료 스토리라인 구성
+                </div>
+                <div class="prompt-box">중원로지스 2025년 매출 성장 전략 발표를 위한 10슬라이드 분량의 PPT 구성을 짜줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag ppt">발표자료</span>
+                <h3>10. 회사 소개서 슬라이드 카피</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#10b981">ChatGPT</span><br>
+                    <strong>상황:</strong> 화주사 미팅용 회사 소개서 헤드라인과 멘트
+                </div>
+                <div class="prompt-box">전국 배차 네트워크와 최신 윙바디 차량 보유 강점을 강조하는 슬라이드 카피와 발표 멘트를 써줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag ppt">발표자료</span>
+                <h3>11. 현장 안전 교육 슬라이드 내용</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#d69e2e">Gemini(내용) + ChatGPT(강사멘트)</span><br>
+                    <strong>상황:</strong> 운전자 대상 분기별 사고 예방 교육 자료
+                </div>
+                <div class="prompt-box">졸음운전 예방을 위한 5분 안전 교육 슬라이드 내용과 강사용 스크립트를 상세히 작성해줘.</div>
+            </div>
+
+            <!-- 4. 웹 시안 -->
+            <div class="case-card">
+                <span class="category-tag web">웹/디자인</span>
+                <h3>12. 차주 모집 랜딩페이지 기획안</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#10b981">ChatGPT</span><br>
+                    <strong>상황:</strong> "중원과 함께할 차주님 모집" 홍보 페이지
+                </div>
+                <div class="prompt-box">중원로지스 소속 차주의 혜택을 강조한 원페이지 웹사이트 홍보 문구와 레이아웃을 기획해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag web">웹/디자인</span>
+                <h3>13. 시스템 사용 가이드 웹 페이지</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 화주사용 화물 추적 앱 이용방법 안내 가이드
+                </div>
+                <div class="prompt-box">실시간 화물 추적 앱의 주요 기능별 사용법을 안내하는 웹 도움말 구조를 상세히 설계해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag web">웹/디자인</span>
+                <h3>14. 사내 매거진 웹 뉴스레터 시안</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini (Coding)</span><br>
+                    <strong>상황:</strong> 매달 기사님들께 배포하는 소식지 웹 시안 구현
+                </div>
+                <div class="prompt-box">중원로지스 로고 색상을 활용한 가독성 높은 모바일 뉴스레터 HTML 시안을 코딩해줘.</div>
+            </div>
+
+            <!-- 5. 코드 -->
+            <div class="case-card">
+                <span class="category-tag code">코드/프로토타입</span>
+                <h3>15. 운송 운임 자동 계산기 코드</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 거리/무게 기반 예상 수익 계산용 툴
+                </div>
+                <div class="prompt-box">거리(km), 무게(ton), 유가율을 입력하면 최종 예상 운임을 반환하는 파이썬 함수를 작성해줘.</div>
+            </div>
+
+            <div class="case-card">
+                <span class="category-tag code">코드/프로토타입</span>
+                <h3>16. 엑셀 데이터 주소 변환 스크립트</h3>
+                <div class="meta">
+                    <strong>추천 도구:</strong> <span style="color:#3182ce">Gemini</span><br>
+                    <strong>상황:</strong> 주소 텍스트를 위경도 좌표로 일괄 변환
+                </div>
+                <div class="prompt-box">텍스트 주소 리스트를 넣어주면 위경도 좌표로 자동 변환해주는 API 연동 스크립트를 짜줘.</div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 30px; font-size: 0.9rem;">
+            중원로지스 실전 AI 교육 7주차 - Canvas 활용 예시집
+        </footer>
+    </div>
+    <script>
+        (function() {
+            
+
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>

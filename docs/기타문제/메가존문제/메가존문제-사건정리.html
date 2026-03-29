@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>메가존 문제 사건 정리</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --primary: #1d4ed8;
+      --accent: #f97316;
+      --info-bg: #eff6ff;
+      --warn-bg: #fff7ed;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); line-height: 1.72; }
+    .container { max-width: 1040px; margin: 40px auto; background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 48px; }
+    header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 28px; }
+    h1 { margin: 0 0 12px; font-size: 30px; font-weight: 800; color: var(--primary); }
+    .meta { color: var(--muted); font-size: 14px; }
+    h2 { margin-top: 34px; font-size: 22px; font-weight: 800; border-left: 6px solid var(--primary); padding-left: 14px; }
+    h3 { margin-top: 24px; font-size: 18px; color: var(--primary); }
+    p, li { font-size: 15.5px; }
+    ul, ol { padding-left: 22px; }
+    .box { background: var(--info-bg); border-left: 5px solid var(--primary); border-radius: 10px; padding: 16px 18px; margin: 16px 0; }
+    .warn { background: var(--warn-bg); border-left-color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 22px; font-size: 14px; }
+    th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; }
+    th { background: #dbeafe; text-align: left; }
+    code { background: #f8fafc; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; font-size: 13px; }
+    .small { color: var(--muted); font-size: 14px; }
+    @media print { body { background: #fff; } .container { box-shadow: none; margin: 0; max-width: none; padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>메가존 문제 사건 정리</h1>
+      <div class="meta">작성일: 2026-03-26 · 작성 기준: 파디엠 강철원 이사 관점</div>
+    </header>
+
+    <h2>1. 사건 개요</h2>
+    <p>파디엠은 부산 클라우드 혁신센터 테스트베드 지원사업을 통해 AWS 계정과 크레딧 기반 클라우드 사용을 시작했다. 파디엠의 인식은 2021년 사업 종료와 잔여 미납 정리 이후 사용이 종료되었다는 것이었다. 그러나 메가존/클라우드그램 측은 2022년 이후에도 과금이 계속 발생했고, 2024년부터는 월 10만~18만원 수준으로 커졌다고 주장하면서 미수채권 독촉과 지급명령 단계까지 진행했다.</p>
+    <div class="box warn">
+      <strong>핵심 쟁점</strong>
+      <ol>
+        <li>2021년 이후 실제 사용 주체가 누구였는가</li>
+        <li>계정 종료 또는 리소스 삭제가 왜 완결되지 않았는가</li>
+        <li>메가존/클라우드그램이 통합빌링, 세금계산서, 사용 안내를 적정하게 했는가</li>
+        <li>파디엠이 후행 청구 전부에 책임을 져야 하는가</li>
+        <li>부산진흥원/지원사업 구조가 책임선을 불명확하게 만들었는가</li>
+      </ol>
+    </div>
+
+    <h2>2. 확인한 자료 범위</h2>
+    <ul>
+      <li><code>docs/기타문제/메가존문제/통화/*.txt</code> 전수 확인</li>
+      <li><code>거래원장_주식회사 파디엠(조회일20241230).xls</code> 확인</li>
+      <li><code>메가존통합.pdf</code> 및 <code>메가존pdf이미지변환/*.jpg</code> 핵심 페이지 확인</li>
+      <li><code>pdf/*.pdf</code> 파일명 및 일부 추출 결과 확인</li>
+    </ul>
+    <div class="box">다수 PDF는 이미지형이라 텍스트 추출이 잘 되지 않았다. 따라서 현재 정리는 통화기록, 거래원장, 메가존통합 핵심 이미지 자료를 중심으로 구성했다.</div>
+
+    <h2>3. 메가존통합 이미지로 확인된 핵심 증거</h2>
+    <ol>
+      <li><code>메가존통합_page-0001.jpg</code>: 2020-09-15경 테스트베드 신청 메일. 사업 시작점 증거.</li>
+      <li><code>메가존통합_page-0013.jpg</code>: 2020-09-16경 통합빌링 승인 요청 메일. <code>ceo@padiem.net</code> 수신 및 <code>AWS ID</code> 확인.</li>
+      <li><code>메가존통합_page-0029.jpg</code>: 2021-06-10경 KMS 요금 문의 및 키 삭제/정리 시도 정황.</li>
+      <li><code>메가존통합_page-0002~0003.jpg</code>: 2021-09-08경 388원 미납 안내.</li>
+      <li><code>메가존통합_page-0035.jpg</code>: 2024-12-06경 부산진흥원에 보낸 사건 설명 메일.</li>
+    </ol>
+    <p>즉 부산진흥원은 단순 제3자가 아니라, 사업 시작점과 문제 발생 후 설명 대상 모두로 등장하는 중요한 연결축이다.</p>
+
+    <h2>4. 통화기록 기준 상세 사실관계</h2>
+    <h3>4.1 2024-12-04 안재성/조광래 통화군</h3>
+    <ul>
+      <li>안재성 초기 안내에서는 기존 담당 퇴사/변경 정황만 확인되고 실질 설명은 없음.</li>
+      <li>조광래 통화에서는 2021년 388원 이후에도 미납이 계속 누적되었다는 설명이 처음 등장.</li>
+      <li>가장 중요한 통화에서는 2022~2023년 월 15달러, 2024년 3월부터 거의 100달러, 버지니아 리전 사용이라는 설명이 나옴.</li>
+      <li>파디엠은 2021년 이후 사용하지 않았고, 현재는 사용할 사람도 없다고 반복 진술.</li>
+      <li>파디엠은 계정 방치, 퇴사자 사용, 해킹/무단사용 가능성을 제기.</li>
+    </ul>
+
+    <h3>4.2 2024-12-27 부산진흥원 김지혜 통화군</h3>
+    <ul>
+      <li>파디엠은 메가존에서 설명을 못 듣자 부산진흥원으로 다시 연락.</li>
+      <li>김지혜는 메가존 내부 담당/조직 구조를 알기 어렵고 직접 해결 수단이 없다고 답함.</li>
+      <li>파디엠은 기관 사업을 보고 시작했는데 사기업 독촉만 오고 설명은 없다는 점을 문제 삼음.</li>
+      <li>2025-02-10 재연락 시도에서도 인사이동으로 전달만 되고 실질 해결은 이뤄지지 않음.</li>
+    </ul>
+
+    <h3>4.3 2025-01-10 메가존 채권 담당 통화</h3>
+    <ul>
+      <li>파디엠은 388원 정리 이후 종료된 줄 알았는데, 2024년 6월 이전분 26만 7천원과 월별 청구가 갑자기 나타났다고 항의.</li>
+      <li>세금계산서 발급 흐름과 사용월 설명이 서로 맞지 않는다고 구체적으로 지적.</li>
+      <li>즉 파디엠은 감정적 부인만 하는 것이 아니라, 메가존 청구자료 정합성 자체를 문제 삼고 있음.</li>
+    </ul>
+
+    <h3>4.4 2026-03-20 부산진흥원 김지혜 직접 통화</h3>
+    <ul>
+      <li>김지혜는 2025년 1월 인사발령 후 팀장/과장에게 내용을 전달했다고 설명.</li>
+      <li>파디엠은 전달만 하고 후속 확인이 없었다면 사실상 처리가 안 된 것이라고 강하게 항의.</li>
+      <li>최종적으로 <code>권규리 과장</code> 이름이 언급됨.</li>
+    </ul>
+
+    <h3>4.5 2026-03-20 이승희 1차 통화</h3>
+    <ul>
+      <li>파디엠은 지급명령을 받았다고 진술.</li>
+      <li>이승희는 메가존으로 이직한 상태이며, 2024-06~2025-03 사이 10~18만원대 과금이면 누군가 쓰긴 쓴 것 같다고 말함.</li>
+      <li>동시에 해킹 여부나 실제 사용 주체 추적 필요성도 부정하지 않음.</li>
+    </ul>
+
+    <h3>4.6 2026-03-23 이승희 장시간 통화</h3>
+    <ul>
+      <li>388원 문제는 예치금/과거 정산 과정에서 따로 정리된 건이라고 설명.</li>
+      <li>현재 큰 청구는 그 388원이 커진 것이 아니라 별도 후행 과금 누적이라고 봄.</li>
+      <li>2024년 2월까지는 예치금이 버텼고, 2024년 5월부터 초과과금이 본격화되었다는 내부 설명을 들었다고 함.</li>
+      <li>채권은 이미 추심/채권팀 단계로 넘어가 실무선에서 손쓰기 어렵다고 설명.</li>
+      <li>파디엠은 2021년 이후 사용하지 않았고, 지금이라도 ID/패스워드/종료방식 안내가 있었다면 달랐을 것이라고 항의.</li>
+    </ul>
+
+    <h2>5. 거래원장으로 확인된 청구 구조</h2>
+    <table>
+      <thead><tr><th>일자</th><th>적요</th><th>금액(원)</th><th>누적 잔액(원)</th></tr></thead>
+      <tbody>
+        <tr><td>2024-06-01</td><td>Amazon Web Services 이용요금</td><td>267,208</td><td>267,208</td></tr>
+        <tr><td>2024-06-30</td><td>Amazon Web Services(2024년06월)</td><td>139,092</td><td>406,300</td></tr>
+        <tr><td>2024-07-31</td><td>Amazon Web Services(2024년07월)</td><td>143,133</td><td>549,433</td></tr>
+        <tr><td>2024-08-31</td><td>Amazon Web Services(2024년08월)</td><td>138,034</td><td>687,467</td></tr>
+        <tr><td>2024-09-30</td><td>Amazon Web Services(2024년09월)</td><td>132,122</td><td>819,589</td></tr>
+        <tr><td>2024-10-31</td><td>Amazon Web Services(2024년10월)</td><td>143,000</td><td>962,589</td></tr>
+        <tr><td>2024-11-30</td><td>Amazon Web Services(2024년11월)</td><td>187,103</td><td>1,149,692</td></tr>
+      </tbody>
+    </table>
+    <p class="small">이 장부는 청구 자료가 존재한다는 점은 보여주지만, 그 책임이 곧바로 파디엠 실사용으로 귀속된다는 뜻은 아니다.</p>
+
+    <h2>6. 시간순 타임라인</h2>
+    <ul>
+      <li><strong>2020년</strong>: 테스트베드 신청, 통합빌링 승인 요청</li>
+      <li><strong>2021년</strong>: KMS 요금 문의, 키 삭제/정리 시도, 388원 미납 안내, 종료 인식</li>
+      <li><strong>2022~2023년</strong>: 메가존 주장상 월 15달러 과금 지속</li>
+      <li><strong>2024년 3~5월</strong>: 버지니아 리전 중심 과금 증가, 예치금 소진 후 초과과금 진입 주장</li>
+      <li><strong>2024년 6~11월</strong>: 거래원장상 월별 AWS 청구 누적</li>
+      <li><strong>2024년 12월</strong>: 조광래 통화 시작, 부산진흥원에 사건 정리 메일 발송</li>
+      <li><strong>2025년 1월</strong>: 채권 담당 통화, 세금계산서 정합성 문제 제기, 김지혜 인사이동</li>
+      <li><strong>2026년 3월 20일</strong>: 지급명령 수령 진술, 김지혜/이승희와 재통화</li>
+      <li><strong>2026년 3월 23일</strong>: 이승희 장시간 통화로 내부 구조 재설명</li>
+    </ul>
+
+    <h2>7. 파디엠에 유리한 포인트</h2>
+    <ol>
+      <li>2021년 이후 사용 부인 진술이 일관됨</li>
+      <li>실사용 주체와 접속 주체가 특정되지 않음</li>
+      <li>2021년 종료/정리 시도 정황이 문서로 일부 남아 있음</li>
+      <li>안내 절차와 인수인계가 부실함</li>
+      <li>부산진흥원이 완전히 빠질 수 없는 구조임</li>
+      <li>세금계산서/청구 자료 정합성 문제 제기가 구체적임</li>
+    </ol>
+
+    <h2>8. 파디엠에 불리한 포인트</h2>
+    <ol>
+      <li>AWS 계정 명의가 파디엠으로 보임</li>
+      <li>거래원장상 청구액이 실제로 존재함</li>
+      <li>종료 확인 문서가 아직 완결형은 아님</li>
+      <li>지급명령 단계에 이미 진입함</li>
+    </ol>
+
+    <h2>9. 현재 가장 설득력 있는 해석</h2>
+    <p>파디엠은 2021년 테스트베드 사업 종료 후 AWS 사용이 끝났다고 인식했다. 하지만 계정, 리소스, 통합빌링 구조는 완전히 정리되지 않았고, 예치금 또는 크레딧이 한동안 과금을 흡수했다. 그 이후 2024년부터는 버지니아 리전 사용 또는 잔존 리소스 과금이 커졌지만, 메가존/클라우드그램/부산진흥원 어느 쪽도 파디엠에게 종료 구조와 책임선을 명확히 설명하지 못했다.</p>
+    <div class="box warn">따라서 이 사건은 단순 미납이 아니라, 지원사업 종료 후 계정 정리 책임, 통합빌링 승인과 운영 책임, 실제 사용 주체 특정, 명의와 실사용의 괴리, 공공지원사업 연결기관의 사후 조율 책임이 얽힌 복합 분쟁으로 보는 것이 맞다.</div>
+
+    <h2>10. 파디엠이 지금 바로 해야 할 일</h2>
+    <h3>10.1 지급명령 대응 시한 확인</h3>
+    <ul>
+      <li>실제 송달일 확인</li>
+      <li>이의신청 기한 계산</li>
+      <li>필요하면 즉시 법률대리인 상담</li>
+    </ul>
+    <h3>10.2 메가존/클라우드그램에 요구할 자료</h3>
+    <ol>
+      <li>AWS 계정 ID, 연결 이메일, 계정 생성/변경 이력</li>
+      <li>2021년 이후 월별 사용 서비스 목록</li>
+      <li>2024년 과금 급증 원인 서비스 및 리전 정보</li>
+      <li>IAM 사용자/접속 주체/접속 로그 확인 자료</li>
+      <li>통합빌링 등록 및 승인 근거</li>
+      <li>세금계산서 발행 일자 전체 이력</li>
+      <li>2021년 종료/삭제/해지 관련 내부 처리 기록</li>
+      <li>388원 이후 장기간 설명 없이 미수채권이 누적된 이유</li>
+    </ol>
+    <h3>10.3 부산진흥원에 확인할 것</h3>
+    <ol>
+      <li>사업 종료 시 계정/리소스 종료 가이드 존재 여부</li>
+      <li>지원사업 당시 파디엠과 메가존/클라우드그램 역할 구분 방식</li>
+      <li>부산진흥원이 해당 계정 사용 또는 운영에 관여했는지</li>
+      <li>2024-12-06 사건 설명 메일을 누가 받고 어떤 조치를 했는지</li>
+      <li>2025년 1월 김지혜가 누구에게 무엇을 전달했는지</li>
+    </ol>
+
+    <h2>11. 권장 대외 입장</h2>
+    <ol>
+      <li>2021년 테스트베드 사업 종료 이후 실제 사용하지 않았다고 인식하고 있었다.</li>
+      <li>2021년 소액 미납 이후 계정 또는 서비스가 계속 살아 있었고, 2024년 과금이 커졌다는 설명은 나중에야 들었다.</li>
+      <li>2024년 이후 실제 사용 주체, 잔존 리소스, 종료처리 미완결 이유에 대한 설명을 받지 못했다.</li>
+      <li>따라서 후행 청구 전부를 곧바로 인정할 수 없고, 먼저 사실관계와 책임 구조부터 재구성되어야 한다.</li>
+    </ol>
+
+    <h2>12. 현재 결론</h2>
+    <p>메가존 측 청구액이 장부상 존재한다는 점은 분명하다. 그러나 그 청구가 곧바로 <strong>파디엠의 승인된 실제 사용</strong>을 의미하지는 않는다. 오히려 현재 자료는 지원사업 참여, 통합빌링 승인 요청, 2021년 정리 시도, 388원 정산 이후 종료 인식, 2024년 다시 커진 과금, 부산진흥원과 메가존 내부의 인수인계 부실, 지급명령 단계까지 가는 동안의 설명 부재를 동시에 보여준다.</p>
+    <p>따라서 파디엠은 <strong>청구가 있었다</strong>는 사실보다 <strong>그 청구가 왜 파디엠 책임으로 귀속되어야 하는지 상대방이 충분히 증명하지 못하고 있다</strong>는 점을 중심으로 대응하는 것이 맞다.</p>
+  </div>
+</body>
+</html>

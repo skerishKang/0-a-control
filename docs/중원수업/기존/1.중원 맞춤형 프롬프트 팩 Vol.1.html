@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중원로지스 수업용 프롬프트 팩 (인쇄/수업용)</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8; /* 중원로지스 신뢰의 블루 */
+            --accent: #f97316; /* 포인트 오렌지 */
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        .container { max-width: 1000px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { font-size: 28px; margin: 0 0 15px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--text-sub); color: white; padding: 5px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px;}
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+
+        .info-box { background: #f8fafc; border-left: 6px solid var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 15px; color: #334155; }
+        .info-box strong { color: var(--accent); font-size: 1.1em; }
+
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 0 0 10px 0; color: #334155; display: flex; align-items: center; }
+
+        .prompt-card { border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 20px; background: #fff; position: relative; transition: 0.2s; }
+        .prompt-card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29, 78, 216, 0.08); transform: translateY(-2px); }
+        
+        .code-block { background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; cursor: pointer; }
+        .code-block:hover { background: #eff6ff; border-color: var(--primary); }
+
+        .copy-btn { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 15px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; color: #475569; transition: 0.2s; }
+        .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .tag { font-size: 12px; padding: 3px 8px; border-radius: 4px; background: #e2e8f0; color: #475569; margin-left: 10px; font-weight: 600; }
+        .tag.hot { background: #fee2e2; color: #b91c1c; }
+
+        @media print {
+            body { background: white; padding: 0; font-size: 12pt; }
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+            .copy-btn { display: none; }
+            .code-block { border: 1px solid #999; background: none; }
+            .grid { display: block; }
+            .prompt-card { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 20px; }
+        }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="badge-group">
+            <span class="badge main">중원로지스</span>
+            <span class="badge">GPT</span>
+            <span class="badge">Gemini</span>
+            <span class="badge">Mixboard</span>
+            <span class="badge">Whisk</span>
+            <span class="badge">Qwen</span>
+            <span class="badge accent">Minimax</span>
+        </div>
+        <h1>AI 내 얼굴 아바타 프롬프트 팩</h1>
+        <p class="desc">본인 사진을 넣어 중원로지스의 멋진 모델이 되어보세요!<br>원하는 AI 툴에 프롬프트를 복사해 넣기만 하면 됩니다.</p>
+    </header>
+
+    <div class="info-box">
+        <strong>💡 AI 이미지 생성 조합 공식</strong><br><br>
+        <div style="background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 10px; font-weight: bold; text-align: center;">
+            [1. 공통 접두어] + [2. 원하는 테마] + [3. 금지문(옵션)]
+        </div>
+        <ul style="margin-top: 15px;">
+            <li><b>얼굴 유지:</b> 본인 사진을 1장 꼭 첨부하고 프롬프트를 입력하세요.</li>
+            <li><b>툴 호환성:</b> 믹스보드, 위스크 등 여러 툴에서 테스트하며 가장 잘 나오는 결과물을 찾아보세요!</li>
+        </ul>
+    </div>
+
+    <section>
+        <h2>STEP 1. 공통 접두어 (얼굴 고정용)</h2>
+        <p class="desc">어떤 테마를 고르든 <strong>맨 앞</strong>에 반드시 이 문장을 붙여주세요.</p>
+        
+        <div class="prompt-card">
+            <h3>🇰🇷 인물 특징 유지 프롬프트</h3>
+            <div class="code-block" id="prefix_kr" onclick="copyText('prefix_kr')">업로드한 인물 사진을 완벽하게 참조해 주세요. 얼굴의 고유한 특징, 눈코입 비율, 피부톤, 헤어스타일을 그대로 유지하여 본인임을 알아볼 수 있어야 합니다. 추가 인물을 생성하지 마세요. 손가락이 어색하게 나오지 않도록 주의해 주세요.</div>
+            <button class="copy-btn" onclick="copyText('prefix_kr')">복사</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 2. 중원 맞춤 테마 선택 (8종)</h2>
+        <p class="desc">자신이 원하는 컨셉을 <strong>하나만 골라</strong> 접두어 뒤에 붙여넣으세요.</p>
+
+        <div class="grid">
+            <div class="prompt-card">
+                <h3>1) AGI 스마트 관제실 <span class="tag hot">강력추천</span></h3>
+                <div class="code-block" id="t1" onclick="copyText('t1')">인물은 깔끔한 비즈니스 정장을 입고 있습니다. 배경은 중원로지스의 최첨단 'AGI 스마트 안전 혁신 관제실'입니다. 허공에 투명한 디지털 홀로그램 지도와 물류 데이터 그래프가 떠 있습니다. 인물은 홀로그램을 터치하며 여유롭고 프로페셔널하게 웃고 있습니다. 영화 같은 푸른빛 조명과 사이버틱한 분위기.</div>
+                <button class="copy-btn" onclick="copyText('t1')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>2) 대형 트럭 앞 영웅 샷</h3>
+                <div class="code-block" id="t2" onclick="copyText('t2')">인물은 세련된 네이비색 물류 유니폼 조끼를 입고 있습니다. 배경에는 거대하고 멋진 최신형 대형 화물 트럭이 웅장하게 서 있습니다. 카메라는 로우 앵글(아래에서 위로 올려다보는 구도)로 인물을 영웅처럼 듬직하게 비춥니다. 파란 하늘과 강렬한 햇빛, 할리우드 영화 포스터 스타일의 고화질 실사.</div>
+                <button class="copy-btn" onclick="copyText('t2')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>3) 이달의 우수 사원 표지</h3>
+                <div class="code-block" id="t3" onclick="copyText('t3')">고급 비즈니스 매거진 표지 스타일. 인물은 팔짱을 끼고 부드러운 미소로 카메라를 응시합니다. 배경은 심플하고 모던한 그레이 톤이며, 스튜디오 조명이 인물을 돋보이게 합니다. 사진 상단과 하단에 텍스트를 넣을 수 있도록 깔끔한 여백을 크게 남겨주세요. 텍스트 직접 생성은 금지.</div>
+                <button class="copy-btn" onclick="copyText('t3')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>4) 귀여운 동물 파트너와 함께 <span class="tag hot">인기</span></h3>
+                <div class="code-block" id="t4" onclick="copyText('t4')">인물 옆에 조끼를 입은 귀여운 골든 리트리버 강아지가 앉아 있습니다. 인물은 강아지의 머리를 쓰다듬으며 환하게 웃고 있습니다. 배경은 화창한 야외 물류 센터. 따뜻하고 감성적인 햇살이 비추는 픽사(Pixar) 3D 애니메이션 스타일. 극도로 귀엽고 디테일하게 묘사.</div>
+                <button class="copy-btn" onclick="copyText('t4')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>5) 웹툰 주인공 스타일</h3>
+                <div class="code-block" id="t5" onclick="copyText('t5')">고퀄리티 한국 웹툰 작화 스타일. 인물은 택배 상자를 들고 활기차게 출근하는 모습입니다. 약간 피곤하지만 열정 넘치는 표정이 잘 드러납니다. 배경은 트렌디한 오피스. 말풍선을 직접 그리지 말고, 나중에 글씨를 넣을 수 있게 머리 위 공간만 여유롭게 비워두세요.</div>
+                <button class="copy-btn" onclick="copyText('t5')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>6) 3D 피규어 장난감 박스</h3>
+                <div class="code-block" id="t6" onclick="copyText('t6')">업로드한 인물을 아주 귀여운 3D 점토 피규어로 변환해 주세요. 투명한 플라스틱 블리스터 패키지(장난감 박스) 안에 포장된 새 상품 느낌입니다. 피규어는 작은 미니카(트럭)를 한 손에 들고 있습니다. 플라스틱 표면에 빛이 반사되는 현실적인 질감.</div>
+                <button class="copy-btn" onclick="copyText('t6')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>7) 시네마틱 야간 배송</h3>
+                <div class="code-block" id="t7" onclick="copyText('t7')">인물이 어두운 밤, 비가 살짝 내린 촉촉한 아스팔트 도로 위에 서 있습니다. 뒤에는 헤드라이트를 켠 물류 트럭이 있습니다. 가로등 불빛과 네온사인 빛이 인물의 얼굴과 젖은 바닥에 드라마틱하게 반사됩니다. 누아르 영화의 한 장면처럼 무드 있고 강렬하게 연출.</div>
+                <button class="copy-btn" onclick="copyText('t7')">복사</button>
+            </div>
+
+            <div class="prompt-card">
+                <h3>8) S-OIL 콜라보 (구도일 만남)</h3>
+                <div class="code-block" id="t8" onclick="copyText('t8')">인물이 노란색 물방울 모양의 귀여운 마스코트 캐릭터(초록색 멜빵바지 착용)와 하이파이브를 하고 있습니다. 두 캐릭터 모두 밝게 웃으며 성공적인 파트너십을 축하하는 분위기입니다. 쨍하고 선명한 색감, 긍정적인 에너지가 넘치는 상업 광고 스타일.</div>
+                <button class="copy-btn" onclick="copyText('t8')">복사</button>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>STEP 3. 금지문 (실패 방지용)</h2>
+        <p class="desc">프롬프트 <strong>맨 마지막</strong>에 붙여주면 이상하게 나오는 것을 막아줍니다.</p>
+        
+        <div class="prompt-card" style="border-left: 5px solid #ef4444;">
+            <h3>🚫 네거티브 프롬프트</h3>
+            <div class="code-block" id="neg" onclick="copyText('neg')">부정 프롬프트: 얼굴 왜곡, 일그러진 눈, 여러 명의 인물 생성, 손가락 기형, 과도한 블러, 깨진 텍스트, 의미 없는 알파벳 생성, 워터마크, 불쾌한 표정 금지.</div>
+            <button class="copy-btn" onclick="copyText('neg')">복사</button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function copyText(elementId) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        const btn = document.querySelector(`button[onclick="copyText('${elementId}')"]`);
+        const originalText = btn.innerText;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            btn.innerText = "복사 완료!";
+            btn.style.background = "#10b981";
+            btn.style.color = "white";
+            btn.style.borderColor = "#10b981";
+            
+            const block = document.getElementById(elementId);
+            block.style.background = "#dcfce7";
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "#f1f5f9";
+                btn.style.color = "#475569";
+                btn.style.borderColor = "#cbd5e1";
+                block.style.background = "#f8fafc";
+            }, 1500);
+        });
+    }
+</script>
+
+</body>
+</html>

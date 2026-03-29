@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>심화: Canvas 확장 활용 워크숍 Instructor Script</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        .speaker-label { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: block; font-size: 0.9rem; }
+        .script-block { margin-bottom: 25px; padding: 15px; border-radius: 8px; border-left: 3px solid #cbd5e1; background: #fdfdfd; }
+        .action-note { font-style: italic; color: #64748b; font-size: 0.85rem; margin-top: 10px; display: block; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">Advanced Script</div>
+            <h1>심화: Canvas 확장 활용 워크숍 Instructor Script</h1>
+            <p>데이터 정리부터 보고서 기획, 실무 도구 제작까지 — 실전 가이드</p>
+        </header>
+
+        <section id="opening">
+            <h2>0. 수업 오프닝</h2>
+            <div class="script-block">
+                <span class="speaker-label">강사 대사</span>
+                "안녕하세요! 지난 기초 과정에서는 Canvas로 문서를 만들고 다듬는 법을 배웠습니다. 오늘은 그 두 번째 시간, '확장 활용 워크숍'입니다. Canvas가 단순한 글쓰기 도구라고 생각하셨다면 오늘 그 생각이 완전히 바뀌실 겁니다. 오늘은 흩어진 데이터를 표로 정리하고, 보고서를 PPT로 기획하고, 심지어 우리 업무에 딱 맞는 계산기까지 직접 만들어볼 겁니다. AI를 '말동무'가 아니라 실제 '업무 파트너'로 활용하는 고급 기술들을 함께 익혀보시죠."
+            </div>
+        </section>
+
+        <section id="period1">
+            <h2 class="section-title">1교시: 데이터 마스터링 (표 활용)</h2>
+            <div class="script-block">
+                <span class="speaker-label">강사 대사</span>
+                "물류 현장에서는 카톡이나 메모장에 대충 적어둔 배차 정보가 참 많죠. 이걸 하나하나 엑셀에 옮기는 대신 AI에게 던져보겠습니다. Gemini Canvas는 복잡한 내용을 '표(Table)'로 바꾸는 데 아주 특화되어 있습니다."
+            </div>
+            <div class="prompt-box">
+                <div class="code">"아래는 어제 배차 일지 메모야. 이걸 [차량번호, 기사성함, 출발/도착지, 운송비, 지연시간] 항목을 포함한 깔끔한 분석표로 바꿔줘."</div>
+                <span class="action-note">* Gemini Canvas에서 표가 생성되는 과정을 화면 공유하며 설명합니다.</span>
+            </div>
+        </section>
+
+        <section id="period2">
+            <h2 class="section-title">2교시: 비주얼 기획 & 스토리보드</h2>
+            <div class="script-block">
+                <span class="speaker-label">강사 대사</span>
+                "글로 길게 적힌 보고서는 읽기 힘들죠. 이걸 발표용 슬라이드 뼈대로 바꿔보겠습니다. ChatGPT Canvas는 글의 맥락을 읽고 슬라이드를 나누는 능력이 뛰어납니다."
+            </div>
+            <div class="prompt-box">
+                <div class="code">"우리가 지난번에 만든 '동절기 안전 운행 공지' 내용을 바탕으로, 전 직원이 볼 PPT 5장 분량의 스토리보드를 짜줘. 슬라이드마다 [제목, 핵심 요점, 추천하는 시각 자료]를 적어줘."</div>
+                <span class="action-note">* 슬라이드 목차가 구성되는 동안 강점이 무엇인지 설명합니다.</span>
+            </div>
+        </section>
+
+        <section id="period3">
+            <h2 class="section-title">3교시: 디지털 화면 설계</h2>
+            <div class="script-block">
+                <span class="speaker-label">강사 대사</span>
+                "새로운 업무용 웹페이지나 앱 화면을 상상해보신 적 있나요? 디자인을 몰라도 괜찮습니다. AI에게 우리 브랜드 컬러와 목적을 말해주면 화면 구조를 눈앞에서 그려줍니다."
+            </div>
+            <div class="prompt-box">
+                <div class="code">"중원로지스 신규 차주 모집을 위한 홍보용 랜딩페이지 화면을 기획해줘. 우리 회사 색깔인 Navy와 White를 쓰고, '지금 신청하기' 버튼이 가장 잘 보이게 배치해줘."</div>
+                <span class="action-note">* 생성된 화면을 보며 버튼 위치나 문구를 수정하는 과정을 시연합니다.</span>
+            </div>
+        </section>
+
+        <section id="period4">
+            <h2 class="section-title">4교시: 나만의 실무 계산기</h2>
+            <div class="script-block">
+                <span class="speaker-label">강사 대사</span>
+                "마지막은 우리 업무의 '치트키'를 만드는 시간입니다. 매번 계산기 두드리던 복잡한 운임 로직을 AI에게 시켜서 '나만의 전용 계산 도구'로 만들어보겠습니다. 코딩을 몰라도 로직만 설명하면 충분합니다."
+            </div>
+            <div class="prompt-box">
+                <div class="code">"거리, 무게를 넣으면 중원로지스 표준 운임을 계산해주는 간단한 도구를 만들어줘. 밤 10시 이후에는 심야 할증 20%가 붙는 로직도 포함해서 실제로 작동하게 해줘."</div>
+                <span class="action-note">* 생성된 계산 툴에 값을 넣어 결과가 나오는지 확인해 봅니다.</span>
+            </div>
+        </section>
+
+        <footer style="text-align: center; color: #64748b; font-size: 0.85rem; padding-top: 30px; border-top: 1px solid var(--border); margin-top: 50px;">
+            중원로지스 AI 실무 역량 강화 교육 - 심화 가이드
+        </footer>
+    </div>
+    <script>
+        (function() {
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>

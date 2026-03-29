@@ -1,0 +1,11 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "exclude": [
+    "data/.*",
+    "\\.git/.*",
+    ".*__pycache__/.*",
+    "\\.pytest_cache/.*"
+  ]
+}

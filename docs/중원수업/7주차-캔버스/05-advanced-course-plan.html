@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>심화: Canvas 확장 활용 워크숍 계획서</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        .info-box { background: #f8fafc; border-left: 6px solid var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 15px; color: #334155; }
+        .info-box strong { color: var(--accent); font-size: 1.1em; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">Advanced Workshop</div>
+            <h1>심화: Canvas 확장 활용 워크숍 과정 계획서</h1>
+            <p>데이터 정리, PPT 기획, 화면 설계, 맞춤형 계산기까지 — 실전을 위한 4시간 심화 세션</p>
+        </header>
+
+        <section>
+            <h2>1. 교육 목표</h2>
+            <div class="info-box">
+                <ul>
+                    <li>Canvas의 <strong>표(Table) 기능</strong>을 통해 흩어진 물류 운영 데이터를 한눈에 보이는 리포트로 변환할 수 있다.</li>
+                    <li><strong>PPT 스토리보드 설계</strong> 기능을 활용해 보고서 내용을 발표 슬라이드 구조로 즉시 전환한다.</li>
+                    <li><strong>디지털 화면 설계(Layout)</strong> 기능을 통해 현장용 웹 페이지나 앱 화면의 구조와 문구를 직접 설계한다.</li>
+                    <li><strong>실무 전용 계산기 생성</strong> 로직을 체험하며, 복잡한 운임 산정 등을 자동화하는 나만의 도구를 만든다.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. 교육 시간표</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">교시</th>
+                        <th style="width: 15%;">시간</th>
+                        <th style="width: 25%;">주제</th>
+                        <th style="width: 45%;">핵심 수행 내용</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1교시</strong></td>
+                        <td>50분</td>
+                        <td>데이터 마스터링</td>
+                        <td>비어있는 텍스트를 표로 변환, 운영 KPI 요약 생성</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2교시</strong></td>
+                        <td>50분</td>
+                        <td>비주얼 기획</td>
+                        <td>보고서를 PPT 목차로 전환, 슬라이드별 시각 요소 설계</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3교시</strong></td>
+                        <td>60분</td>
+                        <td>디지털 화면 설계</td>
+                        <td>차주 모집용 홍보 페이지 구조 기획, 앱 가이드 화면 설계</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4교시</strong></td>
+                        <td>60분</td>
+                        <td>나만의 실무 계산기</td>
+                        <td>할증 운임 계산기 로직 생성, 실전 도구 제작 및 테스트</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. 교시별 세부 내용</h2>
+            
+            <h3>1교시: 데이터 마스터링</h3>
+            <p>카톡이나 메모장에 적힌 난잡한 배차 일지를 논리적인 표(Table)로 즉시 정리하고, 수익성 지표를 추가하여 분석 리포트로 업그레이드하는 기법을 배웁니다.</p>
+            
+            <h3>2교시: 비주얼 기획</h3>
+            <p>텍스트 위주의 보고서를 발표용 스토리보드로 빠르게 변환하고, 슬라이드별 핵심 문구와 적절한 시각화 아이디어를 얻는 방법을 연습합니다.</p>
+            
+            <h3>3교시: 디지털 화면 설계</h3>
+            <p>전문 디자인 기술 없이도 텍스트만으로 깔끔한 웹 시안 구조를 잡고, 버튼 배치와 핵심 문구를 AI와 상의하며 현장용 화면을 설계해봅니다.</p>
+            
+            <h3>4교시: 나만의 실무 계산기</h3>
+            <p>매번 수기로 계산하던 복잡한 할증 로직을 자동 계산해주는 툴을 만들어보고, 코딩 지식 없이도 실무 도구를 생성해내는 과정을 체험합니다.</p>
+        </section>
+
+        <footer style="text-align: center; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 30px; font-size: 0.9rem; margin-top: 50px;">
+            중원로지스 AI 실무 역량 강화 교육 - 심화 과정 파트
+        </footer>
+    </div>
+    <script>
+        (function() {
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grok 영상 생성 프롬프트 심화 가이드</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    :root { --primary: #1a73e8; --accent: #d93025; --bg: #f8fafc; --dark: #1e293b; --secondary: #059669; }
+    body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; line-height: 1.7; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    .step-header { font-size: 1.8rem; font-weight: 800; color: #fff; background: var(--dark); padding: 15px 25px; border-radius: 12px; margin: 30px 0 20px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .card { background: #fff; border-radius: 20px; padding: 35px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #e2e8f0; }
+    
+    .prompt-box { background: #f1f5f9; border-left: 8px solid var(--primary); padding: 20px; border-radius: 12px; font-size: 1rem; white-space: pre-wrap; margin: 15px 0; color: #334155; position: relative; }
+    .copy-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 5px; }
+    .copy-btn:hover { background: #1557b0; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 20px; }
+    .ex-card { background: #fff; border: 1px solid #cbd5e1; padding: 20px; border-radius: 15px; }
+    .ex-title { font-weight: 800; color: var(--secondary); font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; }
+    .tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; }
+    
+    .alert { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 15px 40px; border-radius: 50px; font-weight: bold; opacity: 0; transition: 0.3s; z-index: 1000; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="step-header">STEP 4. Grok(그록) 이미지-투-비디오 심화 활용</div>
+  
+  <div class="card">
+    <p style="font-weight: 700; color: var(--accent);">⚠️ 주의: 루프 프롬프트가 어색할 경우 아래 상황별 프롬프트를 사용하세요.</p>
+    
+    <div class="grid">
+      <div class="ex-card">
+        <div class="ex-title">① 기본형 <span class="tag">추천 90%</span></div>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">가장 자연스러운 영화적 연출이 필요할 때</p>
+        <div class="prompt-box" id="p1">Animate this still image into a short, natural cinematic moment.
+Keep the camera fixed and preserve the original composition. Add very subtle, realistic motion that supports the mood of the scene. Do not exaggerate motion. No music.</div>
+        <button class="copy-btn" onclick="copyText('p1')">프롬프트 복사</button>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-title">② 내레이션 최적화 <span class="tag">긴 문장용</span></div>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">말소리가 긴데 영상이 튀지 않아야 할 때</p>
+        <div class="prompt-box" id="p2">Create a calm, emotionally consistent animation from this image.
+Movement should be minimal and slow, designed to support spoken narration. Focus on atmosphere rather than action. Camera remains still. Lighting and colors remain consistent. No music.</div>
+        <button class="copy-btn" onclick="copyText('p2')">프롬프트 복사</button>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-title">③ 리에디트형 <span class="tag">추가 클립</span></div>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">같은 사진으로 다른 움직임의 영상이 필요할 때</p>
+        <div class="prompt-box" id="p3">Generate an alternative animation of this image with a different subtle motion emphasis.
+Change only the type of movement, while keeping the character pose, camera, and mood the same. This is a variation, not a new scene. No music.</div>
+        <button class="copy-btn" onclick="copyText('p3')">프롬프트 복사</button>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-title">④ 배경 루프형 <span class="tag">은은한 반복</span></div>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">기계적이지 않은 자연스러운 무한 반복</p>
+        <div class="prompt-box" id="p4">Create a short looping animation that feels natural and unobtrusive.
+The loop should be soft and barely noticeable. Avoid mechanical or repetitive motion. Camera remains fixed. Lighting and color stay consistent. No music.</div>
+        <button class="copy-btn" onclick="copyText('p4')">프롬프트 복사</button>
+      </div>
+    </div>
+
+    <div style="margin-top: 25px;">
+      <div class="ex-card" style="border: 2px solid var(--primary);">
+        <div class="ex-title" style="color: var(--primary);">⑤ 한국어 정밀 루프 제어 <span class="tag" style="background: #eef2ff; color: #1a73e8;">고급 설정</span></div>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">첫 프레임과 끝 프레임을 강제로 일치시켜야 할 때</p>
+        <div class="prompt-box" id="p5">6초 길이의 완전한 무한 루프 영상을 만들어 줘. 첫 프레임과 마지막 프레임은 업로드한 이미지와 동일해야 해. 카메라는 고정하고 조명과 색감도 일관되게 유지해 줘. 시작 프레임으로 되돌아오는 부드러운 순환형 움직임을 넣어 매끄러운 루프를 만들어 줘. No music</div>
+        <button class="copy-btn" onclick="copyText('p5')" style="background: var(--dark);">프롬프트 복사</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert" id="copyAlert">✅ 프롬프트가 복사되었습니다!</div>
+
+<script>
+  function copyText(id) {
+    const text = document.getElementById(id).innerText.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const alertBox = document.getElementById('copyAlert');
+      alertBox.style.opacity = '1';
+      setTimeout(() => { alertBox.style.opacity = '0'; }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

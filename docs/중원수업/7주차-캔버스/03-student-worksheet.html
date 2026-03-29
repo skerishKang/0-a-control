@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7주차 학생 실습지</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #334155;
+            --accent: #f97316;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 40px 20px; font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 950px; margin: 0 auto; background: var(--bg-card); padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; }
+        h1 { font-size: 28px; margin: 0 0 10px 0; color: var(--primary); font-weight: 800; }
+        .desc { font-size: 16px; color: var(--text-sub); }
+        .badge-group { margin-bottom: 15px; }
+        .badge { display: inline-block; background: var(--secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .badge.main { background: var(--primary); }
+        .badge.accent { background: var(--accent); }
+        section { margin-bottom: 50px; break-inside: avoid; }
+        h2 { font-size: 22px; border-left: 6px solid var(--primary); padding-left: 15px; margin-bottom: 20px; color: #1e293b; }
+        h3 { font-size: 18px; margin: 25px 0 10px 0; color: #334155; display: flex; align-items: center; }
+        .period { display: inline-block; background: var(--accent); color: white; padding: 5px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+        .card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; transition: 0.2s; }
+        .card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(29,78,216,0.08); transform: translateY(-2px); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px; border: 1px solid var(--border); font-size: 14px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        /* Prompt & Code Blocks */
+        .code-block, .prompt-box, .code, .code-area, .prompt-box-inner, .prompt-body { 
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; font-size: 15px; color: #334155; white-space: pre-wrap; word-break: break-all; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace; position: relative; 
+        }
+        .code-block:hover, .prompt-box:hover, .prompt-body:hover { background: #eff6ff; border-color: var(--primary); }
+        .code-block .label, .follow-up strong { color: var(--accent); font-weight: bold; }
+        
+        /* Copy Button */
+        .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: #2d3748; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 100; font-family: var(--font-sans); }
+        .copy-btn:hover { opacity: 1; background: #1a202c; }
+        .copy-btn.copied { background: #38a169; opacity: 1; }
+        .copy-container { position: relative !important; }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 8px 0; }
+        
+        @media print { 
+            body { background: white; padding: 0; font-size: 12pt; } 
+            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } 
+            .card, section { break-inside: avoid; border: 1px solid #ccc; } 
+            header { border-bottom: 2px solid #000; }
+            h2 { border-left: 4px solid #000; }
+        }
+        @media (max-width: 768px) { .container { padding: 20px; } h1 { font-size: 22px; } }
+
+        .task-box { border: 2px solid var(--border); border-radius: 10px; padding: 20px; margin: 15px 0; background: #fafafa; }
+        .task-box h4 { color: var(--primary); margin-bottom: 10px; }
+        .checklist-item, .checkbox-item { display: flex; align-items: start; gap: 10px; padding: 10px 15px; margin: 8px 0; background: #f8fafc; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .checklist-item:hover, .checkbox-item:hover { background: #f1f5f9; }
+        .checklist-item input, .checkbox-item input { margin-top: 4px; width: 18px; height: 18px; }
+        .input-line { border-bottom: 2px solid var(--border); min-width: 150px; display: inline-block; padding: 0 10px; }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>7주차 학생 실습지</h1>
+            <h2>ChatGPT Canvas & Gemini Canvas 활용 실무 문서 작성</h2>
+        </header>
+
+        <section>
+            <h2>수업 개요</h2>
+            <table>
+                <tr><th style="width: 30%">주제</th><td>ChatGPT Canvas와 Gemini Canvas를 활용한 실무형 문서 작성</td></tr>
+                <tr><th>시간</th><td>4시간 (220분 실수업 + 20분 휴식)</td></tr>
+                <tr><th>준비물</th><td>개인 노트북, ChatGPT 계정, Gemini 계정</td></tr>
+                <tr><th>참고 자료</th><td>05-확장 활용 예시집, 06-프롬프트 라이브러리</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <span class="period">1교시 (50분)</span>
+            <h2>Canvas 개념 이해와 도구 소개</h2>
+            <div class="task-box">
+                <h4>실습 1-1: 첫 Canvas 경험 (15분)</h4>
+                <p><strong>[수행 안내]</strong></p>
+                <div class="checkbox-item"><input type="checkbox"> ChatGPT 또는 Gemini 중 하나를 선택해 로그인합니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> <strong>프롬프트 팩(04)</strong>의 '실습 1-1' 프롬프트를 복사하여 입력합니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> 생성된 문서에서 '결빙 구간 리스트 추가' 등 수정을 한 번 요청해봅니다.</div>
+            </div>
+            <p><span class="time-badge">작업 시간: 10분</span></p>
+        </section>
+
+        <section>
+            <span class="period">2교시 (50분)</span>
+            <h2>공통점과 차이점 비교 실습</h2>
+            <div class="task-box">
+                <h4>실습 2-1: 두 도구의 차이 비교 (20분)</h4>
+                <p><strong>[수행 안내]</strong></p>
+                <div class="checkbox-item"><input type="checkbox"> <strong>프롬프트 팩(04)</strong>의 '실습 2-1(고객 응대 매뉴얼)' 프롬프트를 복사합니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> ChatGPT와 Gemini 두 곳에 각각 입력하여 결과를 만듭니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> 결과물이 어떻게 다른지 아래 표에 핵심만 메모합니다.</div>
+            </div>
+            <p><span class="time-badge">작업 시간: 15분</span></p>
+            <h3>실습 2-2: 내 눈으로 본 차이점</h3>
+            <table>
+                <tr><th>비교 항목</th><th>ChatGPT (글쓰기 코치)</th><th>Gemini (구조 설계자)</th></tr>
+                <tr><td>문장 스타일</td><td></td><td></td></tr>
+                <tr><td>목차/구조</td><td></td><td></td></tr>
+                <tr><td>최종 선택</td><td><input type="radio" name="choice"> 이 작업엔 이게 좋다</td><td><input type="radio" name="choice"> 이 작업엔 이게 좋다</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <span class="period">3교시 (60분)</span>
+            <h2>실무 문서 제작 실습</h2>
+            <h3>실습 3-1: 주제 선정 (5분)</h3>
+            <p><strong>주제 선택(하나만 선택) 및 권장 사용 흐름 확인</strong>:</p>
+            <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">* 권장 사용 흐름은 두 도구를 <strong>순서대로</strong> 사용하는 방식입니다. (앞 도구: 초안 생성 → 뒤 도구: 재구성/다듬기)</p>
+            <table>
+                <tr><th>선택</th><th>주제</th><th>권장 사용 흐름</th></tr>
+                <tr><td><input type="radio" name="topic"></td><td>신규 대형 화주사 대상 최적 배차 노선 제안서</td><td>Gemini → ChatGPT</td></tr>
+                <tr><td><input type="radio" name="topic"></td><td>동절기 차량 소모품 점검 및 안전 수칙 안내문</td><td>ChatGPT → Gemini</td></tr>
+                <tr><td><input type="radio" name="topic"></td><td>물류 터미널 상하차 작업 효율 개선 아이디어</td><td>Gemini → ChatGPT</td></tr>
+                <tr><td><input type="radio" name="topic"></td><td>주간 정산 지연 방지를 위한 서류 수거 실행 계획</td><td>ChatGPT → Gemini</td></tr>
+            </table>
+            <div class="input-field"><strong>선택한 주제</strong>: _______________________</div>
+            <div class="task-box">
+                <h4>실습 3-1: 4단계 문서 완성 (50분)</h4>
+                <p><strong>[수행 안내]</strong></p>
+                <div class="checkbox-item"><input type="checkbox"> 위 표에서 주제 하나를 선택합니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> <strong>프롬프트 팩(04)</strong>에서 해당 주제의 '1단계 초안' 프롬프트를 복사해 시작합니다.</div>
+                <div class="checkbox-item"><input type="checkbox"> 2~4단계를 거치며 문서를 수정/변환/다듬기 합니다.</div>
+            </div>
+
+            <div class="checklist">
+                <label class="checkbox-item"><input type="checkbox"> <strong>1단계: 초안 작성</strong> (권장 도구 활용)</label>
+                <label class="checkbox-item"><input type="checkbox"> <strong>2단계: 구조 변경</strong> (항목화/상세화 등)</label>
+                <label class="checkbox-item"><input type="checkbox"> <strong>3단계: 톤 조정</strong> (대상에 맞춤)</label>
+                <label class="checkbox-item"><input type="checkbox"> <strong>4단계: 형식 변환</strong> (표/체크리스트 등)</label>
+            </div>
+
+            <div class="input-field"><strong>최종 문서를 만들며 가장 크게 바뀐 부분은?</strong>:<br><br></div>
+        </section>
+
+        <section>
+            <span class="period">4교시 (60분)</span>
+            <h2>프롬프트 실전과 결과물 피드백</h2>
+            <h3>실습 4-1: 최종 결과물 완성 (25분)</h3>
+            <div class="task-box"><h4>요구 사항</h4><ul><li>최소 1개 이상의 수정을 거친 문서</li><li>어떤 도구를 조합했는지 메모 (예: Gemini 설계/재구성 → ChatGPT 서술/다듬기)</li><li>최종 결과물은 내일 바로 쓸 수 있는 수준</li></ul></div>
+            <div class="input-field"><strong>사용한 도구 조합</strong>:<br>1. _______ → _______<br>2. _______ → _______<br>3. _______ → _______</div>
+            <h3>실습 4-2: 결과물 기록 (10분)</h3>
+            <div class="input-field" style="min-height: 150px;"><strong>최종 결과물</strong>:<br><br><br><br></div>
+        </section>
+
+        <section>
+            <h2>메모 및 질문 공간</h2>
+            <div class="input-field" style="min-height: 100px;"><strong>오늘 배운 내용 정리</strong>:<br><br><br></div>
+            <div class="input-field" style="min-height: 100px;"><strong>남은 질문</strong>:<br><br><br></div>
+        </section>
+
+        <section>
+            <h2>강사용 체크리스트 (참고용)</h2>
+            <h3>수업 전 체크</h3>
+            <div class="checkbox-item"><input type="checkbox"> 노트북, 스크린 공유 준비</div>
+            <div class="checkbox-item"><input type="checkbox"> 학생 실습지 인쇄 (인원 수)</div>
+            <div class="checkbox-item"><input type="checkbox"> ChatGPT, Gemini 로그인 상태 확인</div>
+            <h3>수업 중 체크</h3>
+            <div class="checkbox-item"><input type="checkbox"> 1교시: 도입(5), 개념(10), 도구소개(15), 실습(15)</div>
+            <div class="checkbox-item"><input type="checkbox"> 2교시: 공통점(10), 차이점(10), 실습(20), 토론(10)</div>
+            <div class="checkbox-item"><input type="checkbox"> 3교시: 주제선정(5), 초안(15), 구조(15), 톤(10), 표변환(15)</div>
+            <div class="checkbox-item"><input type="checkbox"> 4교시: 프롬프트4요소(10), 조합시연(10), 마무리실습(25), 발표(15)</div>
+        </section>
+    </div>
+    <script>
+        (function() {
+            
+
+            const selector = '.code-block, .prompt-box, .code, .code-area, .prompt-box-inner';
+            const blocks = document.querySelectorAll(selector);
+            
+            blocks.forEach(block => {
+                if (block.querySelector('.copy-btn')) return;
+                block.classList.add('copy-container');
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerText = '복사';
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const textToCopy = Array.from(block.childNodes)
+                        .filter(node => node !== btn)
+                        .map(node => node.textContent)
+                        .join('')
+                        .trim();
+                        
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        btn.innerText = '복사됨';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerText = '복사';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                });
+                block.appendChild(btn);
+            });
+        })();
+    </script>
+</body>
+</html>
