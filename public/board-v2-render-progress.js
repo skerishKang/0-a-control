@@ -39,13 +39,15 @@ function renderInProgress(state) {
     </div>
   `;
 
-  // Simplified buttons: done / hold only
+  // Simplified buttons: done / hold / workfile
   const simpleButtonsHtml = quest.id ? `
     <div style="margin-top: 24px; display: flex; gap: 12px;">
       <button type="button" class="v2-btn v2-btn-primary" style="flex:1; font-size:16px; padding:14px 20px;" 
         onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'done')">완료</button>
+      <button type="button" class="v2-btn v2-btn-secondary" style="flex:0.5; font-size:16px; padding:14px 20px;" 
+        onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'hold')">보류</button>
       <button type="button" class="v2-btn v2-btn-secondary" style="flex:0.5; font-size:16px; padding:14px 20px; border-color: var(--v2-brand); color: var(--v2-brand);" 
-        onclick="window.boardV2OpenWorkfile('${escapeHtml(quest.title)}')">작업철</button>
+        onclick="window.boardV2OpenWorkfile('${escapeHtml(quest.id)}', '${escapeHtml(questTitle)}')">작업철</button>
     </div>
   ` : "";
 
@@ -83,7 +85,7 @@ function renderInProgress(state) {
         <h1 class="v2-mission-title v2-quest-title" style="font-size: 32px; line-height: 1.4; color: var(--v2-text); margin-bottom: 32px; word-break: keep-all;">${escapeHtml(questTitle)}</h1>
 
         <div style="margin-bottom: 24px;">
-          <a href="#" onclick="window.boardV2OpenWorkfile('${escapeHtml(questTitle)}'); return false;" style="font-size: 13px; color: var(--v2-brand); opacity: 0.7;">작업철 열기</a>
+          <a href="#" onclick="window.boardV2OpenWorkfile('${escapeHtml(quest.id)}', '${escapeHtml(questTitle)}'); return false;" style="font-size: 13px; color: var(--v2-brand); opacity: 0.7;">작업철 열기</a>
         </div>
 
         <div class="v2-progress-stack" style="gap: 20px;">
