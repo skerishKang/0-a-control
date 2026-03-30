@@ -7,23 +7,35 @@
 Recover prior Codex work context from local session sources and reconstruct a usable working state.
 
 ## Data Sources
-### Required
-- `~/.codex/state_5.sqlite`
-- `~/.codex/history.jsonl`
 
-### Optional
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\sessions`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\sessions_html`
+### Primary
+- `sessions/` — Full session archive (Markdown with Dialogue + Transcript)
+- `sessions_html/` — HTML display layer for quick browsing
+
+### Secondary
+- `~/.codex/state_5.sqlite` — Thread metadata
+- `~/.codex/history.jsonl` — User message log
+
+### Tertiary
+- `data/control_tower.db` — Source records (raw DB)
+
+## Recovery Reading Order
+1. **current urgent state** check
+2. **sessions/ archive** — read full session files
+3. **sessions_html/** — quick browser search if needed
+4. **sqlite / history.jsonl** — additional verification
+5. **summary/current quest** — compressed final state
 
 ## What This Skill Must Do
-1. Find recent Codex threads from sqlite
-2. Identify the most relevant thread(s)
-3. Recover the user-message flow from `history.jsonl`
+1. Find relevant sessions from `sessions/` archive
+2. Read full Dialogue + Transcript for each session
+3. Identify the most relevant session(s)
 4. Reconstruct current working state by topic
 5. Distinguish:
-   - raw session source
-   - summarized recovery
-   - display/view artifacts
+   - raw session source (DB, transcripts)
+   - full archive (sessions/ .md files)
+   - display layer (sessions_html/ .html files)
+   - summarized recovery (final output)
 
 ## Recovery Topics
 - `board-v2`
@@ -47,12 +59,14 @@ Then always include:
 ## Rules
 - Never pretend summary is the raw source
 - Always identify whether a claim came from:
+  - sessions/ archive (full Dialogue)
   - sqlite metadata
   - history.jsonl user messages
-  - local sessions folder
   - human-provided context
 - If assistant replies are missing, state that clearly
 - Prefer recovery from evidence over guesswork
+- Read full archive before summarizing
+- HTML is never source of truth
 
 ## When To Use
 - when a long Codex session exists
@@ -62,4 +76,3 @@ Then always include:
 ## When Not To Use
 - when only a single simple thread exists
 - when the user already has a trusted handoff summary
-

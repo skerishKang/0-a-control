@@ -320,6 +320,42 @@ window.boardV2CloseModal = function boardV2CloseModal() {
   }
 };
 
+window.boardV2OpenWorkfile = async function boardV2OpenWorkfile(questId, fallbackTitle) {
+  let workfilePath = null;
+  
+  // 1. Try explicit mapping first
+  try {
+    const mapResp = await fetch('/작업철/_mapping.json');
+    if (mapResp.ok) {
+      const mapping = await mapResp.json();
+      workfilePath = mapping[questId] || null;
+    }
+  } catch (e) {}
+  
+  // 2. Fallback: title-based guess (last resort)
+  if (!workfilePath && fallbackTitle) {
+    const slug = fallbackTitle.replace(/[^\w\s가-힣]/g, '').trim().split(/\s+/).slice(0, 3).join('-');
+    workfilePath = `작업철/${slug}.md`;
+  }
+  
+  if (!workfilePath) {
+    window.alert('작업철이 연결되어 있지 않습니다.');
+    return;
+  }
+  
+  try {
+    const resp = await fetch('/' + encodeURI(workfilePath));
+    if (!resp.ok) {
+      window.alert('작업철 파일을 찾을 수 없습니다: ' + workfilePath);
+      return;
+    }
+    const content = await resp.text();
+    window.boardV2OpenModal('작업철', `<pre style="white-space:pre-wrap;font-size:14px;">${content}</pre>`);
+  } catch (e) {
+    window.alert('작업철 로드 실패: ' + e.message);
+  }
+};
+
 window.boardV2Refresh = async () => {
   await loadBoardV2();
 };

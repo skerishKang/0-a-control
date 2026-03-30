@@ -1,6 +1,6 @@
 ---
 name: session-refresh
-description: "세션 노트를 DB에서 export하고 읽기 좋은 구조로 갱신한다. sessions/ 폴더를 운영 메모리 canonical 소스로 유지."
+description: "세션 보존본을 DB에서 export한다. sessions/ 폴더를 전체 세션 아카이브로 유지."
 ---
 
 # session-refresh
@@ -43,11 +43,12 @@ refresh-sessions.bat
 
 `export_sessions.py`가 하는 일:
 1. `data/control_tower.db`의 `sessions` 테이블을 읽는다
-2. 각 세션을 Markdown 노트로 변환한다
+2. 각 세션을 전체 보존본 Markdown으로 변환한다 (Dialogue + Transcript 포함)
 3. `sessions/YYYY-MM-DD/` 폴더에 저장한다
 4. `sessions/INDEX.md`를 갱신한다
 
-세션 노트 구조는 Intent/Actions/Decisions/Artifacts/Next Start/Raw Refs 형식을 따른다.
+세션 노트 구조는 Metadata / Summary / Dialogue / Transcript 형식을 따른다.
+Summary는 보조층이고, 전체 대화 흐름이 본문이다.
 
 ### Step 2: HTML 갱신 (선택)
 
@@ -68,6 +69,7 @@ cat sessions/INDEX.md | head -20
 - `sessions/INDEX.md`가 갱신되었는가
 - 최근 세션 파일이 생성되었는가
 - 날짜 폴더 구조가 올바른가
+- Dialogue 섹션에 실제 대화가 있는가
 
 ### Step 4: 결과 출력
 
@@ -83,6 +85,16 @@ HTML 생성: {완료/건너뜀}
 - {날짜}/{세션파일명}
 ```
 
+## Recovery 시 읽기 순서
+
+세션 복원 시 다음 순서로 읽습니다:
+
+1. **current urgent state** 확인
+2. **sessions/ 폴더**에서 관련 세션 archive를 찾아 전체 대화를 읽음
+3. **sessions_html/**로 빠른 탐색 (필요 시)
+4. **DB source_records**에서 추가 확인 (부족할 때)
+5. **summary/current quest**로 압축 (마지막 정리)
+
 ## 출력 형식
 
 - 한국어로 출력한다.
@@ -95,21 +107,25 @@ HTML 생성: {완료/건너뜀}
 | `refresh_sessions.sh` 실행 불가 | 직접 `python scripts/export_sessions.py` 실행 |
 | DB 접근 불가 | "DB 접근 불가. 세션 갱신을 건너뜁니다" 안내 |
 | `generate_session_html.py` 없음 | Markdown export만 수행 |
-| export 결과가 transcript dump | "운영 노트가 아닌 transcript가 생성됨. export 로직 점검 필요" 경고 |
+| Dialogue가 빈 경우 | "대화 기록 없음" 명시 후 계속 |
 | `sessions/` 폴더 없음 | 자동 생성 후 export 수행 |
 
 ## 관련 파일/스크립트
 
-- `scripts/export_sessions.py` — DB → Markdown export
+- `scripts/export_sessions.py` — DB → Markdown export (전체 보존형)
 - `scripts/generate_session_html.py` — Markdown → HTML 변환
 - `scripts/refresh_sessions.sh` — 통합 실행 스크립트 (Unix/WSL)
 - `refresh-sessions.bat` — Windows 래퍼
+- `sessions/README.md` — 세션 아카이브 구조 설명
+- `sessions/TEMPLATE.md` — 세션 노트 템플릿
+- `sessions_html/README.md` — HTML 표시층 설명
 - `.kilo/rules-ops-close/01-closing-rules.md` — ops-close 모드 세부 규칙
 - `AGENTS.md` — Memory Hierarchy 섹션
 
 ## 제한 사항
 
 - 이 skill은 **읽기/내보내기 전용**이다. DB 스키마나 원시 데이터를 수정하지 않는다.
-- 세션 노트는 Intent/Actions/Decisions/Artifacts/Next Start 구조를 유지해야 한다.
-- transcript dump가 아닌 운영 메모리를 생성하는 것이 목표다.
+- 세션 노트는 Metadata / Summary / Dialogue / Transcript 구조를 유지해야 한다.
+- 요약만 남기고 대화를 생략하면 안 된다.
 - 표준 명령어(`refresh_sessions.sh` 또는 `export_sessions.py`)만 사용한다. 직접 Python 명령어로 ad-hoc export하지 않는다.
+- HTML은 보기용이지 원문 대체물이 아니다.

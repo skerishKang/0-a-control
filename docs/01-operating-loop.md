@@ -6,21 +6,39 @@ Define the concrete daily loop for the control tower so any agent or developer c
 ## Core Loop
 The system runs as a strategic execution loop:
 
-1. morning briefing
+1. morning briefing (with archive context)
 2. mission selection
-3. quest execution
+3. quest execution (with archive as needed)
 4. quest evaluation
 5. plan revision
 6. end-of-day report
 7. next-session restart strategy
 
+## Recovery Reading Order (All Phases)
+
+Every phase follows this reading order:
+
+1. **current urgent state** — current_state API
+2. **related sessions archive** — only relevant .md files
+3. **sessions_html/** — quick browser search if needed
+4. **raw transcript / DB** — additional verification
+5. **summary/current quest** — compressed final state
+
+**Important**: Read only what's relevant. Not all archives, every time.
+
 ## Morning Flow
+
+### Reading Order (1 minute)
+1. **current state** (10s) — today's mission, current quest
+2. **related archive** (30s) — yesterday's session on same topic, if any
+3. **mission decision** (20s) — pick one main mission
+
 ### Inputs
 - current state
+- related sessions archive (selective, not all)
 - dated items
 - unfinished items from the previous day
 - new information since last session
-- short-term and long-term pressure
 
 ### Outputs
 - single main mission for the day
@@ -37,6 +55,12 @@ Morning output should feel like a short operations briefing:
 - action-biased
 
 ## During Work
+
+### Reading Order (30 seconds, only when needed)
+- **current quest** — always in focus
+- **related archive** — only when context is lost
+- **sessions_html** — quick scan if topic is unclear
+
 ### Principle
 The system should keep the user focused on one current quest.
 
@@ -47,6 +71,13 @@ The system should keep the user focused on one current quest.
 - propose the next quest
 - explain why that next quest is appropriate
 - revise plan placement when required
+
+### When To Read Archive During Work
+| Situation | Action |
+|-----------|--------|
+| Context is lost | Read relevant session Dialogue |
+| New session starts | Run `codex 세션 복원해줘` or read archive |
+| Quest completed | Verify, then propose next quest |
 
 ### Next Quest Selection Priority
 1. dated urgency
@@ -74,11 +105,29 @@ Use when meaningful progress happened but the completion criteria were not fully
 Use when stopping is the correct strategic choice for now.
 
 ## End-of-Day Flow
+
+### Reading Order (2 minutes)
+1. **today's sessions** (30s) — check archive was saved
+2. **unfinished items** (1m) — what remains
+3. **restart strategy** (30s) — tomorrow's first action
+
 ### Primary output order
 1. what was actually done
 2. what remains unfinished
 3. strategy for unfinished items
 4. first quest for the next session
+
+### Archive Check
+```bash
+ls sessions/$(date +%Y-%m-%d)/
+```
+Verify today's sessions are properly archived.
+
+### Restart Strategy
+Leave a compressed sentence for tomorrow's recovery:
+```
+내일 아침 시작점: [topic]의 [specific state]
+```
 
 ### Tone
 The end-of-day output is:

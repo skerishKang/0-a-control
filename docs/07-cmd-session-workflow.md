@@ -82,6 +82,14 @@ python scripts/import_gemini_cli_session.py --session-id <session_id> --project 
 python scripts/import_windsurf_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\windsurf.log
 ```
 
+For kilo and opencode, the wrapper cleanup automatically imports from their native databases.
+Manual import (if wrapper was not used):
+
+```bash
+python scripts/import_kilo_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control
+python scripts/import_opencode_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control
+```
+
 If `--file` is omitted, the importer looks for:
 
 ```text

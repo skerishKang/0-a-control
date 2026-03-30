@@ -456,6 +456,17 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
         for prefix, prefix_handler in prefix_routes:
             if path.startswith(prefix):
+        prefix_routes = [
+            ("/api/sessions/view/", self._get_sessions_view),
+        ]
+
+        handler = exact_routes.get(path)
+        if handler:
+            handler(query)
+            return
+
+        for prefix, prefix_handler in prefix_routes:
+            if path.startswith(prefix):
                 prefix_handler(path, query)
                 return
 
@@ -478,10 +489,18 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
                 raise
 
     def handle_static(self, path: str) -> None:
+        # 1. Check PUBLIC_DIR first
         candidate = (PUBLIC_DIR / path.lstrip("/")).resolve()
         if not str(candidate).startswith(str(PUBLIC_DIR.resolve())) or not candidate.exists():
-            self.send_error(HTTPStatus.NOT_FOUND, "Static file not found")
-            return
+            # 2. Check '작업철' directory if the path starts with /작업철/
+            if path.lstrip("/").startswith("작업철/"):
+                candidate = (ROOT_DIR / path.lstrip("/")).resolve()
+                if not str(candidate).startswith(str(ROOT_DIR.resolve())) or not candidate.exists():
+                    self.send_error(HTTPStatus.NOT_FOUND, "Workfile not found")
+                    return
+            else:
+                self.send_error(HTTPStatus.NOT_FOUND, "Static file not found")
+                return
 
         content_type, _ = mimetypes.guess_type(str(candidate))
         self.send_response(HTTPStatus.OK)

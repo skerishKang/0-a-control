@@ -237,6 +237,72 @@ def render_session_html(view: dict) -> str:
     date = parse_timestamp(started_at)[1] or "-"
     time = f"{format_time(started_at)} ~ {format_time(ended_at) if ended_at else 'active'}"
 
+    # Build summary box (short supplementary layer)
+    intent = _display_text(summary.get("intent"), "요약이 없습니다.")
+    actions_list = summary.get("actions") or []
+    decisions_list = summary.get("decisions") or []
+    next_start_list = summary.get("next_start") or []
+    files_touched = artifacts.get("files_touched") or []
+    actions_json = artifacts.get("actions") or []
+
+    summary_html = (
+        '<div class="summary-box">'
+        "<h2>Summary</h2>"
+        f"<p><strong>Intent</strong>: {_esc(intent)}</p>"
+    )
+    if actions_list:
+        summary_html += "<p><strong>Key Actions</strong>:</p>" + _render_list(actions_list, "")
+    if decisions_list:
+        summary_html += "<p><strong>Decisions</strong>:</p>" + _render_list(decisions_list, "")
+    if files_touched:
+        summary_html += "<p><strong>Files Touched</strong>:</p><ul>"
+        for f in files_touched:
+            summary_html += f"<li>{_esc(f)}</li>"
+        summary_html += "</ul>"
+    if next_start_list:
+        summary_html += "<p><strong>Next Start</strong>:</p>" + _render_list(next_start_list, "")
+    summary_html += "</div>"
+
+    # Build dialogue (full conversation - main body)
+    dialogue_records = view.get("dialogue") or []
+    if dialogue_records:
+        dialogue_parts = [
+            '<div class="dialogue-section">',
+            "<h2>Dialogue</h2>",
+            "<p class=\"meta\">세션의 전체 대화 흐름입니다.</p>",
+        ]
+        for record in dialogue_records:
+            role = (record.get("role") or "tool").upper()
+            ts = record.get("created_at") or ""
+            content = record.get("content") or ""
+            dialogue_parts.append(
+                f'<div class="message {record.get("role", "tool")}" style="margin:10px 0;padding:12px;border:1px solid #eee;border-radius:8px;">'
+                f'<div class="meta"><strong>{_esc(role)}</strong> | {_esc(ts)}</div>'
+                f'<pre style="margin:8px 0 0;white-space:pre-wrap;">{_esc(content)}</pre>'
+                f"</div>"
+            )
+        dialogue_parts.append("</div>")
+        dialogue_html = "\n".join(dialogue_parts)
+    else:
+        dialogue_html = '<div class="dialogue-section"><h2>Dialogue</h2><p>(대화 기록 없음)</p></div>'
+
+    # Build transcript (full, with toggle)
+    transcript_html = (
+        '<div class="raw-box">'
+        "<h2>Transcript</h2>"
+        + _render_transcript_views(transcript)
+        + "</div>"
+    )
+
+    # Build quest box
+    quest_html = (
+        "<h2>Quest</h2>"
+        "<table><tbody>"
+        f"<tr><th>Recent quest report</th><td>{_esc(quest.get('report') or '(none recorded)')}</td></tr>"
+        f"<tr><th>Recent AI verdict</th><td>{_esc(quest.get('verdict') or '(none recorded)')}</td></tr>"
+        "</tbody></table>"
+    )
+
     parts = [
         "<!DOCTYPE html>",
         "<html lang=\"ko\">",
@@ -260,51 +326,18 @@ def render_session_html(view: dict) -> str:
         f"<span class=\"badge\" style=\"color:{_esc(badges.get('length_color'))};\">{_esc(badges.get('length_badge'))}</span>",
         f"<span class=\"badge\" style=\"color:{_esc(badges.get('value_color'))};\">{_esc(badges.get('value_label'))}</span>",
         "</p>",
-        "<div class=\"summary-box\">",
-        "<h2>Intent</h2>",
-        f"<p>{_esc(_display_text(summary.get('intent'), '요약이 없습니다.'))}</p>",
-        "</div>",
-        "<h2>Actions</h2>",
-        _render_list(summary.get("actions") or [], "(no specific actions recorded)"),
-        "<h2>Decisions</h2>",
-        _render_list(summary.get("decisions") or [], "(none recorded)"),
-        "<div class=\"next-box\">",
-        "<h2>Next Start</h2>",
-        _render_list(summary.get("next_start") or [], "Check current-state API for today's mission"),
-        "</div>",
-        "<h2>Artifacts</h2>",
-        "<table><thead><tr><th>Item</th><th>Type</th></tr></thead><tbody>",
+        # Summary box (supplementary)
+        summary_html,
+        # Dialogue (main body - full conversation)
+        dialogue_html,
+        # Transcript (full, with cleaned/raw toggle)
+        transcript_html,
+        # Quest
+        quest_html,
+        SCRIPT,
+        "</body>",
+        "</html>",
     ]
-
-    files_touched = artifacts.get("files_touched") or []
-    actions = artifacts.get("actions") or []
-    if not files_touched and not actions:
-        parts.append("<tr><td>(none recorded)</td><td>-</td></tr>")
-    else:
-        for item in files_touched:
-            parts.append(f"<tr><td>{_esc(item)}</td><td>file</td></tr>")
-        for item in actions:
-            parts.append(f"<tr><td>{_esc(item)}</td><td>action</td></tr>")
-    parts.append("</tbody></table>")
-
-    parts.extend(
-        [
-            "<h2>Quest</h2>",
-            "<table><tbody>",
-            f"<tr><th>Recent quest report</th><td>{_esc(quest.get('report') or '(none recorded)')}</td></tr>",
-            f"<tr><th>Recent AI verdict</th><td>{_esc(quest.get('verdict') or '(none recorded)')}</td></tr>",
-            "</tbody></table>",
-            "<h2>Dialogue</h2>",
-            _render_dialogue(view.get("dialogue") or []),
-            "<div class=\"raw-box\">",
-            "<h2>Raw Transcript</h2>",
-            _render_transcript_views(transcript),
-            "</div>",
-            SCRIPT,
-            "</body>",
-            "</html>",
-        ]
-    )
     return "\n".join(parts)
 
 

@@ -34,7 +34,7 @@ The web UI is a fast-read situation board, not the primary thinking surface.
 
 ## Working Principles
 1. Prioritize continuity over volume.
-2. Preserve all important raw context, but operate from compressed current state.
+2. Preserve all important raw context in full archive (`sessions/`). Operate from compressed current state as supplementary layer, not as replacement for archive.
 3. Present one main mission and one current quest whenever possible.
 4. Convert guilt into strategy.
 5. Prefer re-entry clarity over exhaustive task trees.
@@ -99,39 +99,48 @@ The system uses a unified CLI entry point for work sessions:
 - show the single main mission
 - show one small action to start immediately
 - support strategic discussion before execution
+- selectively read related session archive from `sessions/` (not all, only relevant)
 
 ### Midday / During Work
 - keep the current quest in focus
 - after progress, propose the next quest
 - explain why the next quest is appropriate
 - revise overall plans when needed
+- read archive only when context is lost
 
 ### End of Day
 - show what was actually done
 - show what remains unfinished
 - convert unfinished work into restart strategy
 - propose the first quest for the next session
+- verify today's sessions are archived in `sessions/`
 
 ## Memory Hierarchy
 The system keeps four layers of memory:
 
-1. raw logs
-2. sessions
+1. raw logs / source records
+2. sessions archive (full Dialogue + Transcript in `sessions/`)
 3. plans
-4. current state
+4. current state (compressed)
 
 Agents should usually read in this order:
 
-1. current state
-2. plans
-3. recent sessions
+1. current state (what to do now)
+2. related sessions archive (selective, not all)
+3. plans
 4. raw logs only when needed
 
+The `sessions/` folder holds full session archives with complete Dialogue and Transcript. The `sessions_html/` folder is the display layer for browser reading. Summaries are supplementary, not the main body.
+
 ## Session Recovery Rule
-- When the user asks to restore a Codex session, always check both Codex stores before concluding a session is missing:
-- WSL Codex store: `/root/.codex/`
-- Windows Codex store: `/mnt/c/Users/limone/.codex/`
-- Do not assume the current runtime's `.codex` directory is the only source of truth.
+- Session recovery takes priority over writing new handoffs.
+- `sessions/` is the primary recovery source (full archive with Dialogue + Transcript).
+- Read only relevant sessions, not all archives.
+- If recovery is insufficient, create a short handoff only for missing topics.
+- When the user asks to restore a Codex session, check both Codex stores:
+  - WSL Codex store: `/root/.codex/`
+  - Windows Codex store: `/mnt/c/Users/limone/.codex/`
+- `sessions_html/` is the display layer, never the source of truth.
 
 ## UI Principles
 ### Morning screen

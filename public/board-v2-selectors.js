@@ -21,17 +21,36 @@ function pickUnfinishedItems(state) {
 }
 
 function pickCurrentQuest(state) {
+  // Try state.current_quest first
   const quest = state.current_quest && typeof state.current_quest === "object" ? state.current_quest : {};
+  const id = state.current_quest_id || quest.id || "";
+  const title = state.current_quest_title || quest.title || "";
+  
+  // Fallback: find active quest from __quests if current_quest_id is empty
+  if (!id && Array.isArray(state.__quests)) {
+    const active = state.__quests.find(q => q.status === "active" || q.status === "in_progress");
+    if (active) {
+      return {
+        id: active.id || "",
+        title: active.title || "현재 퀘스트가 없습니다.",
+        whyNow: active.why_now || "",
+        parentTitle: active.parent_title || "",
+        completionCriteria: active.completion_criteria || "완료 기준을 아직 적지 않았습니다.",
+        restartPoint: active.restart_point || "",
+      };
+    }
+  }
+
   return {
-    id: state.current_quest_id || quest.id || "",
-    title: state.current_quest_title || quest.title || "현재 퀘스트가 없습니다.",
+    id: id,
+    title: title || "현재 퀘스트가 없습니다.",
     whyNow: quest.why_now || "",
     parentTitle: quest.parent_title || "",
     completionCriteria:
       state.current_quest_completion_criteria ||
       quest.completion_criteria ||
       "완료 기준을 아직 적지 않았습니다.",
-    restartPoint: state.restart_point || quest.restart_point || "다시 시작할 지점이 아직 없습니다.",
+    restartPoint: state.restart_point || quest.restart_point || "",
   };
 }
 

@@ -39,51 +39,35 @@ function renderInProgress(state) {
     </div>
   `;
 
+  // Simplified buttons: done / hold only
+  const simpleButtonsHtml = quest.id ? `
+    <div style="margin-top: 24px; display: flex; gap: 12px;">
+      <button type="button" class="v2-btn v2-btn-primary" style="flex:1; font-size:16px; padding:14px 20px;" 
+        onclick="window.boardV2EvaluateQuest('${escapeHtml(quest.id)}', 'done')">완료</button>
+      <button type="button" class="v2-btn v2-btn-secondary" style="flex:0.5; font-size:16px; padding:14px 20px; border-color: var(--v2-brand); color: var(--v2-brand);" 
+        onclick="window.boardV2OpenWorkfile('${escapeHtml(quest.title)}')">작업철</button>
+    </div>
+  ` : "";
+
   let reportFormHtml = "";
   if (questStatus.is_pending) {
     reportFormHtml = `
       <section class="v2-form-card">
-        <span class="v2-section-label">결과 보고</span>
+        <span class="v2-section-label">판정 대기 중</span>
         <div class="v2-info-box">
           AI가 작업 결과를 분석하고 있습니다...
         </div>
-        ${manualEvalHtml(quest.id || state.current_quest_id)}
+        ${simpleButtonsHtml}
       </section>
     `;
   } else if (quest.id) {
-    if (_reportDraft.questId !== quest.id) {
-      _reportDraft.questId = quest.id;
-      _reportDraft.summary = "";
-      _reportDraft.assessment = "partial";
-    }
-
     reportFormHtml = `
       <section class="v2-form-card">
-        <span class="v2-section-label">진행 결과 보고</span>
-        <div class="v2-inline-card" style="background: transparent; border: none; padding: 0;">
-          <div class="v2-form-group">
-            <label class="v2-form-label" for="v2WorkSummary">작업 내용 입력</label>
-            <textarea id="v2WorkSummary" class="v2-textarea" placeholder="무엇을 완료했나요?" 
-              oninput="window.boardV2SyncDraft()" style="min-height: 100px;">${escapeHtml(_reportDraft.summary)}</textarea>
-          </div>
-          <div class="v2-form-group" style="margin-top: 16px;">
-            <label class="v2-form-label" for="v2SelfAssessment">자가 평가</label>
-            <select id="v2SelfAssessment" class="v2-select" onchange="window.boardV2SyncDraft()">
-              <option value="done" ${_reportDraft.assessment === "done" ? "selected" : ""}>완료 (목표 달성)</option>
-              <option value="partial" ${_reportDraft.assessment === "partial" ? "selected" : ""}>부분 완료 (진전 있음)</option>
-              <option value="hold" ${_reportDraft.assessment === "hold" ? "selected" : ""}>보류 (중단/방향 전환)</option>
-            </select>
-          </div>
-          <div class="v2-form-actions" style="margin-top: 24px;">
-            <button type="button" class="v2-btn v2-btn-primary" style="font-size:16px; padding:12px 24px;" onclick="window.boardV2ReportQuest('${escapeHtml(quest.id)}')">보고하고 다음으로 진행</button>
-          </div>
-        </div>
-
-        ${manualEvalHtml(quest.id)}
+        ${simpleButtonsHtml}
       </section>
     `;
   } else {
-    reportFormHtml = `<p class="v2-empty" style="text-align:center;">진행 중인 퀘스트가 없어 결과 보고 기능을 사용할 수 없습니다.</p>`;
+    reportFormHtml = `<p class="v2-empty" style="text-align:center;">진행 중인 퀘스트가 없습니다.</p>`;
   }
 
   // Focus Mode Layout: 1-Column Center, No Distracting Sidebar
@@ -96,7 +80,11 @@ function renderInProgress(state) {
           <span class="v2-item-meta" style="font-size:14px;">${questStatus.is_pending ? "판정 대기 중" : "진행 중"}</span>
         </div>
         
-        <h1 class="v2-mission-title v2-quest-title" style="font-size: 32px; line-height: 1.4; color: #fff; margin-bottom: 32px; word-break: keep-all;">${escapeHtml(questTitle)}</h1>
+        <h1 class="v2-mission-title v2-quest-title" style="font-size: 32px; line-height: 1.4; color: var(--v2-text); margin-bottom: 32px; word-break: keep-all;">${escapeHtml(questTitle)}</h1>
+
+        <div style="margin-bottom: 24px;">
+          <a href="#" onclick="window.boardV2OpenWorkfile('${escapeHtml(questTitle)}'); return false;" style="font-size: 13px; color: var(--v2-brand); opacity: 0.7;">작업철 열기</a>
+        </div>
 
         <div class="v2-progress-stack" style="gap: 20px;">
           ${quest.whyNow ? `
@@ -109,10 +97,6 @@ function renderInProgress(state) {
             <span class="v2-inline-label">완료 기준</span>
             <strong style="font-weight: 500;">${escapeHtml(quest.completionCriteria)}</strong>
           </div>
-          <div class="v2-inline-card" style="font-size: 16px; padding: 16px;">
-            <span class="v2-inline-label">재시작 포인트</span>
-            <strong style="color: var(--v2-foreground); font-weight: normal;">${escapeHtml(quest.restartPoint)}</strong>
-          </div>
         </div>
 
         <div style="margin-top: 40px;">
@@ -122,11 +106,11 @@ function renderInProgress(state) {
 
       <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
         <section class="v2-rail-section" style="margin: 0;">
-          <span class="v2-section-label">최근 판단 참조</span>
+          <span class="v2-section-label">이전 퀘스트</span>
           ${verdictHtml}
         </section>
         <section class="v2-rail-section" style="margin: 0;">
-          <span class="v2-section-label">다음에 이어질 퀘스트</span>
+          <span class="v2-section-label">다음 퀘스트</span>
           <div class="v2-rail-card" style="padding: 16px;">
             ${nextQuestHtml}
           </div>
