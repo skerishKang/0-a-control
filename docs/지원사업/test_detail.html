@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>2026년 XaaS 선도 프로젝트 개발지원 신규과제 공고 - 지원사업 상세</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; background: #f8f9fa; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; color: #333; }
+        h2 { margin-top: 30px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; width: 150px; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 5px 0; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back { margin-bottom: 20px; }
+        .summary { background: #f9f9f9; padding: 15px; border-radius: 5px; line-height: 1.6; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; color: white; font-size: 12px; }
+        .note { background: #fff3cd; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
+        .origin-btn { display: inline-block; padding: 8px 16px; background: #0d6efd; color: white; border-radius: 4px; }
+        .files { background: #e9ecef; padding: 15px; border-radius: 4px; }
+        .files a { display: block; margin: 5px 0; }
+        #updateForm { display: flex; flex-direction: column; gap: 10px; max-width: 400px; }
+        #updateForm select, #updateForm input, #updateForm textarea, #updateForm button { padding: 8px; }
+        #updateForm textarea { min-height: 80px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="back"><a href="/">← 목록으로</a></p>
+        <h1>2026년 XaaS 선도 프로젝트 개발지원 신규과제 공고</h1>
+
+        <h2>기본 정보</h2>
+        <table>
+        <tr><th>상태</th><td><span class='status-badge' style='background:#6c757d'>신규</span></td></tr>
+        <tr><th>공고번호</th><td>PBLN_000000000119288</td></tr>
+        <tr><th>분류</th><td>기술</td></tr>
+        <tr><th>게시일</th><td>2026-03-09</td></tr>
+        <tr><th>접수시작</th><td>2026-03-05</td></tr>
+        <tr><th>접수마감</th><td>2026-04-06</td></tr>
+        <tr><th>소관부처</th><td>과학기술정보통신부</td></tr>
+        <tr><th>주관기관</th><td>정보통신산업진흥원</td></tr>
+        <tr><th>신청방법</th><td>온라인 접수(정보통신산업진흥원 사업관리시스템)</td></tr>
+        <tr><th>접수처</th><td>https://nxt.nipa.kr</td></tr>
+        <tr><th>문의처</th><td>(사업 관련 문의) 정보통신산업진흥원 SW융합전략팀 043-931-5384, jinah@nipa.kr / (전산 등록 관련 문의) 정보통신산업진흥원 유지보수팀 070-5151-8239, nxt_support@nipa.kr</td></tr>
+        <tr><th>저장경로</th><td>2026\03</td></tr>
+        </table>
+
+        <h2>AI 분석</h2>
+        <table>
+        <tr><th>적합도</th><td>8.0/10</td></tr>
+        <tr><th>요약</th><td>2026 XaaS project development support grant for SW/IT companies</td></tr>
+        <tr><th>주요 장점</th><td>Supports XaaS development, cloud platform, data analysis, and SW testing</td></tr>
+        <tr><th>주요 위험</th><td>Limited to 2 projects, consortium requirement with industry-specialized company</td></tr>
+        <tr><th>추천 액션</th><td>Form a consortium with an industry-specialized company, review application requirements and submit proposal before 2026-04-06</td></tr>
+        <tr><th>모델명</th><td>llama-3.3-70b-versatile</td></tr>
+        <tr><th>마지막 분석 시각</th><td>2026-04-06T11:55:53.767611</td></tr>
+        </table>
+        <p style="margin-top:10px;">
+            <button type="button" id="analyzeQuickBtn" style="background:#22c55e;color:white;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;margin-right:10px;">
+                ⚡ 빠른 분석
+            </button>
+            <button type="button" id="analyzeDeepBtn" style="background:#8b5cf6;color:white;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;">
+                🔍 깊은 분석
+            </button>
+        </p>
+        <div id="analyzeMsg"></div>
+        <script>
+            async function runAnalyze(mode) {
+                const quickBtn = document.getElementById('analyzeQuickBtn');
+                const deepBtn = document.getElementById('analyzeDeepBtn');
+                const msg = document.getElementById('analyzeMsg');
+                const btn = mode === 'quick' ? quickBtn : deepBtn;
+                
+                btn.disabled = true;
+                btn.textContent = mode === 'quick' ? '⚡ 분석 중...' : '🔍 분석 중...';
+                msg.innerHTML = '';
+                
+                try {
+                    const res = await fetch('/analyze-ai', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ notice_id: "PBLN_000000000119288", mode: mode })
+                    });
+                    const result = await res.json();
+                    
+                    if (result.success) {
+                        const r = result.result;
+                        msg.innerHTML = '<span style="color:green">' + (mode === 'quick' ? '⚡' : '🔍') + ' ' + r.mode + ' 분석 완료 (provider: ' + r.provider + ')</span>';
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        msg.innerHTML = '<span style="color:red">오류: ' + (result.error || '분석 실패') + '</span>';
+                        btn.disabled = false;
+                        btn.textContent = mode === 'quick' ? '⚡ 빠른 분석' : '🔍 깊은 분석';
+                    }
+                } catch (err) {
+                    msg.innerHTML = '<span style="color:red">오류: ' + err.message + '</span>';
+                    btn.disabled = false;
+                    btn.textContent = mode === 'quick' ? '⚡ 빠른 분석' : '🔍 깊은 분석';
+                }
+            }
+            
+            document.getElementById('analyzeQuickBtn').addEventListener('click', () => runAnalyze('quick'));
+            document.getElementById('analyzeDeepBtn').addEventListener('click', () => runAnalyze('deep'));
+        <\/script>
+
+        <h2>AI 분석 입력</h2>
+     <form id="aiForm">
+         <input type="number" id="aiFitScore" placeholder="적합도 (0-10)" step="0.1" min="0" max="10">
+         <textarea id="aiSummary" placeholder="AI 요약"></textarea>
+         <textarea id="aiStrengths" placeholder="주요 장점"></textarea>
+         <textarea id="aiRisks" placeholder="주요 위험"></textarea>
+         <textarea id="aiNextActions" placeholder="추천 액션"></textarea>
+         <input type="text" id="aiModel" placeholder="모델명">
+         <button type="submit">AI 분석 저장</button>
+     </form>
+     <div id="aiMsg"></div>
+      <script>
+          document.getElementById('aiForm').addEventListener('submit', async (e) => {
+              e.preventDefault();
+              const data = {
+                  notice_id: "PBLN_000000000119288",
+                  ai_fit_score: document.getElementById('aiFitScore').value,
+                  ai_summary: document.getElementById('aiSummary').value,
+                  ai_strengths: document.getElementById('aiStrengths').value,
+                  ai_risks: document.getElementById('aiRisks').value,
+                  ai_next_actions: document.getElementById('aiNextActions').value,
+                  ai_model: document.getElementById('aiModel').value
+              };
+              const res = await fetch('/update-ai', {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify(data)
+              });
+              const result = await res.json();
+              document.getElementById('aiMsg').innerHTML = result.success 
+                  ? '<span style="color:green">AI 분석 저장 완료</span>' 
+                  : '<span style="color:red">오류: ' + result.error + '</span>';
+          });
+      <\/script>
+
+        <h2>사업개요</h2>
+        <div class="summary">과학기술정보통신부와 정보통신산업진흥원은 SW기업이 중심이 되어 全 산업의 디지털 서비스화를 촉진하기 위한 「2026년 XaaS 선도 프로젝트 개발지원 사업」의 신규 과제 공모를 다음과 같이 추진하오니 많은 참여 바랍니다.☞ SW전문기업(공급) - 산업전문기업(수요)으로 구성된 컨소시엄☞ 클라우드 플랫폼 구축ㆍ활용, 데이터 학습·분석, SW테스트ㆍ품질 검증, 수요기업 시범 적용 등 XaaS 개발에 필요한 제반 활동 지원- 2개 과제 내외, 과제당 8억원 이내 지원</div>
+
+
+    <h3>첨부파일</h3>
+    <ul>
+            <li><a href="https://www.bizinfo.go.kr/webapp/upload/bizinfo/file/2026/03/202603091517240796.hwp" target="_blank">붙임2. 2026년 XaaS 선도 프로젝트 개발지원 신규과제 공모안내서.hwp</a></li>
+            <li><a href="https://www.bizinfo.go.kr/webapp/upload/bizinfo/file/2026/03/202603091517340639.zip" target="_blank">붙임4. 관련규정 및 NXT사용자매뉴얼.zip</a></li>
+            <li><a href="https://www.bizinfo.go.kr/webapp/upload/bizinfo/file/2026/03/202603091517340934.zip" target="_blank">붙임5. (참고) 일자리 창출 계산식.zip</a></li>
+            <li><a href="https://www.bizinfo.go.kr/webapp/upload/bizinfo/file/2026/03/202603091517350004.zip" target="_blank">붙임3. 2026년 XaaS 선도 프로젝트 개발지원 신규과제 작성양식.zip</a></li>
+            <li><a href="https://www.bizinfo.go.kr/webapp/upload/bizinfo/file/2026/03/202603091517240796.hwp" target="_blank">붙임1. 2026년 XaaS 선도 프로젝트 개발지원 신규과제 공고문.hwp</a></li>
+    </ul>
+
+
+    <h2>로컬 파일</h2>
+    <div class="files">
+ <a href="../../data/notices/2026/03/meta.json">meta.json</a>
+ <a href="../../data/notices/2026/03/source.html">source.html</a>
+ <a href="../../data/notices/2026/03/attachments.json">attachments.json</a>
+    </div>
+
+        <h2>링크</h2>
+        <p><a href="https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?hashCode=&amp;rowsSel=6&amp;rows=15&amp;cpage=1&amp;cat=&amp;schPblancDiv=&amp;schJrsdCodeTy=&amp;schWntyAt=&amp;schAreaDetailCodes=&amp;schEndAt=N&amp;orderGb=2&amp;sort=asc&amp;preKeywords=&amp;condition=searchPblancNm&amp;condition1=AND&amp;keyword=&amp;pblancId=PBLN_000000000119288" target="_blank">bizinfo.go.kr에서 보기</a></p>
+    <p><a href="https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?hashCode=&amp;rowsSel=6&amp;rows=15&amp;cpage=1&amp;cat=&amp;schPblancDiv=&amp;schJrsdCodeTy=&amp;schWntyAt=&amp;schAreaDetailCodes=&amp;schEndAt=N&amp;orderGb=2&amp;sort=asc&amp;preKeywords=&amp;condition=searchPblancNm&amp;condition1=AND&amp;keyword=&amp;pblancId=PBLN_000000000119288" target="_blank" class="origin-btn">🔗 출처 바로가기</a></p>
+
+
+    <h2>상태 수정</h2>
+    <form id="updateForm">
+        <select id="statusSelect">
+            <option value="new" selected>신규</option>
+            <option value="reviewing" >검토중</option>
+            <option value="writing" >작성중</option>
+            <option value="submitted" >제출완료</option>
+            <option value="pass" >합격</option>
+            <option value="hold" >보류</option>
+        </select>
+        <input type="text" id="summaryInput" placeholder="한줄요약" value="">
+        <textarea id="noteInput" placeholder="사용자 메모"></textarea>
+        <button type="submit">저장</button>
+    </form>
+    <div id="updateMsg"></div>
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                notice_id: 'PBLN_000000000119288',
+                status: document.getElementById('statusSelect').value,
+                summary: document.getElementById('summaryInput').value,
+                note: document.getElementById('noteInput').value
+            };
+            const res = await fetch('/update', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            document.getElementById('updateMsg').innerHTML = result.success 
+                ? '<span style="color:green">저장 완료</span>' 
+                : '<span style="color:red">오류: ' + result.error + '</span>';
+        });
+    <\/script>
+    
+  </div>
+</body>
+</html>

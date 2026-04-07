@@ -1,0 +1,17 @@
+{
+  "storage_root": "data/notices",
+  "db_path": "data/db/notices.sqlite3",
+  "cache_root": "data/cache",
+  "download_mode": "selected",
+  "render_output": "output/site",
+  "enabled_adapters": [
+    "bizinfo"
+  ],
+  "ai": {
+    "summary_enabled": false,
+    "provider": "free-model",
+    "model": "",
+    "api_base": "",
+    "api_key_env": ""
+  }
+}

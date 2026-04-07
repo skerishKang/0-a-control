@@ -76,7 +76,8 @@ start_session = _db.start_session
 
 PUBLIC_DIR = ROOT_DIR / "public"
 HOST = os.getenv("HOST", "127.0.0.1")
-PORT = int(os.getenv("PORT", "4310"))
+PORT_ENV = os.getenv("PORT")
+PORT = int(PORT_ENV or "4310")
 RUNTIME_DIR = ROOT_DIR / "data" / "runtime"
 SESSIONS_DIR = RUNTIME_DIR / "sessions"
 CURRENT_SESSION_FILE = RUNTIME_DIR / "current_session.json"
@@ -456,17 +457,6 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
         for prefix, prefix_handler in prefix_routes:
             if path.startswith(prefix):
-        prefix_routes = [
-            ("/api/sessions/view/", self._get_sessions_view),
-        ]
-
-        handler = exact_routes.get(path)
-        if handler:
-            handler(query)
-            return
-
-        for prefix, prefix_handler in prefix_routes:
-            if path.startswith(prefix):
                 prefix_handler(path, query)
                 return
 
@@ -541,8 +531,47 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
     create_sample_data_if_empty()
-    server = ThreadingHTTPServer((HOST, PORT), ControlTowerHandler)
-    print(f"Control tower server running at http://localhost:{PORT}")
+    bind_errors: list[tuple[int, BaseException]] = []
+    candidate_bindings: list[tuple[str, int]] = [(HOST, PORT)]
+    if PORT_ENV is None:
+        candidate_bindings.extend((HOST, candidate_port) for candidate_port in range(PORT + 1, PORT + 21))
+        if HOST == "127.0.0.1":
+            candidate_bindings.extend(("0.0.0.0", candidate_port) for candidate_port in range(PORT, PORT + 21))
+        candidate_bindings.append((HOST, 0))
+        if HOST == "127.0.0.1":
+            candidate_bindings.append(("0.0.0.0", 0))
+
+    server = None
+    bound_host = None
+    bound_port = None
+    for candidate_host, candidate_port in candidate_bindings:
+        try:
+            server = ThreadingHTTPServer((candidate_host, candidate_port), ControlTowerHandler)
+            actual_host, actual_port = server.server_address[:2]
+            bound_host = actual_host
+            bound_port = actual_port
+            break
+        except OSError as exc:
+            bind_errors.append((candidate_port, exc))
+
+    if server is None or bound_host is None or bound_port is None:
+        if bind_errors:
+            attempted = ", ".join(
+                f"{port} ({type(exc).__name__}: {exc})" for port, exc in bind_errors
+            )
+            raise OSError(f"Failed to bind control tower server. Tried: {attempted}")
+        raise OSError("Failed to bind control tower server")
+
+    display_host = "localhost" if bound_host in {"127.0.0.1", "0.0.0.0"} else bound_host
+    if bound_port != PORT or bound_host != HOST:
+        logging.warning(
+            "Default binding %s:%s unavailable; using http://%s:%s instead.",
+            HOST,
+            PORT,
+            display_host,
+            bound_port,
+        )
+    print(f"Control tower server running at http://{display_host}:{bound_port}")
     server.serve_forever()
 
 

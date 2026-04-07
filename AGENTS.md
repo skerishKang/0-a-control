@@ -32,6 +32,24 @@ The web UI is a fast-read situation board, not the primary thinking surface.
 - update plan drafts and current state
 - propose changes, but do not silently finalize major strategic shifts
 
+## History Model
+`workdiary` uses two history layers by intent:
+
+- `Fossil`: local-first broad archive for recovery
+- `Git`: selective publish/share history for GitHub and deployment
+
+Agents must assume the user prefers this order:
+
+1. keep broad local history first
+2. publish selectively later
+
+Operationally this means:
+
+- treat `Fossil` as the primary recovery layer
+- do not assume `Git` contains all important local files
+- when discussing deletion recovery, check `Fossil` intent before assuming Git is sufficient
+- when proposing workflow changes, preserve the `Fossil first, Git for publish` model unless the user explicitly changes it
+
 ## Working Principles
 1. Prioritize continuity over volume.
 2. Preserve all important raw context in full archive (`sessions/`). Operate from compressed current state as supplementary layer, not as replacement for archive.
@@ -40,6 +58,14 @@ The web UI is a fast-read situation board, not the primary thinking surface.
 5. Prefer re-entry clarity over exhaustive task trees.
 6. Keep plans mutable. Plans are living operational state, not static documents.
 7. Treat the UI as a readable command board, not the main control surface.
+
+## Execution Environment Rule
+- Codex starts in WSL by default.
+- Other external or free models are assumed to run in Windows by default unless explicitly stated otherwise.
+- When Codex writes prompts for other models to execute, use Windows paths and Windows execution assumptions by default.
+- When Codex inspects or edits files directly, it may use WSL paths internally.
+- If both path styles are needed, present Windows path first and WSL path second.
+- Do not assume a Windows-running model understands WSL-only paths.
 
 ## Planning Model
 Plans are organized into:

@@ -18,7 +18,8 @@ except ModuleNotFoundError:
     from db_base import connect, rows_to_dicts
 
 
-OUTPUT_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions_html")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+OUTPUT_DIR = PROJECT_ROOT / "sessions_html"
 
 CSS = """
 <style>

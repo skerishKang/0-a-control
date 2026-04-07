@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 대시보드</title>
+<style>
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #1f1f35;
+  --text-primary: #e0e0ff;
+  --text-secondary: #8888aa;
+  --accent-up: #00e676;
+  --accent-down: #ff5252;
+  --glow-color: rgba(100, 100, 255, 0.3);
+  --card-radius: 16px;
+  --card-padding: 24px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.dashboard {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  flex: 1 1 300px;
+  max-width: 360px;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-speed) ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1);
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 32px var(--glow-color),
+    0 0 0 1px rgba(100, 100, 255, 0.1);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff, #c0c0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.card-change.up {
+  color: var(--accent-up);
+}
+
+.card-change.down {
+  color: var(--accent-down);
+}
+
+.card-change::before {
+  font-size: 0.75rem;
+}
+
+.card-change.up::before {
+  content: '▲';
+}
+
+.card-change.down::before {
+  content: '▼';
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card {
+    max-width: 100%;
+    flex-basis: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <div class="card">
+    <span class="card-icon">🤖</span>
+    <div class="card-label">AI 요청 수</div>
+    <div class="card-value">12,483</div>
+    <div class="card-change up">8.2%</div>
+  </div>
+
+  <div class="card">
+    <span class="card-icon">⚡</span>
+    <div class="card-label">평균 응답속도</div>
+    <div class="card-value">1.24s</div>
+    <div class="card-change down">3.1%</div>
+  </div>
+
+  <div class="card">
+    <span class="card-icon">💰</span>
+    <div class="card-label">이번 달 비용</div>
+    <div class="card-value">$84.20</div>
+    <div class="card-change up">12.5%</div>
+  </div>
+
+</div>
+
+</body>
+</html>

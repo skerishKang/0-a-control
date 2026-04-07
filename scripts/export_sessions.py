@@ -23,7 +23,8 @@ except ModuleNotFoundError:
     from db_base import connect, rows_to_dicts
 
 
-SESSIONS_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SESSIONS_DIR = PROJECT_ROOT / "sessions"
 
 
 def parse_timestamp(ts: str | None) -> tuple[datetime | None, str | None]:

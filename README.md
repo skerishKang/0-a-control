@@ -18,7 +18,7 @@
  선택 사항: `.env.example`를 참고해 환경변수를 맞출 수 있습니다.
 
 2. **실행**:
-    *   **Windows**: `start-control-tower.bat`로 대시보드 서버를 시작할 수 있습니다. 다만 `초기실행bat/`와 일부 에이전트 래퍼는 WSL/bash 환경을 전제로 하므로 Windows 지원은 부분적입니다.
+    *   **Windows**: `auto.bat`로 대시보드 서버를 시작할 수 있습니다. `start-control-tower.bat`는 호환용 별칭으로 유지합니다. 다만 `초기실행bat/`와 일부 에이전트 래퍼는 WSL/bash 환경을 전제로 하므로 Windows 지원은 부분적입니다.
     *   **Windows 에이전트 바로가기**: 에이전트 실행용 배치는 [`초기실행bat`](./초기실행bat)에 모아 둡니다. 예: `codex-0-a-control.bat`, `gemini-cli-0-a-control.bat`, `kilo-0-a-control.bat`, `opencode-new-0-a-control.bat`
     *   **진입점 원칙**: `초기실행bat`의 에이전트별 배치를 직접 실행하면 됩니다. 공통 호출 배치(`agent-direct-launch.bat`, `codex-wsl-launch.bat`)는 내부 구현용입니다.
     *   **에이전트 시작 위치**: `초기실행bat`의 `*-0-a-control*.bat` 경로는 각 에이전트를 `0-a-control` 워크스페이스 기준으로 시작하도록 맞춥니다.
@@ -27,6 +27,22 @@
     *   **에이전트 작업 래퍼**: `scripts/agent-work.sh` 가 공통 진입점이고, `scripts/agent_registry.py` 가 에이전트 이름과 실행 파일을 해석합니다. `scripts/codex-work.sh`, `scripts/gemini-cli-work.sh` 같은 얇은 래퍼는 이 진입점을 감싸는 편의 스크립트입니다.
 
 3. **접속**: 브라우저에서 `http://localhost:4310` 접속
+
+## 기록 운영 원칙
+
+이 워크다이어리는 `Git` 하나만으로 운영하지 않는다. 의도는 `로컬 복구용 전체 기록`과 `외부 공유용 선별 기록`을 분리하는 것이다.
+
+*   **Fossil**: 로컬 전체 기록용 기본 저장층
+*   **Git**: GitHub/배포용 선별 저장층
+
+운영 원칙은 다음과 같다.
+
+1. **평소 작업 저장은 먼저 `Fossil`에 남긴다.**
+2. **정리 전, 세션 종료 전, 삭제 위험이 있는 작업 전에는 `Fossil snapshot`을 우선한다.**
+3. **GitHub에 올리거나 외부 배포가 필요한 시점에만 `Git commit/push`를 한다.**
+4. **삭제 사고나 누락 파일 복구는 먼저 `Fossil`에서 찾는다.**
+
+즉 `Fossil = master archive`, `Git = publish subset`이 이 워크다이어리의 기본 의도다.
 
 ## 운영 구조 (핵심)
 

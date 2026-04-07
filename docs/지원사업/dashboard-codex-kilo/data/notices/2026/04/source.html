@@ -1,0 +1,582 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-71469923-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+	dataLayer.push(arguments);
+}
+gtag('js', new Date());
+gtag('config', 'UA-71469923-1');
+</script>
+	
+		
+		
+		
+	
+	<title>K-Startup 창업지원포털>사업공고>모집중>상세화면</title>
+	<meta name="Keywords" content="K-Startup 창업지원포털>사업공고>모집중">
+	<meta name="Description" content="K-Startup 창업지원포털>사업공고>모집중">
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> -->
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	
+	
+			<meta name="robots" content="noindex,nofollow">
+	
+	
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<meta name="format-detection" content="telephone=no,address=no,email=no" />
+
+
+	<meta property="og:title" content="2023 열매나눔재단 사회적기업가 육성사업 창업팀 모집"/>
+	<meta property="og:description" content="2023 열매나눔재단 사회적기업가 육성사업 창업팀 모집"/>
+	
+		
+			<meta property="og:image" content="https://www.k-startup.go.kr/images/main_kstartup.jpg"/>
+		
+		
+		
+	
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="k-startup"/>
+	<meta property="og:locale:alternate" content="ko_KR" />
+
+	
+		<link rel="shortcut icon" type="image/x-icon" href="/cubersc/cube.ico" />
+	
+
+<!--header-->
+	
+
+
+
+
+
+
+
+
+	<script>
+		var isOldIe = false;
+	</script>
+	<!--[if lt IE 10]>
+		<script>
+			isOldIe = true;
+		</script>
+	<![endif]-->
+
+
+
+	<link href="/cubersc/templete/common/css/subcommon.css"  rel="stylesheet" type="text/css" />
+
+	
+	
+	<link href="/cubersc/templete/common/css/jquery-ui.css"  rel="stylesheet" type="text/css" />
+	<link href="/cubersc/templete/common/css/owl.carousel.css"  rel="stylesheet" type="text/css" />
+	
+	
+	<link href="/cubersc/templete/common/css/base.css"  rel="stylesheet" type="text/css" />
+    
+    
+    <link href="/cubersc/common/css/loading-spiner.css" rel="stylesheet" type="text/css" />
+    <link href="/cubersc/mngr/font/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	
+	
+		<link href="/cubersc/common/css/sns1.css"  rel="stylesheet" type="text/css" />
+	
+	
+	<script src="/cubersc/templete/common/js/jquery-1.12.0.min.js"></script>
+	<script src="/cubersc/templete/common/js/jquery-ui.min.js"></script>
+	<script src="/cubersc/templete/common/js/owl.carousel.min.js"></script>
+	<script src="/cubersc/templete/common/js/common.js"></script>
+	<script src="/cubersc/common/itg-js.js"></script>
+	<script src="/cubersc/common/plugins/validation/validator.js"></script>
+	<script src="/cubersc/common/plugins/validation/accessability.js"></script>
+	<!-- <script src="/cheditor/cheditor.js"></script> -->
+	<script src="/cubersc/common/itg-popwin.js"></script>
+	
+<!--//header-->
+
+	
+
+<!-- <meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" /> -->
+<!-- <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" /> -->
+
+<!-- jquery -->
+<script src="/cubersc/templete/kstartup1/lib/js/jquery-1.12.4.min.js"></script>
+<script src="/cubersc/templete/kstartup1/lib/js/jquery-latest.js"></script>
+<!-- //플러그인 -->
+<script src="/cubersc/templete/kstartup1/lib/js/slick.js"></script>
+<script src="/cubersc/templete/kstartup1/lib/js/jquery.hmbrgr.js"></script>
+<!-- script -->
+<script src="/cubersc/templete/kstartup1/js/common.js"></script>
+<script src="/cubersc/templete/kstartup1/js/sub.js"></script>
+
+<script>
+	var anyidAdaptor = anyidAdaptor || {};
+	
+	
+	
+	
+	
+	
+	
+	/*이용기관 수정 영역 Start*/
+	anyidAdaptor.orgLogin = function(data){
+	    //정부 통합인증SDK_연계가이드 4.4.1.3 이용기관 로그인(토글 off) 참조
+	    //제공되는 라이브러리 메소드로 인증데이터 decrypt 이후 자체 로그인 로직 개발
+		const params = new URLSearchParams(location.search);
+		var obj ={
+			ssob : data.ssob
+			, tag : params.get("tx")
+			, endPoint : params.get("endPoint")
+		}
+		
+	    $.ajax({
+	        url: "/web/module/webLGIN_anyidOrgLoginProc.ajax",
+	        type: "post",
+	        contentType: "application/json",
+	        data: JSON.stringify(obj),
+	        async: false,
+	        cache: false,
+	        success: function (data) {
+	        	if(data == null || data.result == null || data.result == "") {
+	        		alert("시스템에 문제가 발생했습니다. 고객 지원 (1357)에 문의바랍니다. (error990)");
+	        		return;
+	        	}
+	        	
+	        	
+	        	if (data.result == 0) {
+	        		if (data.endPoint != null && data.endPoint != "") {
+	        			window.location.href = data.endPoint;
+	        		} else {
+	        			window.location.href = "/web/main/index.do";
+	        		}
+	        	} else if (data.result == 91) {
+	        		alert("K-스타트업에 등록되어있지 않습니다. 회원가입으로 안내합니다.");
+	        		window.location.href = "/web/contents/webMEMB_JOIN.do";
+	        	} else if(data.result == 2) {
+	        		if(data.url != null && data.url.indexOf("MEMB_JOIN") > -1){
+            			document.location.href = "/web/main/index.do";
+            		} else {
+            			if (data.backUrl != null && data.backUrl != "") {
+            				if (data.url != null && data.url.indexOf("?") > -1) {
+            					document.location.href  = data.url + "&backUrl=" + data.backUrl;	
+            				} else {
+            					document.location.href  = data.url + "?backUrl=" + data.backUrl;
+            				}
+            			} else {
+            				if (data.url != null && data.url != "") {
+            					document.location.href = data.url;	
+            				} else {
+            					document.location.href = "/web/main/index.do";
+            				}
+            					
+            			}
+            		}
+	            } else if(data.result == "3"){
+	            	document.location.href = "/web/main/index.do";
+	            } else if(data.result == "4"){
+	            	document.location.href = "/web/main/index.do";
+	            } else if(data.result == "5"){
+	            	document.location.href = "/web/main/index.do";
+	            } else if(data.result == "6"){
+	            	var form = document.createElement("form");
+	            	
+	            	var inputFlag = document.createElement("input");
+	            	inputFlag.setAttribute("type", "hidden");
+	            	inputFlag.setAttribute("name", "flag");
+	            	inputFlag.setAttribute("value", "login");
+	            	
+	            	var inputUserCi = document.createElement("input");
+	            	inputUserCi.setAttribute("type", "hidden");
+	            	inputUserCi.setAttribute("name", "userCi");
+	            	inputUserCi.setAttribute("value", data.userCi);
+	            	
+	            	var inputReturnUrl = document.createElement("input");
+	            	inputReturnUrl.setAttribute("type", "hidden");
+	            	inputReturnUrl.setAttribute("name", "returnUrl");
+	            	inputReturnUrl.setAttribute("value", data.url);
+	            		            	
+	            	form.appendChild(inputFlag);
+	            	form.appendChild(inputUserCi);
+	            	form.appendChild(inputReturnUrl);
+	            	
+	            	form.setAttribute("method", "post");
+	        		form.setAttribute("action", "/passni/kstartup/tokenInfoRelay.jsp");
+	        		
+	        		document.body.appendChild(form);
+	        		
+	        		form.submit();
+	            } else if(data.result == "7"){
+	            	var form = document.createElement("form");
+	            	
+	            	var inputFlag = document.createElement("input");
+	            	inputFlag.setAttribute("type", "hidden");
+	            	inputFlag.setAttribute("name", "flag");
+	            	inputFlag.setAttribute("value", data.flag);
+	            	
+	            	var inputReturnUrl = document.createElement("input");
+	            	inputReturnUrl.setAttribute("type", "hidden");
+	            	inputReturnUrl.setAttribute("name", "returnUrl");
+	            	inputReturnUrl.setAttribute("value", data.returnUrl);
+	            	
+	            	form.appendChild(inputFlag);
+	            	form.appendChild(inputReturnUrl);
+	            		            	
+	            	form.setAttribute("method", data.method);
+	        		form.setAttribute("action", data.action);
+	        		
+	        		document.body.appendChild(form);
+	        		
+	        		form.submit();
+	            } else if(data.result == "10") {
+	            	document.location.href = "/web/main/index.do";
+	            } else if (data.result < 0) {
+		        	alert("시스템에 문제가 발생했습니다. 고객 지원 (1357)에 문의바랍니다. (errorCode:" + data.result + ")");
+		        	return;
+		        } else {
+		        	document.location.href = "/web/main/index.do";
+		        }
+
+	        }, error: function (request, status, error) {
+	    		alert("시스템에 문제가 발생했습니다. 고객 지원 (1357)에 문의바랍니다. (error995)");
+	    		return;
+	        }
+	    });
+	}
+	/*이용기관 수정 영역 End*/
+	
+	
+	/*이용기관 문구수정 영역 Start*/
+	anyidAdaptor.JoinConfirm = function(portalJoinUri, memberData){
+	    if(!confirm('Any-ID 사용자등록 하시겠습니까?')) {
+			anyidAdaptor.orgLogin();
+			return;
+	    }else{
+			anyidAdaptor.receiveAnyIdJoin(portalJoinUri, memberData);
+	    }
+	}
+	/*이용기관 문구수정 영역 End*/
+	
+	
+	
+	
+	anyidAdaptor.portalJoinUri = "null";
+	anyidAdaptor.certData = null;
+	anyidAdaptor.ssoByPass = "0";
+	anyidAdaptor.niRegYn = "null";
+	anyidAdaptor.agencyContextPath = "";
+	
+	
+	anyidAdaptor.success = function(data){
+	    if(anyidAdaptor.ssoByPass != 0 || !data.useSso) {
+			anyidAdaptor.orgLogin(data);
+	    } else {
+			anyidAdaptor.certData = data;
+			anyidAdaptor.userCheck();
+	    }  
+	}
+	
+	anyidAdaptor.userCheck = function(){
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("POST", anyidAdaptor.agencyContextPath + "/oidc/userCheck", true);
+	    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	
+	    xhr.onreadystatechange = function() {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+			    var response = JSON.parse(xhr.responseText);
+			    if (response.success) {
+					anyidAdaptor.ssoLogin();
+			    } else {
+					setTimeout(function() {
+				    	anyidAdaptor.receiveAnyIdJoin(response.uri, response.data);
+					}, 100);  
+			    }
+			}
+	    };
+	
+	    let jsonObject = new Object();
+	    jsonObject.txId = anyidAdaptor.certData.txId;
+	    jsonObject.ssob = anyidAdaptor.certData.ssob;
+	    jsonObject.userSeCd = anyidAdaptor.certData.userSeCd;
+	    
+	    let jsonStr = JSON.stringify(jsonObject);
+	    let encodedString = btoa(jsonStr);
+	    
+	    var data = "data=" + encodedString + "&txId=" + anyidAdaptor.certData.txId;
+	    xhr.send(data);
+	    
+	}
+	
+	//anyid가입
+	anyidAdaptor.receiveAnyIdJoin = function(portalJoinUri, memberData){
+	
+	    var url = portalJoinUri+encodeURIComponent(memberData);
+	    anyidAdaptor.popup(url,"openAnyIdRegistUserIdv",700,740);
+	
+	    window.addEventListener("message", function(event) {
+			var result;
+			try {
+			    result = JSON.parse(event.data);
+			} catch (error) {
+			    console.error("Received message is not valid JSON:", error);
+			    return;
+			}
+		
+			if(!result.funcName || (result.funcName !== "trmsAgreComplete" && result.funcName !== "registUserComplete")) {
+			    return;
+			}
+			if(result.status === "success") {
+			    if(result.trmsAgreYn == "Y"){
+					anyidAdaptor.ssoLogin();
+			    }else{
+					anyidAdaptor.orgLogin();
+			    }
+			}else{
+			    
+			    anyidAdaptor.orgLogin();
+			}
+	
+	    }, false);
+	}
+	
+	// 팝업 호출
+	anyidAdaptor.popup = function(url, name, width, height){
+	    let left = (screen.width) ? (screen.width-width)/2 : 0;
+	    let top = (screen.height) ? (screen.height-height)/2 : 0;
+	    let popup=window.open(url, name ,"resizable=yes,toolbar=no,scrollbars=yes,location=no,top="+top+"px,left="+left+"px,width="+width+"px,height="+height+"px");
+	    if(popup){
+			popup.focus();
+	    }
+	}
+	
+	anyidAdaptor.ssoLogin = function(){
+	    let jsonObject = new Object();
+	    jsonObject.txId = anyidAdaptor.certData.txId;
+	    jsonObject.ssob = anyidAdaptor.certData.ssob;
+	    jsonObject.userSeCd = anyidAdaptor.certData.userSeCd;
+	    let jsonStr = JSON.stringify(jsonObject);
+	    let encodedString = btoa(jsonStr);
+	    var baseUrl = window.location.origin + anyidAdaptor.agencyContextPath + "/oidc/ssoLogin";
+	    var urlWithParams = baseUrl + "?data=" + encodedString;
+	    window.location.href = urlWithParams;
+	    
+	}
+	
+	anyidAdaptor.ssoLoginPageSub = function(baseUrl, endPoint, acrValues){
+	    var subUrl = "";
+	    
+	    if (endPoint && endPoint.trim() !== "") {
+			subUrl = "?endPoint=" + encodeURIComponent(endPoint);
+	    }
+	    
+	    if (!acrValues && acrValues.trim() == "") {
+			acrValues = "3" 
+	    }
+	    
+	    if (acrValues && acrValues.trim() !== "") {
+			if(subUrl == ""){
+			    subUrl = "?";
+			}else{
+			    subUrl = subUrl + "&";
+			}
+			subUrl = subUrl + "acrValues=" + acrValues;
+	    }
+	    
+	    window.location.replace(baseUrl+subUrl);
+	}
+	
+	/**/
+	anyidAdaptor.ssoLogout = function(endPoint) {
+	    endPoint = typeof endPoint !== 'undefined' ? endPoint : "/web/main/index.do";
+	    var baseUrl = window.location.origin + anyidAdaptor.agencyContextPath + "/oidc/ssoLogout";
+	    baseUrl = baseUrl + "?endPoint=" + encodeURIComponent(endPoint);
+	    window.location.replace(baseUrl);
+	}
+	/**/
+	anyidAdaptor.reAuthLevel = function(endPoint, acrValues){
+	    endPoint = typeof endPoint !== 'undefined' ? endPoint : "/web/main/index.do";
+	    var baseUrl = window.location.origin + anyidAdaptor.agencyContextPath + "/oidc/reAuthLevel";
+	    anyidAdaptor.ssoLoginPageSub(baseUrl, endPoint, acrValues)
+	
+	}
+	/**/
+	anyidAdaptor.ssoLoginPage = function(endPoint, acrValues){
+	    endPoint = typeof endPoint !== 'undefined' ? endPoint : "/web/main/index.do";
+	    var baseUrl = window.location.origin + anyidAdaptor.agencyContextPath + "/oidc/auth";
+	    anyidAdaptor.ssoLoginPageSub(baseUrl, endPoint, acrValues)
+	}
+	
+	/**/
+	anyidAdaptor.ssoSvcToSvc = function(url, endPoint){
+	    var baseUrl = url + "/oidc/svcToSvc?endPoint=" + encodeURIComponent(endPoint);;
+	    window.open(baseUrl, "_blank");
+	}
+</script>
+<!-- //script -->
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/css/common.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/css/layout.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/css/sub.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/css/nnoFndEcs.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/lib/css/slick.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/css/tracer.css"/>
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/font/dingbat_xeicon.css">
+<link rel="stylesheet" type="text/css" href="/cubersc/templete/kstartup1/font/fontawesome-7.1.0.css">
+<!-- //css -->
+<style>
+	#a_btnTop:focus-visible { outline: red auto 3px; outline-offset: 2px; }
+	#a_btnHelp:focus-visible { outline: red auto 3px; outline-offset: 2px; }
+</style>
+
+<script>
+var loginID = "";
+
+function openChatbot() {
+	
+	
+    const params = new URLSearchParams(); // null 은 "" 으로 맵핑
+    params.append("aprcClss","K"); // 진입구분필드 PMS admin : A, Front : F, K-Startup : K
+    params.append("lginID",loginID); // 로그인 한 경우 로그인 ID, 로그인 X ""(null)
+    params.append("blngClss",""); // 소속구분필드 k-startup에서는 사용X 전담기관 : 1, 주관기관 : 2, (예비)창업자 : 3, 소속 구분 X : ""(null)
+    params.append("qustnCtgr",""); // 질문카테고리필드 사업공고 : P, FAQ : F, 이용가이드 : G, 등록매뉴얼 : M, 질문카테고리 X : ""(null)
+    params.append("preQustn",""); // 선행질문, 선행질문 X : ""(null)
+    
+    fetch('https://pms.k-startup.go.kr/chatbot/api/post/lnkAIChatBotPopup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: params
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ');
+        }
+        return response.json();
+    }).then(data => {
+        console.log('Session created: ', data)
+        const chatbotUrl = data.redirectUrl; // api 에서 팝업 주소 리턴 (주소 + jwtToken)
+        console.log('chatbotUrl: ', chatbotUrl)
+      	const chatbotWindow = window.open('https://pms.k-startup.go.kr' + chatbotUrl, '_blank', 'width=1080,height=900'); // api 받은 주소로 팝업 호출
+        //const chatbotWindow = window.open(chatbotUrl); // api 받은 주소로 팝업 호출
+    }).catch(error => {
+        console.log('Error opening chatbot:', error)
+    })
+}
+</script>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<!--[if lte IE 9]><script src="/cubersc/templete_common/js/html5shiv.js"></script><script src="/cubersc/templete_common/js/respond.min.js"></script><![endif]-->
+	
+	<script>
+		let logoutUrl = "";
+	</script>
+	
+		
+			<script>
+				logoutUrl = "javascript:anyidAdaptor.ssoLogout('/web/main/index.do');";
+			</script>
+		
+		
+	
+	
+	<script>
+		
+		
+	</script>
+</head>
+<body class="sub">
+	<div id="accessibility">
+		<a href="#container">본문 바로가기</a>
+		
+	</div>
+
+	<!-- 본문 영역 -->
+	
+<script type="text/javascript">
+	var method = 'GET';
+	var fullUrl = '/web/contents/bizpbanc-deadline.do?schM=view&pbancSn=163048';
+	var target = '';
+	
+	var url;
+	
+	try {
+		url = new URL(fullUrl);
+	} catch (error) {
+		if (fullUrl.substr(0, 1) != "/") {
+			url = new URL(window.location.origin + "/" + fullUrl);	
+		} else {
+			url = new URL(window.location.origin + fullUrl);
+		}
+	}
+	
+	var urlParams = url.searchParams;
+	
+	var form = document.createElement("form");
+	
+	for (var key of urlParams.keys()) {
+		var input = document.createElement("input");
+		input.setAttribute("type", "hidden");
+		input.setAttribute("name", key);
+		input.setAttribute("value", urlParams.get(key));
+		
+		form.appendChild(input);
+	}
+	
+	var urlOrigin = url.origin;
+	if (urlOrigin == null || urlOrigin == "null") {
+		urlOrigin = "";
+	}
+	
+	form.setAttribute("method", method);
+	form.setAttribute("action", urlOrigin + url.pathname);
+	
+	if (target != null && target != "") {
+		form.setAttribute("target", target);	
+	}
+	
+	document.body.appendChild(form);
+	
+	form.submit();
+</script>
+
+	<!-- 본문 영역 -->
+
+	<!--footer-->
+	
+
+
+	<div id="loadingLayer" style="position: fixed; display: block; width: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; top: 0; left: 0;"></div>
+	<!--//footer-->
+
+</body>
+</html>
