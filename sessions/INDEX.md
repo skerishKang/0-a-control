@@ -2,13 +2,7 @@
 
 | Date | Session | Agent | Status | Title |
 |------|---------|-------|--------|-------|
-| 2026-03-30 | 2026-03-30_0600_... | kilo | closed | kilo env test |
-| 2026-03-30 | 2026-03-30_0554_... | test | closed | pipeline test session |
-| 2026-03-25 | 2026-03-25_1038_... | codex | closed | [세션 기록] 3월 25일 운영 검토 (KOSA/민원) |
-| 2026-03-25 | 2026-03-25_1037_... | codex | closed | [세션 기록] 3월 25일 운영 검토 (KOSA/민원) |
-| 2026-03-25 | 2026-03-25_1037_... | codex | closed | [세션 기록] 3월 25일 운영 검토 (KOSA/민원) |
-| 2026-03-25 | 2026-03-25_1036_... | codex | closed | [세션 기록] 3월 25일 운영 검토 (KOSA/민원) |
-| 2026-03-16 | 2026-03-16_2058_... | codex | closed | 0-a-control new session |
+| 2026-03-16 | 2026-03-16_2058_... | codex | active | 0-a-control new session |
 | 2026-03-16 | 2026-03-16_0731_... | codex | active | 0-a-control new session |
 | 2026-03-16 | 2026-03-16_0419_... | codex | active | 0-a-control new session |
 | 2026-03-15 | 2026-03-15_2240_... | kilo | closed | 0-a-control new session |

@@ -39,12 +39,6 @@ bash scripts/workdone.sh "0-myplan 구조 점검 완료"
 - this is a local convenience pointer, not the canonical source of truth
 - the canonical source of truth remains SQLite
 
-## Codex Session Recovery Note
-- When restoring a Codex session, check both Codex stores before deciding a session is missing.
-- WSL Codex store: `/root/.codex/`
-- Windows Codex store: `/mnt/c/Users/limone/.codex/`
-- The current runtime's `.codex` directory is not always the only source of truth.
-
 ## Next Step
 Wrap real tools like `codex`, `gemini`, or `kilo` with these commands so session logging happens automatically.
 
@@ -80,14 +74,6 @@ If a tool session was run outside the wrapper, import the saved transcript into 
 python scripts/import_codex_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\codex.log
 python scripts/import_gemini_cli_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\gemini.log
 python scripts/import_windsurf_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\windsurf.log
-```
-
-For kilo and opencode, the wrapper cleanup automatically imports from their native databases.
-Manual import (if wrapper was not used):
-
-```bash
-python scripts/import_kilo_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control
-python scripts/import_opencode_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control
 ```
 
 If `--file` is omitted, the importer looks for:

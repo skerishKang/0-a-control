@@ -113,8 +113,6 @@
 | docs/SKILL-reading-to-operating-plan.md | 독서/철학 → 운영 플랜 변환 |
 | docs/SKILL-panel-priority-judger.md | 패널 우선순위 판단 |
 | docs/SKILL-conversation-to-control-tower.md | 대화 → 구조 변환 |
-| docs/SKILL-red-team-trigger.md | 조건부 반대 검증 |
-| docs/agent-red-team-prompts.md | 에이전트별 레드팀 프롬프트 |
 
 ---
 

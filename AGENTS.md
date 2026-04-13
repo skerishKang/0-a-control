@@ -32,40 +32,14 @@ The web UI is a fast-read situation board, not the primary thinking surface.
 - update plan drafts and current state
 - propose changes, but do not silently finalize major strategic shifts
 
-## History Model
-`workdiary` uses two history layers by intent:
-
-- `Fossil`: local-first broad archive for recovery
-- `Git`: selective publish/share history for GitHub and deployment
-
-Agents must assume the user prefers this order:
-
-1. keep broad local history first
-2. publish selectively later
-
-Operationally this means:
-
-- treat `Fossil` as the primary recovery layer
-- do not assume `Git` contains all important local files
-- when discussing deletion recovery, check `Fossil` intent before assuming Git is sufficient
-- when proposing workflow changes, preserve the `Fossil first, Git for publish` model unless the user explicitly changes it
-
 ## Working Principles
 1. Prioritize continuity over volume.
-2. Preserve all important raw context in full archive (`sessions/`). Operate from compressed current state as supplementary layer, not as replacement for archive.
+2. Preserve all important raw context, but operate from compressed current state.
 3. Present one main mission and one current quest whenever possible.
 4. Convert guilt into strategy.
 5. Prefer re-entry clarity over exhaustive task trees.
 6. Keep plans mutable. Plans are living operational state, not static documents.
 7. Treat the UI as a readable command board, not the main control surface.
-
-## Execution Environment Rule
-- Codex starts in WSL by default.
-- Other external or free models are assumed to run in Windows by default unless explicitly stated otherwise.
-- When Codex writes prompts for other models to execute, use Windows paths and Windows execution assumptions by default.
-- When Codex inspects or edits files directly, it may use WSL paths internally.
-- If both path styles are needed, present Windows path first and WSL path second.
-- Do not assume a Windows-running model understands WSL-only paths.
 
 ## Planning Model
 Plans are organized into:
@@ -125,48 +99,33 @@ The system uses a unified CLI entry point for work sessions:
 - show the single main mission
 - show one small action to start immediately
 - support strategic discussion before execution
-- selectively read related session archive from `sessions/` (not all, only relevant)
 
 ### Midday / During Work
 - keep the current quest in focus
 - after progress, propose the next quest
 - explain why the next quest is appropriate
 - revise overall plans when needed
-- read archive only when context is lost
 
 ### End of Day
 - show what was actually done
 - show what remains unfinished
 - convert unfinished work into restart strategy
 - propose the first quest for the next session
-- verify today's sessions are archived in `sessions/`
 
 ## Memory Hierarchy
 The system keeps four layers of memory:
 
-1. raw logs / source records
-2. sessions archive (full Dialogue + Transcript in `sessions/`)
+1. raw logs
+2. sessions
 3. plans
-4. current state (compressed)
+4. current state
 
 Agents should usually read in this order:
 
-1. current state (what to do now)
-2. related sessions archive (selective, not all)
-3. plans
+1. current state
+2. plans
+3. recent sessions
 4. raw logs only when needed
-
-The `sessions/` folder holds full session archives with complete Dialogue and Transcript. The `sessions_html/` folder is the display layer for browser reading. Summaries are supplementary, not the main body.
-
-## Session Recovery Rule
-- Session recovery takes priority over writing new handoffs.
-- `sessions/` is the primary recovery source (full archive with Dialogue + Transcript).
-- Read only relevant sessions, not all archives.
-- If recovery is insufficient, create a short handoff only for missing topics.
-- When the user asks to restore a Codex session, check both Codex stores:
-  - WSL Codex store: `/root/.codex/`
-  - Windows Codex store: `/mnt/c/Users/limone/.codex/`
-- `sessions_html/` is the display layer, never the source of truth.
 
 ## UI Principles
 ### Morning screen

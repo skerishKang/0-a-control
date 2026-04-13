@@ -211,25 +211,6 @@ cleanup() {
       --cwd "$WORKSPACE" \
       --file "$TRANSCRIPT_FILE" >/dev/null 2>&1 || true
   fi
-
-  # Agent-specific session import (kilo, opencode)
-  case "$CANONICAL_AGENT" in
-    kilo)
-      PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_kilo_session.py" \
-        --session-id "$SESSION_ID" \
-        --source-name "kilo" \
-        --project "$PROJECT_KEY" \
-        --cwd "$WORKSPACE" >/dev/null 2>&1 || true
-      ;;
-    opencode)
-      PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/import_opencode_session.py" \
-        --session-id "$SESSION_ID" \
-        --source-name "opencode" \
-        --project "$PROJECT_KEY" \
-        --cwd "$WORKSPACE" >/dev/null 2>&1 || true
-      ;;
-  esac
-
   PYTHONPATH="$ROOT_DIR/scripts" $PYTHON_CMD "$ROOT_DIR/scripts/session_cli.py" end \
     --session-id "$SESSION_ID" \
     --summary "$summary" >/dev/null 2>&1 || true

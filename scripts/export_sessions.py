@@ -1,13 +1,7 @@
 ﻿#!/usr/bin/env python3
 """
-Export sessions from DB to session archive structure.
-Creates full session preservation notes in sessions/YYYY-MM-DD/ folder.
-
-Philosophy:
-- sessions/ holds the complete session archive, not compressed notes.
-- Summary is a supplementary layer (short box), not the main body.
-- Dialogue records and transcript content are preserved in full.
-- Display layer (HTML) renders all of this.
+Export sessions from DB to operational memory structure.
+Creates session notes in sessions/YYYY-MM-DD/ folder.
 """
 
 from __future__ import annotations
@@ -23,8 +17,7 @@ except ModuleNotFoundError:
     from db_base import connect, rows_to_dicts
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SESSIONS_DIR = PROJECT_ROOT / "sessions"
+SESSIONS_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions")
 
 
 def parse_timestamp(ts: str | None) -> tuple[datetime | None, str | None]:
@@ -64,7 +57,6 @@ def session_note_from_view(view: dict) -> tuple[str, str, str]:
     artifacts = view.get("artifacts", {})
     transcript = view.get("transcript", {})
     quest = view.get("quest", {})
-    dialogue = view.get("dialogue", [])
 
     session_id = view["session_id"]
     started_at = header.get("started_at")
@@ -90,9 +82,8 @@ def session_note_from_view(view: dict) -> tuple[str, str, str]:
     short_id = session_id[:8]
     filename = f"{date_str}_{time_prefix}_{short_id}.md"
 
-    # --- Summary block (supplementary, not main body) ---
     intent = _display_text(summary.get("intent"), "요약이 없습니다.")
-    actions_summary = _format_list(summary.get("actions") or [], "(no specific actions recorded)")
+    actions = _format_list(summary.get("actions") or [], "(no specific actions recorded)")
     decisions = _format_list(summary.get("decisions") or [], "(none recorded)")
     next_start = _format_list(
         summary.get("next_start") or [],
@@ -117,84 +108,87 @@ def session_note_from_view(view: dict) -> tuple[str, str, str]:
 
 ---
 
-## Summary
+## Intent
 
-> 이 세션의 요약입니다. 전체 대화는 아래 본문에 포함되어 있습니다.
+> What was this session trying to accomplish?
 
-**Intent**: {intent}
-
-**Key Actions**:
-"""
-    for item in actions_summary:
-        note += f"- {item}\n"
-
-    note += "\n**Decisions**:\n"
-    for item in decisions:
-        note += f"- {item}\n"
-
-    note += "\n**Files Touched**:\n"
-    if files_touched:
-        for item in files_touched:
-            note += f"- {item}\n"
-    else:
-        note += "- (none recorded)\n"
-
-    note += "\n**Next Start**:\n"
-    for index, item in enumerate(next_start, 1):
-        note += f"{index}. {item}\n"
-
-    note += "\n**Quest**:\n"
-    note += f"- Report: {quest.get('report') or '(none recorded)'}\n"
-    note += f"- Verdict: {quest.get('verdict') or '(none recorded)'}\n"
-
-    # --- Dialogue (full conversation flow) ---
-    note += """
+- {intent}
 
 ---
 
-## Dialogue
+## Actions
 
-> 세션의 전체 대화 흐름입니다.
+> What was actually done?
 
 """
-    if dialogue:
-        for record in dialogue:
-            role = (record.get("role") or "tool").upper()
-            ts = record.get("created_at") or ""
-            content = record.get("content") or ""
-            note += f"### [{ts}] {role}\n\n"
-            note += f"{content}\n\n---\n\n"
-    else:
-        note += "(대화 기록 없음)\n"
 
-    # --- Transcript (full raw content) ---
+    for item in actions:
+        note += f"- {item}\n"
+
     note += """
+## Decisions
 
-## Transcript
+> What was decided?
 
-> 원시 세션 기록입니다.
+| Decision | Rationale |
+|----------|-----------|
+"""
+    for item in decisions:
+        note += f"| {item} | - |\n"
+
+    note += """
+---
+
+## Artifacts
+
+> Files created or modified
+
+| File | Role |
+|------|------|
+"""
+    if not files_touched and not actions_json:
+        note += "| (none recorded) | - |\n"
+    else:
+        for item in files_touched:
+            note += f"| {item} | file |\n"
+        for item in actions_json:
+            note += f"| {item} | action |\n"
+
+    note += """
+---
+
+## Next Start
+
+> Where should the next session pick up?
+
+"""
+    for index, item in enumerate(next_start, 1):
+        note += f"{index}. {item}\n"
+
+    note += """
+---
+
+## Quest
+
+"""
+    note += f"- Recent quest report: {quest.get('report') or '(none recorded)'}\n"
+    note += f"- Recent AI verdict: {quest.get('verdict') or '(none recorded)'}\n"
+
+    note += """
+---
+
+## Raw Refs
+
+> Transcript path or raw references (not full content)
 
 """
     if transcript.get("available"):
-        profile = transcript.get("profile") or "default"
-        record_count = transcript.get("record_count", 0)
-        note += f"- Profile: {profile}\n"
-        note += f"- Record count: {record_count}\n\n"
-
-        cleaned = transcript.get("cleaned_content") or ""
-        raw = transcript.get("raw_content") or ""
-
-        if cleaned:
-            note += "### Cleaned Transcript\n\n"
-            note += f"```\n{cleaned}\n```\n\n"
-
-        if raw:
-            note += "### Raw Transcript\n\n"
-            note += f"```\n{raw}\n```\n"
+        note += f"- Transcript: embedded in DB source_records ({transcript.get('record_count', 0)} record(s))\n"
+        note += f"- Transcript profile: {transcript.get('profile') or 'default'}\n"
+        note += "- Transcript views: cleaned + raw available in dashboard/html export\n"
     else:
-        note += "(transcript 없음)\n"
-
-    note += f"\n---\n\n- DB session: `{session_id}`\n"
+        note += "- (no transcript)\n"
+    note += f"- DB session: `{session_id}`\n"
 
     return date_str, filename, note
 
