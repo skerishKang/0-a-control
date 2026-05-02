@@ -1,1 +1,0 @@
-G:/Ddrive/BatangD/task/workdiary/47-youtube-brief/AGENTS.md
