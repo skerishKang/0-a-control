@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 03 04 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a><a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 03 04 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.1 • INFORMATION RETRIEVAL 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.1 • 정보 검색 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>term weight
+BM25</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>용어 가중치
+BM25</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>검색 성능 향상을 위한 가중치 산정 방식과 관련된 핵심 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We don’t use raw word counts in IR, instead computing a term weight for each document word. Two term weighting schemes are common: the tf-idf weighting introduced in Chapter 6, and a slightly more powerful variant called BM25.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>IR에서는 단순한 단어 빈도수를 사용하지 않고, 대신 각 문서 단어에 대해 용어 가중치(term weight)를 계산합니다. 두 가지 일반적인 용어 가중치 산정 방식이 있는데, 6장에서 소개된 tf-idf 가중치 부여 방식과 이보다 약간 더 강력한 변형인 BM25입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순히 단어가 많이 나온다고 중요한 것이 아니라, 가중치를 통해 문서의 특징을 더 잘 나타내야 한다는 IR의 기본 원칙을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We’ll reintroduce tf-idf here so readers don’t need to look back at Chapter 6. Tf-idf (the ‘-’ here is a hyphen, not a minus sign) is the product of two terms, the term frequency tf and the indirect document frequency idf.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>독자들이 6장을 다시 찾아볼 필요가 없도록 여기서 tf-idf를 다시 소개하겠습니다. Tf-idf(여기서 '-'는 마이너스 기호가 아닌 하이픈입니다)는 용어 빈도(term frequency, tf)와 역 문서 빈도(inverse document frequency, idf)라는 두 용어의 곱입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf-idf의 구성 요소를 다시 짚어 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The term frequency tells us how frequent the word is; words that occur more often in a document are likely to be informative about the document’s contents. We usually use the log10 of the word frequency, rather than the raw count. The intuition is that a word appearing 100 times in a document doesn’t make that word 100 times more likely to be relevant to the meaning of the document. Because we can’t take the log of 0, we normally add 1 to the count:3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>용어 빈도(tf)는 단어가 얼마나 자주 나타나는지를 알려줍니다. 문서에서 더 자주 나타나는 단어는 문서의 내용에 대한 정보를 더 많이 담고 있을 가능성이 큽니다. 우리는 보통 단순 빈도수 대신 단어 빈도에 log10을 취한 값을 사용합니다. 그 직관적인 이유는 문서에 단어가 100번 나타난다고 해서 그 단어가 문서의 의미와 100배 더 관련이 있다고 볼 수는 없기 때문입니다. 0의 로그를 취할 수는 없으므로, 보통 빈도수에 1을 더합니다.3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf 계산 시 로그를 사용하는 이유(빈도와 중요도가 선형적으로 비례하지 않음)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>tf_{t,d} = log_{10}(count(t, d) + 1) (23.3)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>tf_{t,d} = log_{10}(count(t, d) + 1) (23.3)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로그 기반 용어 빈도 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we use log weighting, terms which occur 0 times in a document would have tf = log10(1) = 0, 10 times in a document tf = log10(11) = 1.04, 100 times tf = log10(101) = 2.004, 1000 times tf = 3.00044, and so on.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로그 가중치를 사용하면, 문서에 0번 나타나는 용어는 tf = log10(1) = 0, 10번 나타나면 tf = log10(11) = 1.04, 100번이면 tf = log10(101) = 2.004, 1000번이면 tf = 3.00044 등이 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 빈도수 증가에 따른 로그 tf 값의 변화 예시입니다. 값이 완만하게 증가함을 볼 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The document frequency df_t of a term t is the number of documents it occurs in. Terms that occur in only a few documents are useful for discriminating those documents from the rest of the collection; terms that occur across the entire collection aren’t as helpful. The inverse document frequency or idf term weight (Sparck Jones, 1972) is defined as:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>용어 t의 문서 빈도 df_t는 해당 용어가 나타나는 문서의 수입니다. 소수의 문서에서만 나타나는 용어는 그 문서들을 컬렉션의 나머지 문서들과 구별하는 데 유용합니다. 반면 컬렉션 전체에 걸쳐 나타나는 용어는 그다지 도움이 되지 않습니다. 역 문서 빈도 또는 idf 용어 가중치(Sparck Jones, 1972)는 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>idf의 개념적 배경을 설명합니다. 흔한 단어일수록 변별력이 낮다는 점이 핵심입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>idf_t = log_{10} \frac{N}{df_t} (23.4)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>idf_t = log_{10} \frac{N}{df_t} (23.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>idf 계산 공식입니다. N은 전체 문서 수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>where N is the total number of documents in the collection, and df_t is the number of documents in which term t occurs. The fewer documents in which a term occurs, the higher this weight; the lowest weight of 0 is assigned to terms that occur in every document.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 N은 컬렉션의 전체 문서 수이고, df_t는 용어 t가 나타나는 문서의 수입니다. 용어가 나타나는 문서의 수가 적을수록 이 가중치는 높아지며, 모든 문서에서 나타나는 용어에는 최저 가중치인 0이 할당됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>idf 가중치의 특징을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Here are some idf values for some words in the corpus of Shakespeare plays, ranging from extremely informative words that occur in only one play like Romeo, to those that occur in a few like salad or Falstaff, to those that are very common like fool or so common as to be completely non-discriminative since they occur in all 37 plays like good or sweet.4</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음은 셰익스피어 희곡 말뭉치에 포함된 일부 단어들의 idf 값입니다. 'Romeo'와 같이 단 하나의 희곡에만 등장하여 매우 유용한 정보를 제공하는 단어부터, 'salad'나 'Falstaff'처럼 소수의 작품에 등장하는 단어, 'fool'처럼 매우 흔한 단어, 그리고 'good'이나 'sweet'처럼 37편의 전 작품에 등장하여 변별력이 전혀 없는 단어까지 다양합니다.4</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 말뭉치(셰익스피어 희곡)를 예로 들어 idf 값의 범위를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Word | df | idf |
+| :--- | :--- | :--- |
+| Romeo | 1 | 1.57 |
+| salad | 2 | 1.27 |
+| Falstaff | 4 | 0.967 |
+| forest | 12 | 0.489 |
+| battle | 21 | 0.246 |
+| wit | 34 | 0.037 |
+| fool | 36 | 0.012 |
+| good | 37 | 0 |
+| sweet | 37 | 0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 단어 | df | idf |
+| :--- | :--- | :--- |
+| Romeo | 1 | 1.57 |
+| salad | 2 | 1.27 |
+| Falstaff | 4 | 0.967 |
+| forest | 12 | 0.489 |
+| battle | 21 | 0.246 |
+| wit | 34 | 0.037 |
+| fool | 36 | 0.012 |
+| good | 37 | 0 |
+| sweet | 37 | 0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>셰익스피어 희곡 데이터를 바탕으로 한 단어별 df와 idf 값 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3 Or we can use this alternative: tf_{t,d} = \begin{cases} 1 + log_{10} count(t,d) & \text{if } count(t,d) > 0 \\ 0 & \text{otherwise} \end{cases}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3 또는 다음과 같은 대안을 사용할 수도 있습니다: tf_{t,d} = \begin{cases} 1 + log_{10} count(t,d) & count(t,d) > 0 \text{ 인 경우} \\ 0 & \text{그 외의 경우} \end{cases}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf 계산의 다른 수식 형태를 보여주는 주석입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 Sweet was one of Shakespeare’s favorite adjectives, a fact probably related to the increased use of sugar in European recipes around the turn of the 16th century (Jurafsky, 2014, p. 175).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 'Sweet'는 셰익스피어가 가장 좋아했던 형용사 중 하나였는데, 이는 아마도 16세기 전환기 무렵 유럽 레시피에서 설탕 사용이 증가한 것과 관련이 있을 것입니다(Jurafsky, 2014, p. 175).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'sweet'라는 단어가 셰익스피어 작품에서 흔하게 쓰인 역사적 배경을 설명하는 흥미로운 주석입니다.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">23.1.2 문서 점수 산정 (Document Scoring)</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 23 • QUESTION ANSWERING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제23장 • 질의응답</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The tf-idf value for word t in document d is then the product of term frequency tf_{t,d} and IDF:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문서 d에 있는 단어 t의 tf-idf 값은 용어 빈도 tf_{t,d}와 IDF의 곱입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf-idf의 최종 결합 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>tf-idf(t, d) = tf_{t,d} \cdot idf_t (23.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>tf-idf(t, d) = tf_{t,d} \cdot idf_t (23.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf-idf 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.1.2 Document Scoring</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.1.2 문서 점수 산정 (Document Scoring)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쿼리와 문서 간의 유사도를 점수로 계산하는 방법을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We score document d by the cosine of its vector d with the query vector q:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 문서 d의 벡터 d와 쿼리 벡터 q 사이의 코사인 값을 통해 문서 d에 점수를 매깁니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>코사인 유사도를 점수 산정의 기준으로 삼음을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(q, d) = cos(q, d) = \frac{q \cdot d}{|q||d|} (23.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>score(q, d) = cos(q, d) = \frac{q \cdot d}{|q||d|} (23.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>코사인 유사도 기본 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another way to think of the cosine computation is as the dot product of unit vectors; we first normalize both the query and document vector to unit vectors, by dividing by their lengths, and then take the dot product:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>코사인 계산을 생각하는 또 다른 방법은 단위 벡터들의 내적(dot product)으로 보는 것입니다. 먼저 쿼리 벡터와 문서 벡터를 각각의 길이로 나누어 단위 벡터로 정규화한 다음, 내적을 구합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>코사인 유사도를 벡터 정규화 후 내적으로 이해하는 관점을 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(q, d) = cos(q, d) = \frac{q}{|q|} \cdot \frac{d}{|d|} (23.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>score(q, d) = cos(q, d) = \frac{q}{|q|} \cdot \frac{d}{|d|} (23.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단위 벡터 내적 형태의 코사인 유사도 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can spell out Eq. 23.7, using the tf-idf values and spelling out the dot product as a sum of products:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>tf-idf 값을 사용하고 내적을 곱들의 합으로 풀어서 식 23.7을 상세히 기술할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수식을 실제 계산 가능한 합의 형태로 확장합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(q, d) = \sum_{t \in q} \frac{tf-idf(t, q)}{\sqrt{\sum_{q_i \in q} tf-idf^2(q_i, q)}} \cdot \frac{tf-idf(t, d)}{\sqrt{\sum_{d_i \in d} tf-idf^2(d_i, d)}} (23.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>score(q, d) = \sum_{t \in q} \frac{tf-idf(t, q)}{\sqrt{\sum_{q_i \in q} tf-idf^2(q_i, q)}} \cdot \frac{tf-idf(t, d)}{\sqrt{\sum_{d_i \in d} tf-idf^2(d_i, d)}} (23.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tf-idf 값을 대입한 상세 점수 산정 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In practice, it’s common to approximate Eq. 23.8 by simplifying the query processing. Queries are usually very short, so each query word is likely to have a count of 1. And the cosine normalization for the query (the division by |q|) will be the same for all documents, so won’t change the ranking between any two documents D_i and D_j. So we generally use the following simple score for a document d given a query q:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제로는 쿼리 처리를 단순화하여 식 23.8을 근사하는 것이 일반적입니다. 쿼리는 보통 매우 짧아서 각 쿼리 단어의 빈도는 1일 가능성이 높습니다. 또한 쿼리에 대한 코사인 정규화(|q|로 나누는 것)는 모든 문서에 대해 동일하므로, 임의의 두 문서 D_i와 D_j 사이의 순위를 바꾸지 않습니다. 따라서 쿼리 q가 주어졌을 때 문서 d에 대해 일반적으로 다음과 같은 단순화된 점수를 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실질적인 구현에서 계산 효율성을 위해 수식을 단순화하는 이유를 설명합니다. 순위 산정이 목적이므로 공통 분모는 생략 가능합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(q, d) = \sum_{t \in q} \frac{tf-idf(t, d)}{|d|} (23.9)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>score(q, d) = \sum_{t \in q} \frac{tf-idf(t, d)}{|d|} (23.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실용적으로 사용되는 단순화된 문서 점수 산정 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s walk through an example of a tiny query against a collection of 4 nano documents, computing tf-idf values and seeing the rank of the documents. We’ll assume all words in the following query and documents are downcased and punctuation is removed:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4개의 아주 작은 문서 컬렉션에 대해 작은 쿼리를 던져 tf-idf 값을 계산하고 문서의 순위를 확인하는 예제를 살펴보겠습니다. 다음 쿼리와 문서의 모든 단어는 소문자로 변환되고 구두점은 제거되었다고 가정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개념 이해를 돕기 위한 구체적인 예제 시나리오를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Query: sweet love
+Doc 1: Sweet sweet nurse! Love?
+Doc 2: Sweet sorrow
+Doc 3: How sweet is love?
+Doc 4: Nurse!</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>쿼리: sweet love
+문서 1: Sweet sweet nurse! Love?
+문서 2: Sweet sorrow
+문서 3: How sweet is love?
+문서 4: Nurse!</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제에 사용될 쿼리와 4개 문서의 내용입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 23.2 shows the computation of the tf-idf values and the document vector length |d| for the first two documents using Eq. 23.3, Eq. 23.4, and Eq. 23.5 (computations for documents 3 and 4 are left as an exercise for the reader).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.2는 식 23.3, 23.4, 23.5를 사용하여 처음 두 문서에 대한 tf-idf 값과 문서 벡터 길이 |d|를 계산한 결과를 보여줍니다(문서 3과 4에 대한 계산은 독자의 연습 문제로 남겨둡니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 과정을 그림과 함께 설명하며 독자의 참여를 유도합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 23.3 shows the scores of the 4 documents, reranked according to Eq. 23.9. The ranking follows intuitively from the vector space model. Document 1, which has both terms including two instances of sweet, is the highest ranked, above document 3 which has a larger length |d| in the denominator, and also a smaller tf for sweet. Document 3 is missing one of the terms, and Document 4 is missing both.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.3은 식 23.9에 따라 다시 매겨진 4개 문서의 점수를 보여줍니다. 이 순위는 벡터 공간 모델로부터 직관적으로 도출됩니다. 'sweet'가 두 번 나타나는 등 두 용어를 모두 포함하고 있는 문서 1이 가장 높은 순위를 차지하며, 분모의 길이 |d|가 더 길고 'sweet'의 tf가 더 작은 문서 3보다 앞섭니다. 문서 3은 용어 중 하나가 빠져 있고, 문서 4는 둘 다 빠져 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 결과에 따른 최종 순위와 그 이유를 분석합니다. 빈도수와 문서 길이의 영향력을 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Word Senses and WordNet</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">18 Word Senses and WordNet</div>
+<h1>Word Senses and WordNet</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>18. Word Senses and WordNet.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">다의성과 워드넷 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 18 Word Senses and WordNet</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제18장 단어 의미와 워드넷(WordNet)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>18장의 시작입니다. 단어의 다양한 의미(Sense)와 어휘 데이터베이스인 워드넷에 대해 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"The word bank can refer to a financial institution or the side of a river. This phenomenon, where a single word form has multiple meanings, is called polysemy."</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"단어 'bank'는 금융 기관을 의미할 수도 있고 강둑을 의미할 수도 있습니다. 이처럼 하나의 단어 형태가 여러 가지 의미를 갖는 현상을 다의성(polysemy)이라고 합니다."</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다의성의 개념을 익숙한 예시인 'bank'를 통해 설명하며 장을 엽니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>word sense</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 의미(word sense)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어가 특정 문맥에서 가지는 개별적이고 구별되는 의미 단위를 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter, we explore how to represent and distinguish between these different word senses. We will also introduce WordNet, a large lexical database of English that organizes words into sets of synonyms called synsets.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서 우리는 이러한 서로 다른 단어 의미들을 어떻게 표현하고 구별하는지 탐색합니다. 또한 단어들을 유의어 집합인 '신셋(synsets)'으로 조직화한 대규모 영어 어휘 데이터베이스인 워드넷(WordNet)을 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장의 두 가지 핵심 주제인 단어 의미 구별과 워드넷의 구조(신셋)를 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18.1 Lexical Semantics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18.1 어휘 의미론(Lexical Semantics)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개별 단어의 의미와 단어들 사이의 관계를 연구하는 어휘 의미론의 기초를 다릅니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">단어 의미 정의</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 18 • WORD SENSES AND WORDNET</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제18장 • 단어 의미와 워드넷</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18.1.1 Word Senses</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18.1.1 단어 의미(Word Senses)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 의미의 정의와 특징에 대해 자세히 알아봅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A word sense is a discrete representation of one aspect of the meaning of a word. For example, the lemma 'bank' has at least two senses:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 의미는 단어 의미의 한 측면을 나타내는 불연속적인 표현입니다. 예를 들어, 표제어 'bank'는 적어도 두 가지 의미를 가집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 의미가 연속적인 것이 아니라 구별 가능한 단위(discrete)로 취급됨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. A financial institution.
+2. The rising ground bordering a lake, river, or sea.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 금융 기관.
+2. 호수, 강, 또는 바다에 인접한 솟아오른 지면.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'bank'의 대표적인 두 가지 의미를 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>lemma</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표제어(lemma)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 사전적 기본형을 말합니다. (예: 'banks', 'banking'의 표제어는 'bank')</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We represent these senses formally by associating them with a unique identifier, often called a sense tag.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이러한 의미들을 흔히 의미 태그(sense tag)라고 불리는 고유 식별자와 결합하여 형식적으로 표현합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전산 처리를 위해 자연어 의미에 고유 코드를 부여하는 방식(Sense Tagging)을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

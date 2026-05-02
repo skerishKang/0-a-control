@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Logistic Regression</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">05 Logistic Regression</div>
+<h1>Logistic Regression</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-9">Page 9</a>
+<a class="chip" href="#page-10">Page 10</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 9-10 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>5. Logistic Regression.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-9">
+<header class="page-header">
+<h2>Page 9</h2>
+<div class="page-subtitle">경사 하강법의 개념과 일차원 예시</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.4 • GRADIENT DESCENT 9</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.4 • 경사 하강법 9</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How shall we find the minimum of this (or any) loss function? Gradient descent is a method that finds a minimum of a function by figuring out in which direction (in the space of the parameters θ) the function's slope is rising the most steeply, and moving in the opposite direction. The intuition is that if you are hiking in a canyon and trying to descend most quickly down to the river at the bottom, you might look around yourself 360 degrees, find the direction where the ground is sloping the steepest, and walk downhill in that direction.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 손실 함수(또는 어떤 함수든)의 최솟값을 어떻게 찾을까요? 경사 하강법(gradient descent)은 파라미터 $\theta$ 공간에서 함수의 기울기가 가장 가파르게 상승하는 방향을 파악한 뒤, 그 반대 방향으로 이동하여 함수의 최솟값을 찾는 방법입니다. 이에 대한 직관적인 비유는 이렇습니다. 여러분이 협곡에서 하이킹을 하며 바닥에 있는 강으로 가장 빠르게 내려가려 한다면, 주위를 360도 둘러보고 땅이 가장 가파르게 기울어진 방향을 찾아 그 내리막길로 걸어 내려가는 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>경사 하강법의 기본 원리를 산에서 내려오는 물리적 상황에 비유하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>convex</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>볼록(convex)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>함수의 어느 두 점을 이어도 그 선분이 함수 그래프보다 위에 있는 특성으로, 최솟값 찾기가 용이한 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For logistic regression, this loss function is conveniently convex. A convex function has just one minimum; there are no local minima to get stuck in, so gradient descent starting from any point is guaranteed to find the minimum. (By contrast, the loss for multi-layer neural networks is non-convex, and gradient descent may get stuck in local minima for neural network training and never find the global optimum.)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀의 경우, 다행히도 이 손실 함수는 볼록(convex) 함수입니다. 볼록 함수는 단 하나의 최솟값만을 가집니다. 빠져나오지 못할 지역 최솟값(local minima)이 없으므로, 어떤 지점에서 경사 하강법을 시작하든 최솟값을 찾는 것이 보장됩니다. (대조적으로, 다층 신경망의 손실 함수는 비볼록(non-convex) 함수이며, 신경망 학습 시 경사 하강법은 지역 최솟값에 갇혀 전역 최적점(global optimum)을 영영 찾지 못할 수도 있습니다.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로지스틱 회귀 손실 함수의 볼록성이 가지는 최적화 측면에서의 이점과 신경망과의 차이점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Although the algorithm (and the concept of gradient) are designed for direction vectors, let's first consider a visualization of the case where the parameter of our system is just a single scalar w, shown in Fig. 5.3.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>알고리즘(그리고 경사의 개념)이 방향 벡터를 위해 설계되었지만, 먼저 시스템의 파라미터가 단일 스칼라 $w$인 경우의 시각화 자료인 그림 5.3을 살펴봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다차원 확장 이전에 이해를 돕기 위해 일차원 상황에서의 시각화를 시도합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given a random initialization of w at some value w^1, and assuming the loss function L happened to have the shape in Fig. 5.3, we need the algorithm to tell us whether at the next iteration we should move left (making w^2 smaller than w^1) or right (making w^2 bigger than w^1) to reach the minimum.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어떤 값 $w^1$에서 $w$를 무작위로 초기화하고, 손실 함수 $L$이 그림 5.3과 같은 모양이라고 가정해 봅시다. 우리는 알고리즘이 다음 반복(iteration)에서 최솟값에 도달하기 위해 왼쪽으로 이동해야 할지($w^2$를 $w^1$보다 작게 만들기), 아니면 오른쪽으로 이동해야 할지($w^2$를 $w^1$보다 크게 만들기) 알려주기를 원합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현재 위치에서 최적점을 향해 어느 방향으로 이동할지를 결정하는 최적화의 의사결정 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 5.3 The first step in iteratively finding the minimum of this loss function, by moving w in the reverse direction from the slope of the function. Since the slope is negative, we need to move w in a positive direction, to the right. Here superscripts are used for learning steps, so w^1 means the initial value of w (which is 0), w^2 at the second step, and so on.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 5.3 함수의 기울기와 반대 방향으로 $w$를 이동시켜 이 손실 함수의 최솟값을 반복적으로 찾아가는 첫 단계. 기울기가 음수이므로 $w$를 양의 방향인 오른쪽으로 이동시켜야 합니다. 여기서 위첨자는 학습 단계를 나타내므로, $w^1$은 초기 $w$값(여기서는 0), $w^2$는 두 번째 단계의 값 등을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기울기의 부호와 이동 방향의 관계를 시각적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>gradient</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>경사(gradient)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 변수에 대한 편미분 값들로 이루어진 벡터입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The gradient descent algorithm answers this question by finding the gradient of the loss function at the current point and moving in the opposite direction. The gradient of a function of many variables is a vector pointing in the direction of the greatest increase in a function. The gradient is a multi-variable generalization of the slope, so for a function of one variable like the one in Fig. 5.3, we can informally think of the gradient as the slope. The dotted line in Fig. 5.3 shows the slope of this hypothetical loss function at point w = w^1. You can see that the slope of this dotted line is negative. Thus to find the minimum, gradient descent tells us to go in the opposite direction: moving w in a positive direction.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>경사 하강법 알고리즘은 현재 지점에서 손실 함수의 경사(gradient)를 찾고 그 반대 방향으로 이동함으로써 이 질문에 답합니다. 다변수 함수의 경사는 함수가 가장 가파르게 증가하는 방향을 가리키는 벡터입니다. 경사는 기울기(slope)를 다변수로 일반화한 것이므로, 그림 5.3과 같은 일변수 함수의 경우 경사를 비공식적으로 기울기라고 생각할 수 있습니다. 그림 5.3의 점선은 지점 $w = w^1$에서 이 가상의 손실 함수의 기울기를 보여줍니다. 이 점선의 기울기가 음수임을 확인할 수 있습니다. 따라서 최솟값을 찾기 위해 경사 하강법은 반대 방향, 즉 $w$를 양의 방향으로 이동시키라고 알려줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>경사가 함수의 최대 증가 방향을 가리킨다는 정의와, 최솟값을 찾기 위해 그 반대 방향으로 가야 하는 논리적 이유를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>learning rate</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>학습률(learning rate)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>한 번의 업데이트 단계에서 얼마나 크게 이동할지를 결정하는 하이퍼파라미터입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The magnitude of the amount to move in gradient descent is the value of the slope d/dw L(f(x;w),y) weighted by a learning rate η. A higher (faster) learning rate means that we should move w more on each step. The change we make in our parameter is the learning rate times the gradient (or the slope, in our single-variable example):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>경사 하강법에서 이동할 양의 크기는 학습률 $\eta$에 의해 가중치가 부여된 기울기 $\frac{d}{dw}L(f(x;w),y)$의 값입니다. 학습률이 높을수록(빠를수록) 매 단계에서 $w$를 더 많이 이동시켜야 함을 의미합니다. 파라미터의 변화량은 학습률과 경사(또는 일변수 예제의 경우 기울기)의 곱입니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이동 방향뿐만 아니라 이동 거리(보폭)를 결정하는 학습률의 역할을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-10">
+<header class="page-header">
+<h2>Page 10</h2>
+<div class="page-subtitle">다변수 함수로의 확장과 경사 벡터 공식</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>10 CHAPTER 5 • LOGISTIC REGRESSION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>10 제5장 • 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>example):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 예제의 경우):</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 페이지 문장의 마무리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>w^{t+1} = w^t - \eta \frac{d}{dw} L(f(x; w), y) (5.14)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>w^{t+1} = w^t - \eta \frac{d}{dw} L(f(x; w), y) (5.14)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.14). 일변수 파라미터에 대한 경사 하강법 업데이트 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now let's extend the intuition from a function of one scalar variable w to many variables, because we don't just want to move left or right, we want to know where in the N-dimensional space (of the N parameters that make up θ) we should move. The gradient is just such a vector; it expresses the directional components of the sharpest slope along each of those N dimensions. If we're just imagining two weight dimensions (say for one weight w and one bias b), the gradient might be a vector with two orthogonal components, each of which tells us how much the ground slopes in the w dimension and in the b dimension. Fig. 5.4 shows a visualization of the value of a 2-dimensional gradient vector taken at the red point.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 직관을 하나의 스칼라 변수 $w$에서 다변수 함수로 확장해 봅시다. 우리는 단순히 왼쪽이나 오른쪽으로 움직이려 하는 것이 아니라, $\theta$를 구성하는 $N$개의 파라미터로 이루어진 $N$차원 공간의 어디로 이동해야 할지 알고 싶기 때문입니다. 경사는 바로 그러한 벡터로, $N$개의 각 차원을 따라 가장 가파른 기울기의 방향 성분들을 표현합니다. 만약 우리가 두 개의 가중치 차원(예를 들어 하나의 가중치 $w$와 하나의 편향 $b$)만 상상한다면, 경사는 두 개의 직교하는 성분을 가진 벡터가 될 것이며, 각 성분은 $w$ 차원과 $b$ 차원에서 지면이 얼마나 기울어져 있는지를 알려줍니다. 그림 5.4는 빨간색 지점에서 측정된 2차원 경사 벡터의 시각화 자료를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고차원 공간에서의 최적화를 위해 경사가 각 차원별 기울기 성분을 가진 벡터로 정의됨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 5.4 Visualization of the gradient vector at the red point in two dimensions w and b, showing the gradient as a red arrow in the x-y plane.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 5.4 $w$와 $b$의 2차원에서 빨간색 지점의 경사 벡터 시각화. $x-y$ 평면에서 빨간색 화살표로 경사를 표시하고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>3차원 손실 표면 위에서의 경사가 파라미터 평면($w, b$ 평면)상에서 어떤 방향 벡터로 나타나는지 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In an actual logistic regression, the parameter vector w is much longer than 1 or 2, since the input feature vector x can be quite long, and we need a weight w_i for each x_i. For each dimension/variable w_i in w (plus the bias b), the gradient will have a component that tells us the slope with respect to that variable. Essentially we're asking: "How much would a small change in that variable w_i influence the total loss function L?"</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제 로지스틱 회귀에서 파라미터 벡터 $w$는 1이나 2보다 훨씬 깁니다. 입력 특징 벡터 $x$가 상당히 길 수 있고, 각 $x_i$에 대해 가중치 $w_i$가 필요하기 때문입니다. $w$의 각 차원/변수 $w_i$ (그리고 편향 $b$)에 대해, 경사는 해당 변수에 대한 기울기를 알려주는 성분을 가질 것입니다. 본질적으로 우리는 이렇게 묻는 셈입니다. "해당 변수 $w_i$의 아주 미세한 변화가 전체 손실 함수 $L$에 얼마나 영향을 미치는가?"</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 파라미터가 전체 손실에 기여하는 정도를 편미분을 통해 파악한다는 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In each dimension w_i, we express the slope as a partial derivative \frac{\partial}{\partial w_i} of the loss function. The gradient is then defined as a vector of these partials. We'll represent y_hat as f(x; θ) to make the dependence on θ more obvious:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 차원 $w_i$에서, 우리는 기울기를 손실 함수의 편미분(partial derivative) $\frac{\partial}{\partial w_i}$로 표현합니다. 그런 다음 경사는 이러한 편미분 값들의 벡터로 정의됩니다. $\theta$에 대한 의존성을 더 명확히 하기 위해 $\hat{y}$을 $f(x; \theta)$로 표기하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>경사 벡터를 구성하는 수학적 도구인 편미분을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\nabla_{\theta} L(f(x; \theta), y) = \begin{bmatrix} \frac{\partial}{\partial w_1} L(f(x; \theta), y) \\ \frac{\partial}{\partial w_2} L(f(x; \theta), y) \\ \vdots \\ \frac{\partial}{\partial w_n} L(f(x; \theta), y) \\ \frac{\partial}{\partial b} L(f(x; \theta), y) \end{bmatrix} (5.15)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\nabla_{\theta} L(f(x; \theta), y) = \begin{bmatrix} \frac{\partial}{\partial w_1} L(f(x; \theta), y) \\ \frac{\partial}{\partial w_2} L(f(x; \theta), y) \\ \vdots \\ \frac{\partial}{\partial w_n} L(f(x; \theta), y) \\ \frac{\partial}{\partial b} L(f(x; \theta), y) \end{bmatrix} (5.15)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.15). 손실 함수를 전체 파라미터 $\theta$에 대해 편미분하여 얻은 경사 벡터의 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The final equation for updating θ based on the gradient is thus</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 경사에 기반하여 $\theta$를 업데이트하는 최종 방정식은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고차원 파라미터 공간으로 확장된 최종 업데이트 규칙을 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\theta_{t+1} = \theta_t - \eta \nabla L(f(x; \theta), y) (5.16)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\theta_{t+1} = \theta_t - \eta \nabla L(f(x; \theta), y) (5.16)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.16). 경사 하강법의 일반적인 파라미터 업데이트 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

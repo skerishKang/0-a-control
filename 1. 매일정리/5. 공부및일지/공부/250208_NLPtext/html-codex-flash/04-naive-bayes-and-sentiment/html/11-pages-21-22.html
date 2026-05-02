@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 21-22 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 21-22 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">연습 문제 및 참고 문헌</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>EXERCISES 21</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제 21</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | pos | neg |
+|---|---|---|
+| I | 0.09 | 0.16 |
+| always | 0.07 | 0.06 |
+| like | 0.29 | 0.06 |
+| foreign | 0.04 | 0.15 |
+| films | 0.08 | 0.11 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 긍정(pos) | 부정(neg) |
+|---|---|---|
+| I | 0.09 | 0.16 |
+| always | 0.07 | 0.06 |
+| like | 0.29 | 0.06 |
+| foreign | 0.04 | 0.15 |
+| films | 0.08 | 0.11 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.1을 위한 단어별 가능도 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What class will Naive bayes assign to the sentence "I always like foreign films."?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈가 "I always like foreign films."라는 문장에 할당할 클래스는 무엇입니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.1의 질문입니다. 주어진 가능도와 동일한 사전 확률을 사용하여 계산하는 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.2 Given the following short movie reviews, each labeled with a genre, either comedy or action:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.2 다음과 같이 장르(코미디 또는 액션)가 라벨링된 짧은 영화 리뷰들이 주어졌습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.2의 설정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>1. fun, couple, love, love comedy
+2. fast, furious, shoot action
+3. couple, fly, fast, fun, fun comedy
+4. furious, shoot, shoot, fun action
+5. fly, fast, shoot, love action</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. fun, couple, love, love 코미디(comedy)
+2. fast, furious, shoot 액션(action)
+3. couple, fly, fast, fun, fun 코미디(comedy)
+4. furious, shoot, shoot, fun 액션(action)
+5. fly, fast, shoot, love 액션(action)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.2의 학습용 데이터셋입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>and a new document D:
+fast, couple, shoot, fly
+compute the most likely class for D. Assume a naive Bayes classifier and use add-1 smoothing for the likelihoods.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그리고 새로운 문서 D는 다음과 같습니다.
+fast, couple, shoot, fly
+문서 D에 대해 가장 가능성이 높은 클래스를 계산하십시오. 나이브 베이즈 분류기를 가정하고, 가능도 계산 시 1 더하기 스무딩(add-1 smoothing)을 사용하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.2의 과업입니다. 1 더하기 스무딩을 적용하여 사후 확률을 계산하는 실습입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.3 Train two models, multinomial naive Bayes and binarized naive Bayes, both with add-1 smoothing, on the following document counts for key sentiment words, with positive or negative class assigned as noted.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.3 다음은 주요 감성 단어들의 문서 출현 빈도와 긍정(pos) 또는 부정(neg) 클래스 할당 정보입니다. 이를 바탕으로 1 더하기 스무딩을 사용하는 다항 나이브 베이즈와 이진화된 나이브 베이즈 두 모델을 학습시키십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.3의 설정입니다. 두 가지 유형의 나이브 베이즈 모델을 비교하는 실습입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>doc "good" "poor" "great" (class)
+d1. 3 0 3 pos
+d2. 0 1 2 pos
+d3. 1 3 0 neg
+d4. 1 5 2 neg
+d5. 0 2 0 neg</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문서 "good" "poor" "great" (클래스)
+d1. 3 0 3 긍정(pos)
+d2. 0 1 2 긍정(pos)
+d3. 1 3 0 부정(neg)
+d4. 1 5 2 부정(neg)
+d5. 0 2 0 부정(neg)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.3의 학습 데이터셋 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Use both naive Bayes models to assign a class (pos or neg) to this sentence:
+A good, good plot and great characters, but poor acting.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 나이브 베이즈 모델을 모두 사용하여 다음 문장에 클래스(긍정 또는 부정)를 할당하십시오.
+A good, good plot and great characters, but poor acting.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 4.3에서 분류할 대상 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall from page 6 that with naive Bayes text classification, we simply ignore (throw out) any word that never occurred in the training document. (We don't throw out words that appear in some classes but not others; that's what addone smoothing is for.) Do the two models agree or disagree?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6페이지에서 다루었듯이, 나이브 베이즈 텍스트 분류에서는 학습 문서에 한 번도 나타나지 않은 단어는 단순히 무시(제외)한다는 점을 상기하십시오. (일부 클래스에는 나타나지만 다른 클래스에는 나타나지 않는 단어를 제외하는 것이 아닙니다. 그런 경우를 위해 1 더하기 스무딩이 존재하는 것입니다.) 두 모델의 결과가 일치합니까, 아니면 다릅니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미등록 단어(OOV) 처리 방식에 대한 주의 사항과 모델 비교 관점을 제시합니다. [다음 페이지에서 계속]</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<h2>Page 22</h2>
+<div class="page-subtitle">참고 문헌 목록</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22 Chapter 4 • Naive Bayes and Sentiment Classification</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Aggarwal, C. C. and C. Zhai. 2012. A survey of text classification algorithms. In Charu C. Aggarwal and ChengXiang Zhai, editors, Mining text data, pages 163–222. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Aggarwal, C. C. and C. Zhai. 2012. A survey of text classification algorithms. In Charu C. Aggarwal and ChengXiang Zhai, editors, Mining text data, pages 163–222. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 분류 알고리즘 서베이 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bayes, T. 1763. An Essay Toward Solving a Problem in the Doctrine of Chances, volume 53. Reprinted in Facsimiles of Two Papers by Bayes, Hafner Publishing, 1963.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bayes, T. 1763. An Essay Toward Solving a Problem in the Doctrine of Chances, volume 53. Reprinted in Facsimiles of Two Papers by Bayes, Hafner Publishing, 1963.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 정리의 근간이 된 토마스 베이즈의 역사적 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Berg-Kirkpatrick, T., D. Burkett, and D. Klein. 2012. An empirical investigation of statistical significance in NLP. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Berg-Kirkpatrick, T., D. Burkett, and D. Klein. 2012. An empirical investigation of statistical significance in NLP. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP에서의 통계적 유의성에 관한 실증적 연구 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bisani, M. and H. Ney. 2004. Bootstrap estimates for confidence intervals in ASR performance evaluation. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bisani, M. and H. Ney. 2004. Bootstrap estimates for confidence intervals in ASR performance evaluation. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식 성능 평가에서 부트스트랩을 활용한 신뢰 구간 추정에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bishop, C. M. 2006. Pattern recognition and machine learning. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bishop, C. M. 2006. Pattern recognition and machine learning. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>패턴 인식 및 머신러닝 분야의 고전적인 교과서(PRML)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Blodgett, S. L., S. Barocas, H. Daumé III, and H. Wallach. 2020. Language (technology) is power: A critical survey of "bias" in NLP. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Blodgett, S. L., S. Barocas, H. Daumé III, and H. Wallach. 2020. Language (technology) is power: A critical survey of "bias" in NLP. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP에서의 편향에 관한 비판적 서베이 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Blodgett, S. L., L. Green, and B. O'Connor. 2016. Demographic dialectal variation in social media: A case study of African-American English. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Blodgett, S. L., L. Green, and B. O'Connor. 2016. Demographic dialectal variation in social media: A case study of African-American English. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소셜 미디어에서의 인구통계학적 방언 변이에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Borges, J. L. 1964. The analytical language of John Wilkins. University of Texas Press. Trans. Ruth L. C. Simms.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Borges, J. L. 1964. The analytical language of John Wilkins. University of Texas Press. Trans. Ruth L. C. Simms.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>호르헤 루이스 보르헤스의 에세이입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Caliskan, A., J. J. Bryson, and A. Narayanan. 2017. Semantics derived automatically from language corpora contain human-like biases. Science, 356(6334):183–186.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Caliskan, A., J. J. Bryson, and A. Narayanan. 2017. Semantics derived automatically from language corpora contain human-like biases. Science, 356(6334):183–186.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 코퍼스에서 자동 추출된 의미론이 인간과 유사한 편향을 포함하고 있음을 밝힌 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chinchor, N., L. Hirschman, and D. L. Lewis. 1993. Evaluating Message Understanding systems: An analysis of the third Message Understanding Conference. Computational Linguistics, 19(3):409–449.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Chinchor, N., L. Hirschman, and D. L. Lewis. 1993. Evaluating Message Understanding systems: An analysis of the third Message Understanding Conference. Computational Linguistics, 19(3):409–449.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MUC-3 시스템 평가에 관한 분석 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Crawford, K. 2017. The trouble with bias. Keynote at NeurIPS.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Crawford, K. 2017. The trouble with bias. Keynote at NeurIPS.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NeurIPS에서의 편향 문제에 관한 기조 강연입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Davidson, T., D. Bhattacharya, and I. Weber. 2019. Racial bias in hate speech and abusive language detection datasets. Third Workshop on Abusive Language Online.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Davidson, T., D. Bhattacharya, and I. Weber. 2019. Racial bias in hate speech and abusive language detection datasets. Third Workshop on Abusive Language Online.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>혐오 표현 탐지 데이터셋에 존재하는 인종적 편향에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dixon, L., J. Li, J. Sorensen, N. Thain, and L. Vasserman. 2018. Measuring and mitigating unintended bias in text classification. 2018 AAAI/ACM Conference on AI, Ethics, and Society.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dixon, L., J. Li, J. Sorensen, N. Thain, and L. Vasserman. 2018. Measuring and mitigating unintended bias in text classification. 2018 AAAI/ACM Conference on AI, Ethics, and Society.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 분류에서 의도치 않은 편향을 측정하고 완화하는 방법에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dror, R., G. Baumer, M. Bogomolov, and R. Reichart. 2017. Replicability analysis for natural language processing: Testing significance with multiple datasets. TACL, 5:471–486.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dror, R., G. Baumer, M. Bogomolov, and R. Reichart. 2017. Replicability analysis for natural language processing: Testing significance with multiple datasets. TACL, 5:471–486.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다중 데이터셋을 활용한 NLP 재현성 분석 및 유의성 검정에 관한 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dror, R., L. Peled-Cohen, S. Shlomov, and R. Reichart. 2020. Statistical Significance Testing for Natural Language Processing, volume 45 of Synthesis Lectures on Human Language Technologies. Morgan & Claypool.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dror, R., L. Peled-Cohen, S. Shlomov, and R. Reichart. 2020. Statistical Significance Testing for Natural Language Processing, volume 45 of Synthesis Lectures on Human Language Technologies. Morgan & Claypool.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP를 위한 통계적 유의성 검정에 관한 전문서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Efron, B. and R. J. Tibshirani. 1993. An introduction to the bootstrap. CRC press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Efron, B. and R. J. Tibshirani. 1993. An introduction to the bootstrap. CRC press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부트스트랩 기법의 고전적인 입문서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Gillick, L. and S. J. Cox. 1989. Some statistical issues in the comparison of speech recognition algorithms. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Gillick, L. and S. J. Cox. 1989. Some statistical issues in the comparison of speech recognition algorithms. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식 알고리즘 비교 시의 통계적 쟁점들을 다룬 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Guyon, I. and A. Elisseeff. 2003. An introduction to variable and feature selection. JMLR, 3:1157–1182.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Guyon, I. and A. Elisseeff. 2003. An introduction to variable and feature selection. JMLR, 3:1157–1182.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>변수 및 특징 선택에 관한 입문 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hastie, T., R. J. Tibshirani, and J. H. Friedman. 2001. The Elements of Statistical Learning. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hastie, T., R. J. Tibshirani, and J. H. Friedman. 2001. The Elements of Statistical Learning. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>통계적 학습론(ESL) 분야의 권위 있는 교과서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 21</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Heckerman, D., E. Horvitz, M. Sahami, and T. Dumais. 1998. A bayesian approach to filtering junk e-mail. AAAI98 Workshop on Learning for Text Categorization.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Heckerman, D., E. Horvitz, M. Sahami, and T. Dumais. 1998. A bayesian approach to filtering junk e-mail. AAAI98 Workshop on Learning for Text Categorization.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스팸 메일 필터링에 베이지안 기법을 최초로 적용한 연구 중 하나입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 22</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hu, M. and B. Liu. 2004. Mining and summarizing customer reviews. KDD.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hu, M. and B. Liu. 2004. Mining and summarizing customer reviews. KDD.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고객 리뷰 마이닝 및 요약에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 23</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hutchinson, B., V. Prabhakaran, E. Denton, K. Webster, Y. Zhong, and S. Denuyl. 2020. Social biases in NLP models as barriers for persons with disabilities. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hutchinson, B., V. Prabhakaran, E. Denton, K. Webster, Y. Zhong, and S. Denuyl. 2020. Social biases in NLP models as barriers for persons with disabilities. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장애인을 위한 장벽으로 작용하는 NLP 모델의 사회적 편향에 관한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 24</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jaech, A., G. Mulcaire, S. Hathi, M. Ostendorf, and N. A. Smith. 2016. Hierarchical character-word models for language identification. ACL Workshop on NLP for Social Media.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jaech, A., G. Mulcaire, S. Hathi, M. Ostendorf, and N. A. Smith. 2016. Hierarchical character-word models for language identification. ACL Workshop on NLP for Social Media.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 식별을 위한 계층적 문자-단어 모델 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 25</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jauhiainen, T., M. Lui, M. Zampieri, T. Baldwin, and K. Lindén. 2018. Automatic language identification in texts: A survey. ArXiv preprint arXiv:1804.08186.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jauhiainen, T., M. Lui, M. Zampieri, T. Baldwin, and K. Lindén. 2018. Automatic language identification in texts: A survey. ArXiv preprint arXiv:1804.08186.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트의 자동 언어 식별에 관한 서베이 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 26</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jurgens, D., Y. Tsvetkov, and D. Jurafsky. 2017. Incorporating dialectal variability for socially equitable language identification. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jurgens, D., Y. Tsvetkov, and D. Jurafsky. 2017. Incorporating dialectal variability for socially equitable language identification. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사회적으로 형평성 있는 언어 식별을 위한 방언 변이 반영 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 27</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kiritchenko, S. and S. M. Mohammad. 2018. Examining gender and race bias in two hundred sentiment analysis systems. *SEM.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Kiritchenko, S. and S. M. Mohammad. 2018. Examining gender and race bias in two hundred sentiment analysis systems. *SEM.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>200개의 감성 분석 시스템에서 성별 및 인종 편향을 조사한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 28</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Liu, B. and L. Zhang. 2012. A survey of opinion mining and sentiment analysis. In Charu C. Aggarwal and ChengXiang Zhai, editors, Mining text data, pages 415–464. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Liu, B. and L. Zhang. 2012. A survey of opinion mining and sentiment analysis. In Charu C. Aggarwal and ChengXiang Zhai, editors, Mining text data, pages 415–464. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오피니언 마이닝 및 감성 분석에 관한 서베이 자료입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 29</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lui, M. and T. Baldwin. 2011. Cross-domain feature selection for language identification. IJCNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lui, M. and T. Baldwin. 2011. Cross-domain feature selection for language identification. IJCNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 식별을 위한 교차 도메인 특징 선택 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 30</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lui, M. and T. Baldwin. 2012. langid.py: An off-the-shelf language identification tool. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lui, M. and T. Baldwin. 2012. langid.py: An off-the-shelf language identification tool. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>널리 쓰이는 언어 식별 도구인 `langid.py`에 관한 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 31</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Manning, C. D., P. Raghavan, and H. Schütze. 2008. Introduction to Information Retrieval. Cambridge.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Manning, C. D., P. Raghavan, and H. Schütze. 2008. Introduction to Information Retrieval. Cambridge.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정보 검색(IR) 분야의 대표적인 입문서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 32</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Maron, M. E. 1961. Automatic indexing: An experimental inquiry. Journal of the ACM, 8(3):404–417.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Maron, M. E. 1961. Automatic indexing: An experimental inquiry. Journal of the ACM, 8(3):404–417.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자동 색인 생성에 관한 선구적인 연구 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 33</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>McCallum, A. and K. Nigam. 1998. A comparison of event models for naive bayes text classification. AAAI/ICML-98 Workshop on Learning for Text Categorization.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>McCallum, A. and K. Nigam. 1998. A comparison of event models for naive bayes text classification. AAAI/ICML-98 Workshop on Learning for Text Categorization.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈 텍스트 분류를 위한 사건 모델(다항 vs 베르누이) 비교 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 34</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Metsis, V., I. Androutsopoulos, and G. Paliouras. 2006. Spam filtering with naive bayes–which naive bayes? CEAS.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Metsis, V., I. Androutsopoulos, and G. Paliouras. 2006. Spam filtering with naive bayes–which naive bayes? CEAS.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스팸 필터링을 위한 다양한 나이브 베이즈 변형들을 비교한 연구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 35</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Minsky, M. 1961. Steps toward artificial intelligence. Proceedings of the IRE, 49(1):8–30.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Minsky, M. 1961. Steps toward artificial intelligence. Proceedings of the IRE, 49(1):8–30.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마빈 민스키의 초기 인공지능 연구 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 36</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mitchell, M., S. Wu, A. Zaldivar, P. Barnes, L. Vasserman, B. Hutchinson, E. Spitzer, I. D. Raji, and T. Gebru. 2019. Model cards for model reporting. ACM FAccT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mitchell, M., S. Wu, A. Zaldivar, P. Barnes, L. Vasserman, B. Hutchinson, E. Spitzer, I. D. Raji, and T. Gebru. 2019. Model cards for model reporting. ACM FAccT.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 보고를 위한 '모델 카드' 개념을 제안한 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 37</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mosteller, F. and D. L. Wallace. 1963. Inference in an authorship problem: A comparative study of discrimination methods applied to the authorship of the disputed Federalist papers. Journal of the American Statistical Association, 58(302):275–309.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mosteller, F. and D. L. Wallace. 1963. Inference in an authorship problem: A comparative study of discrimination methods applied to the authorship of the disputed Federalist papers. Journal of the American Statistical Association, 58(302):275–309.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'연방주의자 논집' 저자 식별 문제를 베이지안 기법으로 다룬 역사적인 통계학 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 38</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mosteller, F. and D. L. Wallace. 1964. Inference and Disputed Authorship: The Federalist. Springer-Verlag. 1984 2nd edition: Applied Bayesian and Classical Inference.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mosteller, F. and D. L. Wallace. 1964. Inference and Disputed Authorship: The Federalist. Springer-Verlag. 1984 2nd edition: Applied Bayesian and Classical Inference.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위 논문을 확장한 단행본입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 39</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Murphy, K. P. 2012. Machine learning: A probabilistic perspective. MIT press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Murphy, K. P. 2012. Machine learning: A probabilistic perspective. MIT press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률론적 관점에서의 머신러닝 입문서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 40</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Noreen, E. W. 1989. Computer Intensive Methods for Testing Hypothesis. Wiley.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Noreen, E. W. 1989. Computer Intensive Methods for Testing Hypothesis. Wiley.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>컴퓨터 집약적 가설 검정 방법론에 관한 서적입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 41</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pang, B. and L. Lee. 2008. Opinion mining and sentiment analysis. Foundations and trends in information retrieval, 2(1-2):1–135.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Pang, B. and L. Lee. 2008. Opinion mining and sentiment analysis. Foundations and trends in information retrieval, 2(1-2):1–135.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오피니언 마이닝 및 감성 분석 분야의 필독서와 같은 논문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 42</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pang, B., L. Lee, and S. Vaithyanathan. 2002. Thumbs up? Sentiment classification using machine learning techniques. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Pang, B., L. Lee, and S. Vaithyanathan. 2002. Thumbs up? Sentiment classification using machine learning techniques. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>머신러닝 기법을 감성 분류에 본격적으로 적용한 초기 연구입니다. [다음 페이지에서 계속]</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

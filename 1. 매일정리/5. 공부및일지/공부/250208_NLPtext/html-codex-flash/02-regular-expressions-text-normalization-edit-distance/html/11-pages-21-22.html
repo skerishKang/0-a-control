@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 21-22 | Regular Expressions, Text Normalization, Edit Distance</title>
+<style>
+:root {
+--bg: #f6f1e8;
+--paper: #fffdf8;
+--ink: #1f1b16;
+--muted: #6f675d;
+--line: #ddd2c2;
+--accent: #8c5a2b;
+--accent-soft: #f1e2cf;
+--note-bg: #faf4ea;
+--source-bg: #f5f3ef;
+--translation-bg: #fff8ea;
+--shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+--radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+margin: 0;
+background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+color: var(--ink);
+font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+.shell {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 24px 0 64px;
+}
+
+.topbar {
+position: sticky;
+top: 0;
+z-index: 10;
+backdrop-filter: blur(10px);
+background: rgba(246, 241, 232, 0.88);
+border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+margin-bottom: 24px;
+}
+
+.topbar-inner {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 14px 0;
+display: flex;
+gap: 16px;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+}
+
+.doc-meta {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.eyebrow {
+color: var(--muted);
+font-size: 13px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+}
+
+h1 {
+margin: 0;
+font-size: clamp(22px, 4vw, 34px);
+line-height: 1.15;
+font-weight: 800;
+}
+
+.quick-nav, .actions {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.chip, .action-btn {
+border: 1px solid var(--line);
+background: rgba(255, 253, 248, 0.92);
+color: var(--ink);
+border-radius: 999px;
+padding: 8px 14px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+text-decoration: none;
+transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover, .action-btn:hover {
+transform: translateY(-1px);
+background: #fff;
+}
+
+.hero {
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 4px);
+box-shadow: var(--shadow);
+padding: 28px;
+margin-bottom: 24px;
+}
+
+.hero p {
+margin: 10px 0 0;
+color: var(--muted);
+}
+
+.hero-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin-top: 18px;
+}
+
+.meta-card {
+padding: 14px 16px;
+border-radius: 14px;
+background: #fcf7f0;
+border: 1px solid var(--line);
+}
+
+.meta-card dt {
+font-size: 12px;
+color: var(--muted);
+margin-bottom: 6px;
+}
+
+.meta-card dd {
+margin: 0;
+font-weight: 700;
+}
+
+.page {
+margin-bottom: 28px;
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 2px);
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+
+.page-header {
+padding: 20px 24px;
+background: linear-gradient(135deg, #fff8eb, #f5ead8);
+border-bottom: 1px solid var(--line);
+}
+
+.page-header h2 {
+margin: 0;
+font-size: 28px;
+line-height: 1.15;
+}
+
+.page-subtitle {
+margin-top: 6px;
+color: var(--muted);
+font-size: 14px;
+}
+
+.blocks {
+padding: 18px;
+display: grid;
+gap: 16px;
+}
+
+.block {
+border: 1px solid var(--line);
+border-radius: var(--radius);
+overflow: hidden;
+background: #fffdfa;
+}
+
+.block-head {
+padding: 14px 16px;
+border-bottom: 1px solid var(--line);
+display: flex;
+justify-content: space-between;
+gap: 10px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.block-title {
+font-weight: 800;
+}
+
+.block-type {
+color: var(--accent);
+background: var(--accent-soft);
+border-radius: 999px;
+padding: 4px 10px;
+font-size: 13px;
+font-weight: 700;
+}
+
+.block-body {
+padding: 16px;
+display: grid;
+gap: 14px;
+}
+
+.label {
+display: inline-block;
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 0.04em;
+color: var(--muted);
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+
+.source, .translation, .note-panel {
+border-radius: 14px;
+padding: 14px 16px;
+border: 1px solid var(--line);
+}
+
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+
+.source pre, .translation pre, .note-panel pre {
+margin: 0;
+white-space: pre-wrap;
+word-break: break-word;
+font: inherit;
+}
+
+.mono pre {
+font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.note-toggle {
+align-self: start;
+border: 1px solid var(--line);
+background: #fff;
+border-radius: 999px;
+padding: 8px 12px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+}
+
+.note-panel[hidden] { display: none; }
+
+@media (max-width: 720px) {
+.shell { width: min(100% - 20px, 100%); }
+.topbar-inner { width: min(100% - 20px, 100%); }
+.hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">02 PDF / HTML Sample</div>
+<h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 21-22 Annotated Page</h2>
+<p>문장 분절, 최소 편집 거리, 레벤슈타인 거리, 동적 계획법을 다릅니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">문장 분절과 최소 편집 거리 소개</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2.5 • MINIMUM EDIT DISTANCE 21</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2.5 • 최소 편집 거리 21</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2.4.5 Sentence Segmentation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2.4.5 문장 분절 (Sentence Segmentation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트를 개별 문장 단위로 나누는 단계를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sentence segmentation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문장 분절 (sentence segmentation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 경계 식별을 의미하는 핵심 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Sentence segmentation is another important step in text processing. The most useful cues for segmenting a text into sentences are punctuation, like periods, question marks, and exclamation points. Question marks and exclamation points are relatively unambiguous markers of sentence boundaries. Periods, on the other hand, are more ambiguous. The period character "." is ambiguous between a sentence boundary marker and a marker of abbreviations like Mr. or Inc. The previous sentence that you just read showed an even more complex case of this ambiguity, in which the final period of Inc. marked both an abbreviation and the sentence boundary marker. For this reason, sentence tokenization and word tokenization may be addressed jointly.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문장 분절(Sentence segmentation)은 텍스트 처리의 또 다른 중요한 단계입니다. 텍스트를 문장으로 분절하는 데 가장 유용한 단서는 마침표, 물음표, 느낌표와 같은 문장 부호입니다. 물음표와 느낌표는 비교적 모호하지 않은 문장 경계 표지입니다. 반면에 마침표는 더 모호합니다. 마침표 문자 "."는 문장 경계 표지와 Mr. 또는 Inc.와 같은 약어 표지 사이에서 중의적입니다. 방금 읽으신 이전 문장은 이러한 중의성의 훨씬 더 복잡한 사례를 보여주는데, 여기서 Inc.의 마지막 마침표는 약어 표지이자 문장 경계 표지의 역할을 동시에 수행했습니다. 이러한 이유로 문장 토크나이징과 단어 토크나이징은 함께 다루어질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마침표(.)가 문장의 마침과 약어를 나타내는 용도 두 가지로 쓰일 때 발생하는 중의성과 그 해결의 필요성을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<button class="action-btn" type="button" onclick="window.location.href='#page-21'" style="margin-right: 10px;">← Prev</button>
+<h2>Page 22</h2>
+<div class="page-subtitle">편집 거리와 동적 계획법</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>I N T E * N T I O N
+| | | | | | | | | |
+* E X E C U T I O N
+d s s i s</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>I N T E * N T I O N
+| | | | | | | | | |
+* E X E C U T I O N
+d s s i s</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'intention'을 'execution'으로 변환하는 과정을 정렬(alignment) 형태로 보여줍니다. '*'는 공백(gap)을 의미하며, 하단의 d(삭제), s(치환), i(삽입)는 각 단계의 편집 연산을 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 2.14 Representing the minimum edit distance between two strings as an alignment. The final row gives the operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 2.14 두 문자열 사이의 최소 편집 거리를 정렬(alignment)로 표현한 것. 마지막 행은 상단 문자열을 하단 문자열로 변환하기 위한 연산 리스트를 제공함: d는 삭제(deletion), s는 치환(substitution), i는 삽입(insertion)을 의미함.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최소 편집 거리를 시각화하는 표준적인 방법인 정렬(alignment)과 각 편집 연산 기호의 의미를 설명하는 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can also assign a particular cost or weight to each of these operations. The Levenshtein distance between two sequences is the simplest weighting factor in which each of the three operations has a cost of 1 (Levenshtein, 1966)—we assume that the substitution of a letter for itself, for example, t for t, has zero cost. The Levenshtein distance between intention and execution is 5. Levenshtein also proposed an alternative version of his metric in which each insertion or deletion has a cost of 1 and substitutions are not allowed. (This is equivalent to allowing substitution, but giving each substitution a cost of 2 since any substitution can be represented by one insertion and one deletion). Using this version, the Levenshtein distance between intention and execution is 8.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 또한 이러한 각 연산에 특정한 비용이나 가중치를 할당할 수 있습니다. 두 시퀀스 사이의 레벤슈타인 거리(Levenshtein distance)는 가장 단순한 가중치 방식으로, 세 가지 연산 각각에 1의 비용을 부여합니다(Levenshtein, 1966). 예를 들어 t를 t로 바꾸는 것과 같이 문자 자신을 자신으로 치환하는 것은 비용이 0이라고 가정합니다. 이 경우 'intention'과 'execution' 사이의 레벤슈타인 거리는 5입니다. 레벤슈타인은 또한 각 삽입이나 삭제에 1의 비용을 부여하고 치환은 허용하지 않는 대체 버전을 제안했습니다. (이는 치환을 허용하되, 모든 치환은 하나의 삽입과 하나의 삭제로 표현될 수 있으므로 각 치환에 2의 비용을 부여하는 것과 동일합니다). 이 버전을 사용하면 'intention'과 'execution' 사이의 레벤슈타인 거리는 8이 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연산별 비용 할당 방식에 따른 편집 거리 값의 변화를 설명합니다. 특히 치환 비용을 2로 책정하는 방식(Standard Levenshtein)과 1로 책정하는 방식의 차이를 이해하는 것이 중요합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2.5.1 The Minimum Edit Distance Algorithm</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2.5.1 최소 편집 거리 알고리즘</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>효율적으로 최소 편집 거리를 계산하기 위한 알고리즘적 접근을 다루기 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do we find the minimum edit distance? We can think of this as a search task, in which we are searching for the shortest path—a sequence of edits—from one string to another.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최소 편집 거리를 어떻게 찾을 수 있을까요? 우리는 이것을 하나의 문자열에서 다른 문자열로 가는 최단 경로(일련의 편집 연산들)를 찾는 탐색 작업(search task)으로 생각할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>편집 거리 계산 문제를 그래프에서의 최단 경로 탐색 문제로 추상화하여 접근합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>intention
+/ | \
+del ins subst
+/ | \
+ntention intecntion inxention</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>intention
+/ | \
+삭제 삽입 치환
+/ | \
+ntention intecntion inxention</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'intention'에서 파생될 수 있는 초기 편집 연산들을 트리 구조로 단순화하여 보여줍니다. 실제 탐색 공간이 어떻게 확장될 수 있는지를 시각화한 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 2.15 Finding the edit distance viewed as a search problem</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 2.15 탐색 문제로 간주하여 편집 거리를 찾는 과정</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트로 표현된 트리에 대한 설명 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The space of all possible edits is enormous, so we can't search naively. However, lots of distinct edit paths will end up in the same state (string), so rather than recomputing all those paths, we could just remember the shortest path to a state each time we saw it. We can do this by using dynamic programming. Dynamic programming is the name for a class of algorithms, first introduced by Bellman (1957), that apply a table-driven method to solve problems by combining solutions to sub-problems. Some of the most commonly used algorithms in natural language processing make use of dynamic programming, such as the Viterbi algorithm (Chapter 8) and the CKY algorithm for parsing (Chapter 13).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가능한 모든 편집의 공간은 거대하기 때문에 순진하게(naively) 탐색할 수는 없습니다. 하지만 많은 서로 다른 편집 경로들이 결국 동일한 상태(문자열)에 도달하게 되므로, 그 모든 경로들을 다시 계산하는 대신 각 상태에 도달하는 최단 경로를 볼 때마다 기억해 둘 수 있습니다. 우리는 동적 계획법(dynamic programming)을 사용하여 이를 수행할 수 있습니다. 동적 계획법은 Bellman(1957)이 처음 도입한 알고리즘 클래스의 명칭으로, 하위 문제(sub-problems)들에 대한 해답을 결합하여 문제를 해결하기 위해 테이블 기반(table-driven) 방식을 적용합니다. 자연어 처리에서 가장 흔히 사용되는 알고리즘 중 일부는 비터비 알고리즘(8장) 및 구문 분석을 위한 CKY 알고리즘(13장)과 같이 동적 계획법을 활용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 탐색의 비효율성을 극복하기 위한 수단으로 동적 계획법을 소개하며, 그 핵심인 '하위 문제 해답의 재사용(Memoization)'을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dynamic programming</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>동적 계획법(dynamic programming)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>복잡한 문제를 작은 하위 문제로 나누어 푸는 알고리즘 설계 패러다임입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition of a dynamic programming problem is that a large problem can be solved by properly combining the solutions to various sub-problems. Consider the shortest path of transformed words that represents the minimum edit distance between the strings intention and execution shown in Fig. 2.16.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>동적 계획법 문제의 직관은 큰 문제를 다양한 하위 문제들에 대한 해답을 적절히 결합함으로써 해결할 수 있다는 것입니다. 그림 2.16에 표시된 'intention'과 'execution' 문자열 사이의 최소 편집 거리를 나타내는 변환된 단어들의 최단 경로를 생각해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동적 계획법의 기본 원리인 최적 부분 구조(optimal substructure)를 예시를 통해 설명하려는 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Imagine some string (perhaps it is exention) that is in this optimal path (whatever it is). The intuition of dynamic programming is that if exention is in the optimal operation list, then the optimal sequence must also include the optimal path from intention to exention. Why? If there were a shorter path from intention to exention,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(그것이 무엇이든) 이 최적 경로 상에 있는 어떤 문자열(예를 들어 'exention')을 상상해 봅시다. 동적 계획법의 직관은 만약 'exention'이 최적 연산 리스트에 포함되어 있다면, 그 최적 시퀀스는 'intention'에서 'exention'까지의 최적 경로 또한 반드시 포함해야 한다는 것입니다. 왜일까요? 만약 'intention'에서 'exention'으로 가는 더 짧은 경로가 있다면, [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'최단 경로의 부분 경로는 역시 최단 경로여야 한다'는 동적 계획법의 핵심 귀납적 논리를 설명하고 있으며, 문장이 페이지를 넘어가므로 계속됨을 표시했습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

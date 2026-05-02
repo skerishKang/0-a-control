@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+th { background: var(--accent-soft); font-weight: 700; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">나이브 베이즈 활용 예제와 감성 분석 최적화</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.3 • WORKED EXAMPLE 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.3 • 활용 예제 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.3 Worked example</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.3 활용 예제(Worked example)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈 알고리즘을 실제 소규모 데이터에 적용해보는 예제 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's walk through an example of training and testing naive Bayes with add-one smoothing. We'll use a sentiment analysis domain with the two classes positive (+) and negative (-), and take the following miniature training and test documents simplified from actual movie reviews.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩(add-one smoothing)을 적용한 나이브 베이즈의 학습과 테스트 과정을 예제를 통해 살펴보겠습니다. 긍정(+)과 부정(-)이라는 두 클래스를 가진 감성 분석 도메인을 사용하며, 실제 영화 리뷰에서 단순화한 다음과 같은 축소판 학습 및 테스트 문서들을 사용하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제의 배경 설정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | Cat | Documents |
+|---|---|---|
+| Training | - | just plain boring |
+| | - | entirely predictable and lacks energy |
+| | - | no surprises and very few laughs |
+| | + | very powerful |
+| | + | the most fun film of the summer |
+| Test | ? | predictable with no fun |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 범주 | 문서 |
+|---|---|---|
+| 학습(Training) | - | just plain boring |
+| | - | entirely predictable and lacks energy |
+| | - | no surprises and very few laughs |
+| | + | very powerful |
+| | + | the most fun film of the summer |
+| 테스트(Test) | ? | predictable with no fun |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제에 사용될 데이터셋입니다. 학습 데이터에서 부정(-)은 3개, 긍정(+)은 2개입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The prior P(c) for the two classes is computed via Eq. 4.11 as Nc / Ndoc :</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 클래스에 대한 사전 확률 $P(c)$는 식 4.11($N_c / N_{doc}$)을 통해 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클래스별 빈도를 전체 문서 수로 나누어 사전 확률을 구합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(-) = 3/5, P(+) = 2/5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(-) = 3/5, P(+) = 2/5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사전 확률 계산 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The word with doesn't occur in the training set, so we drop it completely (as mentioned above, we don't use unknown word models for naive Bayes). The likelihoods from the training set for the remaining three words "predictable", "no", and "fun", are as follows, from Eq. 4.14 (computing the probabilities for the remainder of the words in the training set is left as an exercise for the reader):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 'with'는 학습 세트에 등장하지 않으므로 완전히 제거합니다(앞서 언급했듯이, 나이브 베이즈에서는 미등록 단어 모델을 사용하지 않습니다). 나머지 세 단어인 'predictable', 'no', 'fun'에 대한 학습 세트 기반의 가능도(likelihood)는 식 4.14를 사용하여 다음과 같이 계산됩니다(학습 세트의 나머지 단어들에 대한 확률을 계산하는 것은 독자의 연습 문제로 남겨둡니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 세트에 없는 단어('with')는 제외하고, 나머지 단어들에 대해 1 더하기 스무딩이 적용된 조건부 확률을 계산합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P("predictable"|-) = (1 + 1) / (14 + 20)
+P("predictable"|+) = (0 + 1) / (9 + 20)
+P("no"|-) = (1 + 1) / (14 + 20)
+P("no"|+) = (0 + 1) / (9 + 20)
+P("fun"|-) = (0 + 1) / (14 + 20)
+P("fun"|+) = (1 + 1) / (9 + 20)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P("predictable"|-) = (1 + 1) / (14 + 20)
+P("predictable"|+) = (0 + 1) / (9 + 20)
+P("no"|-) = (1 + 1) / (14 + 20)
+P("no"|+) = (0 + 1) / (9 + 20)
+P("fun"|-) = (0 + 1) / (14 + 20)
+P("fun"|+) = (1 + 1) / (9 + 20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 단어가 각 클래스에서 나타날 확률을 스무딩을 포함하여 계산한 식입니다. 분모의 20은 전체 어휘 집합(V)의 크기이고, 14와 9는 각 클래스 내 전체 단어의 수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For the test sentence S = "predictable with no fun", after removing the word 'with', the chosen class, via Eq. 4.9, is therefore computed as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>테스트 문장 $S = \text{"predictable with no fun"}$에 대해, 단어 'with'를 제거한 후 식 4.9를 통해 선택된 클래스는 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>테스트 문장의 각 단어 확률을 곱하여 최종 점수를 산출합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(-)P(S|-) = 3/5 * (2 * 2 * 1) / 34^3 = 6.1 * 10^-5
+P(+)P(S|+) = 2/5 * (1 * 1 * 2) / 29^3 = 3.2 * 10^-5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(-)P(S|-) = 3/5 \times (2 \times 2 \times 1) / 34^3 = 6.1 \times 10^{-5}
+P(+)P(S|+) = 2/5 \times (1 \times 1 \times 2) / 29^{3} = 3.2 \times 10^{-5}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최종 확률 계산 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The model thus predicts the class negative for the test sentence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 모델은 이 테스트 문장에 대해 '부정(negative)' 클래스로 예측합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$P(-)P(S|-)$의 값이 더 크므로 부정으로 분류됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.4 Optimizing for Sentiment Analysis</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.4 감성 분석을 위한 최적화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 나이브 베이즈를 감성 분석 작업의 특성에 맞게 조정하는 방법들을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While standard naive Bayes text classification can work well for sentiment analysis, some small changes are generally employed that improve performance. First, for sentiment classification and a number of other text classification tasks, whether a word occurs or not seems to matter more than its frequency. Thus it often improves performance to clip the word counts in each document at 1 (see the end of the chapter for pointers to these results). This variant is called binary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표준적인 나이브 베이즈 텍스트 분류가 감성 분석에서도 잘 작동할 수 있지만, 성능 향상을 위해 일반적으로 몇 가지 작은 변화들이 적용됩니다. 첫째, 감성 분류 및 여러 다른 텍스트 분류 작업에서 단어의 등장 빈도보다 단어가 '한 번이라도 나타났느냐 아니냐'가 더 중요한 경우가 많습니다. 따라서 각 문서 내의 단어 빈도수를 1로 제한(clipping)하는 것이 종종 성능을 향상시킵니다(이러한 결과에 대한 참고 자료는 장 끝부분을 확인하십시오). 이 변형된 방식을 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>감성 분석에서는 단어의 다회 출현보다 존재 여부 자체가 더 결정적인 특징이 될 수 있음을 시사하며 이진 나이브 베이즈의 도입을 예고합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">이진 나이브 베이즈와 부정어 처리</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 4 • NAIVE BAYES AND SENTIMENT CLASSIFICATION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>binary NB</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이진 나이브 베이즈(binary NB)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 빈도수가 아닌 출현 여부만을 특징으로 사용하는 나이브 베이즈 변형입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>multinomial naive Bayes or binary NB. The variant uses the same Eq. 4.10 except that for each document we remove all duplicate words before concatenating them into the single big document. Fig. 4.3 shows an example in which a set of four documents (shortened and text-normalized for this example) are remapped to binary, with the modified counts shown in the table on the right. The example is worked without add-1 smoothing to make the differences clearer. Note that the results counts need not be 1; the word great has a count of 2 even for Binary NB, because it appears in multiple documents.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이진 다항 나이브 베이즈(multinomial naive Bayes) 또는 이진 NB(binary NB)라고 부릅니다. 이 방식은 개별 문서들을 하나의 거대한 문서로 합치기 전에 각 문서에서 모든 중복된 단어를 제거한다는 점을 제외하고는 식 4.10과 동일한 수식을 사용합니다. 그림 4.3은 네 개의 문서 세트(예시를 위해 단축 및 텍스트 정규화됨)가 이진(binary) 방식으로 리매핑되는 예시를 보여주며, 수정된 빈도는 오른쪽 표에 나타나 있습니다. 차이점을 더 명확히 드러내기 위해 이 예제에서는 1 더하기 스무딩을 적용하지 않았습니다. 결과 카운트가 반드시 1일 필요는 없다는 점에 유의하십시오. 예를 들어 'great'라는 단어는 이진 NB에서도 카운트가 2가 될 수 있는데, 이는 해당 단어가 여러 문서에 걸쳐 나타나기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 NB의 핵심은 '문서 내 중복 제거'이지 '전체 데이터셋에서의 총 빈도를 1로 만드는 것'이 아님을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Four original documents:
+− it was pathetic the worst part was the boxing scenes
+− no plot twists or great scenes
++ and satire and great plot twists
++ great scenes great film
+After per-document binarization:
+− it was pathetic the worst part boxing scenes
+− no plot twists or great scenes
++ and satire great plot twists
++ great scenes film</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>네 개의 원본 문서:
+− it was pathetic the worst part was the boxing scenes
+− no plot twists or great scenes
++ and satire and great plot twists
++ great scenes great film
+문서별 이진화(binarization) 후:
+− it was pathetic the worst part boxing scenes
+− no plot twists or great scenes
++ and satire great plot twists
++ great scenes film</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서별로 중복 단어를 제거한 결과입니다. 예를 들어 마지막 문서의 'great'가 두 번에서 한 번으로 줄어들었습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | NB Counts | Binary Counts |
+|---|---|---|---|
+| | + | - | + | - |
+| and | 2 | 0 | 1 | 0 |
+| boxing | 0 | 1 | 0 | 1 |
+| film | 1 | 0 | 1 | 0 |
+| great | 3 | 1 | 2 | 1 |
+| it | 0 | 1 | 0 | 1 |
+| no | 0 | 1 | 0 | 1 |
+| or | 0 | 1 | 0 | 1 |
+| part | 0 | 1 | 0 | 1 |
+| pathetic | 0 | 1 | 0 | 1 |
+| plot | 1 | 1 | 1 | 1 |
+| satire | 1 | 0 | 1 | 0 |
+| scenes | 1 | 2 | 1 | 2 |
+| the | 0 | 2 | 0 | 1 |
+| twists | 1 | 1 | 1 | 1 |
+| was | 0 | 2 | 0 | 1 |
+| worst | 0 | 1 | 0 | 1 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | NB 빈도 | 이진 빈도 |
+|---|---|---|---|
+| | + | - | + | - |
+| and | 2 | 0 | 1 | 0 |
+| boxing | 0 | 1 | 0 | 1 |
+| film | 1 | 0 | 1 | 0 |
+| great | 3 | 1 | 2 | 1 |
+| it | 0 | 1 | 0 | 1 |
+| no | 0 | 1 | 0 | 1 |
+| or | 0 | 1 | 0 | 1 |
+| part | 0 | 1 | 0 | 1 |
+| pathetic | 0 | 1 | 0 | 1 |
+| plot | 1 | 1 | 1 | 1 |
+| satire | 1 | 0 | 1 | 0 |
+| scenes | 1 | 2 | 1 | 2 |
+| the | 0 | 2 | 0 | 1 |
+| twists | 1 | 1 | 1 | 1 |
+| was | 0 | 2 | 0 | 1 |
+| worst | 0 | 1 | 0 | 1 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.3의 데이터 테이블입니다. NB 빈도와 이진 빈도의 수치 변화를 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 4.3 An example of binarization for the binary naive Bayes algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 4.3 이진 나이브 베이즈 알고리즘을 위한 이진화(binarization) 예시.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.3의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second important addition commonly made when doing text classification for sentiment is to deal with negation. Consider the difference between I really like this movie (positive) and I didn't like this movie (negative). The negation expressed by didn't completely alters the inferences we draw from the predicate like. Similarly, negation can modify a negative word to produce a positive review (don't dismiss this film, doesn't let us get bored).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>감성 분석을 위한 텍스트 분류 시 흔히 적용되는 두 번째 중요한 추가 사항은 부정어(negation)를 처리하는 것입니다. "I really like this movie"(긍정)와 "I didn't like this movie"(부정)의 차이를 생각해 보십시오. 'didn't'이 표현하는 부정어는 'like라는 서술어로부터 우리가 이끌어내는 추론을 완전히 바꿔놓습니다. 마찬가지로, 부정어는 부정적인 단어를 수식하여 긍정적인 리뷰를 만들어낼 수도 있습니다("don't dismiss this film", "doesn't let us get bored").</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부정을 의미하는 단어들이 뒤따르는 단어의 감성 극성을 반전시킨다는 점을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A very simple baseline that is commonly used in sentiment analysis to deal with negation is the following: during text normalization, prepend the prefix NOT_ to every word after a token of logical negation (n't, not, no, never) until the next punctuation mark. Thus the phrase</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부정어를 처리하기 위해 감성 분석에서 흔히 사용되는 매우 간단한 베이스라인 방식은 다음과 같습니다. 텍스트 정규화 과정에서 논리적 부정 기호(n't, not, no, never) 이후부터 다음 문장 부호가 나타날 때까지 모든 단어 앞에 'NOT_'이라는 접두사를 붙이는 것입니다. 따라서 다음 구절은</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부정어의 영향을 받는 단어들을 별도의 독립된 특징으로 분리하기 위한 간단한 기법을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>didn't like this movie , but I
+becomes
+didn't NOT_like NOT_this NOT_movie , but I</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>didn't like this movie , but I
+는 다음과 같이 변합니다.
+didn't NOT_like NOT_this NOT_movie , but I</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NOT_ 접두사가 적용된 실제 예시입니다. 'like'와 'NOT_like'는 완전히 다른 단어로 취급됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Newly formed 'words' like NOT_like, NOT_recommend will thus occur more often in negative document and act as cues for negative sentiment, while words like NOT_bored, NOT_dismiss will acquire positive associations. We will return in Chapter 16 to the use of parsing to deal more accurately with the scope relationship between these negation words and the predicates they modify, but this simple baseline works quite well in practice.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이렇게 새로 생성된 '단어'들인 NOT_like, NOT_recommend 등은 부정적인 문서에서 더 자주 등장하여 부정 감성을 나타내는 단서로 작용하게 되며, NOT_bored, NOT_dismiss 같은 단어들은 긍정적인 연관성을 갖게 됩니다. 이러한 부정어들과 이들이 수식하는 서술어 사이의 범위(scope) 관계를 더 정확하게 처리하기 위해 구문 분석(parsing)을 사용하는 방법은 제16장에서 다시 다루겠지만, 이 단순한 베이스라인 방식도 실제로는 꽤 잘 작동합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 기법이 왜 효과적인지를 설명하고, 추후 더 정교한 분석 방식이 있음을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, in some situations we might have insufficient labeled training data to train accurate naive Bayes classifiers using all words in the training set to estimate positive and negative sentiment. In such cases we can instead derive the positive</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 어떤 상황에서는 긍정 및 부정 감성을 추정하기 위해 학습 세트의 모든 단어를 사용하여 정확한 나이브 베이즈 분류기를 학습시키기에 라벨링된 학습 데이터가 부족할 수 있습니다. 이러한 경우에는 대신 긍정 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터 부족 문제에 대한 대안으로 감성 사전 활용법을 언급하기 전 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Appendix B: Spelling Correction</title>
+<style>
+
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix B: Spelling Correction and the Noisy Channel</div>
+<h1>Spelling Correction and the Noisy Channel</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-11">Page 11</a>
+<a class="chip" href="#page-12">Page 12</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Appendix B.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-11">
+<header class="page-header">
+<h2>Page 11</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Brill and Moore’s model also conditions each edit on where it is in the word. Thus instead of estimating P(f|ph), the model estimates P(f|ph, beginning). More formally, let R be a partition of the typo string x into adjacent substrings and T be a partition of the candidate string. The total likelihood P(x|w) is approximated by the probability of the single best partition.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Brill과 Moore의 모델은 각 편집이 단어 안의 어느 위치에서 일어났는지도 함께 조건화합니다. 따라서 P(f|ph) 대신 P(f|ph, beginning)을 추정합니다. 더 형식적으로는, 오타 문자열 x를 인접한 부분 문자열들로 나눈 것을 R, 후보 문자열의 분할을 T라고 할 때, 전체 likelihood P(x|w)는 단일 최적 분할의 확률로 근사됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>같은 편집이라도 단어의 처음, 중간, 끝에서 성격이 다를 수 있다는 점을 모델에 반영합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(x|w) ≈ max_{R,T} ∏_{i=1}^{|R|} P(T_i|R_i, position)   (B.11)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(x|w) ≈ max_{R,T} ∏_{i=1}^{|R|} P(T_i|R_i, position)   (B.11)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가능한 분할들 중 가장 그럴듯한 하나를 선택해 likelihood를 근사하는 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given a training pair akgsuual/actual, standard minimum edit distance is used to produce an alignment:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 학습 쌍 akgsuual/actual이 주어지면, 표준 최소 편집 거리를 사용해 다음과 같은 정렬을 만듭니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정렬은 다중 문자 편집 확률을 학습하기 위한 출발점입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    actual
+    akgsuual
+
+    a -> a
+    c -> k
+    ε -> g
+    t -> s
+    u -> u
+    a -> a
+    l -> l</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    actual
+    akgsuual
+
+    a -> a
+    c -> k
+    ε -> g
+    t -> s
+    u -> u
+    a -> a
+    l -> l</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>actual과 akgsuual 사이의 정렬과 그에 대응하는 편집 연산 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    For N = 2, expand c -> k to:
+    ac -> ak
+    c  -> cg
+    ac -> akg
+    ct -> kgs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    N = 2일 때 c -> k를 다음처럼 확장:
+    ac -> ak
+    c  -> cg
+    ac -> akg
+    ct -> kgs</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 치환을 주변 문맥을 포함하는 다중 문자 편집으로 확장하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(α -> β) = count(α -> β) / count(α)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(α -> β) = count(α -> β) / count(α)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확장된 편집 연산의 확률을 학습 말뭉치의 빈도로부터 추정합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another research direction is the use of pronunciation in addition to spelling. Pronunciation is an important feature in some non-noisy-channel spell correction systems like GNU aspell, which uses metaphone pronunciations. Metaphone maps a word to a normalized representation of its pronunciation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또 다른 연구 방향은 철자뿐 아니라 발음을 함께 사용하는 것입니다. 발음은 GNU aspell 같은 비-noisy-channel 철자 교정 시스템에서 중요한 특징이며, 이런 시스템은 metaphone 발음 표현을 사용합니다. Metaphone은 단어를 정규화된 발음 표현으로 변환합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>발음 정보는 철자만으로 설명되지 않는 오류를 잡는 데 특히 유용합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    Some metaphone-style rules:
+    - Drop duplicate adjacent letters, except for C.
+    - If the word begins with KN, GN, PN, AE, WR, drop the first letter.
+    - Drop B if after M and if it is at the end of the word.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    metaphone식 규칙 예:
+    - C를 제외한 인접 중복 글자는 제거한다.
+    - 단어가 KN, GN, PN, AE, WR로 시작하면 첫 글자를 제거한다.
+    - M 뒤에 오고 단어 끝에 있는 B는 제거한다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>metaphone은 규칙 기반으로 발음 유사성을 포착하는 대표적 방법입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-12">
+<header class="page-header">
+<h2>Page 12</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    function SOUNDEX(name) returns soundex form
+    1. Keep the first letter of name
+    2. Drop all occurrences of non-initial a, e, h, i, o, u, w, y
+    3. Replace the remaining letters with numbers:
+       b, f, p, v -> 1
+       c, g, j, k, q, s, x, z -> 2
+       d, t -> 3
+       l -> 4
+       m, n -> 5
+       r -> 6
+    4. Replace identical adjacent numbers with one number
+    5. Convert to Letter Digit Digit Digit</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    function SOUNDEX(name) returns soundex form
+    1. 이름의 첫 글자를 유지한다
+    2. 첫 글자가 아닌 a, e, h, i, o, u, w, y는 제거한다
+    3. 남은 글자를 숫자로 치환한다:
+       b, f, p, v -> 1
+       c, g, j, k, q, s, x, z -> 2
+       d, t -> 3
+       l -> 4
+       m, n -> 5
+       r -> 6
+    4. 인접한 동일 숫자 열은 하나로 줄인다
+    5. Letter Digit Digit Digit 형태로 만든다</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이름 매칭에 널리 쓰인 Soundex 알고리즘의 절차입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure B.7 The Soundex Algorithm</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 B.7 Soundex 알고리즘</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Soundex 절차를 요약한 그림 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pronunciation can also be incorporated directly into the noisy channel model. For example, Toutanova and Moore (2002) interpolate a spelling-based channel model with a pronunciation-based channel model. More recent work on names often uses Jaro-Winkler distance rather than Soundex, since it allows characters to move longer distances and gives higher similarity to strings that share initial characters.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>발음 정보는 noisy channel 모델 안에 직접 통합될 수도 있습니다. 예를 들어 Toutanova와 Moore(2002)는 철자 기반 채널 모델과 발음 기반 채널 모델을 보간합니다. 이름 처리의 더 최근 연구는 Soundex 대신 Jaro-Winkler 거리를 자주 사용하는데, 이 거리는 더 긴 거리의 문자 이동을 허용하고 시작 글자가 같은 문자열에 더 높은 유사도를 부여하기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Soundex는 오래된 방식이고, 현대 이름 매칭에는 Jaro-Winkler 같은 더 정교한 거리 함수가 자주 쓰입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고문헌 및 역사적 노트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Appendix B 마지막의 역사적 배경과 참고문헌 메모 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Algorithms for spelling error detection and correction have existed since at least Blair (1960). Most early algorithms were based on similarity keys like Soundex. Damerau (1964) gave a dictionary-based algorithm for error detection, and most detection algorithms since then have been dictionary-based. Although early work suggested that spelling dictionaries might need to be kept small, later work found that larger dictionaries were more helpful in practice.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>철자 오류 탐지와 교정을 위한 알고리즘은 적어도 Blair(1960) 이후로 존재해 왔습니다. 초기 알고리즘의 대부분은 Soundex 같은 유사성 키에 기반했습니다. Damerau(1964)는 사전 기반 오류 탐지 알고리즘을 제안했고, 이후의 대부분의 탐지 알고리즘도 사전 기반이었습니다. 초기 연구에서는 철자 사전을 작게 유지해야 한다고 보기도 했지만, 이후 연구들은 실제로는 더 큰 사전이 더 유용하다는 점을 보여주었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 교정 연구의 초기 흐름은 Soundex류 유사성 키와 사전 기반 탐지로 요약할 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The idea of modeling language transmission as a noisy channel was developed very early by Claude Shannon (1948). Later work at IBM, AT&T Bell Laboratories, and elsewhere connected priors and likelihoods for OCR and spelling correction, leading to the modern noisy channel approach.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언어 전달을 noisy channel로 모델링하는 아이디어는 Claude Shannon(1948)에 의해 아주 일찍 제시되었습니다. 이후 IBM, AT&T Bell Laboratories 등에서 OCR과 철자 교정을 위해 prior와 likelihood를 결합하는 연구가 이어지며 현대적 noisy channel 접근으로 발전했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Appendix B 전체의 역사적 배경을 요약하는 마무리 문단입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+
+</script>
+</body>
+</html>

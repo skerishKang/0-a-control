@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">Query, Key, Value 및 스케일드 닷 프로덕트</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.7 • SELF-ATTENTION NETWORKS: TRANSFORMERS 19</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.7 • 자기 주의 집중 네트워크: 트랜스포머 19</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.7 섹션의 연속된 내용과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But transformers allow us to create a more sophisticated way of representing how words can contribute to the representation of longer inputs. Consider the three different roles that each input embedding plays during the course of the attention process.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 트랜스포머는 단어들이 더 긴 입력의 표현에 어떻게 기여할 수 있는지를 나타내는 더 정교한 방식을 만들 수 있게 해줍니다. 주의 집중 프로세스가 진행되는 동안 각 입력 임베딩이 수행하는 세 가지 서로 다른 역할을 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머의 주의 집중 메커니즘에서 정보가 처리되는 세 가지 핵심 역할을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>• As the current focus of attention when being compared to all of the other preceding inputs. We'll refer to this role as a query.
+• In its role as a preceding input being compared to the current focus of attention. We'll refer to this role as a key.
+• And finally, as a value used to compute the output for the current focus of attention.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>• 다른 모든 이전 입력들과 비교될 때의 현재 주의 집중의 초점으로서의 역할. 이 역할을 쿼리(query)라고 부릅니다.
+• 현재 주의 집중의 초점과 비교되는 이전 입력으로서의 역할. 이 역할을 키(key)라고 부릅니다.
+• 그리고 마지막으로, 현재 주의 집중 초점에 대한 출력을 계산하는 데 사용되는 정보원으로서의 값(value) 역할.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쿼리(Query), 키(Key), 값(Value)의 개념적 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>query
+key
+value</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>쿼리(query)
+키(key)
+값(value)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주의 집중 메커니즘의 세 가지 핵심 요소입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To capture these three different roles, transformers introduce weight matrices W^Q, W^K, and W^V. These weights will be used to project each input vector x_i into a representation of its role as a key, query, or value.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 세 가지 서로 다른 역할을 포착하기 위해, 트랜스포머는 가중치 행렬 W^Q, W^K, W^V를 도입합니다. 이 가중치들은 각 입력 벡터 x_i를 키, 쿼리 또는 값으로서의 역할을 나타내는 표현으로 투영(project)하는 데 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 벡터로부터 Q, K, V를 생성하기 위한 선형 변환(Projection) 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>q_i = W^Q x_i; k_i = W^K x_i; v_i = W^V x_i</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$q_i = W^Q x_i; \quad k_i = W^K x_i; \quad v_i = W^V x_i$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 x_i로부터 쿼리, 키, 값을 계산하는 공식(9.31)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The inputs x and outputs y of transformers, as well as the intermediate vectors after the various layers, all have the same dimensionality 1 × d. For now let's assume the dimensionalities of the transform matrices are W^Q ∈ R^{d×d}, W^K ∈ R^{d×d}, and W^V ∈ R^{d×d}. Later we'll need separate dimensions for these matrices when we introduce multi-headed attention, so let's just make a note that we'll have a dimension d_k for the key and query vectors, and a dimension d_v for the value vectors, both of which for now we'll set to d. In the original transformer work (Vaswani et al., 2017), d was 1024.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>트랜스포머의 입력 x와 출력 y, 그리고 다양한 층을 거친 후의 중간 벡터들은 모두 1 × d의 동일한 차원을 갖습니다. 일단 변환 행렬들의 차원이 W^Q ∈ ℝ^{d×d}, W^K ∈ ℝ^{d×d}, W^V ∈ ℝ^{d×d}라고 가정해 봅시다. 나중에 멀티 헤드 주의 집중(multi-headed attention)을 도입할 때 이 행렬들에 대해 별도의 차원이 필요할 것이므로, 키와 쿼리 벡터를 위한 차원 d_k와 값 벡터를 위한 차원 d_v를 가질 것이며 지금은 둘 다 d로 설정한다는 점만 메모해 둡시다. 원래의 트랜스포머 논문(Vaswani et al., 2017)에서 d는 1024였습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머 모델의 기본 차원(d)과 이후 멀티 헤드 어텐션에서 사용될 하위 차원(d_k, d_v)에 대해 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given these projections, the score between a current focus of attention, x_i and an element in the preceding context, x_j consists of a dot product between its query vector q_i and the preceding element's key vectors k_j. This dot product has the right shape since both the query and the key are of dimensionality 1 × d. Let's update our previous comparison calculation to reflect this, replacing Eq. 9.27 with Eq. 9.32:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 투영들이 주어지면, 현재 주의 집중의 초점인 x_i와 이전 문맥의 요소 x_j 사이의 점수는, x_i의 쿼리 벡터 q_i와 이전 요소의 키 벡터 k_j 사이의 내적으로 구성됩니다. 쿼리와 키 모두 1 × d 차원이므로 이 내적은 적절한 형태를 갖습니다. 이를 반영하여 이전의 비교 계산식을 업데이트하고, 식 9.27을 식 9.32로 대체해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원시 입력 간의 내적 대신, 투영된 쿼리와 키 간의 내적으로 유사도를 구하는 방식으로 업그레이드합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(x_i, x_j) = q_i · k_j</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$\text{score}(x_i, x_j) = q_i \cdot k_j$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쿼리와 키를 이용한 점수 계산 공식(9.32)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The ensuing softmax calculation resulting in α_{i,j} remains the same, but the output calculation for y_i is now based on a weighted sum over the value vectors v.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>α_{i,j}를 도출하는 뒤이은 softmax 계산은 동일하게 유지되지만, y_i에 대한 출력 계산은 이제 값 벡터 v들에 대한 가중합을 기반으로 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정규화된 가중치를 '값(Value)' 벡터들에 적용하여 정보를 집약함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y_i = ∑_{j≤i} α_{ij} v_j</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$y_i = \sum_{j \le i} \alpha_{ij} v_j$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>값 벡터들의 가중합을 이용한 출력 계산 공식(9.33)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 9.16 illustrates this calculation in the case of computing the third output y_3 in a sequence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.16은 시퀀스에서 세 번째 출력 y_3를 계산하는 경우의 이러한 연산 과정을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이어지는 도식에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The result of a dot product can be an arbitrarily large (positive or negative) value. Exponentiating such large values can lead to numerical issues and to an effective loss of gradients during training. To avoid this, the dot product needs to be scaled in a suitable fashion. A scaled dot-product approach divides the result of the dot product by a factor related to the size of the embeddings before passing them through the softmax. A typical approach is to divide the dot product by the square root of the dimensionality of the query and key vectors (d_k), leading us to update our scoring function one more time, replacing Eq. 9.27 and Eq. 9.32 with Eq. 9.34:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>내적의 결과는 임의로 큰 (양수 또는 음수) 값일 수 있습니다. 이러한 큰 값들에 지수 함수를 적용하면 수치적 문제(numerical issues)가 발생할 수 있으며 학습 중에 실질적인 그래디언트 손실로 이어질 수 있습니다. 이를 방지하기 위해 내적은 적절한 방식으로 스케일링(scaling)되어야 합니다. '스케일드 닷 프로덕트(scaled dot-product)' 접근 방식은 내적 결과를 softmax에 통과시키기 전에 임베딩 크기와 관련된 인수로 나눕니다. 일반적인 방법은 내적 값을 쿼리와 키 벡터의 차원(d_k)의 제곱근으로 나누는 것이며, 이를 통해 우리의 점수 함수를 다시 한 번 업데이트하여 식 9.27과 식 9.32를 식 9.34로 대체하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>내적 값이 커질 때 발생할 수 있는 수치적 불안정성을 해결하기 위한 '스케일링' 기법의 필요성과 구체적 방법(√d_k로 나누기)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(x_i, x_j) = (q_i · k_j) / √d_k</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$\text{score}(x_i, x_j) = \frac{q_i \cdot k_j}{\sqrt{d_k}}$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스케일드 닷 프로덕트 점수 공식(9.34)입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">어텐션 행렬화</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y_3 Output Vector
+Softmax α_{i,j}
+Key/Query Comparisons
+Generate key, query, value vectors (k_1, q_1, v_1 etc.)
+x_1, x_2, x_3</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>y_3 출력 벡터
+softmax α_{i,j}
+키/쿼리 비교
+키, 쿼리, 값 벡터 생성 (k_1, q_1, v_1 등)
+x_1, x_2, x_3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쿼리, 키, 값을 이용한 인과적 자기 주의 집중의 상세 연산 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.16 Calculating the value of y_3, the third element of a sequence using causal (left-to-right) self-attention.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.16 인과적(왼쪽에서 오른쪽으로의) 자기 주의 집중을 사용하여 시퀀스의 세 번째 요소인 y_3의 값을 계산하는 과정.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.16에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This description of the self-attention process has been from the perspective of computing a single output at a single time step i. However, since each output, y_i, is computed independently this entire process can be parallelized by taking advantage of efficient matrix multiplication routines by packing the input embeddings of the N tokens of the input sequence into a single matrix X ∈ R^{N×d}. That is, each row of X is the embedding of one token of the input. We then multiply X by the key, query, and value matrices (all of dimensionality d × d) to produce matrices Q ∈ R^{N×d}, K ∈ R^{N×d}, and V ∈ R^{N×d}, containing all the key, query, and value vectors:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>지금까지의 자기 주의 집중 프로세스 설명은 단일 시간 단계 i에서 단일 출력을 계산하는 관점이었습니다. 그러나 각 출력 y_i는 서로 독립적으로 계산되므로, 입력 시퀀스의 N개 토큰에 대한 입력 임베딩들을 하나의 행렬 X ∈ ℝ^{N×d}로 묶음으로써 효율적인 행렬 곱셈 루틴을 활용하여 이 전체 프로세스를 병렬화할 수 있습니다. 즉, X의 각 행은 입력 토큰 하나하나의 임베딩입니다. 그런 다음 X에 키, 쿼리, 값 행렬(모두 d × d 차원)을 곱하여 모든 키, 쿼리, 값 벡터를 포함하는 행렬 Q ∈ ℝ^{N×d}, K ∈ ℝ^{N×d}, V ∈ ℝ^{N×d}를 생성합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시점별로 설명했던 어텐션 연산을 행렬 연산으로 통합하여 병렬 처리가 가능하게 만드는 효율적인 구현 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Q = XW^Q; K = XW^K; V = XW^V</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$Q = XW^Q; \quad K = XW^K; \quad V = XW^V$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬 형태의 Q, K, V 계산 공식(9.35)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given these matrices we can compute all the requisite query-key comparisons simultaneously by multiplying Q and K^T in a single matrix multiplication (the product is of shape N × N; Fig. 9.17 shows a visualization). Taking this one step further, we can scale these scores, take the softmax, and then multiply the result by V resulting in a matrix of shape N × d: a vector embedding representation for each token in the input. We've reduced the entire self-attention step for an entire sequence of N tokens to the following computation:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 행렬들이 주어지면, 단 한 번의 행렬 곱셈으로 Q와 K^T를 곱하여 필요한 모든 쿼리-키 비교를 동시에 수행할 수 있습니다(결과물은 N × N 형태이며, 그림 9.17에서 시각화되어 있습니다). 여기서 한 걸음 더 나아가, 이 점수들을 스케일링하고 softmax를 취한 뒤, 그 결과에 V를 곱하면 N × d 형태의 행렬이 생성됩니다. 이는 입력의 각 토큰에 대한 벡터 임베딩 표현이 됩니다. 우리는 N개 토큰으로 이루어진 전체 시퀀스에 대한 자기 주의 집중 단계를 다음과 같은 계산으로 축약했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체 시퀀스의 어텐션을 한 번에 계산하는 '행렬화된 어텐션'의 흐름을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>SelfAttention(Q, K, V) = softmax(QK^T / √d_k)V</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$\text{SelfAttention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머의 핵심인 행렬 기반 자기 주의 집중 공식(9.36)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unfortunately, this process goes a bit too far since the calculation of the comparisons in QK^T results in a score for each query value to every key value, including those</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>불행하게도, 이 프로세스는 다소 지나친 면이 있습니다. QK^T의 비교 계산은 모든 쿼리 값과 모든 키 값 사이의 점수를 산출하기 때문인데, 여기에는...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 행렬 곱셈 시 미래 정보를 참조하게 되는 문제(인과성 위배)를 지적하며 마스킹(Masking)의 필요성을 시사합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

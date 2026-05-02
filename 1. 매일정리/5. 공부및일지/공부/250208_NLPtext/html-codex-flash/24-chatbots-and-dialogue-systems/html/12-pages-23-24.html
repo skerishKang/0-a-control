@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 23-24 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-23">Page 23</a>
+<a class="chip" href="#page-24">Page 24</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 23-24 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Regenerated from MD</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-23">
+<header class="page-header">
+<h2>Page 23</h2>
+<div class="page-subtitle">명시적/암시적 확인 및 거부 전략</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>input. This is generally done by two methods: confirming understandings with the user and rejecting utterances that the system is likely to have misunderstood.
+As we saw in the prior section, most systems introduce particular strategies and actions related to confirmation and rejection. When using the explicit confirmation strategy, a system asks the user a direct question to confirm the system's understanding, like the two examples below in which the system asks a (boldface) yes-no confirmation question:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력. 이는 일반적으로 두 가지 방법으로 수행됩니다. 사용자와의 이해를 확인하는 것과 시스템이 오해했을 가능성이 있는 발화를 거부하는 것입니다.
+이전 섹션에서 보았듯이 대부분의 시스템은 확인 및 거부와 관련된 특정 전략과 작업을 도입합니다. 명시적 확인(explicit confirmation) 전략을 사용할 때 시스템은 아래의 두 예시와 같이 시스템의 이해를 확인하기 위해 사용자에게 직접적인 질문을 던지며, 시스템은 (굵은 글씨로 된) 예/아니오 확인 질문을 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Two main methods for handling potential misunderstandings: confirmation and rejection.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>explicit confirmation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명시적 확인</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>S: Which city do you want to leave from?
+U: Baltimore.
+S: Do you want to leave from Baltimore?
+U: Yes.
+U: I'd like to fly from Denver Colorado to New York City on September twenty first in the morning on United Airlines
+S: Let's see then. I have you going from Denver Colorado to New York on September twenty first. Is that correct?
+U: Yes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>S: 어느 도시에서 출발하시겠습니까?
+U: 볼티모어.
+S: 볼티모어에서 출발하시겠습니까?
+U: 네.
+U: 9월 21일 아침 유나이티드 항공으로 덴버 콜로라도에서 뉴욕 시로 가고 싶습니다.
+S: 그럼 보겠습니다. 9월 21일에 덴버 콜로라도에서 뉴욕으로 가시는 걸로 되어 있습니다. 맞습니까?
+U: 네.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Examples of explicit confirmation.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>implicit confirmation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>암시적 확인</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>When using the implicit confirmation strategy, a system instead can demonstrate its understanding as a grounding strategy, for example repeating back the system's understanding as part of asking the next question, as in the two examples below:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>암시적 확인(implicit confirmation) 전략을 사용할 때 시스템은 대신 접지(grounding) 전략으로서 자신의 이해를 보여줄 수 있습니다. 예를 들어 아래의 두 예와 같이 다음 질문을 하는 과정의 일부로 시스템의 이해를 다시 반복하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Implicit confirmation as a grounding strategy.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>U: I want to travel to Berlin
+S: When do you want to travel to Berlin?
+U2: Hi I'd like to fly to Seattle Tuesday Morning
+A3: Traveling to Seattle on Tuesday, August eleventh in the morning. Your full name?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>U: 베를린으로 여행하고 싶습니다.
+S: 언제 베를린으로 여행하고 싶으신가요?
+U2: 안녕하세요, 화요일 아침에 시애틀로 가고 싶습니다.
+A3: 8월 11일 화요일 아침에 시애틀로 여행하시는군요. 성함이 어떻게 되시나요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Examples of implicit confirmation.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Explicit and implicit confirmation have complementary strengths. Explicit confirmation makes it easier for users to correct the system's misrecognitions since a user can just answer "no" to the confirmation question. But explicit confirmation is awkward and increases the length of the conversation (Danieli and Gerbino 1995, Walker et al. 1998). The explicit confirmation dialogue fragments above sound non-natural and definitely non-human; implicit confirmation is much more conversationally natural.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명시적 확인과 암시적 확인은 상호 보완적인 강점을 가지고 있습니다. 명시적 확인은 사용자가 확인 질문에 단순히 "아니오"라고 답할 수 있기 때문에 사용자가 시스템의 오인식을 수정하기 더 쉽게 만듭니다. 하지만 명시적 확인은 어색하고 대화의 길이를 늘립니다(Danieli and Gerbino 1995, Walker 등 1998). 위의 명시적 확인 대화 단편은 부자연스럽고 확실히 인간 같지 않게 들립니다. 암시적 확인이 훨씬 더 대화적으로 자연스럽습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Comparison between explicit and implicit confirmation.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Confirmation is just one kind of conversational action by which a system can express lack of understanding. Another option is rejection, in which a system gives the user a prompt like I'm sorry, I didn't understand that.
+Sometimes utterances are rejected multiple times. This might mean that the user is using language that the system is unable to follow. Thus, when an utterance is rejected, systems often follow a strategy of progressive prompting or escalating detail (Yankelovich et al. 1995, Weinschenk and Barker 2000), as in this example from Cohen et al. (2004):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확인은 시스템이 이해 부족을 표현할 수 있는 한 가지 종류의 대화 작업일 뿐입니다. 또 다른 옵션은 거부(rejection)로, 시스템이 사용자에게 "죄송합니다, 이해하지 못했습니다"와 같은 프롬프트를 제공하는 것입니다.
+때때로 발화가 여러 번 거부되기도 합니다. 이는 사용자가 시스템이 따를 수 없는 언어를 사용하고 있음을 의미할 수 있습니다. 따라서 발화가 거부될 때 시스템은 종종 Cohen 등(2004)의 다음 예시와 같이 점진적 프롬프트(progressive prompting) 또는 세부 정보 확대(escalating detail) 전략을 따릅니다(Yankelovich 등 1995, Weinschenk 및 Barker 2000).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Rejection and progressive prompting strategies.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>rejection</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>거부</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>progressive prompting</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>점진적 프롬프트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>System: When would you like to leave?
+Caller: Well, um, I need to be in New York in time for the first World Series game.
+System: <reject>. Sorry, I didn't get that. Please say the month and day you'd like to leave.
+Caller: I wanna go on October fifteenth.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시스템: 언제 출발하시겠습니까?
+발신자: 음, 첫 번째 월드 시리즈 경기 시간에 맞춰 뉴욕에 가야 해요.
+시스템: <거부>. 죄송합니다, 이해하지 못했습니다. 출발하고 싶은 월과 일을 말씀해 주세요.
+발신자: 10월 15일에 가고 싶어요.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example of rejection and progressive prompting.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-24">
+<header class="page-header">
+<h2>Page 24</h2>
+<div class="page-subtitle">빠른 재프롬프트 및 자연어 생성</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this example, instead of just repeating "When would you like to leave?", the rejection prompt gives the caller more guidance about how to formulate an utterance the system will understand. These you-can-say help messages are important in helping improve systems' understanding performance (Bohus and Rudnicky, 2005). If the caller's utterance gets rejected yet again, the prompt can reflect this ("I still didn't get that"), and give the caller even more guidance.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 예에서는 단순히 "언제 출발하시겠습니까?"를 반복하는 대신, 거부 프롬프트가 발신자에게 시스템이 이해할 수 있는 발화를 구성하는 방법에 대해 더 많은 안내를 제공합니다. 이러한 "이렇게 말할 수 있습니다(you-can-say)" 도움말 메시지는 시스템의 이해 성능을 향상시키는 데 중요합니다(Bohus 및 Rudnicky, 2005). 발신자의 발화가 다시 거부되면 프롬프트에 이를 반영하고("여전히 이해하지 못했습니다"), 발신자에게 훨씬 더 많은 안내를 제공할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Use of help messages in rejection prompts to guide the user.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>rapid reprompting</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>빠른 재프롬프트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An alternative strategy for error handling is rapid reprompting, in which the system rejects an utterance just by saying "I'm sorry?" or "What was that?" Only if the caller's utterance is rejected a second time does the system start applying progressive prompting. Cohen et al. (2004) summarize experiments showing that users greatly prefer rapid reprompting as a first-level error prompt.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오류 처리를 위한 대안적 전략은 빠른 재프롬프트(rapid reprompting)로, 시스템이 단지 "죄송합니다?" 또는 "방금 뭐라고 하셨나요?"라고 말함으로써 발화를 거부하는 것입니다. 발신자의 발화가 두 번째로 거부될 때만 시스템이 점진적 프롬프트를 적용하기 시작합니다. Cohen 등(2004)은 사용자들이 첫 번째 단계의 오류 프롬프트로서 빠른 재프롬프트를 매우 선호한다는 실험을 요약했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Rapid reprompting as a user-preferred initial error handling strategy.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It is common to use rich features other than just the dialogue state representation to make policy decisions. For example, the confidence that the ASR system assigns to an utterance can be used by explicitly confirming low-confidence sentences. Confidence is a metric that the speech recognizer can assign to its transcription of a sentence to indicate how confident it is in that transcription. Confidence is often computed from the acoustic log-likelihood of the utterance (greater probability means higher confidence), but prosodic features can also be used in confidence prediction. For example, utterances with large F0 excursions or longer durations, or those preceded by longer pauses, are likely to be misrecognized (Litman et al., 2000).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정책 결정을 내리기 위해 단순히 대화 상태 표현 외에 풍부한 특징을 사용하는 것이 일반적입니다. 예를 들어, ASR 시스템이 발화에 할당하는 신뢰도는 신뢰도가 낮은 문장을 명시적으로 확인하는 데 사용될 수 있습니다. 신뢰도는 음성 인식기가 해당 전사(transcription)에 얼마나 확신하는지를 나타내기 위해 문장의 전사에 할당할 수 있는 지표입니다. 신뢰도는 종종 발화의 음향 로그 가능성(로그 가능성이 클수록 신뢰도가 높음)에서 계산되지만, 운율 특징도 신뢰도 예측에 사용될 수 있습니다. 예를 들어, F0 편차가 크거나 지속 시간이 길거나 긴 일시 정지가 선행된 발화는 오인식될 가능성이 높습니다(Litman 등, 2000).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Using ASR confidence and prosodic features for policy decisions.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another common feature in confirmation is the cost of making an error. For example, explicit confirmation is common before a flight is actually booked or money in an account is moved. Systems might have a four-tiered level of confidence with three thresholds α, β, and γ:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확인 시의 또 다른 공통적인 특징은 오류 발생 비용입니다. 예를 들어, 실제로 항공편이 예약되거나 계좌의 돈이 이동되기 전에 명시적 확인이 일반적입니다. 시스템은 세 가지 임계값 α, β, γ를 가진 4단계 신뢰 수준을 가질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Considering the cost of errors in deciding confirmation strategies.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>< α low confidence - reject
+≥ α above the threshold - confirm explicitly
+≥ β high confidence - confirm implicitly
+≥ γ very high confidence - don't confirm at all</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>< α 낮은 신뢰도 - 거부
+≥ α 임계값 초과 - 명시적 확인
+≥ β 높은 신뢰도 - 암시적 확인
+≥ γ 매우 높은 신뢰도 - 확인하지 않음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Thresholds for choosing different confirmation strategies.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.4.5 Natural language generation in the dialogue-state model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.4.5 대화 상태 모델에서의 자연어 생성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to NLG in dialogue systems.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>| content planning | sentence realization |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 콘텐츠 계획 | 문장 실현 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Two stages of NLG.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Once a dialogue act has been decided, we need to generate the text of the response to the user. The task of natural language generation (NLG) in the information-state architecture is often modeled in two stages, content planning (what to say), and sentence realization (how to say it).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 행위가 결정되면 사용자에게 보낼 응답 텍스트를 생성해야 합니다. 정보 상태 아키텍처에서의 자연어 생성(NLG) 작업은 종종 콘텐츠 계획(무엇을 말할지)과 문장 실현(어떻게 말할지)의 두 단계로 모델링됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The two-stage model of NLG: content planning and sentence realization.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Here we'll assume content planning has been done by the dialogue policy, which has chosen the dialogue act to generate, and chosen some attributes (slots and values) that the planner wants to say to the user (either to give the user the answer, or as part of a confirmation strategy).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서는 대화 정책에 의해 콘텐츠 계획이 이미 수행되었다고 가정합니다. 대화 정책은 생성할 대화 행위를 선택하고, 플래너가 사용자에게 말하고자 하는 일부 속성(슬롯 및 값)을 선택했습니다(사용자에게 답을 주기 위해서나 확인 전략의 일부로서).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Role of dialogue policy in content planning.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 24.16 shows some sample input/outputs for the sentence realization phase. In the first example, the content planner has chosen the dialogue act RECOMMEND and some particular slots (name, neighborhood, cuisine) and their fillers. The goal of the sentence realizer is to generate a sentence like lines 1 or 2 shown in the figure, by training on many such examples of representation/sentence pairs from a large corpus of labeled dialogues.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.16은 문장 실현 단계의 몇 가지 샘플 입력/출력을 보여줍니다. 첫 번째 예에서 콘텐츠 플래너는 대화 행위 RECOMMEND와 몇 가지 특정 슬롯(이름, 지역, 요리) 및 그 필러들을 선택했습니다. 문장 실현기의 목표는 레이블이 지정된 대화의 대규모 말뭉치에서 가져온 표현/문장 쌍의 수많은 사례를 학습하여 그림에 표시된 1번 또는 2번 라인과 같은 문장을 생성하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Goal of sentence realization: converting dialogue acts and slots into natural language sentences.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Training data is hard to come by; we are unlikely to see every possible restaurant with every possible attribute in many possible differently worded sentences. Therefore it is common in sentence realization to increase the generality of the training examples by delexicalization. Delexicalization is the process of replacing specific</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>훈련 데이터를 얻는 것은 어렵습니다. 가능한 모든 속성을 가진 가능한 모든 레스토랑이 다양한 문장으로 표현된 사례를 모두 보기는 어렵습니다. 따라서 문장 실현에서는 어휘 제거(delexicalization)를 통해 훈련 예시의 일반성을 높이는 것이 일반적입니다. 어휘 제거는 특정...을 교체하는 프로세스입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Use of delexicalization to handle data scarcity in NLG.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>delexicalization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘 제거(delexicalization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

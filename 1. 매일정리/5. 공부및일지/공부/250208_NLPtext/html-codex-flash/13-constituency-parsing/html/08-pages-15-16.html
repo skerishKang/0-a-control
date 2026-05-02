@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">13 Constituency Parsing</div>
+<h1>Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>13. Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">PARSEVAL 평가</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13.6 Parsing Evaluation: PARSEVAL</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13.6 파싱 평가: PARSEVAL</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성된 파스 트리의 정확도를 골드 표준 트리와 비교하여 측정하는 표준 평가 방식인 PARSEVAL을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To evaluate a parser, we need a way to compare the parse tree it produces to a "gold standard" parse tree, usually from a treebank. The standard metric for this is the PARSEVAL metric, which was originally proposed by Abney et al. (1991).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파서를 평가하기 위해, 파서가 생성한 파스 트리를 트리뱅크 등에 있는 "골드 표준(gold standard)" 파스 트리와 비교하는 방법이 필요합니다. 이를 위한 표준 척도는 원래 Abney 등에 의해 제안된 PARSEVAL입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파싱 평가의 기본 개념과 척도인 PARSEVAL의 기원과 용도를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>evaluation / gold standard</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>평가(evaluation) / 골드 표준(gold standard)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신뢰할 수 있는 정답 트리와 파서의 결과를 비교하는 과정의 핵심 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>precision / recall / F1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도(precision) / 재현율(recall) / F1</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PARSEVAL 평가의 핵심이 되는 세 가지 통계적 척도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>PARSEVAL measures the similarity between two trees by comparing the constituents they contain. A constituent is defined by its label and its span (the start and end indices of the segment of the sentence it covers).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PARSEVAL은 트리들이 포함하는 성분들을 비교하여 두 트리 간의 유사성을 측정합니다. 성분은 그 레이블과 범주(span, 문장에서 해당 부분이 시작되고 끝나는 인덱스)에 의해 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PARSEVAL이 트리를 비교할 때 사용하는 '범주'와 '레이블'의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Labeled Precision = # of correct constituents in T_p / # of constituents in T_p
+Labeled Recall = # of correct constituents in T_p / # of constituents in T_g
+F1 = (2 * Precision * Recall) / (Precision + Recall)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>레이블된 정밀도 = 생성 트리(T_p)의 올바른 성분 개수 / 생성 트리(T_p)의 전체 성분 개수
+레이블된 재현율 = 생성 트리(T_p)의 올바른 성분 개수 / 정답 트리(T_g)의 전체 성분 개수
+F1 = (2 * 정밀도 * 재현율) / (정밀도 + 재현율)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PARSEVAL에서 사용되는 구체적인 계산 공식들입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">PARSEVAL 이후 / 인간 파싱</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13.6.1 Beyond PARSEVAL</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13.6.1 PARSEVAL을 넘어서</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PARSEVAL이 갖는 한계점들과 이를 보완하기 위한 현대적인 평가 관점들을 논의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While PARSEVAL is the standard metric, it has some limitations. One issue is that it treats all errors as equally important, even if some errors are more semantically significant than others.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PARSEVAL이 표준 척도이기는 하지만 몇 가지 한계가 있습니다. 한 가지 문제는 모든 오류를 동일하게 중요하다는 점입니다. 실제로는 어떤 오류가 다른 오류보다 더 중요한 의미를 지닐 수 있음에도 불구하고 말입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PARSEVAL의 단순 수치적 평가 방식이 실제 의미적 차이를 모두 반영하지 못함을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13.7 Human Parsing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13.7 인간의 파싱(Human Parsing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계적인 알고리즘이 아닌, 인간이 언어를 실시간으로 처리할 때의 심리언어학적 파싱 기제를 분석합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>human parsing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인간 파싱(human parsing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 뇌가 문장 구조를 해석하는 심리적인 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>garden path</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가든 패스(garden path)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장의 중반부까지 하나의 해석을 유도했다가 끝에서 다른 해석이 필요함을 알게 되어 당황하게 만드는 문장을 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Human parsing is different from machine parsing. Humans parse sentences incrementally, meaning they process the words one by one as they hear or read them.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인간의 파싱은 기계의 파싱과는 다릅니다. 인간은 문장을 점진적으로 파싱합니다. 즉, 문장을 듣거나 읽으면서 단어들을 하나씩 실시간으로 처리해 나갑니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간 파싱의 점진적(incremental) 특성을 기계 파싱과 대조하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>(13.1) The horse raced past the barn fell.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(13.1) 헛간 옆을 달린 말이 넘어졌다. (The horse raced past the barn fell.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대표적인 가든 패스 문장 예시입니다. 'raced'를 동사로 오해하여 나중에 'fell'이 나왔을 때 독자가 읽기를 다시 하게 됩니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

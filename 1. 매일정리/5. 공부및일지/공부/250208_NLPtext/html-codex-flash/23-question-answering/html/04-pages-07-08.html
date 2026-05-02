@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 07 08 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a><a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 07 08 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.1 • INFORMATION RETRIEVAL 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.1 • 정보 검색 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Rank | Judgment | Precision_{Rank} | Recall_{Rank} |
+| :--- | :--- | :--- | :--- |
+| 1 | R | 1.0 | .11 |
+| 2 | N | .50 | .11 |
+| 3 | R | .66 | .22 |
+| 4 | N | .50 | .22 |
+| 5 | R | .60 | .33 |
+| 6 | R | .66 | .44 |
+| 7 | N | .57 | .44 |
+| 8 | R | .63 | .55 |
+| 9 | N | .55 | .55 |
+| 10 | N | .50 | .55 |
+| 11 | R | .55 | .66 |
+| 12 | N | .50 | .66 |
+| 13 | N | .46 | .66 |
+| 14 | N | .43 | .66 |
+| 15 | R | .47 | .77 |
+| 16 | N | .44 | .77 |
+| 17 | N | .44 | .77 |
+| 18 | R | .44 | .88 |
+| 19 | N | .42 | .88 |
+| 20 | N | .40 | .88 |
+| 21 | N | .38 | .88 |
+| 22 | N | .36 | .88 |
+| 23 | N | .35 | .88 |
+| 24 | N | .33 | .88 |
+| 25 | R | .36 | 1.0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 순위 | 판정 | 정밀도_{순위} | 재현율_{순위} |
+| :--- | :--- | :--- | :--- |
+| 1 | R | 1.0 | .11 |
+| 2 | N | .50 | .11 |
+| 3 | R | .66 | .22 |
+| 4 | N | .50 | .22 |
+| 5 | R | .60 | .33 |
+| 6 | R | .66 | .44 |
+| 7 | N | .57 | .44 |
+| 8 | R | .63 | .55 |
+| 9 | N | .55 | .55 |
+| 10 | N | .50 | .55 |
+| 11 | R | .55 | .66 |
+| 12 | N | .50 | .66 |
+| 13 | N | .46 | .66 |
+| 14 | N | .43 | .66 |
+| 15 | R | .47 | .77 |
+| 16 | N | .44 | .77 |
+| 17 | N | .44 | .77 |
+| 18 | R | .44 | .88 |
+| 19 | N | .42 | .88 |
+| 20 | N | .40 | .88 |
+| 21 | N | .38 | .88 |
+| 22 | N | .36 | .88 |
+| 23 | N | .35 | .88 |
+| 24 | N | .33 | .88 |
+| 25 | R | .36 | 1.0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>검색 결과 순위에 따라 정밀도와 재현율이 어떻게 변하는지 보여주는 상세 표입니다. R은 관련 있음(Relevant), N은 관련 없음(Not relevant)을 뜻합니다. 전체 관련 문서가 9개라고 가정했을 때의 수치입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 23.4 Rank-specific precision and recall values calculated as we proceed down through a set of ranked documents (assuming the collection has 9 relevant documents).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.4 순위가 매겨진 문서 집합을 따라 내려가며 계산한 순위별 정밀도 및 재현율 값(컬렉션에 9개의 관련 문서가 있다고 가정함).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞선 표(그림 23.4)에 대한 설명 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 23.5 The precision recall curve for the data in table 23.4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.5 표 23.4의 데이터에 대한 정밀도-재현율 곡선.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>표의 데이터를 시각화한 곡선 그래프에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s turn to an example. Assume the table in Fig. 23.4 gives rank-specific precision and recall values calculated as we proceed down through a set of ranked documents for a particular query; the precisions are the fraction of relevant documents seen at a given rank, and recalls the fraction of relevant documents found at the same rank. The recall measures in this example are based on this query having 9 relevant documents in the collection as a whole.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예제를 살펴보겠습니다. 그림 23.4의 표가 특정 쿼리에 대해 순위가 매겨진 문서 집합을 따라 내려가며 계산한 순위별 정밀도와 재현율 값을 나타낸다고 가정해 봅시다. 여기서 정밀도는 주어진 순위까지 확인된 문서들 중 관련 있는 문서의 비율이고, 재현율은 같은 순위까지 발견된 전체 관련 문서의 비율입니다. 이 예제의 재현율 측정치는 컬렉션 전체에 이 쿼리와 관련된 문서가 9개 있다는 사실을 바탕으로 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>순위별 정밀도와 재현율이 계산되는 방식을 예제와 함께 다시 한 번 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that recall is non-decreasing; when a relevant document is encountered,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재현율은 감소하지 않는다는 점에 유의하십시오. 관련 있는 문서가 발견될 때마다 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>재현율의 수학적 특성(단조 증가)에 대한 설명이 다음 페이지로 이어집니다.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 23 • QUESTION ANSWERING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제23장 • 질의응답</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>recall increases, and when a non-relevant document is found it remains unchanged. Precision, on the other hand, jumps up and down, increasing when relevant documents are found, and decreasing otherwise. The most common way to visualize precision and recall is to plot precision against recall in a **precision-recall curve**, like the one shown in Fig. 23.5 for the data in table 23.4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재현율은 증가하며, 관련 없는 문서가 발견되면 변하지 않고 유지됩니다. 반면 정밀도는 관련 있는 문서가 발견되면 증가하고 그렇지 않으면 감소하며 위아래로 요동칩니다. 정밀도와 재현율을 시각화하는 가장 일반적인 방법은 그림 23.5에서 표 23.4의 데이터를 바탕으로 보여준 것처럼 정밀도를 재현율에 대해 도표로 나타낸 **정밀도-재현율 곡선(precision-recall curve)**을 그리는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도와 재현율의 변화 양상 차이와 이를 시각화하는 표준적인 방법인 정밀도-재현율 곡선을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>precision-recall curve</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도-재현율 곡선</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 지표 간의 상충 관계를 보여주는 중요한 시각화 도구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 23.5 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we use **interpolated precision** values for the 11 recall values from the data points we do have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.5는 단일 쿼리에 대한 값들을 보여줍니다. 하지만 우리는 모든 쿼리에 대한 값들을 결합해야 하며, 한 시스템과 다른 시스템을 비교할 수 있는 방식이어야 합니다. 이를 수행하는 한 가지 방법은 11개의 고정된 재현율 수준(0에서 100까지, 10단계씩)에서 평균 정밀도 값을 도표로 그리는 것입니다. 이러한 정확한 수준에서 데이터 포인트가 없을 가능성이 높으므로, 우리가 가진 데이터 포인트로부터 11개의 재현율 값에 대한 **보간된 정밀도(interpolated precision)** 값을 사용합니다. 이는 우리가 계산하려는 재현율 수준이나 그 이상의 수준에서 달성된 최대 정밀도 값을 선택함으로써 수행할 수 있습니다. 즉,</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 쿼리의 결과를 종합하고 시스템 간 비교를 가능하게 하기 위해 11개 지점의 보간된 정밀도를 사용하는 이유와 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>interpolated precision</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>보간된 정밀도</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 재현율 지점에서의 정밀도를 그 지점 이후의 최대 정밀도로 정의하여 곡선을 매끄럽게 만드는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>IntPrecision(r) = \max_{i \ge r} Precision(i) (23.12)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>IntPrecision(r) = \max_{i \ge r} Precision(i) (23.12)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보간된 정밀도의 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This interpolation scheme not only lets us average performance over a set of queries, but also helps smooth over the irregular precision values in the original data. It is designed to give systems the benefit of the doubt by assigning the maximum precision value achieved at higher levels of recall from the one being measured. Fig. 23.6 and Fig. 23.7 show the resulting interpolated data points from our example.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 보간 체계는 일련의 쿼리들에 대해 평균 성능을 낼 수 있게 해줄 뿐만 아니라, 원본 데이터의 불규칙한 정밀도 값들을 매끄럽게 만드는 데도 도움이 됩니다. 이는 측정되는 수준보다 높은 재현율 수준에서 달성된 최대 정밀도 값을 할당함으로써 시스템에 유리한 판정을 내려주도록 설계되었습니다. 그림 23.6과 그림 23.7은 우리 예제에서 도출된 보간 데이터 포인트들을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보간법이 주는 이점(평균화 가능, 평활화 효과)과 그 특징을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Interpolated Precision | Recall |
+| :--- | :--- |
+| 1.0 | 0.0 |
+| 1.0 | .10 |
+| .66 | .20 |
+| .66 | .30 |
+| .66 | .40 |
+| .63 | .50 |
+| .55 | .60 |
+| .47 | .70 |
+| .44 | .80 |
+| .36 | .90 |
+| .36 | 1.0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 보간된 정밀도 | 재현율 |
+| :--- | :--- |
+| 1.0 | 0.0 |
+| 1.0 | .10 |
+| .66 | .20 |
+| .66 | .30 |
+| .66 | .40 |
+| .63 | .50 |
+| .55 | .60 |
+| .47 | .70 |
+| .44 | .80 |
+| .36 | .90 |
+| .36 | 1.0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 23.4의 데이터를 바탕으로 11개 표준 재현율 지점에서 계산된 보간된 정밀도 값들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 23.6 Interpolated data points from Fig. 23.4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.6 그림 23.4로부터 도출된 보간된 데이터 포인트들.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞선 보간 데이터 표(그림 23.6)에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given curves such as that in Fig. 23.7 we can compare two systems or approaches by comparing their curves. Clearly, curves that are higher in precision across all recall values are preferred. However, these curves can also provide insight into the overall behavior of a system. Systems that are higher in precision toward the left may favor precision over recall, while systems that are more geared towards recall will be higher at higher levels of recall (to the right).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.7과 같은 곡선들이 주어지면 곡선을 비교함으로써 두 시스템이나 접근 방식을 비교할 수 있습니다. 분명히 모든 재현율 값에 대해 정밀도가 더 높은 곡선이 선호됩니다. 하지만 이러한 곡선들은 시스템의 전반적인 동작에 대한 통찰도 제공할 수 있습니다. 왼쪽 부분에서 정밀도가 더 높은 시스템은 재현율보다 정밀도를 선호하는 경향이 있을 수 있고, 재현율에 더 치중한 시스템은 더 높은 재현율 수준(오른쪽)에서 더 높은 값을 보일 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도-재현율 곡선을 해석하는 방법과 이를 통해 알 수 있는 시스템의 성향(정밀도 중시 vs 재현율 중시)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second way to evaluate ranked retrieval is **mean average precision (MAP)**, which provides a single metric that can be used to compare competing systems or approaches. In this approach, we again descend through the ranked list of items, but now we note the precision only at those points where a relevant item has been encountered (for example at ranks 1, 3, 5, 6 but not 2 or 4 in Fig. 23.4). For a single query, we average these individual precision measurements over the return set (up to some fixed cutoff). More formally, if we assume that R_r is the set of relevant documents at or above r, then the **average precision (AP)** for a single query is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>순위 기반 검색을 평가하는 두 번째 방법은 **평균 정밀도의 평균(MAP, mean average precision)**으로, 경쟁 시스템이나 접근 방식을 비교하는 데 사용할 수 있는 단일 지표를 제공합니다. 이 접근 방식에서도 다시 항목들의 순위 목록을 따라 내려가지만, 이번에는 관련 있는 항목이 발견된 지점에서만 정밀도를 기록합니다(예를 들어 그림 23.4에서 순위 1, 3, 5, 6은 기록하지만 2나 4는 기록하지 않습니다). 단일 쿼리에 대해, 이러한 개별 정밀도 측정치들을 반환 집합에 대해(특정 고정 컷오프까지) 평균을 냅니다. 더 공식적으로, $R_r$이 순위 r이나 그 이상의 관련 문서 집합이라고 가정하면, 단일 쿼리에 대한 **평균 정밀도(AP)**는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>검색 시스템의 성능을 하나의 숫자로 요약해주는 MAP의 개념과 그 구성 요소인 AP(평균 정밀도)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>mean average precision</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MAP (평균 정밀도의 평균)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 쿼리에 대한 AP 값들을 평균 낸 값으로, 검색 성능 평가에서 가장 널리 쓰이는 지표 중 하나입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>AP = \frac{1}{|R_r|} \sum_{d \in R_r} Precision_r(d) (23.13)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>AP = \frac{1}{|R_r|} \sum_{d \in R_r} Precision_r(d) (23.13)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 쿼리에 대한 평균 정밀도(AP) 계산 공식입니다. 관련 문서가 나올 때마다의 정밀도를 모두 더해 전체 관련 문서 수로 나눕니다.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

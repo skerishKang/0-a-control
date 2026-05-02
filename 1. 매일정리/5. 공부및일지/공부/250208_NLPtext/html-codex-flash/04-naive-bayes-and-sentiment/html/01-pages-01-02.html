@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">분류의 정의와 감성 분석 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. 모든 권리 보유. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 정보와 판본 정보를 담은 헤더 블록입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER
+4 Naive Bayes and Sentiment Classification</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제4장
+나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>4장의 핵심 주제인 나이브 베이즈 알고리즘과 그 대표적인 응용 사례인 감성 분류의 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Classification lies at the heart of both human and machine intelligence. Deciding what letter, word, or image has been presented to our senses, recognizing faces or voices, sorting mail, assigning grades to homeworks; these are all examples of assigning a category to an input. The potential challenges of this task are highlighted by the fabulist Jorge Luis Borges 1964, who imagined classifying animals into:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분류(Classification)는 인간과 기계 지능 모두의 핵심에 자리 잡고 있습니다. 우리 감각에 어떤 글자, 단어, 혹은 이미지가 제시되었는지 결정하는 것, 얼굴이나 목소리를 인식하는 것, 우편물을 분류하는 것, 과제에 성적을 매기는 것 등은 모두 입력값에 범주(category)를 할당하는 예시들입니다. 이러한 작업의 잠재적 어려움은 우화 작가 호르헤 루이스 보르헤스(Jorge Luis Borges, 1964)가 동물을 다음과 같이 분류한다고 상상했던 대목에서 도드라집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정형화된 분류 시스템의 필요성을 역설하기 위해 보르헤스의 역설적인 동물 분류 예시를 도입하는 문단입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(a) those that belong to the Emperor, (b) embalmed ones, (c) those that are trained, (d) suckling pigs, (e) mermaids, (f) fabulous ones, (g) stray dogs, (h) those that are included in this classification, (i) those that tremble as if they were mad, (j) innumerable ones, (k) those drawn with a very fine camel's hair brush, (l) others, (m) those that have just broken a flower vase, (n) those that resemble flies from a distance.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(a) 황제에게 속한 것들, (b) 박제된 것들, (c) 훈련된 것들, (d) 젖을 먹는 돼지들, (e) 인어들, (f) 전설적인 것들, (g) 떠돌이 개들, (h) 이 분류에 포함된 것들, (i) 미친 듯이 떠는 것들, (j) 셀 수 없이 많은 것들, (k) 아주 고운 낙타 털 붓으로 그려진 것들, (l) 기타, (m) 방금 화병을 깨뜨린 것들, (n) 멀리서 보면 파리처럼 보이는 것들.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보르헤스가 상상한 '임의적이고 비논리적인' 분류 방식의 예시입니다. 컴퓨터 과학에서의 분류는 이와 달리 명확하고 배타적인 범주화를 목표로 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many language processing tasks involve classification, although luckily our classes are much easier to define than those of Borges. In this chapter we introduce the naive Bayes algorithm and apply it to text categorization, the task of assigning a label or category to an entire text or document.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 언어 처리 작업이 분류와 연관되어 있습니다. 다행히 우리의 분류 범주는 보르헤스의 것보다 훨씬 정의하기 쉽습니다. 이 장에서는 나이브 베이즈(naive Bayes) 알고리즘을 소개하고, 이를 텍스트 전체나 문서에 라벨 또는 범주를 할당하는 작업인 텍스트 분류(text categorization)에 적용해 보겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈 알고리즘을 텍스트 수준의 분류 작업에 적용할 것임을 밝힙니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>text categorization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서를 사전에 정의된 카테고리로 나누는 작업을 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sentiment analysis</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>감성 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트에 담긴 주관적인 감정(긍정/부정 등)을 파악하는 기술입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We focus on one common text categorization task, sentiment analysis, the extraction of sentiment, the positive or negative orientation that a writer expresses toward some object. A review of a movie, book, or product on the web expresses the author's sentiment toward the product, while an editorial or political text expresses sentiment toward a candidate or political action. Extracting consumer or public sentiment is thus relevant for fields from marketing to politics.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 흔히 쓰이는 텍스트 분류 작업 중 하나인 감성 분석(sentiment analysis)에 집중할 것입니다. 이는 작가가 어떤 대상에 대해 표현하는 긍정적 혹은 부정적인 성향, 즉 감성(sentiment)을 추출하는 작업입니다. 웹상의 영화, 책, 제품 리뷰는 해당 제품에 대한 저자의 감성을 나타내며, 사설이나 정치 기사는 후보자나 정치적 행보에 대한 감성을 표현합니다. 따라서 소비자나 대중의 감성을 추출하는 일은 마케팅부터 정치에 이르기까지 다양한 분야와 밀접한 관련이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>감성 분석의 정의와 실질적인 활용 가치를 설명하는 문단입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simplest version of sentiment analysis is a binary classification task, and the words of the review provide excellent cues. Consider, for example, the following phrases extracted from positive and negative reviews of movies and restaurants. Words like great, richly, awesome, and pathetic, and awful and ridiculously are very informative cues:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>감성 분석의 가장 단순한 형태는 이진 분류(binary classification) 작업이며, 리뷰에 쓰인 단어들은 훌륭한 단서가 됩니다. 예를 들어 영화나 음식점의 긍정적 및 부정적 리뷰에서 추출한 다음 구절들을 보십시오. great, richly, awesome 같은 단어나 pathetic, awful, ridiculously 같은 단어들은 매우 유용한 정보를 담고 있는 단서입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 자체가 감성을 판단하는 강력한 특징(feature)이 된다는 점을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>+ ...zany characters and richly applied satire, and some great plot twists
+− It was pathetic. The worst part about it was the boxing scenes...
++ ...awesome caramel sauce and sweet toasty almonds. I love this place!
+− ...awful pizza and ridiculously overpriced...</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>+ ...익살스러운 캐릭터와 풍부하게 가미된 풍자, 그리고 멋진 반전들
+− 형편없었습니다. 가장 최악이었던 부분은 복싱 장면들이었는데...
++ ...굉장한 카라멜 소스와 달콤하고 고소한 아몬드. 여기 정말 좋아요!
+− ...끔찍한 피자와 터무니없이 비싼 가격...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>긍정(+)과 부정(-) 리뷰의 예시 구절들을 통해 핵심 감성 단어들을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>spam detection</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스팸 탐지</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이메일 등을 정상 메일과 스팸 메일로 분류하는 작업입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Spam detection is another important commercial application, the binary classification task of assigning an email to one of the two classes spam or not-spam. Many lexical and other features can be used to perform this classification. For example you might quite reasonably be suspicious of an email containing phrases like "online pharmaceutical" or "WITHOUT ANY COST" or "Dear Winner".</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스팸 탐지(Spam detection)는 또 다른 중요한 상업적 응용 사례로, 이메일을 '스팸(spam)' 또는 '정상(not-spam)' 두 클래스 중 하나로 나누는 이진 분류 작업입니다. 이 분류를 수행하기 위해 많은 어휘적 특징 및 기타 특징들이 사용될 수 있습니다. 예를 들어 "online pharmaceutical", "WITHOUT ANY COST", "Dear Winner" 같은 구문이 포함된 이메일은 충분히 의심해 볼 만합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스팸 탐지 또한 특정 구문을 단서로 활용하는 이진 분류의 일종임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another thing we might want to know about a text is the language it's written in. Texts on social media, for example, can be in any number of languages and we'll need to apply different processing. The task of language id is thus the first step in most language processing pipelines. Related text classification tasks like authorship attribution— determining a text's author— are also relevant to the digital humanities, social sciences, and forensic linguistics.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트에 대해 우리가 알고 싶어 할 수 있는 또 다른 정보는 그것이 어떤 언어로 작성되었는가입니다. 예를 들어 소셜 미디어상의 텍스트는 수많은 언어로 존재할 수 있으며, 우리는 각 언어에 맞는 서로 다른 처리를 적용해야 합니다. 따라서 언어 식별(language id) 작업은 대부분의 언어 처리 파이프라인에서 첫 번째 단계가 됩니다. 텍스트의 저자를 확인하는 저자 식별(authorship attribution)과 같은 관련 텍스트 분류 작업 또한 디지털 인문학, 사회과학, 그리고 법언어학 분야에서 중요하게 다뤄집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 식별과 저자 식별 등 텍스트 분류의 확장된 응용 분야들을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>language id</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언어 식별</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 텍스트가 어떤 언어인지 자동으로 판별하는 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>authorship attribution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>저자 식별</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문체의 특징 등을 분석하여 글을 쓴 저자를 찾아내는 작업입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">나이브 베이즈 분류기 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 4 • NAIVE BAYES AND SENTIMENT CLASSIFICATION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, one of the oldest tasks in text classification is assigning a library subject category or topic label to a text. Deciding whether a research paper concerns epidemiology or instead, perhaps, embryology, is an important component of information retrieval. Various sets of subject categories exist, such as the MeSH (Medical Subject Headings) thesaurus. In fact, as we will see, subject category classification is the task for which the naive Bayes algorithm was invented in 1961.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 텍스트 분류에서 가장 오래된 작업 중 하나는 텍스트에 도서관 주제 카테고리나 주제 라벨을 할당하는 것입니다. 어떤 연구 논문이 역학(epidemiology)에 관한 것인지 아니면 발생학(embryology)에 관한 것인지 결정하는 일은 정보 검색의 중요한 구성 요소입니다. MeSH(Medical Subject Headings) 시소러스와 같이 다양한 주제 범주 체계가 존재합니다. 실제로 곧 보게 되겠지만, 주제 범주 분류는 1961년에 나이브 베이즈 알고리즘이 처음 발명된 목적이기도 했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈의 역사적 기원이 도서 분류(주제 분류)에 있음을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Classification is essential for tasks below the level of the document as well. We've already seen period disambiguation (deciding if a period is the end of a sentence or part of a word), and word tokenization (deciding if a character should be a word boundary). Even language modeling can be viewed as classification: each word can be thought of as a class, and so predicting the next word is classifying the context-so-far into a class for each next word. A part-of-speech tagger (Chapter 8) classifies each occurrence of a word in a sentence as, e.g., a noun or a verb.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분류는 문서 수준 미만의 작업에서도 필수적입니다. 우리는 이미 마침표 중의성 해소(마침표가 문장의 끝인지 단어의 일부인지 결정하는 것)와 단어 토큰화(특정 문자가 단어 경계가 되어야 하는지 결정하는 것)를 보았습니다. 심지어 언어 모델링조차 분류 문제로 볼 수 있습니다. 각 단어를 하나의 클래스로 생각한다면, 다음 단어를 예측하는 것은 지금까지의 문맥을 각 다음 단어라는 클래스로 분류하는 작업이 됩니다. 품사 태거(제8장)는 문장 안의 각 단어 출현을 명사나 동사 등의 클래스로 분류합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자연어 처리의 거의 모든 요소(토큰화, 언어 모델링, 품사 인식 등)가 근본적으로는 분류 문제로 환산될 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The goal of classification is to take a single observation, extract some useful features, and thereby classify the observation into one of a set of discrete classes. One method for classifying text is to use handwritten rules. There are many areas of language processing where handwritten rule-based classifiers constitute a state-of-the-art system, or at least part of it.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분류의 목표는 단일 관측치(observation)를 받아 유용한 특징(features)을 추출하고, 이를 통해 관측치를 이산적인 클래스 집합 중 하나로 분류하는 것입니다. 텍스트를 분류하는 한 가지 방법은 수작업으로 작성된 규칙(handwritten rules)을 사용하는 것입니다. 언어 처리의 많은 영역에서 이러한 수단 기법 기반의 분류기는 여전히 최첨단 시스템(SOTA)을 구성하거나, 적어도 그 일부로 기능합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분류의 일반적인 정의와 초기 방식인 규칙 기반 분류를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Rules can be fragile, however, as situations or data change over time, and for some tasks humans aren't necessarily good at coming up with the rules. Most cases of classification in language processing are instead done via supervised machine learning, and this will be the subject of the remainder of this chapter. In supervised learning, we have a data set of input observations, each associated with some correct output (a 'supervision signal'). The goal of the algorithm is to learn how to map from a new observation to a correct output.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 규칙은 상황이나 데이터가 시간이 흐름에 따라 변화함에 따라 깨지기 쉽고(fragile), 어떤 작업들은 인간이 그 규칙을 생각해 내기에 적합하지 않기도 합니다. 대신 언어 처리의 대부분의 분류 사례는 지도 기계 학습(supervised machine learning)을 통해 이루어지며, 이것이 이 장의 나머지 부분에서 다룰 주제입니다. 지도 학습에서는 각 입력 관측치가 정답 출력('지도 신호')과 연결된 데이터 세트를 가집니다. 알고리즘의 목표는 새로운 관측치로부터 올바른 출력으로 매핑하는 방법을 배우는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 방식의 한계와 그 대안인 지도 학습 방식의 도입 배경을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>supervised machine learning</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>지도 기계 학습</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정답 라벨이 있는 데이터를 통해 모델을 학습시키는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Formally, the task of supervised classification is to take an input x and a fixed set of output classes Y = {y1, y2, . . . , yM} and return a predicted class y ∈ Y. For text classification, we'll sometimes talk about c (for "class") instead of y as our output variable, and d (for "document") instead of x as our input variable. In the supervised situation we have a training set of N documents that have each been hand-labeled with a class: (d1, c1), . . . , (dN , cN ). Our goal is to learn a classifier that is capable of mapping from a new document d to its correct class c ∈ C. A probabilistic classifier additionally will tell us the probability of the observation being in the class. This full distribution over the classes can be useful information for downstream decisions; avoiding making discrete decisions early on can be useful when combining systems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>형식적으로 지도 분류 작업은 입력 $x$와 고정된 출력 클래스 집합 $Y = \{y_1, y_2, . . . , y_M\}$을 받아 예측된 클래스 $y \in Y$를 반환하는 것입니다. 텍스트 분류에서는 때때로 출력 변수로 $y$ 대신 $c$ ("class"의 약자)를, 입력 변수로 $x$ 대신 $d$ ("document"의 약자)를 사용하기도 합니다. 지도 학습 환경에서는 각각 수동으로 라벨링된 $N$개의 문서로 이루어진 학습 세트 $(d_1, c_1), . . . , (d_N , c_N )$을 가집니다. 우리의 목표는 새로운 문서 $d$를 올바른 클래스 $c \in C$로 매핑할 수 있는 분류기를 학습하는 것입니다. 확률적 분류기(probabilistic classifier)는 추가적으로 관측치가 해당 클래스에 속할 확률을 알려줍니다. 클래스들에 대한 이러한 전체 분포 정보는 후속 의사결정에 유용할 수 있습니다. 시스템을 결합할 때 불확실한 초기 단계에서 성급하게 이산적인 결정을 내리는 것을 피하는 데 도움이 되기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지도 학습 기반 텍스트 분류의 수학적 정의와 클래스 확률을 제공하는 '확률적 분류기'의 장점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many kinds of machine learning algorithms are used to build classifiers. This chapter introduces naive Bayes; the following one introduces logistic regression. These exemplify two ways of doing classification. Generative classifiers like naive Bayes build a model of how a class could generate some input data. Given an observation, they return the class most likely to have generated the observation. Discriminative classifiers like logistic regression instead learn what features from the input are most useful to discriminate between the different possible classes. While discriminative systems are often more accurate and hence more commonly used, generative classifiers still have a role.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분류기를 구축하기 위해 많은 종류의 기계 학습 알고리즘이 사용됩니다. 이 장에서는 나이브 베이즈를 소개하고, 다음 장에서는 로지스틱 회귀를 소개합니다. 이 둘은 분류를 수행하는 두 가지 방식을 예증합니다. 나이브 베이즈와 같은 생성 분류기(Generative classifiers)는 특정 클래스가 어떻게 입력 데이터를 생성할 수 있는지에 대한 모델을 구축합니다. 관측치가 주어지면, 그 관측치를 생성했을 가능성이 가장 높은 클래스를 반환합니다. 반면 로지스틱 회귀와 같은 판별 분류기(Discriminative classifiers)는 가능한 여러 클래스를 구별하는 데 입력의 어떤 특징이 가장 유용한지를 학습합니다. 판별 시스템이 대개 더 정확하여 더 보편적으로 사용되지만, 생성 분류기 또한 나름의 역할이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 모델(나이브 베이즈)과 판별 모델(로지스틱 회귀)의 개념적 차이를 명확히 구분해 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.1 Naive Bayes Classifiers</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.1 나이브 베이즈 분류기</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>본격적으로 나이브 베이즈 알고리즘의 원리를 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>naive Bayes classifier</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈 분류기</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 정리를 기반으로 하되, 모든 특징이 서로 독립이라고 가정하는 단순하지만 강력한 분류기입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we introduce the multinomial naive Bayes classifier, so called because it is a Bayesian classifier that makes a simplifying (naive) assumption about</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 다항 나이브 베이즈 분류기(multinomial naive Bayes classifier)를 소개합니다. 이는 베이즈 분류기의 일종으로, [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'다항(multinomial)' 나이브 베이즈 분류기에 대한 설명이 시작됩니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

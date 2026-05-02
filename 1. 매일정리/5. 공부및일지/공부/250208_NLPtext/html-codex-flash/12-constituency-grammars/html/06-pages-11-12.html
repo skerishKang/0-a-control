@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Constituency Grammars</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">12 Constituency Grammars</div>
+<h1>Constituency Grammars</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-11">Page 11</a>
+<a class="chip" href="#page-12">Page 12</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-11">
+<header class="page-header">
+<h2>Page 11</h2>
+<div class="page-subtitle">일치(Agreement)</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.9 Agreement</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.9 일치(Agreement)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어와 동사 사이의 수, 인칭 일치 등 언어적 제약을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>number agreement</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>수 일치(number agreement)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어 명사구와 동사의 단수/복수 일치 여부를 결정하는 하위 범주입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Most languages have constraints on what words can occur together. One of the most common is agreement, which means that certain words in a sentence must have the same properties. For example, in English, a subject NP and its verb must agree in number:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대부분의 언어에는 어떤 단어들이 함께 나타날 수 있는지에 관한 제약 사항이 있습니다. 가장 흔한 것 중 하나는 '일치(agreement)'로, 문장 안의 특정 단어들이 동일한 속성을 공유해야 함을 의미합니다. 예를 들어, 영어에서 주어 NP와 그 동사는 반드시 '수(number)'가 일치해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일괄적인 문법 규칙 외에 성분 간의 속성 공유 제약을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    (12.7) [NP This flight] [VP leaves] at 9:00.
+    (12.8) *[NP This flight] [VP leave] at 9:00.
+    (12.9) [NP These flights] [VP leave] at 9:00.
+    (12.10) *[NP These flights] [VP leaves] at 9:00.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    (12.7) [NP 이 항공편(This flight)]은 9시에 [VP 출발한다(leaves)].
+    (12.8) *[NP 이 항공편(This flight)]은 9시에 [VP 출발하다(leave)]. (오문)
+    (12.9) [NP 이 항공편들(These flights)]은 9시에 [VP 출발한다(leave)].
+    (12.10) *[NP 이 항공편들(These flights)]은 9시에 [VP 출발하다(leaves)]. (오문)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어의 수(단수/복수)에 따른 동사 굴절 형태의 적절성과 부적절성 예시입니다. '*' 표시가 붙은 문장은 문법적으로 틀린 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To handle this in a CFG, we could simply create new non-terminals for singular and plural versions of everything:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 CFG에서 처리하기 위해, 모든 기호에 대해 단순히 단수와 복수 버전을 나타내는 새로운 비단말 기호들을 생성할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일치 문제를 구조적으로 해결하기 위한 단순한 확장 방식을 제안합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    S → S-Sing | S-Plur
+    S-Sing → NP-Sing VP-Sing
+    S-Plur → NP-Plur VP-Plur
+    NP-Sing → Det-Sing N-Sing
+    NP-Plur → Det-Plur N-Plur</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    S → S-Sing | S-Plur
+    S-Sing → NP-Sing VP-Sing
+    S-Plur → NP-Plur VP-Plur
+    NP-Sing → Det-Sing N-Sing
+    NP-Plur → Det-Plur N-Plur</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단수와 복수를 구분하기 위해 기호들을 분리한 CFG 규칙 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>However, this leads to a massive explosion in the number of rules. Instead, most computational grammars use features to handle agreement, as we will see in more detail in other contexts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 이러한 방식은 규칙의 수를 급격하게 증가(rule explosion)시키는 결과를 초래합니다. 대신, 대부분의 계산 문법은 일치 문제를 처리하기 위해 '자질(features)'을 사용하며, 이에 대해서는 다른 문맥에서 더 자세히 다루게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 폭발 문제를 언급하며 '자질'을 통한 해결책을 암시합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-12">
+<header class="page-header">
+<h2>Page 12</h2>
+<div class="page-subtitle">하위 범주화</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.10 Subcategorization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.10 하위 범주화(Subcategorization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동사가 취하는 보충어의 종류에 따른 분류 제약을 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>valence</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>원자가(valence)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동사가 문장을 구성하기 위해 필수적으로 요구하는 논항의 개수와 유형을 의미하는 언어학 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Not all verbs can occur with all kinds of complements. This restriction is called subcategorization or valence. We've already seen that some verbs are transitive and others are intransitive. But the situation is more complex.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모든 동사가 모든 종류의 보충어와 함께 나타날 수 있는 것은 아닙니다. 이러한 제약을 '하위 범주화(subcategorization)' 또는 '원자가(valence)'라고 부릅니다. 우리는 이미 일부 동사가 타동사이고 다른 일부는 자동사라는 것을 보았습니다. 하지만 실제 상황은 더 복잡합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동사와 보충어 간의 결합 제약을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    | Frame | Verb Example | Complement Example |
+    | :--- | :--- | :--- |
+    | ∅ | disappear | [VP disappeared] |
+    | NP | book | [VP booked [NP a flight]] |
+    | NP PP | give | [VP gave [NP the map] [PP to Harry]] |
+    | CP | think | [VP thought [CP that it was late]] |
+    | VP-to-inf | want | [VP want [VP-to-inf to fly to Rome]] |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    | 프레임(Frame) | 동사 예시 | 보충어 예시 |
+    | :--- | :--- | :--- |
+    | ∅ (없음) | disappear | [VP 사라졌다(disappeared)] |
+    | NP | book | [VP 비행기를 예약했다(booked [NP a flight])] |
+    | NP PP | give | [VP 해리에게 지도를 주었다(gave [NP the map] [PP to Harry])] |
+    | CP | think | [VP 늦었다고 생각했다(thought [CP that it was late])] |
+    | VP-to-inf | want | [VP 로마로 날아가고 싶다(want [VP-to-inf to fly to Rome])] |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동사가 취할 수 있는 다양한 동사구 프레임과 그에 해당하는 보충어의 유형을 정리한 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we used the same simple CFG approach as we did for agreement, we would again have an explosion of rules like VP-intrans, VP-transitive, and so on.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>만약 일치 문제에서 그랬던 것처럼 단순한 CFG 방식으로 접근한다면, VP-intrans(자동사구), VP-transitive(타동사구) 등 규칙이 기하급수적으로 늘어나는 문제에 직면하게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하위 범주화 역시 단순 규칙 분리로는 한계가 있음을 지적합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

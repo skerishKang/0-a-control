@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+th { background: var(--accent-soft); font-weight: 700; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-11">Page 11</a>
+<a class="chip" href="#page-12">Page 12</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-11">
+<header class="page-header">
+<h2>Page 11</h2>
+<div class="page-subtitle">언어 모델로서의 나이브 베이즈와 평가 지표 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.7 • EVALUATION: PRECISION, RECALL, F-MEASURE 11</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.7 • 평가: 정밀도, 재현율, F-측정치 11</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As it happens, the positive model assigns a higher probability to the sentence: P(s|pos) > P(s|neg). Note that this is just the likelihood part of the naive Bayes model; once we multiply in the prior a full naive Bayes model might well make a different classification decision.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 결과적으로, 긍정 모델이 이 문장에 더 높은 확률을 부여합니다: $P(s|pos) > P(s|neg)$. 이는 나이브 베이즈 모델의 가능도(likelihood) 부분만 고려한 것임에 유의하십시오. 여기에 사전 확률(prior)까지 곱하게 되면 전체 나이브 베이즈 모델은 전혀 다른 분류 결정을 내릴 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체 사후 확률을 얻기 위해서는 가능도뿐만 아니라 클래스 자체의 빈도인 사전 확률도 고려해야 함을 상기시킵니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.7 Evaluation: Precision, Recall, F-measure</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.7 평가: 정밀도(Precision), 재현율(Recall), F-측정치(F-measure)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분류 모델의 성능을 측정하는 다양한 지표들에 대해 배우는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To introduce the methods for evaluating text classification, let's first consider some simple binary detection tasks. For example, in spam detection, our goal is to label every text as being in the spam category ("positive") or not in the spam category ("negative"). For each item (email document) we therefore need to know whether our system called it spam or not. We also need to know whether the email is actually spam or not, i.e. the human-defined labels for each document that we are trying to match. We will refer to these human labels as the gold labels.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트 분류 평가 방법을 소개하기 위해, 먼저 몇 가지 단순한 이진 탐지(binary detection) 작업을 생각해 봅시다. 예를 들어 스팸 탐지에서 우리의 목표는 모든 텍스트를 스팸 범주("긍정") 또는 스팸이 아닌 범주("부정")로 라벨링하는 것입니다. 따라서 각 항목(이메일 문서)에 대해 우리 시스템이 그것을 스팸이라고 불렀는지 아닌지를 알아야 합니다. 또한 해당 이메일이 실제로 스팸인지 여부, 즉 우리가 맞히고자 하는 각 문서에 대한 인간이 정의한 라벨도 알아야 합니다. 우리는 이러한 인간의 라벨을 정답 라벨(gold labels)이라고 부를 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>평가의 기본 요소인 시스템 예측값과 실제 정답(gold labels)의 개념을 정립합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>gold labels</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정답 라벨(gold labels)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델의 성능을 검증하기 위한 기준이 되는 전문가의 수동 주석 라벨입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Or imagine you're the CEO of the Delicious Pie Company and you need to know what people are saying about your pies on social media, so you build a system that detects tweets concerning Delicious Pie. Here the positive class is tweets about Delicious Pie and the negative class is all other tweets.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또는 여러분이 '딜리셔스 파이' 회사의 CEO가 되어 사람들이 소셜 미디어에서 여러분의 파이에 대해 뭐라고 말하는지 알아야 한다고 상상해 보십시오. 그래서 여러분은 '딜리셔스 파이'와 관련된 트윗을 찾아내는 시스템을 구축합니다. 여기서 긍정 클래스는 '딜리셔스 파이'에 관한 트윗이고, 부정 클래스는 그 외의 모든 트윗입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 분류의 또 다른 현실적인 예시를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In both cases, we need a metric for knowing how well our spam detector (or pie-tweet-detector) is doing. To evaluate any system for detecting things, we start by building a confusion matrix like the one shown in Fig. 4.4. A confusion matrix is a table for visualizing how an algorithm performs with respect to the human gold labels, using two dimensions (system output and gold labels), and each cell labeling a set of possible outcomes. In the spam detection case, for example, true positives are documents that are indeed spam (indicated by human-created gold labels) that our system correctly said were spam. False negatives are documents that are indeed spam but our system incorrectly labeled as non-spam.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 경우 모두, 우리의 스팸 탐지기(또는 파이 트윗 탐지기)가 얼마나 잘 작동하는지 알기 위한 지표가 필요합니다. 무언가를 탐지하는 시스템을 평가할 때, 우리는 그림 4.4에 나타난 것과 같은 혼동 행렬(confusion matrix)을 구축하는 것부터 시작합니다. 혼동 행렬은 시스템 출력과 정답 라벨이라는 두 가지 차원을 사용하여 알고리즘이 정답 라벨에 대해 어떻게 수행되는지 시각화하는 표이며, 각 셀(cell)은 가능한 결과들의 집합을 나타냅니다. 예를 들어 스팸 탐지 사례에서 진양성(true positives, TP)은 실제로 스팸(인간이 만든 정답 라벨에 표시됨)인데 우리 시스템도 스팸이라고 정확히 판단한 문서입니다. 위음성(false negatives, FN)은 실제로 스팸이지만 우리 시스템이 스팸이 아니라고 잘못 분류한 문서입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>혼동 행렬의 정의와 TP, FN 등 내부 구성 요소들의 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>confusion matrix</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>혼동 행렬(confusion matrix)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시스템의 예측과 실제 정답의 관계를 2x2 표 형태로 나타낸 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To the bottom right of the table is the equation for accuracy, which asks what percentage of all the observations (for the spam or pie examples that means all emails or tweets) our system labeled correctly. Although accuracy might seem a natural metric, we generally don't use it for text classification tasks. That's because accuracy doesn't work well when the classes are unbalanced (as indeed they are with spam, which is a large majority of email, or with tweets, which are mainly not about pie).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표의 오른쪽 하단에는 정확도(accuracy) 공식이 있는데, 이는 전체 관측치(스팸이나 파이 예제에서는 모든 이메일이나 트윗) 중에서 우리 시스템이 얼마나 정확하게 라벨링했는지 그 백분율을 묻는 것입니다. 정확도가 자연스러운 지표처럼 보일 수 있지만, 우리는 일반적으로 텍스트 분류 작업에 이를 사용하지 않습니다. 그 이유는 클래스가 불균형한 경우(실제로 스팸은 이메일의 절대다수를 차지하고, 트윗의 대부분은 파이에 관한 것이 아닌 것처럼) 정확도가 제대로 작동하지 않기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정확도 지표의 한계, 특히 클래스 불균형 문제에서의 결함을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>gold standard labels
+| | gold positive | gold negative |
+|---|---|---|---|
+| system output labels | system positive | true positive | false positive | precision = tp / (tp + fp) |
+| | system negative | false negative | true negative |
+| | | recall = tp / (tp + fn) | | accuracy = (tp + tn) / (tp + fp + tn + fn)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정답 기준 라벨(gold standard labels)
+| | 정답 긍정 | 정답 부정 |
+|---|---|---|---|
+| 시스템 출력 라벨 | 시스템 긍정 | 진양성(TP) | 위양성(FP) | 정밀도 = TP / (TP + FP) |
+| | 시스템 부정 | 위음성(FN) | 진음성(TN) |
+| | | 재현율 = TP / (TP + FN) | | 정확도 = (TP + TN) / (TP + FP + TN + FN)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.4의 혼동 행렬 구조와 기본 평가 지표들의 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 4.4 A confusion matrix for visualizing how well a binary classification system performs against gold standard labels.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 4.4 이진 분류 시스템이 정답 기준 라벨에 대해 얼마나 잘 수행하는지 시각화하기 위한 혼동 행렬.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.4의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To make this more explicit, imagine that we looked at a million tweets, and let's say that only 100 of them are discussing their love (or hatred) for our pie,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 더 명확히 하기 위해, 우리가 백만 개의 트윗을 살펴본다고 가정해 봅시다. 그리고 그중 단 100개만이 우리 회사의 파이에 대한 애정(또는 증오)을 논하고 있다고 해 보겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정확도의 위험성을 설명하기 위한 극단적인 사례의 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-12">
+<header class="page-header">
+<h2>Page 12</h2>
+<div class="page-subtitle">정밀도, 재현율, F-측정치</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12 CHAPTER 4 • NAIVE BAYES AND SENTIMENT CLASSIFICATION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>while the other 999,900 are tweets about something completely unrelated. Imagine a simple classifier that stupidly classified every tweet as "not about pie". This classifier would have 999,900 true negatives and only 100 false negatives for an accuracy of 999,900/1,000,000 or 99.99%! What an amazing accuracy level! Surely we should be happy with this classifier? But of course this fabulous 'no pie' classifier would be completely useless, since it wouldn't find a single one of the customer comments we are looking for. In other words, accuracy is not a good metric when the goal is to discover something that is rare, or at least not completely balanced in frequency, which is a very common situation in the world.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 나머지 999,900개는 완전히 무관한 내용의 트윗입니다. 모든 트윗을 어리석게도 "파이와 무관함"으로 분류해버리는 단순한 분류기를 상상해 보십시오. 이 분류기는 999,900개의 진음성(TN)과 단 100개의 위음성(FN)을 갖게 되어, 정확도는 999,900/1,000,000 즉 99.99%가 됩니다! 놀라운 정확도 수준입니다! 과연 우리가 이 분류기에 만족해야 할까요? 물론 이 대단해 보이는 '노 파이(no pie)' 분류기는 완전히 쓸모가 없습니다. 우리가 찾고 있는 고객의 의견을 단 하나도 찾아내지 못할 것이기 때문입니다. 다시 말해, 목표가 희귀한 것(또는 적어도 빈도가 완전히 균형 잡히지 않은 것)을 발견하는 것일 때 정확도는 좋은 지표가 아닙니다. 그리고 이런 상황은 현실 세계에서 매우 흔합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클래스 불균형 상황에서 정확도 지표가 어떻게 기만적일 수 있는지를 구체적인 수치 예시를 통해 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>precision</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도(precision)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델이 긍정으로 예측한 것들 중 실제 긍정인 비율입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>That's why instead of accuracy we generally turn to two other metrics shown in Fig. 4.4: precision and recall. Precision measures the percentage of the items that the system detected (i.e., the system labeled as positive) that are in fact positive (i.e., are positive according to the human gold labels). Precision is defined as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그래서 우리는 일반적인 정확도 대신 그림 4.4에 나타난 두 가지 다른 지표인 정밀도(precision)와 재현율(recall)을 사용합니다. 정밀도는 시스템이 탐지한 항목들(즉, 시스템이 긍정이라고 라벨링한 항목들) 중에서 실제로 긍정(즉, 인간의 정답 라벨에 따라 긍정인 것)인 항목들의 비율을 측정합니다. 정밀도는 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도의 개념과 필요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Precision = true positives / (true positives + false positives)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도 = 진양성(TP) / (진양성(TP) + 위양성(FP))</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>recall</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재현율(recall)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 긍정인 것들 중 모델이 긍정으로 찾아낸 비율입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall measures the percentage of items actually present in the input that were correctly identified by the system. Recall is defined as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재현율은 입력 데이터에 실제로 존재하는 항목들 중 시스템에 의해 정확하게 식별된 항목들의 비율을 측정합니다. 재현율은 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>재현율의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall = true positives / (true positives + false negatives)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재현율 = 진양성(TP) / (진양성(TP) + 위음성(FN))</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>재현율 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Precision and recall will help solve the problem with the useless "nothing is pie" classifier. This classifier, despite having a fabulous accuracy of 99.99%, has a terrible recall of 0 (since there are no true positives, and 100 false negatives, the recall is 0/100). You should convince yourself that the precision at finding relevant tweets is equally problematic. Thus precision and recall, unlike accuracy, emphasize true positives: finding the things that we are supposed to be looking for.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도와 재현율은 쓸모없는 "아무것도 파이가 아님" 분류기 문제를 해결하는 데 도움이 됩니다. 이 분류기는 99.99%라는 엄청난 정확도를 보였음에도 불구하고, 재현율은 끔찍하게도 0입니다(진양성이 0개이고 위음성이 100개이므로 재현율은 0/100입니다). 관련 트윗을 찾는 정밀도 또한 똑같이 문제가 있다는 점을 스스로 확인해 보십시오. 이처럼 정밀도와 재현율은 정확도와 달리 진양성(TP), 즉 우리가 마땅히 찾아야 할 대상을 찾는 것에 중점을 둡니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도와 재현율이 어떻게 정확도의 허점을 보완하는지 다시 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>F-measure</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F-측정치(F-measure)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정밀도와 재현율을 하나의 숫자로 통합한 지표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are many ways to define a single metric that incorporates aspects of both precision and recall. The simplest of these combinations is the F-measure (van Rijsbergen, 1975), defined as:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정밀도와 재현율의 측면을 모두 포함하는 단일 지표를 정의하는 방법은 여러 가지가 있습니다. 이러한 결합 방식 중 가장 단순한 것이 F-측정치(van Rijsbergen, 1975)이며, 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>통합 지표인 F-measure의 도입 배경을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>F_beta = ((beta^2 + 1)PR) / (beta^2 P + R)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F_{\beta} = \frac{(\beta^2 + 1)PR}{\beta^2 P + R}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 F-measure 공식입니다. $P$는 정밀도, $R$은 재현율입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>F1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F1 스코어</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$\beta=1$인 경우로, 정밀도와 재현율에 동일한 가중치를 부여합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The β parameter differentially weights the importance of recall and precision, based perhaps on the needs of an application. Values of β > 1 favor recall, while values of β < 1 favor precision. When β = 1, precision and recall are equally balanced; this is the most frequently used metric, and is called Fβ=1 or just F1:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>$\beta$ 파라미터는 애플리케이션의 필요에 따라 재현율과 정밀도의 중요도에 서로 다른 가중치를 부여합니다. $\beta > 1$이면 재현율을 더 중시하고, $\beta < 1$이면 정밀도를 더 중시합니다. $\beta = 1$일 때는 정밀도와 재현율이 균형을 이루며, 이것이 가장 빈번하게 사용되는 지표인 $F_{\beta=1}$ 또는 간단히 $F_1$입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$\beta$ 파라미터의 역할과 가장 널리 쓰이는 $F_1$ 지표의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>F1 = 2PR / (P + R) (4.16)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F_1 = \frac{2PR}{P + R} (4.16)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.16). $F_1$ 스코어 공식입니다. 이는 정밀도와 재현율의 조화 평균입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>F-measure comes from a weighted harmonic mean of precision and recall. The harmonic mean of a set of numbers is the reciprocal of the arithmetic mean of reciprocals:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F-측정치는 정밀도와 재현율의 가중 조화 평균(weighted harmonic mean)에서 기원합니다. 일련의 숫자들에 대한 조화 평균은 역수들의 산술 평균의 역수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조화 평균의 수학적 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>HarmonicMean(a1, a2, a3, a4, ..., an) = n / (1/a1 + 1/a2 + 1/a3 + ... + 1/an) (4.17)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HarmonicMean(a_1, a_2, a_3, a_4, ..., a_n) = \frac{n}{\frac{1}{a_1} + \frac{1}{a_2} + \frac{1}{a_3} + \dots + \frac{1}{a_n}} (4.17)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.17). 일반적인 조화 평균 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>and hence F-measure is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 F-측정치는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조화 평균을 이용한 F-측정치의 다른 표현 방식들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>F = 1 / (alpha * 1/P + (1 - alpha) * 1/R) or (with beta^2 = (1 - alpha) / alpha) F = ((beta^2 + 1)PR) / (beta^2 P + R) (4.18)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F = \frac{1}{\alpha \frac{1}{P} + (1 - \alpha) \frac{1}{R}} \quad \text{또는 } \left(\beta^2 = \frac{1 - \alpha}{\alpha} \text{일 때}\right) \quad F = \frac{(\beta^2 + 1)PR}{\beta^2 P + R} (4.18)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.18). 비중 $\alpha$ 또는 계수 $\beta$를 사용한 F-측정치의 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

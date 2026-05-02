@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Discourse Coherence</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">22 Discourse Coherence</div>
+<h1>Discourse Coherence</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">응집 관계, RST</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - Occasion: The first segment describes an event, and the second segment describes another event that follows logically.
+    - Parallel: The two segments express similar properties for different entities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 계기(Occasion): 첫 번째 세그먼트가 물리적 사건을 기술하고, 두 번째 세그먼트가 논리적으로 이어지는 다른 사건을 기술합니다.
+    - 병렬(Parallel): 서로 다른 개체에 대해 유사한 속성을 표현하는 경우입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시간적, 논리적 선후 관계를 공유하는 'Occasion'과 유사 구조를 반복하는 'Parallel' 관계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22.2 Rhetorical Structure Theory</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22.2 수사적 구조 이론(Rhetorical Structure Theory)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화의 의미 단위를 핵(Nuclear)과 위성(Satellite)으로 구분하여 트리 구조로 분석하는 RST를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>RST</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>수사적 구조 이론(Rhetorical Structure Theory)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mann과 Thompson(1987)이 제안한 담화 분석의 대표적인 이론적 틀입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Rhetorical Structure Theory (RST) is an influential framework that represents discourse as a tree of related segments. Each relation connects two segments, typically identifying one as the nucleus (the central part) and the other as the satellite (a supporting part).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>수사적 구조 이론(RST)은 담화를 연관된 세그먼트들의 트리로 표현하는 영향력 있는 프레임워크입니다. 각 관계는 두 세그먼트를 연결하며, 대개 하나를 핵(nucleus, 중심 부분)으로, 다른 하나를 위성(satellite, 보조 부분)으로 식별합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RST의 핵심인 핵-위성 불균형 관계(asymmetry)를 정의합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">핵성과 RST 관계</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 22 • DISCOURSE COHERENCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제22장 • 담화 응집성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22.2.1 Nuclearity and RST Relations</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22.2.1 핵성(Nuclearity)과 RST 관계</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RST에서 핵과 위성의 역할 분담과 그들 사이의 의미적 연결 방식을 구체적으로 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - Evidence: The satellite provides information to increase the reader's belief in the nucleus.
+    - Elaboration: The satellite gives more detail about some aspect of the nucleus.
+    - Concession: The satellite expresses a point that might oppose the nucleus, but which the writer accepts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 증거(Evidence): 위성이 독자의 핵심에 대한 믿음을 증가시키기 위한 정보를 제공합니다.
+    - 상세화(Elaboration): 위성이 핵의 어떤 측면에 대해 더 자세한 내용을 제공합니다.
+    - 양보(Concession): 작가가 인정하긴 하지만 핵과 대치될 수 있는 관점을 위성이 표명합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RST에서 정의하는 대표적인 세 가지 관계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Some RST relations are multinuclear, meaning they connect two segments of equal importance, such as Sequence or List.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일부 RST 관계는 다중 핵(multinuclear) 관계입니다. 이는 'Sequence'나 'List'처럼 대등한 중요도를 가진 두 세그먼트를 연결함을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 관계가 핵-위성 구조인 것은 아니며, 대등한 관계(Paratactic)도 존재함을 보충합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.nextElementSibling;
+    const isHidden = panel.hidden;
+    panel.hidden = !isHidden;
+    btn.textContent = isHidden ? 'study_note 접기' : 'study_note 보기';
+    btn.setAttribute('aria-expanded', isHidden);
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => { b.textContent = 'study_note 접기'; b.setAttribute('aria-expanded', 'true'); });
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => { b.textContent = 'study_note 보기'; b.setAttribute('aria-expanded', 'false'); });
+});
+</script>
+</body>
+</html>

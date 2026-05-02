@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">13 Constituency Parsing</div>
+<h1>Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-11">Page 11</a>
+<a class="chip" href="#page-12">Page 12</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>13. Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-11">
+<header class="page-header">
+<h2>Page 11</h2>
+<div class="page-subtitle">MLE와 트리뱅크</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Probabilities for PCFG rules can be estimated from a treebank. A treebank is a corpus in which every sentence has been annotated with a parse tree. The probability of a rule A -> β can be estimated using maximum likelihood estimation (MLE).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG 규칙의 확률은 트리뱅크(treebank)에서 추정할 수 있습니다. 트리뱅크는 모든 문장에 대해 구문 분석 트리가 주석으로 달린 코퍼스입니다. 규칙 A -> β의 확률은 최대 우도 추정법(MLE)을 사용하여 계산될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 핵심 데이터 소스인 트리뱅크와 확률 추정 방법인 MLE를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>maximum likelihood estimation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최대 우도 추정법(maximum likelihood estimation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관측된 데이터를 바탕으로 가장 가능성 높은 모수(확률)를 찾는 통계적 방법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>MLE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MLE</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최대 우도 추정법의 약자입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(A -> β | A) = Count(A -> β) / Count(A)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(A -> β | A) = Count(A -> β) / Count(A)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG 규칙 확률을 MLE로 계산하는 공식입니다. 특정 기호 A가 나올 때 그 기호가 β로 확장되는 비율을 구합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this equation, Count(A -> β) is the number of times the rule A -> β occurs in the treebank, and Count(A) is the total number of times the non-terminal A occurs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 식에서 Count(A -> β)는 트리뱅크에서 A -> β 규칙이 나타나는 횟수이고, Count(A)는 비단말 기호 A가 나타나는 전체 횟수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MLE 공식의 각 항이 의미하는 바를 구체적으로 정의합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-12">
+<header class="page-header">
+<h2>Page 12</h2>
+<div class="page-subtitle">확률적 CKY 파싱</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13.4.2 Probabilistic CKY Parsing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13.4.2 확률적 CKY 파싱</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CKY 알고리즘을 확률 모델인 PCFG와 결합하여 가장 가능성 높은 트리를 찾는 방법을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>probabilistic CKY</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 CKY(probabilistic CKY)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 성분의 조합에 대해 확률을 계산하고 최대 확률을 유지하며 분석하는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The CKY algorithm can be extended to find the most likely parse tree for a sentence using PCFGs. In the probabilistic version of CKY, each entry table[i, j, A] stores the maximum probability of non-terminal A deriving the segment w[i+1...j].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CKY 알고리즘은 PCFG를 사용하여 문장에 대한 가장 가능성 높은 구문 분석 트리를 찾도록 확장될 수 있습니다. 확률적 버전의 CKY에서 각 칸 table[i, j, A]는 비단말 기호 A가 문자열 부분 w[i+1...j]를 유도할 수 있는 최대 확률을 저장합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY 표의 각 엔트리가 저장하는 정보의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    function PROBABILISTIC-CKY-PARSE(words, grammar) returns table
+      for j = 1 to n do
+        for each A -> words[j] in grammar do
+          table[j-1, j, A] = P(A -> words[j])
+        for i = j-2 down to 0 do
+          for k = i+1 to j-1 do
+            for each A -> B C in grammar do
+              table[i, j, A] = max(table[i, j, A], P(A -> B C) * table[i, k, B] * table[k, j, C])
+      return table</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    함수 PROBABILISTIC-CKY-PARSE(words, grammar) 반환 table
+      j = 1부터 n까지 반복
+        문법의 각 A -> words[j]에 대해 반복
+          table[j-1, j, A] = P(A -> words[j])
+        i = j-2부터 0까지 역순 반복
+          k = i+1부터 j-1까지 반복
+            문법의 각 A -> B C에 대해 반복
+              table[i, j, A] = max(table[i, j, A], P(A -> B C) * table[i, k, B] * table[k, j, C])
+      표(table) 반환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률 값을 곱하여 최대 확률을 찾아나가는 확률적 CKY 알고리즘의 의사 코드를 보여줍니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 27 28 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-27">Page 27</a><a class="chip" href="#page-28">Page 28</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 27 28 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-27">
+<header class="page-header">
+<h2>Page 27</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>EXERCISES 27</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습문제 27</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Page header.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>a natural language interface to a database of chemical facts about lunar geology. It could answer questions like Do any samples have greater than 13 percent aluminum by parsing them into a logical form (TEST (FOR SOME X16 / (SEQ SAMPLES) : T ; (CONTAIN' X16 (NPR* X17 / (QUOTE AL2O3)) (GREATERTHAN 13 PCT))))</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>달 지질학에 관한 화학적 사실 데이터베이스에 대한 자연어 인터페이스입니다. 이 시스템은 질문을 논리 형식(예: (TEST (FOR SOME X16 / (SEQ SAMPLES) : T ; (CONTAIN' X16 (NPR* X17 / (QUOTE AL2O3)) (GREATERTHAN 13 PCT)))))으로 파싱함으로써 "13% 이상의 알루미늄을 포함하는 샘플이 있습니까?"와 같은 질문에 답할 수 있었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LUNAR 시스템의 논리 형식 예시. AL2O3는 산화알루미늄을 의미함.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By a couple decades later, drawing on new machine learning approaches in NLP, Zelle and Mooney (1996) proposed to treat knowledge-based QA as a semantic parsing task, by creating the Prolog-based GEOQUERY dataset of questions about US geography. This model was extended by Zettlemoyer and Collins (2005) and 2007. By a decade later, neural models were applied to semantic parsing (Dong and Lapata 2016, Jia and Liang 2016), and then to knowledge-based question answering by mapping text to SQL (Iyer et al., 2017).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>약 20년 후, NLP의 새로운 기계 학습 접근 방식에 힘입어 Zelle와 Mooney(1996)는 미국 지리에 관한 질문들로 구성된 Prolog 기반 GEOQUERY 데이터셋을 만듦으로써 지식 기반 QA를 의미 파싱 작업으로 취급할 것을 제안했습니다. 이 모델은 Zettlemoyer와 Collins(2005, 2007)에 의해 확장되었습니다. 다시 10년 후, 신경망 모델이 의미 파싱에 적용되었고(Dong and Lapata 2016, Jia and Liang 2016), 이어서 텍스트를 SQL로 매핑함으로써 지식 기반 질문 답변에 적용되었습니다(Iyer et al., 2017).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반에서 기계 학습 및 신경망 의미 파싱으로의 전환 과정.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Meanwhile, the information-retrieval paradigm for question answering was influenced by the rise of the web in the 1990s. The U.S. government-sponsored TREC (Text REtrieval Conference) evaluations, run annually since 1992, provide a testbed for evaluating information-retrieval tasks and techniques (Voorhees and Harman, 2005). TREC added an influential QA track in 1999, which led to a wide variety of factoid and non-factoid systems competing in annual evaluations.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한편, 질문 답변을 위한 정보 검색(IR) 패러다임은 1990년대 웹의 부상에 영향을 받았습니다. 1992년부터 매년 개최된 미국 정부 후원의 TREC(Text REtrieval Conference) 평가는 정보 검색 작업과 기술을 평가하기 위한 테스트베드를 제공했습니다(Voorhees and Harman, 2005). TREC은 1999년에 영향력 있는 QA 트랙을 추가했으며, 이는 연례 평가에서 경쟁하는 다양한 팩토이드 및 비팩토이드 시스템의 발전으로 이어졌습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>IR 기반 QA 패러다임에 대한 TREC의 영향.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>At that same time, Hirschman et al. (1999) introduced the idea of using children's reading comprehension tests to evaluate machine text comprehension algorithms. They acquired a corpus of 120 passages with 5 questions each designed for 3rd-6th grade children, built an answer extraction system, and measured how well the answers given by their system corresponded to the answer key from the test's publisher. Their algorithm focused on word overlap as a feature; later algorithms added named entity features and more complex similarity between the question and the answer span (Riloff and Thelen 2000, Ng et al. 2000).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>같은 시기에 Hirschman 등(1999)은 기계 텍스트 이해 알고리즘을 평가하기 위해 어린이용 독해 테스트를 사용하는 아이디어를 도입했습니다. 그들은 초등학교 3~6학년 어린이를 위해 설계된, 각 5개의 질문이 딸린 120개 구절의 코퍼스를 확보하고 답변 추출 시스템을 구축했으며, 시스템의 답변이 테스트 출판사의 정답지와 얼마나 잘 일치하는지 측정했습니다. 그들의 알고리즘은 특징으로서 단어 중첩에 초점을 맞추었으며, 이후 알고리즘들은 개체명 특징과 질문 및 답변 범위 사이의 더 복잡한 유사성을 추가했습니다(Riloff and Thelen 2000, Ng et al. 2000).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어린이용 테스트를 이용한 초기 기계 독해(MRC) 평가 방식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The DeepQA component of the Watson Jeopardy! system was a large and sophisticated feature-based system developed just before neural systems became common. It is described in a series of papers in volume 56 of the IBM Journal of Research and Development, e.g., Ferrucci (2012).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Watson Jeopardy! 시스템의 DeepQA 구성 요소는 신경망 시스템이 일반화되기 직전에 개발된 대규모의 정교한 특징 기반 시스템이었습니다. 이는 IBM Journal of Research and Development 56권의 일련의 논문들(예: Ferrucci 2012)에 설명되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특징 기반 시스템의 정점에 있었던 Watson의 DeepQA.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Neural reading comprehension systems drew on the insight common to early systems that answer finding should focus on question-passage similarity. Many of the architectural outlines of these modern neural systems were laid out in Hermann et al. (2015), Chen et al. (2017), and Seo et al. (2017). These systems focused on datasets like Rajpurkar et al. (2016) and Rajpurkar et al. (2018) and their successors, usually using separate IR algorithms as input to neural reading comprehension systems. Some recent systems include the IR component as part of a single end-to-end architecture (Lee et al., 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망 독해 시스템은 답변 찾기가 질문-구절 유사성에 초점을 맞춰야 한다는 초기 시스템들의 공통된 통찰을 계승했습니다. 이러한 현대적 신경망 시스템의 많은 아키텍처 개요는 Hermann 등(2015), Chen 등(2017), Seo 등(2017)에서 제시되었습니다. 이 시스템들은 Rajpurkar 등(2016, 2018)의 데이터셋과 그 후속 데이터셋들에 집중했으며, 보통 별도의 IR 알고리즘을 신경망 독해 시스템의 입력으로 사용했습니다. 일부 최신 시스템들은 IR 구성 요소를 단일 엔드-투-엔드(end-to-end) 아키텍처의 일부로 포함하기도 합니다(Lee et al., 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 신경망 독해(MRC) 및 엔드-투-엔드 시스템의 발전.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Other question-answering tasks include Quiz Bowl, which has timing considerations since the question can be interrupted (Boyd-Graber et al., 2018). Question answering is also an important function of modern personal assistant dialog systems; see Chapter 24.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다른 질문 답변 작업으로는 질문 도중에 중단될 수 있어 타이밍 고려가 필요한 퀴즈볼(Quiz Bowl)이 있습니다(Boyd-Graber et al., 2018). 질문 답변은 현대의 개인 비서 대화 시스템의 중요한 기능이기도 합니다(24장 참조).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기타 QA 작업 및 응용 분야.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Exercises 섹션 시작.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-28">
+<header class="page-header">
+<h2>Page 28</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>28 Chapter 23 • Question Answering</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>28 장 23 • 질문 답변</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Page header.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Alberti, C., K. Lee, and M. Collins. 2019. A BERT base-line for the natural questions. http://arxiv.org/abs/1901.08634.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Alberti, C., K. Lee, and M. Collins. 2019. A BERT base-line for the natural questions. http://arxiv.org/abs/1901.08634.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Natural Questions를 위한 BERT 베이스라인.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Berant, J., A. Chou, R. Frostig, and P. Liang. 2013. Semantic parsing on freebase from question-answer pairs. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Berant, J., A. Chou, R. Frostig, and P. Liang. 2013. Semantic parsing on freebase from question-answer pairs. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>QA 쌍을 이용한 Freebase 의미 파싱.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bizer, C., J. Lehmann, G. Kobilarov, S. Auer, C. Becker, R. Cyganiak, and S. Hellmann. 2009. DBpedia—A crystallization point for the Web of Data. Web Semantics: science, services and agents on the world wide web, 7(3):154–165.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bizer, C., J. Lehmann, G. Kobilarov, S. Auer, C. Becker, R. Cyganiak, and S. Hellmann. 2009. DBpedia—A crystallization point for the Web of Data. Web Semantics: science, services and agents on the world wide web, 7(3):154–165.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DBpedia에 관한 주요 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bollacker, K., C. Evans, P. Paritosh, T. Sturge, and J. Taylor. 2008. Freebase: a collaboratively created graph database for structuring human knowledge. SIGMOD 2008.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bollacker, K., C. Evans, P. Paritosh, T. Sturge, and J. Taylor. 2008. Freebase: a collaboratively created graph database for structuring human knowledge. SIGMOD 2008.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Freebase 소개.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bordes, A., N. Usunier, S. Chopra, and J. Weston. 2015. Large-scale simple question answering with memory networks. arXiv preprint arXiv:1506.02075.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bordes, A., N. Usunier, S. Chopra, and J. Weston. 2015. Large-scale simple question answering with memory networks. arXiv preprint arXiv:1506.02075.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Memory Networks를 이용한 대규모 QA.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Boyd-Graber, J., S. Feng, and P. Rodriguez. 2018. Human-computer question answering: The case for quizbowl. In Sergio Escalera and Markus Weimer, editors, The NIPS '17 Competition: Building Intelligent Systems. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Boyd-Graber, J., S. Feng, and P. Rodriguez. 2018. Human-computer question answering: The case for quizbowl. In Sergio Escalera and Markus Weimer, editors, The NIPS '17 Competition: Building Intelligent Systems. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Quiz Bowl을 이용한 QA 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chen, D., A. Fisch, J. Weston, and A. Bordes. 2017. Reading Wikipedia to answer open-domain questions. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Chen, D., A. Fisch, J. Weston, and A. Bordes. 2017. Reading Wikipedia to answer open-domain questions. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오픈 도메인 QA를 위한 DrQA 시스템.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Clark, J. H., E. Choi, M. Collins, D. Garrette, T. Kwiatkowski, V. Nikolaev, and J. Palomaki. 2020. TyDi QA: A benchmark for information-seeking question answering in typologically diverse languages. arXiv preprint arXiv:2003.05002.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Clark, J. H., E. Choi, M. Collins, D. Garrette, T. Kwiatkowski, V. Nikolaev, and J. Palomaki. 2020. TyDi QA: A benchmark for information-seeking question answering in typologically diverse languages. arXiv preprint arXiv:2003.05002.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다국어 QA 벤치마크 TyDi QA.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Clark, P., I. Cowhey, O. Etzioni, T. Khot, A. Sabharwal, C. Schoenick, and O. Tafjord. 2018. Think you have solved question answering? Try ARC, the AI2 reasoning challenge. arXiv preprint arXiv:1803.05457.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Clark, P., I. Cowhey, O. Etzioni, T. Khot, A. Sabharwal, C. Schoenick, and O. Tafjord. 2018. Think you have solved question answering? Try ARC, the AI2 reasoning challenge. arXiv preprint arXiv:1803.05457.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>AI2 Reasoning Challenge (ARC).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Clark, P., O. Etzioni, D. Khashabi, T. Khot, B. D. Mishra, K. Richardson, A. Sabharwal, C. Schoenick, O. Tafjord, N. Tandon, S. Bhakthavatsalam, D. Groeneveld, M. Guerquin, and M. Schmitz. 2019. From ‘F’ to ‘A’ on the NY Regents Science Exams: An overview of the Aristo project. arXiv preprint arXiv:1909.01958.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Clark, P., O. Etzioni, D. Khashabi, T. Khot, B. D. Mishra, K. Richardson, A. Sabharwal, C. Schoenick, O. Tafjord, N. Tandon, S. Bhakthavatsalam, D. Groeneveld, M. Guerquin, and M. Schmitz. 2019. From ‘F’ to ‘A’ on the NY Regents Science Exams: An overview of the Aristo project. arXiv preprint arXiv:1909.01958.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>과학 시험 문제를 푸는 Aristo 프로젝트.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Cucerzan, S. 2007. Large-scale named entity disambiguation based on Wikipedia data. EMNLP/CoNLL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Cucerzan, S. 2007. Large-scale named entity disambiguation based on Wikipedia data. EMNLP/CoNLL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위키피디아 기반 개체명 중의성 해소.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Deerwester, S. C., S. T. Dumais, T. K. Landauer, G. W. Furnas, and R. A. Harshman. 1990. Indexing by latent semantic analysis. JASIS, 41(6):391–407.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Deerwester, S. C., S. T. Dumais, T. K. Landauer, G. W. Furnas, and R. A. Harshman. 1990. Indexing by latent semantic analysis. JASIS, 41(6):391–407.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>잠재 의미 분석(LSA)의 기원.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Devlin, J., M.-W. Chang, K. Lee, and K. Toutanova. 2019. BERT: Pre-training of deep bidirectional transformers for language understanding. NAACL HLT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Devlin, J., M.-W. Chang, K. Lee, and K. Toutanova. 2019. BERT: Pre-training of deep bidirectional transformers for language understanding. NAACL HLT.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BERT 모델 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dong, L. and M. Lapata. 2016. Language to logical form with neural attention. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dong, L. and M. Lapata. 2016. Language to logical form with neural attention. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 어텐션을 이용한 의미 파싱.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dua, D., Y. Wang, P. Dasigi, G. Stanovsky, S. Singh, and M. Gardner. 2019. DROP: A reading comprehension benchmark requiring discrete reasoning over paragraphs. NAACL HLT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dua, D., Y. Wang, P. Dasigi, G. Stanovsky, S. Singh, and M. Gardner. 2019. DROP: A reading comprehension benchmark requiring discrete reasoning over paragraphs. NAACL HLT.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이산적 추론이 필요한 DROP 데이터셋.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ferragina, P. and U. Scaiella. 2011. Fast and accurate annotation of short texts with wikipedia pages. IEEE Software, 29(1):70–75.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ferragina, P. and U. Scaiella. 2011. Fast and accurate annotation of short texts with wikipedia pages. IEEE Software, 29(1):70–75.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>TAGME 시스템 관련 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ferrucci, D. A. 2012. Introduction to “This is Watson”. IBM Journal of Research and Development, 56(3/4):1:1–1:15.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ferrucci, D. A. 2012. Introduction to “This is Watson”. IBM Journal of Research and Development, 56(3/4):1:1–1:15.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>IBM Watson 시스템 개요.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Furnas, G. W., T. K. Landauer, L. M. Gomez, and S. T. Dumais. 1987. The vocabulary problem in human-system communication. Communications of the ACM, 30(11):964–971.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Furnas, G. W., T. K. Landauer, L. M. Gomez, and S. T. Dumais. 1987. The vocabulary problem in human-system communication. Communications of the ACM, 30(11):964–971.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 불일치 문제 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Green, B. F., A. K. Wolf, C. Chomsky, and K. Laughery. 1961. Baseball: An automatic question answerer. Proceedings of the Western Joint Computer Conference 19.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Green, B. F., A. K. Wolf, C. Chomsky, and K. Laughery. 1961. Baseball: An automatic question answerer. Proceedings of the Western Joint Computer Conference 19.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>초기 QA 시스템인 BASEBALL.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 21</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hermann, K. M., T. Kocisky, E. Grefenstette, L. Espeholt, W. Kay, M. Suleyman, and P. Blunsom. 2015. Teaching machines to read and comprehend. NeurIPS.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hermann, K. M., T. Kocisky, E. Grefenstette, L. Espeholt, W. Kay, M. Suleyman, and P. Blunsom. 2015. Teaching machines to read and comprehend. NeurIPS.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CNN/Daily Mail 데이터셋과 신경망 MRC.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 22</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hirschman, L., M. Light, E. Breck, and J. D. Burger. 1999. Deep Read: A reading comprehension system. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hirschman, L., M. Light, E. Breck, and J. D. Burger. 1999. Deep Read: A reading comprehension system. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Deep Read 시스템 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 23</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Iyer, S., I. Konstas, A. Cheung, J. Krishnamurthy, and L. Zettlemoyer. 2017. Learning a neural semantic parser from user feedback. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Iyer, S., I. Konstas, A. Cheung, J. Krishnamurthy, and L. Zettlemoyer. 2017. Learning a neural semantic parser from user feedback. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사용자 피드백을 이용한 신경망 의미 파싱.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 24</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ji, H. and R. Grishman. 2011. Knowledge base population: Successful approaches and challenges. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ji, H. and R. Grishman. 2011. Knowledge base population: Successful approaches and challenges. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지식 베이스 구축(KBP) 관련 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 25</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jia, R. and P. Liang. 2016. Data recombination for neural semantic parsing. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jia, R. and P. Liang. 2016. Data recombination for neural semantic parsing. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>의미 파싱을 위한 데이터 증강 기법.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 26</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jiang, K., D. Wu, and H. Jiang. 2019. FreebaseQA: A new factoid QA data set matching trivia-style question-answer pairs with Freebase. NAACL HLT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jiang, K., D. Wu, and H. Jiang. 2019. FreebaseQA: A new factoid QA data set matching trivia-style question-answer pairs with Freebase. NAACL HLT.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Freebase와 연동된 QA 데이터셋 FreebaseQA.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 27</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Johnson, J., M. Douze, and H. Jégou. 2017. Billion-scale similarity search with GPUs. arXiv preprint arXiv:1702.08734.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Johnson, J., M. Douze, and H. Jégou. 2017. Billion-scale similarity search with GPUs. arXiv preprint arXiv:1702.08734.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대규모 유사도 검색을 위한 FAISS 라이브러리.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 28</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Joshi, A. K. and P. Hopely. 1999. A parser from antiquity. In András Kornai, editor, Extended Finite State Models of Language, pages 6–15. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Joshi, A. K. and P. Hopely. 1999. A parser from antiquity. In András Kornai, editor, Extended Finite State Models of Language, pages 6–15. Cambridge University Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>FST 기반 파싱의 역사.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 29</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Joshi, M., E. Choi, D. S. Weld, and L. Zettlemoyer. 2017. Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Joshi, M., E. Choi, D. S. Weld, and L. Zettlemoyer. 2017. Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>TriviaQA 데이터셋 소개.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 30</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jurafsky, D. 2014. The Language of Food. W. W. Norton, New York.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jurafsky, D. 2014. The Language of Food. W. W. Norton, New York.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Dan Jurafsky의 음식 언어학 책.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 31</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kamphuis, C., A. P. de Vries, L. Boytsov, and J. Lin. 2020. Which bm25 do you mean? a large-scale reproducibility study of scoring variants. European Conference on Information Retrieval.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Kamphuis, C., A. P. de Vries, L. Boytsov, and J. Lin. 2020. Which bm25 do you mean? a large-scale reproducibility study of scoring variants. European Conference on Information Retrieval.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BM25 변형들에 대한 재현성 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 32</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Karpukhin, V., B. Oğuz, S. Min, P. Lewis, L. Wu, S. Edunov, D. Chen, and W.-t. Yih. 2020. Dense passage retrieval for open-domain question answering. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Karpukhin, V., B. Oğuz, S. Min, P. Lewis, L. Wu, S. Edunov, D. Chen, and W.-t. Yih. 2020. Dense passage retrieval for open-domain question answering. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>밀집 구절 검색(DPR) 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 33</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Karttunen, L. 1999. Comments on Joshi. In András Kornai, editor, Extended Finite State Models of Language, pages 16–18. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Karttunen, L. 1999. Comments on Joshi. In András Kornai, editor, Extended Finite State Models of Language, pages 16–18. Cambridge University Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Joshi의 FST 연구에 대한 코멘트.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 34</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kwiatkowski, T., J. Palomaki, O. Redfield, M. Collins, A. Parikh, C. Alberti, D. Epstein, I. Polosukhin, J. Devlin, K. Lee, K. Toutanova, L. Jones, M. Kelcey, M.-W. Chang, A. M. Dai, J. Uszkoreit, Q. Le, and S. Petrov. 2019. Natural questions: A benchmark for question answering research. TACL, 7:452–466.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Kwiatkowski, T., J. Palomaki, O. Redfield, M. Collins, A. Parikh, C. Alberti, D. Epstein, I. Polosukhin, J. Devlin, K. Lee, K. Toutanova, L. Jones, M. Kelcey, M.-W. Chang, A. M. Dai, J. Uszkoreit, Q. Le, and S. Petrov. 2019. Natural questions: A benchmark for question answering research. TACL, 7:452–466.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Natural Questions 데이터셋 벤치마크.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 35</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lee, K., M.-W. Chang, and K. Toutanova. 2019. Latent retrieval for weakly supervised open domain question answering. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lee, K., M.-W. Chang, and K. Toutanova. 2019. Latent retrieval for weakly supervised open domain question answering. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오픈 도메인 QA를 위한 ORQA 시스템.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 36</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Li, B. Z., S. Min, S. Iyer, Y. Mehdad, and W.-t. Yih. 2020. Efficient one-pass end-to-end entity linking for questions. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Li, B. Z., S. Min, S. Iyer, Y. Mehdad, and W.-t. Yih. 2020. Efficient one-pass end-to-end entity linking for questions. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>질문을 위한 효율적인 엔티티 링킹 시스템 ELQ.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 37</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lin, J., R. Nogueira, and A. Yates. 2020. Pretrained transformers for text ranking: BERT and beyond. arXiv preprint arXiv:2010.06467.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lin, J., R. Nogueira, and A. Yates. 2020. Pretrained transformers for text ranking: BERT and beyond. arXiv preprint arXiv:2010.06467.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 랭킹을 위한 사전 학습 트랜스포머 서베이.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 38</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Liu, C.-W., R. T. Lowe, I. V. Serban, M. Noseworthy, L. Charlin, and J. Pineau. 2016. How NOT to evaluate your dialogue system: An empirical study of unsupervised evaluation metrics for dialogue response generation. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Liu, C.-W., R. T. Lowe, I. V. Serban, M. Noseworthy, L. Charlin, and J. Pineau. 2016. How NOT to evaluate your dialogue system: An empirical study of unsupervised evaluation metrics for dialogue response generation. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템 평가 지표에 대한 비판적 연구.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

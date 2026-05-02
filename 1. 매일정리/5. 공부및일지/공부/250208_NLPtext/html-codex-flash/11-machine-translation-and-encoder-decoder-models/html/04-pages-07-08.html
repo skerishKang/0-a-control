@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Machine Translation and Encoder-Decoder Models</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">11 Machine Translation and Encoder-Decoder Models</div>
+<h1>Machine Translation and Encoder-Decoder Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>11. Machine Translation and Encoder-Decoder Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">11.3 RNN을 이용한 인코더-디코더</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3. A decoder, which accepts c as input and generates an arbitrary length sequence of hidden states hm 1 , from which a corresponding sequence of output states ym 1 , can be obtained. Just as with encoders, decoders can be realized by any kind of sequence architecture.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3. $c$를 입력으로 받아 임의의 길이를 가진 은닉 상태 시퀀스 $h_1^m$을 생성하고, 이로부터 그에 대응하는 출력 상태 시퀀스 $y_1^m$을 얻을 수 있는 디코더. 인코더와 마찬가지로 디코더도 어떤 종류의 시퀀스 아키텍처로든 구현될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더의 세 번째 구성 요소인 디코더의 정의와 유연성을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>11.3 • ENCODER-DECODER WITH RNNS 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>11.3 • RNN을 이용한 인코더-디코더 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>11.3 Encoder-Decoder with RNNs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>11.3 RNN을 이용한 인코더-디코더</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 기반의 인코더-디코더 모델을 상세히 설명하는 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s begin by describing an encoder-decoder network based on a pair of RNNs. Recall the conditional RNN language model from Chapter 9 for computing p(y), the probability of a sequence y. Like any language model, we can break down the probability as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 쌍의 RNN을 기반으로 하는 인코더-디코더 네트워크를 설명하는 것부터 시작해 봅시다. 9장에서 시퀀스 $y$의 확률인 $p(y)$를 계산하기 위해 배웠던 조건부 RNN 언어 모델을 떠올려 보십시오. 다른 언어 모델들과 마찬가지로, 우리는 이 확률을 다음과 같이 분해할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 기반 인코더-디코더 모델의 동작 원리를 언어 모델의 확률 분해 관점에서 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">structural_formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>p(y) = p(y1)p(y2|y1)p(y3|y1, y2)...P(ym|y1, ..., ym−1) (11.7)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>p(y) = p(y1)p(y2|y1)p(y3|y1, y2)...P(ym|y1, ..., ym−1) (11.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 전체의 확률을 이전 단어들이 주어졌을 때 다음 단어가 나타날 조건부 확률들의 곱으로 나타내는 체인 룰(chain rule) 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>At a particular time t, we pass the prefix of t − 1 tokens through the language model, using forward inference to produce a sequence of hidden states, ending with the hidden state corresponding to the last word of the prefix. We then use the final hidden state of the prefix as our starting point to generate the next token.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>특정 시점 $t$에서, 우리는 순방향 추론(forward inference)을 사용하여 $t-1$개 토큰의 접두사(prefix)를 언어 모델에 통과시켜 은닉 상태 시퀀스를 생성하며, 이때 접두사의 마지막 단어에 해당하는 은닉 상태에서 끝납니다. 그런 다음 이 접두사의 마지막 은닉 상태를 다음 토큰을 생성하기 위한 시작점으로 삼습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델에서 이전 정보를 함축하고 있는 마지막 은닉 상태를 활용하여 다음 단어를 생성하는 추론 과정을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More formally, if g is an activation function like tanh or ReLU, a function of the input at time t and the hidden state at time t − 1, and f is a softmax over the set of possible vocabulary items, then at time t the output yt and hidden state ht are computed as:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>좀 더 형식적으로 표현하면, 만약 $g$가 $t$ 시점의 입력과 $t-1$ 시점의 은닉 상태에 대한 함수인 tanh나 ReLU와 같은 활성화 함수이고, $f$가 가능한 어휘 집합에 대한 소프트맥스 함수라면, $t$ 시점의 출력 $y_t$와 은닉 상태 $h_t$는 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN의 은닉 상태 전이와 출력 계산 과정을 수식으로 정의하기 위한 전제 조건입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">structural_formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>ht = g(ht−1, xt) (11.8)
+yt = f(ht) (11.9)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>ht = g(ht−1, xt) (11.8)
+yt = f(ht) (11.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN의 기본 업데이트 수식으로, 이전 은닉 상태와 현재 입력을 통해 새로운 은닉 상태를 구하고(11.8), 이를 바탕으로 출력을 생성함(11.9)을 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>source</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>소스(source)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>번역의 대상이 되는 원본 언어의 텍스트입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>target</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>타깃(target)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>번역 결과로 생성되는 목적 언어의 텍스트입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We only have to make one slight change to turn this language model with autoregressive generation into a translation model that can translate from a source text in one language to a target text in a second: add a sentence separation marker at the end of the source text, and then simply concatenate the target text. We briefly introduced this idea of a sentence separator token in Chapter 9 when we considered using a Transformer language model to do summarization, by training a conditional language model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 자기 회귀 생성을 활용하는 언어 모델을 한 언어의 소스 텍스트(source text)에서 두 번째 언어의 타깃 텍스트(target text)로 번역할 수 있는 번역 모델로 바꾸기 위해서는 단 한 가지만 약간 변경하면 됩니다. 즉, 소스 텍스트의 끝에 문장 구분 마커를 추가한 다음, 타깃 텍스트를 단순히 이어 붙이는 것입니다. 우리는 9장에서 조건부 언어 모델을 학습시켜 요약을 수행하는 트랜스포머 언어 모델의 활용을 고려할 때, 이러한 문장 구분 토큰의 아이디어를 간략히 소개한 바 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델링 방식을 기계 번역에 적용하기 위해 소스 문장과 타깃 문장을 구분자 토큰으로 연결하여 하나의 시퀀스로 만드는 기법을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we call the source text x and the target text y, we are computing the probability p(y|x) as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>소스 텍스트를 $x$, 타깃 텍스트를 $y$라고 한다면, 우리는 다음과 같이 조건부 확률 $p(y|x)$를 계산하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소스 문장이 주어졌을 때 타깃 문장이 나타날 확률인 조건부 확률의 형태로 번역 문제를 정의합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">structural_formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>p(y|x) = p(y1|x)p(y2|y1, x)p(y3|y1, y2, x)...P(ym|y1, ..., ym−1, x) (11.10)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>p(y|x) = p(y1|x)p(y2|y1, x)p(y3|y1, y2, x)...P(ym|y1, ..., ym−1, x) (11.10)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 생성 단계에서 소스 문장 $x$의 정보가 조건으로 주어진다는 점을 보여주는 수식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 11.4 shows the setup for a simplified version of the encoder-decoder model (we’ll see the full model, which requires attention, in the next section). Fig. 11.4 shows an English source text (“the green witch arrived”), a sentence separator token (&lt;s&gt;), and a Spanish target text (“llegó la bruja verde”). To translate a source text, we run it through the network performing forward inference to generate hidden states until we get to the end of the source. Then we begin autoregressive generation, asking for a word in the context of the hidden layer from the end of the source input as well as the end-of-sentence marker. Subsequent words are conditioned on the previous hidden state and the embedding for the last word generated.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.4는 단순화된 버전의 인코더-디코더 모델 설정을 보여줍니다(다음 절에서 어텐션(attention)이 필요한 전체 모델을 다룰 예정입니다). 그림 11.4는 영어 소스 텍스트("the green witch arrived"), 문장 구분 토큰(&lt;s&gt;), 그리고 스페인어 타깃 텍스트("llegó la bruja verde")를 보여줍니다. 소스 텍스트를 번역하기 위해, 우리는 소스의 끝에 도달할 때까지 순방향 추론을 수행하여 은닉 상태를 생성하며 네트워크를 통과시킵니다. 그런 다음, 소스 입력의 끝과 문장 끝 마커로부터 얻은 은닉층의 문맥에서 단어를 요청하며 자기 회귀 생성을 시작합니다. 그 이후의 단어들은 이전 은닉 상태와 마지막으로 생성된 단어의 임베딩에 따라 조건 지어집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더를 통해 소스 문장의 정보를 요약한 후, 구분자 토큰을 기점으로 타깃 문장을 생성해 나가는 추론 과정을 단계별로 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">footnote</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 Later we’ll see how to use pairs of Transformers as well; it’s even possible to use separate architectures for the encoder and decoder.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 나중에 한 쌍의 트랜스포머를 사용하는 방법도 배우게 될 것입니다. 인코더와 디코더에 서로 다른 아키텍처를 사용하는 것도 가능합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더와 디코더가 반드시 같은 아키텍처일 필요는 없으며, 트랜스포머로도 구현 가능함을 명시하는 주석입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 11 • MACHINE TRANSLATION AND ENCODER-DECODER MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제11장 • 기계 번역 및 인코더-디코더 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 11.4 Diagram showing RNN-based translation process at inference time]
+Source Text: the green witch arrived
+Separator: &lt;s&gt;
+Target Text: llegó la bruja verde &lt;/s&gt;
+(output of source is ignored)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 11.4 추론 시 RNN 기반 번역 과정 도식]
+소스 텍스트: the green witch arrived
+구분자: &lt;s&gt;
+타깃 텍스트: llegó la bruja verde &lt;/s&gt;
+(소스의 출력은 무시됨)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소스 텍스트를 입력받아 은닉 상태를 축적한 뒤(Encoding), &lt;s&gt; 토큰을 기점으로 타깃 텍스트를 하나씩 생성하는(Decoding) 과정을 시각화한 그림입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 11.4 Translating a single sentence (inference time) in the basic RNN version of encoder-decoder approach to machine translation. Source and target sentences are concatenated with a separator token in between, and the decoder uses context information from the encoder’s last hidden state.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.4 기계 번역에 대한 인코더-디코더 접근법의 기본 RNN 버전에서의 단일 문장 번역(추론 시간). 소스 문장과 타깃 문장은 중간에 구분 토큰을 두고 연결되며, 디코더는 인코더의 마지막 은닉 상태로부터 문맥 정보를 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 11.4에 대한 캡션으로, 인코더의 마지막 은닉 상태가 문맥 전사의 핵심임을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s formalize and generalize this model a bit in Fig. 11.5. (To help keep things straight, we’ll use the superscripts e and d where needed to distinguish the hidden states of the encoder and the decoder.) The elements of the network on the left process the input sequence x and comprise the encoder. While our simplified figure shows only a single network layer for the encoder, stacked architectures are the norm, where the output states from the top layer of the stack are taken as the final representation. A widely used encoder design makes use of stacked biLSTMs where the hidden states from top layers from the forward and backward passes are concatenated as described in Chapter 9 to provide the contextualized representations for each time step.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.5에서 이 모델을 좀 더 형식화하고 일반화해 봅시다. (혼동을 피하기 위해 인코더와 디코더의 은닉 상태를 구분할 필요가 있는 곳에 위첨자 $e$와 $d$를 사용하겠습니다.) 왼쪽의 네트워크 요소들은 입력 시퀀스 $x$를 처리하며 인코더(encoder)를 구성합니다. 단순화된 그림에서는 인코더 레이어가 하나뿐인 것으로 그려졌으나, 실제로는 여러 층을 쌓은(stacked) 아키텍처가 일반적이며, 이때 스택의 최상단 레이어에서 나온 출력 상태들이 최종 표현으로 간주됩니다. 널리 사용되는 인코더 설계는 9장에서 설명한 대로 순방향 및 역방향 패스의 최상단 레이어 은닉 상태들을 연결하여 각 시점의 문맥화된 표현을 제공하는 형태인 스택형 biLSTM을 활용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 모델을 형식화하면서 전형적인 인코더 설계 방식(스택형 구조 및 biLSTM 활용)을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 11.5 A more formal encoder-decoder architecture]
+Encoder: x1, x2, x3, ..., xn -&gt; h1e, h2e, h3e, ..., hne
+Bridge: hne = c = h0d
+Decoder: h0d -&gt; y1, h1d -&gt; y2, h2d -&gt; y3, h3d -&gt; y4, h4d -&gt; &lt;/s&gt;
+softmax over outputs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 11.5 더 형식적인 인코더-디코더 아키텍처]
+인코더: x1, x2, x3, ..., xn -&gt; h1e, h2e, h3e, ..., hne
+가교: hne = c = h0d (인코더의 마지막 상태가 디코더의 초기 상태가 됨)
+디코더: h0d -&gt; y1, h1d -&gt; y2, h2d -&gt; y3, h3d -&gt; y4, h4d -&gt; &lt;/s&gt;
+출력에 대한 소프트맥스 적용</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더의 마지막 은닉 상태($h_n^e$)가 문맥 벡터($c$)가 되어 디코더의 첫 번째 은닉 상태($h_0^d$)로 초기화되는 구조를 수식적으로 보여주는 도식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 11.5 A more formal version of translating a sentence at inference time in the basic RNN-based encoder-decoder architecture. The final hidden state of the encoder RNN, hne , serves as the context for the decoder in its role as hd 0 in the decoder RNN.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.5 기본 RNN 기반 인코더-디코더 아키텍처에서 추론 시 문장을 번역하는 과정의 더 형식적인 버전. 인코더 RNN의 마지막 은닉 상태인 $h_n^e$는 디코더 RNN에서 $h_0^d$의 역할을 하며 디코더의 문맥으로 기능합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 11.5에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The entire purpose of the encoder is to generate a contextualized representation of the input. This representation is embodied in the final hidden state of the encoder, hne . This representation, also called c for context, is then passed to the decoder.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더의 전체적인 목적은 입력에 대한 문맥화된 표현을 생성하는 것입니다. 이 표현은 인코더의 마지막 은닉 상태인 $h_n^e$에 구현되어 있습니다. 흔히 문맥이라 불리는 $c$로도 명칭되는 이 표현은 그 후 디코더로 전달됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더의 존재 이유와 문맥 벡터 생성 과정을 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The decoder network on the right takes this state and uses it to initialize the first</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오른쪽에 있는 디코더 네트워크는 이 상태를 받아 첫 번째 [은닉 상태를 초기화하는 데 사용합니다...]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>디코더가 인코더로부터 정보를 넘겨받아 생성을 시작하는 첫 단계를 설명하는 부분입니다. (결말 미완성)</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

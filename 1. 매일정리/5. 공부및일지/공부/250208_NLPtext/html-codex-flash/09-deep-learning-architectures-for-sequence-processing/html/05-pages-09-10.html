@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-9">Page 9</a>
+<a class="chip" href="#page-10">Page 10</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 9-10 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-9">
+<header class="page-header">
+<h2>Page 9</h2>
+<div class="page-subtitle">RNN 응용: 시퀀스 레이블링 및 분류</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.4 • RNNS FOR OTHER NLP TASKS 9</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.4 • 다른 NLP 작업을 위한 RNN 9</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.4 섹션의 시작과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.4.1 Sequence Labeling</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.4.1 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스의 각 요소에 태그를 붙이는 작업인 시퀀스 레이블링을 RNN으로 수행하는 방법을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In sequence labeling, the network's task is to assign a label chosen from a small fixed set of labels to each element of a sequence, like the part-of-speech tagging and named entity recognition tasks from Chapter 8. In an RNN approach to sequence labeling, inputs are word embeddings and the outputs are tag probabilities generated by a softmax layer over the given tagset, as illustrated in Fig. 9.7.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시퀀스 레이블링에서 네트워크의 작업은 8장에서 다룬 품사 태깅이나 개체명 인식 과제와 같이, 시퀀스의 각 요소에 미리 정해진 작은 레이블 집합 중 하나를 할당하는 것입니다. 시퀀스 레이블링에 대한 RNN 접근 방식에서는 그림 9.7에 묘사된 것처럼 입력은 단어 임베딩이고, 출력은 주어진 태그 집합에 대해 softmax 층에서 생성된 태그 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN을 이용한 시퀀스 레이블링의 기본적인 입출력 구조를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Argmax: NNP, MD, VB, DT, NN
+Softmax over tags
+RNN hidden layers (h)
+Embeddings (e)
+Words: Janet, will, back, the, bill</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>Argmax 결과: NNP, MD, VB, DT, NN
+태그들에 대한 softmax
+RNN 은닉층 (h)
+임베딩 (e)
+단어: Janet, will, back, the, bill</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>"Janet will back the bill" 문장에 대한 RNN 품사 태깅 과정을 보여주는 도식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.7 Part-of-speech tagging as sequence labeling with a simple RNN. Pre-trained word embeddings serve as inputs and a softmax layer provides a probability distribution over the part-of-speech tags as output at each time step.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.7 단순 RNN을 이용한 시퀀스 레이블링으로서의 품사 태깅. 사전 학습된 단어 임베딩이 입력으로 사용되며, softmax 층이 매 시간 단계에서 출력으로 품사 태그들에 대한 확률 분포를 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.7에 대한 캡션으로, 사전 학습된 임베딩과 softmax 출력의 역할을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this figure, the inputs at each time step are pre-trained word embeddings corresponding to the input tokens. The RNN block is an abstraction that represents an unrolled simple recurrent network consisting of an input layer, hidden layer, and output layer at each time step, as well as the shared U, V and W weight matrices that comprise the network. The outputs of the network at each time step represent the distribution over the POS tagset generated by a softmax layer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 그림에서 각 시간 단계의 입력은 입력 토큰에 대응하는 사전 학습된 단어 임베딩입니다. RNN 블록은 각 시간 단계의 입력층, 은닉층, 출력층뿐만 아니라 네트워크를 구성하는 공유 가중치 행렬 U, V, W를 포함하는 '펼쳐진 단순 순환 신경망'을 나타내는 추상화된 표현입니다. 각 시간 단계에서의 네트워크 출력은 softmax 층에 의해 생성된 품사 태그셋에 대한 분포를 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>도식화된 RNN 블록이 내부적으로는 펼쳐진 네트워크 구조를 의미함을 부연 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To generate a sequence of tags for a given input, we run forward inference over the input sequence and select the most likely tag from the softmax at each step. Since we're using a softmax layer to generate the probability distribution over the output tagset at each time step, we will again employ the cross-entropy loss during training.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>주어진 입력에 대한 태그 시퀀스를 생성하기 위해, 우리는 입력 시퀀스에 대해 순방향 추론을 실행하고 각 단계의 softmax에서 가장 가능성이 높은 태그를 선택합니다. 매 시간 단계에서 출력 태그셋에 대한 확률 분포를 생성하기 위해 softmax 층을 사용하므로, 학습 중에는 다시 교차 엔트로피 손실을 채택할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추론 시의 태그 선택 방식(Argmax)과 학습 시의 손실 함수(교차 엔트로피)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.4.2 RNNs for Sequence Classification</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.4.2 시퀀스 분류를 위한 RNN</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 내 각 요소가 아닌, 시퀀스 전체를 하나의 카테고리로 분류하는 작업을 RNN으로 수행하는 방법을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another use of RNNs is to classify entire sequences rather than the tokens within them. We've already encountered sentiment analysis in Chapter 4, in which we classify a text as positive or negative. Other sequence classification tasks for mapping sequences of text to one from a small set of categories include document-level topic classification, spam detection, or message routing for customer service applications.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>RNN의 또 다른 용도는 시퀀스 내의 토큰들이 아니라 시퀀스 전체를 분류하는 것입니다. 우리는 이미 4장에서 텍스트를 긍정 또는 부정으로 분류하는 감성 분석을 접했습니다. 텍스트 시퀀스를 작은 범주 집합 중 하나로 매핑하는 다른 시퀀스 분류 과제로는 문서 수준의 주제 분류, 스팸 탐지, 또는 고객 서비스 애플리케이션을 위한 메시지 라우팅 등이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 분류의 정의와 구체적인 응용 사례(감성 분석, 스팸 탐지 등)를 나열합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To apply RNNs in this setting, we pass the text to be classified through the RNN a word at a time generating a new hidden layer at each time step. We can then take the hidden layer for the last token of the text, h_n, to constitute a compressed representation of the entire sequence. We can pass this representation h_n to a feedforward network that chooses a class via a softmax over the possible classes. Fig. 9.8 illustrates this approach.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 상황에 RNN을 적용하기 위해, 우리는 분류할 텍스트를 한 번에 한 단어씩 RNN에 통과시켜 매 시간 단계마다 새로운 은닉층을 생성합니다. 그 다음 텍스트의 마지막 토큰에 대한 은닉층 h_n을 취하여 전체 시퀀스의 압축된 표현으로 구성할 수 있습니다. 우리는 이 표현 h_n을 가능한 클래스들에 대해 softmax를 통해 클래스를 선택하는 피드포워드 신경망으로 보낼 수 있습니다. 그림 9.8이 이러한 접근 방식을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마지막 시점의 은닉 상태(h_n)가 시퀀스 전체의 정보를 담고 있다고 가정하고 이를 분류기의 입력으로 사용하는 기법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that in this approach there don't need intermediate outputs for the words</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 접근 방식에서는 단어들에 대한 중간 출력이 필요하지 않다는 점에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중간 시점의 출력을 사용하지 않는 분류 모델의 특징을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-10">
+<header class="page-header">
+<h2>Page 10</h2>
+<div class="page-subtitle">텍스트 생성 및 엔드 투 엔드 학습</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>10 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>10 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Softmax
+FFN
+h_n
+RNN (processing x_1, x_2, x_3, ..., x_n)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>softmax(Softmax)
+피드포워드 신경망(FFN)
+h_n
+RNN (x_1, x_2, x_3, ..., x_n 처리 중)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 분류를 위한 RNN 구조도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.8 Sequence classification using a simple RNN combined with a feedforward network. The final hidden state from the RNN is used as the input to a feedforward network that performs the classification.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.8 피드포워드 신경망과 결합된 단순 RNN을 이용한 시퀀스 분류. RNN의 마지막 은닉 상태가 분류를 수행하는 피드포워드 신경망의 입력으로 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.8에 대한 캡션으로, 마지막 은닉 상태의 활용 방식을 재차 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>in the sequence preceding the last element. Therefore, there are no loss terms associated with those elements. Instead, the loss function used to train the weights in the network is based entirely on the final text classification task. The output from the softmax output from the feedforward classifier together with a cross-entropy loss drives the training. The error signal from the classification is backpropagated all the way through the weights in the feedforward classifier through, to its input, and then through to the three sets of weights in the RNN as described earlier in Section 9.2.2. The training regimen that uses the loss from a downstream application to adjust the weights all the way through the network is referred to as end-to-end training.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...마지막 요소 앞에 오는 시퀀스의 요소들에게는 해당됩니다. 따라서 이러한 요소들과 연관된 손실 항은 존재하지 않습니다. 대신, 네트워크의 가중치들을 학습시키는 데 사용되는 손실 함수는 전적으로 최종 텍스트 분류 과제에 기반합니다. 피드포워드 분류기의 softmax 출력과 교차 엔트로피 손실이 학습을 주도합니다. 분류 과정에서 발생한 오차 신호는 9.2.2절에서 이미 설명한 것처럼 피드포워드 분류기의 가중치들을 거쳐 그 입력으로, 그리고 다시 RNN의 세 가지 가중치 세트로 끝까지 역전파됩니다. 다운스트림 애플리케이션(최종 작업)의 손실을 사용하여 네트워크 전체의 가중치를 조정하는 학습 체계를 '엔드 투 엔드 학습(end-to-end training)'이라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중간 손실 없이 최종 출력의 손실만으로 전체 네트워크를 학습시키는 '엔드 투 엔드 학습'의 개념과 오차 전파 경로를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>end-to-end training</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>엔드 투 엔드 학습(end-to-end training)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력부터 최종 출력까지 모든 파라미터를 하나의 손실 함수를 통해 동시에 최적화하는 학습 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>pooling</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>풀링(pooling)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 개의 벡터 정보를 집약하여 하나의 대표 벡터로 만드는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another option, instead of using just the last token h_n to represent the whole sequence, is to use some sort of pooling function of all the hidden states h_i for each word i in the sequence. For example, we can create a representation that pools all the n hidden states by taking their element-wise mean:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전체 시퀀스를 표현하기 위해 마지막 토큰 h_n만을 사용하는 대신 또 다른 선택지는, 시퀀스 내 각 단어 i에 대한 모든 은닉 상태 h_i의 일종의 '풀링(pooling)' 함수를 사용하는 것입니다. 예를 들어, 모든 n개의 은닉 상태의 요소별 평균(element-wise mean)을 취함으로써 이들을 풀링하는 표현을 만들 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마지막 상태값만 쓰는 방식의 대안으로, 시퀀스 전체의 상태값들을 평균내어 정보를 집약하는 '평균 풀링'을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>h_{mean} = (1/n) ∑_{i=1}^n h_i</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$h_{mean} = \frac{1}{n} \sum_{i=1}^n h_i$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>평균 풀링 공식(9.14)입니다. 시점별 모든 은닉 상태의 평균을 구합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Or we can take the element-wise max; the element-wise max of a set of n vectors is a new vector whose kth element is the max of the kth elements of all the n vectors.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또는 요소별 최댓값(element-wise max)을 취할 수도 있습니다. n개 벡터 세트의 요소별 최댓값은, 각 성분이 n개 벡터들의 대응하는 성분 중 최댓값인 새로운 벡터가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정보의 최대 강도를 보존하는 방식인 '맥스 풀링'을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.4.3 Generation with RNN-Based Language Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.4.3 RNN 기반 언어 모델을 이용한 생성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습된 언어 모델을 사용하여 새로운 텍스트 시퀀스를 생성해내는 '텍스트 생성' 작업을 다듭니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>RNN-based language models can also be used to generate text. Text generation is of enormous practical importance, part of tasks like question answering, machine translation, text summarization, and conversational dialogue; any ask where a system needs to produce text, conditioned on some other text.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>RNN 기반 언어 모델은 텍스트를 생성하는 데에도 사용될 수 있습니다. 텍스트 생성은 질의응답, 기계 번역, 텍스트 요약, 대화와 같은 과제들의 일부로서 엄청난 실용적 중요성을 갖습니다. 즉, 시스템이 다른 어떤 텍스트를 조건으로 하여 새로운 텍스트를 출력해야 하는 모든 요구 사항에 해당합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 생성 기술이 현대 NLP의 핵심적인 응용 분야들(번역, 요약 등)에서 갖는 가치를 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall back in Chapter 3 we saw how to generate text from an n-gram language model by adapting a technique suggested contemporaneously by Claude Shannon (Shannon, 1951) and the psychologists George Miller and Selfridge (Miller and Selfridge, 1950). We first randomly sample a word to begin a sequence based on its suitability as the start of a sequence. We then continue to sample words conditioned on our previous choices until we reach a pre-determined length, or an end of sequence token is generated.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3장에서 우리는 클로드 섀넌(Shannon, 1951)과 심리학자인 조지 밀러 및 셀프리지(Miller and Selfridge, 1950)에 의해 동시에 제안된 기술을 응용하여, n-그램 언어 모델로부터 텍스트를 생성하는 방법을 살펴보았습니다. 먼저 시퀀스의 시작으로서의 적합성을 토대로 시퀀스를 시작할 단어를 무작위로 샘플링합니다. 그런 다음 미리 정해진 길이에 도달하거나 시퀀스 종료 토큰이 생성될 때까지, 이전의 선택들을 조건으로 하여 단어들을 계속 샘플링합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>3장에서 배운 고전적인 언어 모델 기반 생성 방식(무작위 샘플링 및 조건부 샘플링)을 복습합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Today, this approach of using a language model to incrementally generate words by repeatedly sampling the next word conditioned on our previous choices is called</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오늘날, 이전의 선택들을 조건으로 다음 단어를 반복적으로 샘플링하여 점진적으로 단어들을 생성하는 이러한 언어 모델 활용 방식을...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자동 회기(Autoregressive) 생성 방식의 현대적 정의를 도입합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

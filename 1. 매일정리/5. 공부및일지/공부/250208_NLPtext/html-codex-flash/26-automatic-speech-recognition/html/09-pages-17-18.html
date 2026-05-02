@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6. • TTS 17</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6. • TTS 17</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It's time for lunch! (Mel spectrogram output example)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>It's time for lunch! (멜 스펙트로그램 출력 예시)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 입력이 멜 스펙트로그램으로 변환된 시각적 예시를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These standard encoder-decoder algorithms for TTS are still quite computationally intensive, so a significant focus of modern research is on ways to speed them up.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 TTS를 위한 표준 인코더-디코더 알고리즘은 여전히 계산 집약적이어서, 현대 연구의 중요한 초점은 이들을 가속화하는 방법에 맞춰져 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기존 TTS 모델의 높은 계산 비용 문제를 해결하기 위한 연구 방향을 언급합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.6.1 TTS Preprocessing: Text normalization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.6.1 TTS 전처리: 텍스트 정규화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>TTS의 첫 단계인 텍스트 정규화(Text Normalization)의 필요성과 방법을 다룹니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Before either of these two steps, however, TTS systems require text normalization preprocessing for handling non-standard words: numbers, monetary amounts, dates, and other concepts that are verbalized differently than they are spelled. A TTS system seeing a number like 151 needs to know to verbalize it as one hundred fifty one if it occurs as $151 but as one fifty one if it occurs in the context 151 Chapultepec Ave.. The number 1750 can be spoken in at least four different ways, depending on the context: seventeen fifty: (in “The European economy in 1750”), one seven five zero: (in “The password is 1750”), seventeen hundred and fifty: (in “1750 dollars”), one thousand, seven hundred, and fifty: (in “1750 dollars”)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 이 두 단계 중 어느 하나를 시작하기 전에, TTS 시스템은 비표준어(숫자, 금액, 날짜 및 철자와 다르게 발음되는 다른 개념들)를 처리하기 위한 텍스트 정규화 전처리가 필요합니다. 숫자 151을 본 TTS 시스템은 그것이 '$151'로 나타나면 'one hundred fifty one'으로, '151 Chapultepec Ave.'라는 맥락에서 나타나면 'one fifty one'으로 발음해야 한다는 것을 알아야 합니다. 숫자 1750은 문맥에 따라 최소 네 가지 방식으로 읽힐 수 있습니다. 'seventeen fifty'("1750년의 유럽 경제"), 'one seven five zero'("비밀번호는 1750입니다"), 'seventeen hundred and fifty'("1750달러"), 'one thousand, seven hundred, and fifty'("1750달러").</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동일한 표기라도 문맥에 따라 읽는 법이 달라지는 비표준어(NSW) 정규화의 중요성을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Often the verbalization of a non-standard word depends on its meaning (what Taylor (2009) calls its semiotic class). Fig. 26.13 lays out some English non-standard word types.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비표준어의 구어화(verbalization)는 종종 그 의미(Taylor(2009)가 기호학적 클래스(semiotic class)라고 부른 것)에 따라 달라집니다. 그림 26.13은 몇 가지 영어 비표준어 유형을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비표준어의 의미적 범주를 '기호학적 클래스'로 정의하고, 이에 따라 발음이 결정됨을 언급합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many classes have preferred realizations. A year is generally read as paired digits (e.g., seventeen fifty for 1750). $3.2 billion must be read out with the word dollars at the end, as three point two billion dollars. Some abbreviations like N.Y. are expanded (to New York), while other acronyms like GPU are pronounced as letter sequences. In languages with grammatical gender, normalization may depend on morphological properties. In French, the phrase 1 mangue (‘one mangue’) is normalized to une mangue, but 1 ananas (‘one pineapple’) is normalized to un ananas. In German, Heinrich IV (‘Henry IV’) can be normalized to Heinrich der Vierte, Heinrich des Vierten, Heinrich dem Vierten, or Heinrich den Vierten depending on the grammatical case of the noun (Demberg, 2006).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 클래스에는 선호되는 구현 방식이 있습니다. 연도는 일반적으로 두 자리씩 짝을 지어 읽습니다(예: 1750의 경우 seventeen fifty). 32억 달러($3.2 billion)는 끝에 'dollars'라는 단어를 붙여 'three point two billion dollars'로 읽어야 합니다. N.Y.와 같은 일부 약어는 'New York'으로 확장되지만, GPU와 같은 다른 두문자어는 글자 시퀀스로 발음됩니다. 문법적 성(gender)이 있는 언어에서는 정규화가 형태론적 속성에 따라 달라질 수 있습니다. 프랑스어에서 '1 mangue'는 'une mangue'로 정규화되지만, '1 ananas'는 'un ananas'로 정규화됩니다. 독일어에서 'Heinrich IV'는 명사의 격에 따라 'Heinrich der Vierte', 'des Vierten', 'dem Vierten' 또는 'den Vierten'으로 정규화될 수 있습니다(Demberg, 2006).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어별, 단위별로 다른 정규화 규칙과 형태론적 제약 사항들을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 26 • AUTOMATIC SPEECH RECOGNITION AND TEXT-TO-SPEECH</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제26장 • 자동 음성 인식 및 텍스트 음성 변환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.13 Some types of non-standard words in text normalization; see Sproat et al. (2001) and (van Esch and Sproat, 2018) for many more.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.13 텍스트 정규화에서의 몇 가지 비표준어 유형. 자세한 내용은 Sproat et al. (2001) 및 (van Esch and Sproat, 2018)을 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 정규화의 대상이 되는 다양한 비표준어 범주(약어, 숫자, 날짜, 금액 등)를 정리한 표의 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern end-to-end TTS systems can learn to do some normalization themselves, but TTS systems are only trained on a limited amount of data (like the 220,000 words we mentioned above for the LJ corpus (Ito and Johnson, 2017)), and so a separate normalization step is important.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 엔드투엔드 TTS 시스템은 어느 정도의 정규화를 스스로 학습할 수 있지만, TTS 시스템은 제한된 양의 데이터(예: 앞서 언급한 LJ 코퍼스의 220,000 단어(Ito and Johnson, 2017))로만 학습되므로 별도의 정규화 단계가 중요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>엔드투엔드 모델의 학습 데이터 부족으로 인해 여전히 별도의 텍스트 정규화 모듈이 필요함을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Normalization can be done by rule or by an encoder-decoder model. Rule-based normalization is done in two stages: tokenization and verbalization. In the tokenization stage we hand-write rules to detect non-standard words. These can be regular expressions, like the following for detecting years:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정규화는 규칙 기반 또는 인코더-디코더 모델을 통해 수행될 수 있습니다. 규칙 기반 정규화는 토큰화와 구어화(verbalization)의 두 단계로 이루어집니다. 토큰화 단계에서는 비표준어를 감지하기 위해 규칙을 직접 작성합니다. 이는 다음과 같이 연도를 감지하기 위한 정규 표현식일 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 정규화의 단계와 정규 표현식 활용에 대해 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>/(1[89][0-9][0-9])|(20[0-9][0-9])/</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>/(1[89][0-9][0-9])|(20[0-9][0-9])/</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1800년대, 1900년대, 2000년대 연도를 탐지하기 위한 정규 표현식 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second pass of rules express how to verbalize each semiotic class. Larger TTS systems instead use more complex rule-systems, like the Kestral system of (Ebden and Sproat, 2015), which first classifies and parses each input into a normal form and then produces text using a verbalization grammar. Rules have the advantage that they don’t require training data, and they can be designed for high precision, but can be brittle, and require expert rule-writers so are hard to maintain.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 번째 규칙 단계에서는 각 기호학적 클래스를 구어화하는 방법을 표현합니다. 더 큰 규모의 TTS 시스템은 대신 (Ebden and Sproat, 2015)의 Kestral 시스템과 같이 더 복잡한 규칙 시스템을 사용합니다. 이 시스템은 먼저 각 입력을 표준 형식으로 분류 및 파싱한 다음, 구어화 문법을 사용하여 텍스트를 생성합니다. 규칙은 학습 데이터가 필요하지 않고 높은 정밀도로 설계할 수 있다는 장점이 있지만, 깨지기 쉽고 전문가 수준의 규칙 작성자가 필요하여 유지 관리가 어렵다는 단점이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고급 규칙 기반 시스템의 특징과 장단점을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The alternative model is to use encoder-decoder models, which have been shown to work better than rules for such transduction tasks, but do require expert-labeled training sets in which non-standard words have been replaced with the appropriate verbalization; such training sets for some languages are available (Sproat and Gorman 2018, Zhang et al. 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대안적인 모델은 이러한 변환(transduction) 작업에서 규칙보다 성능이 좋은 것으로 입증된 인코더-디코더 모델을 사용하는 것입니다. 하지만 이 모델은 비표준어가 적절한 발음으로 대체된 전문가 레이블이 지정된 학습 세트를 필요로 하며, 일부 언어의 경우 이러한 학습 세트를 사용할 수 있습니다(Sproat and Gorman 2018, Zhang et al. 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반의 대안으로 인코더-디코더 모델을 활용하는 방식과 필요한 데이터 조건을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the simplest encoder-decoder setting, we simply treat the problem like machine translation, training a system to map from: They live at 224 Mission St. to They live at two twenty four Mission Street</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 단순한 인코더-디코더 설정에서, 우리는 이 문제를 기계 번역처럼 취급하여 "They live at 224 Mission St."에서 "They live at two twenty four Mission Street"로 매핑하도록 시스템을 학습시킵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 모델을 이용한 정규화의 구체적인 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While encoder-decoder algorithms are highly accurate, they occasionally produce errors that are egregious; for example normalizing 45 minutes as forty five millimeters. To address this, more complex systems use mechanisms like lightweight covering grammars, which enumerate a large set of possible verbalizations but don’t try to disambiguate, to constrain the decoding to avoid such outputs (Zhang et al., 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더 알고리즘은 정확도가 매우 높지만, 때때로 '45 minutes'를 'forty five millimeters'로 정규화하는 것과 같은 어처구니없는 오류를 범하기도 합니다. 이를 해결하기 위해 더 복잡한 시스템에서는 가능한 구어화 집합을 나열하되 중의성을 해소하려 하지는 않는 '경량 커버링 문법(lightweight covering grammars)'과 같은 메커니즘을 사용하여, 이러한 잘못된 출력을 피하도록 디코딩을 제한합니다(Zhang et al., 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 기반 방식의 치명적인 오류를 방지하기 위해 제약 기반의 문법을 결합하는 하이브리드 접근법을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

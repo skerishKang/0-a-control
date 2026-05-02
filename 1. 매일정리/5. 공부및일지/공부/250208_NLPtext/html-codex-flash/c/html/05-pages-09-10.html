@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-9">Page 9</a>
+<a class="chip" href="#page-10">Page 10</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 9-10 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Speech and Language Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-9">
+<header class="page-header">
+<h2>Page 9</h2>
+<div class="page-subtitle">독립성 가정 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.4 • PROBLEMS WITH PCFGS 9</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.4 • PCFG의 문제점 9</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the next few sections after discussing the problems in more detail we introduce some of these augmentations.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 몇 개 절에서는 문제점들을 더 자세히 논의한 후, 이러한 확장 기법 중 일부를 소개하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>향후 전개될 내용에 대한 안내입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.4.1 Independence Assumptions Miss Rule Dependencies</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.4.1 독립성 가정으로 인한 규칙 의존성 누락</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 독립성 가정이 가져오는 구조적 한계를 다루는 소단원입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's look at these problems in more detail. Recall that in a CFG the expansion of a non-terminal is independent of the context, that is, of the other nearby non-terminals in the parse tree. Similarly, in a PCFG, the probability of a particular rule like NP → Det N is also independent of the rest of the tree. By definition, the probability of a group of independent events is the product of their probabilities. These two facts explain why in a PCFG we compute the probability of a tree by just multiplying the probabilities of each non-terminal expansion.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 문제들을 더 자세히 살펴보겠습니다. CFG에서 비단말 기호의 확장은 문맥, 즉 구문 분석 트리의 다른 주변 비단말 기호들과 독립적이라는 점을 상기하십시오. 마찬가지로 PCFG에서 NP → Det N과 같은 특정 규칙의 확률 또한 트리의 나머지 부분과 독립적입니다. 정의에 따라, 독립적인 사건 그룹의 확률은 각 확률의 곱입니다. 이 두 가지 사실은 왜 PCFG에서 각 비단말 확장의 확률을 단순히 곱함으로써 트리의 확률을 계산하는지를 설명해 줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 확률 계산 방식이 각 규칙의 독립성 가정에 기반하고 있음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unfortunately, this CFG independence assumption results in poor probability estimates. This is because in English the choice of how a node expands can after all depend on the location of the node in the parse tree. For example, in English it turns out that NPs that are syntactic subjects are far more likely to be pronouns, and NPs that are syntactic objects are far more likely to be non-pronominal (e.g., a proper noun or a determiner noun sequence), as shown by these statistics for NPs in the Switchboard corpus (Francis et al., 1999):¹</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>안타깝게도, 이러한 CFG의 독립성 가정은 좋지 않은 확률 추정 결과를 초래합니다. 이는 영어에서 노드가 어떻게 확장될지의 선택이 결국 구문 분석 트리 내의 노드 위치에 따라 달라질 수 있기 때문입니다. 예를 들어, 영어에서 통사적 주어인 NP는 대명사일 확률이 훨씬 더 높고, 통사적 목적어인 NP는 비대명사(예: 고유 명사 또는 한정사-명사 나열)일 확률이 훨씬 더 높다는 것이 Switchboard 말뭉치의 NP 통계(Francis 등, 1999)를 통해 드러납니다.¹</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 내 위치(주어/목적어)에 따라 단어의 형태(대명사/일반명사)가 달라지는 경향이 있음을 실제 통계 예시로 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>           Pronoun  Non-Pronoun
+   Subject  91%      9%
+   Object   34%      66%</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>           대명사    비대명사
+   주어     91%      9%
+   목적어   34%      66%</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어 위치에서는 대명사 비율이 압도적으로 높지만, 목적어 위치에서는 비대명사 비율이 더 높음을 보여주는 수치입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unfortunately, there is no way to represent this contextual difference in the probabilities of a PCFG. Consider two expansions of the non-terminal NP as a pronoun or as a determiner+noun. How shall we set the probabilities of these two rules? If we set their probabilities to their overall probability in the Switchboard corpus, the two rules have about equal probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>안타깝게도, PCFG의 확률 구조 내에서 이러한 문맥적 차이를 표현할 방법은 없습니다. 비단말 기호 NP를 대명사로 확장하거나 한정사+명사로 확장하는 두 가지 경우를 고려해 보십시오. 이 두 규칙의 확률을 어떻게 설정해야 할까요? 만약 Switchboard 말뭉치에서의 전체적인 확률로 설정한다면, 두 규칙은 거의 대등한 확률을 갖게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥에 따라 확률이 달라져야 함에도 불구하고, PCFG는 하나의 규칙에 하나의 고정된 확률만을 부여할 수 있다는 한계를 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>  NP → DT NN  .28
+  NP → PRP    .25</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>  NP → DT NN  .28
+  NP → PRP    .25</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 정보가 없을 때 두 규칙의 확률이 비슷하게 설정되는 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because PCFGs don't allow a rule probability to be conditioned on surrounding context, this equal probability is all we get; there is no way to capture the fact that in subject position, the probability for NP → PRP should go up to .91, while in object position, the probability for NP → DT NN should go up to .66.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG는 규칙 확률이 주변 문맥에 따라 조건화되는 것을 허용하지 않기 때문에, 우리는 이러한 대등한 확률만을 얻게 됩니다. 주어 위치에서 NP → PRP의 확률은 .91까지 올라가야 하고, 목적어 위치에서 NP → DT NN의 확률은 .66까지 올라가야 한다는 사실을 포착할 방법이 없습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위치 정보를 활용하지 못해 발생하는 확률 추정의 부정확성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These dependencies could be captured if the probability of expanding an NP as a pronoun (e.g., NP → PRP) versus a lexical NP (e.g., NP → DT NN) were conditioned on whether the NP was a subject or an object. Section C.5 introduces the technique of parent annotation for adding this kind of conditioning.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 의존성은 NP를 대명사로 확장할지(예: NP → PRP) 또는 어휘적 NP로 확장할지(예: NP → DT NN)의 확률이, 해당 NP가 주어인지 목적어인지에 따라 조건화된다면 포착될 수 있을 것입니다. C.5절에서는 이러한 종류의 조건화를 추가하기 위한 부모 주석(parent annotation) 기법을 소개합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 해결을 위한 방안으로 '부모 주석' 기법을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.4.2 Lack of Sensitivity to Lexical Dependencies</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.4.2 어휘적 의존성에 대한 민감도 부족</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG가 단어의 개별적 특성을 반영하지 못해 발생하는 문제를 다루는 소단원입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second class of problems with PCFGs is their lack of sensitivity to the words in the parse tree. Words do play a role in PCFGs since the parse probability includes the probability of a word given a part-of-speech (e.g., from rules like V → sleep, NN → book, etc.).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG의 두 번째 부류의 문제는 구문 분석 트리에 있는 단어들에 대한 민감도가 부족하다는 것입니다. 구문 분석 확률에 품사가 주어졌을 때 단어가 나타날 확률(예: V → sleep, NN → book 등과 같은 규칙에서)이 포함되므로, 단어들이 PCFG에서 어느 정도 역할을 하긴 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어가 품사 규칙을 통해 관여하긴 하지만, 그 이상의 구조적 영향력을 미치지 못함을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>¹ Distribution of subjects from 31,021 declarative sentences; distribution of objects from 7,489 sentences. This tendency is caused by the use of subject position to realize the topic or old information in a sentence (Givón, 1990). Pronouns are a way to talk about old information, while non-pronominal ("lexical") noun-phrases are often used to introduce new referents (Chapter 22).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>¹ 31,021개의 평서문에서의 주어 분포와 7,489개의 문장에서의 목적어 분포. 이러한 경향은 문장에서 주제(topic)나 구정보(old information)를 실현하기 위해 주어 위치를 사용하기 때문에 발생합니다(Givón, 1990). 대명사는 구정보에 대해 이야기하는 방식인 반면, 비대명사("어휘적") 명사구는 종종 새로운 지칭 대상을 도입하는 데 사용됩니다(22장).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어/목적어 위치에 따른 대명사 사용 비율 차이의 언어학적 근거(정보 구조)를 설명하는 주석입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-10">
+<header class="page-header">
+<h2>Page 10</h2>
+<div class="page-subtitle">어휘 의존성, 전치사 부착</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>10 APPENDIX C • STATISTICAL CONSTITUENCY PARSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>10 부록 C • 통계적 구성 성분 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But it turns out that lexical information is useful in other places in the grammar, such as in resolving prepositional phrase (PP) attachment ambiguities. Since prepositional phrases in English can modify a noun phrase or a verb phrase, when a parser finds a prepositional phrase, it must decide where to attach it in the tree. Consider the following example:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 어휘 정보는 전치사구(PP) 부착 모호성을 해소하는 것과 같이 문법의 다른 곳에서도 유용하다는 것이 드러납니다. 영어에서 전치사구는 명사구나 동사구를 수식할 수 있기 때문에, 구문 분석기가 전치사구를 발견하면 트리의 어디에 부착할지 결정해야 합니다. 다음 예시를 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구 부착 모호성 문제에서 어휘 정보의 중요성을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>(C.18) Workers dumped sacks into a bin.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(C.18) Workers dumped sacks into a bin.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모호성을 가진 예시 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.5 shows two possible parse trees for this sentence; the one on the left is the correct parse; Fig. C.6 shows another perspective on the preposition attachment problem, demonstrating that resolving the ambiguity in Fig. C.5 is equivalent to deciding whether to attach the prepositional phrase into the rest of the tree at the NP or VP nodes; we say that the correct parse requires VP attachment, and the incorrect parse implies NP attachment.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.5는 이 문장에 대한 두 가지 가능한 구문 분석 트리를 보여줍니다. 왼쪽의 것이 올바른 분석입니다. 그림 C.6은 전치사 부착 문제에 대한 또 다른 관점을 보여주는데, 그림 C.5의 모호성을 해소하는 것이 트리의 나머지 부분에서 전치사구를 NP 노드에 부착할지 또는 VP 노드에 부착할지를 결정하는 것과 같음을 입증합니다. 우리는 올바른 분석이 VP 부착(VP attachment)을 필요로 하고, 잘못된 분석은 NP 부착(NP attachment)을 수반한다고 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>VP 부착과 NP 부착 중 어느 것을 선택하느냐에 따라 트리의 구조와 의미가 달라짐을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>  VP attachment
+  NP attachment</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>  VP 부착
+  NP 부착</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구가 동사구에 부착되는지 명사구에 부착되는지를 나타내는 핵심 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure C.5: Two possible parse trees for a prepositional phrase attachment ambiguity]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 C.5: 전치사구 부착 모호성에 대한 두 가지 가능한 구문 분석 트리]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>"Workers dumped sacks into a bin" 문장에 대한 VP 부착 트리(왼쪽)와 NP 부착 트리(오른쪽)를 비교한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.5 Two possible parse trees for a prepositional phrase attachment ambiguity. The left parse is the sensible one, in which "into a bin" describes the resulting location of the sacks. In the right incorrect parse, the sacks to be dumped are the ones which are already "into a bin", whatever that might mean.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.5 전치사구 부착 모호성에 대한 두 가지 가능한 구문 분석 트리. 왼쪽 분석이 합리적인 것으로, "into a bin"이 포대(sacks)의 이동 결과 위치를 설명합니다. 오른쪽의 잘못된 분석에서는, 버려질 포대들이 이미 "into a bin" 상태에 있는 것들이라는 의미가 되는데, 이것이 무엇을 뜻하든 어색합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 부착 방식에 따른 의미 차이를 설명합니다. 왼쪽은 '통에 담았다'는 뜻이고, 오른쪽은 '통 안에 있는 포대를 버렸다'는 뜻이 됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Why doesn't a PCFG already deal with PP attachment ambiguities? Note that the two parse trees in Fig. C.5 have almost exactly the same rules; they differ only in that the left-hand parse has this rule:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>왜 PCFG는 이미 전치사구 부착 모호성을 다루지 못할까요? 그림 C.5의 두 구문 분석 트리가 거의 동일한 규칙들을 가지고 있음에 유의하십시오. 이들은 오직 왼쪽 분석이 다음과 같은 규칙을 갖는다는 점에서만 다릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 구조에서 사용된 규칙들이 매우 유사하여 확률적으로 구분하기 어렵다는 점을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>VP → VBD NP PP</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>VP → VBD NP PP</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>VP 부착 구조에서 사용되는 규칙입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>while the right-hand parse has these:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>반면 오른쪽 분석은 다음과 같은 규칙들을 갖습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NP 부착 구조에서 사용되는 규칙들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>  VP → VBD NP
+  NP → NP PP</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>  VP → VBD NP
+  NP → NP PP</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구가 NP 아래에 속하게 되는 규칙 조합입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Depending on how these probabilities are set, a PCFG will always either prefer NP attachment or VP attachment. As it happens, NP attachment is slightly more common in English, so if we trained these rule probabilities on a corpus, we might always prefer NP attachment, causing us to misparse this sentence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 확률들이 어떻게 설정되느냐에 따라, PCFG는 항상 NP 부착을 선호하거나 VP 부착을 선호하게 될 것입니다. 공교롭게도 영어에서는 NP 부착이 약간 더 흔하기 때문에, 만약 우리가 말뭉치에서 이러한 규칙 확률을 학습한다면 항상 NP 부착을 선호하게 되어 이 문장을 잘못 분석하게 될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개별 단어의 특성을 무시하고 규칙의 통계적 빈도에만 의존할 경우 발생하는 오류를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But suppose we set the probabilities to prefer the VP attachment for this sentence. Now we would misparse the following, which requires NP attachment:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 우리가 이 문장에 대해 VP 부착을 선호하도록 확률을 설정했다고 가정해 봅시다. 그러면 이제 NP 부착이 필요한 다음 문장을 잘못 분석하게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 문장에 맞춰 확률을 조정하더라도, 다른 문장에서 반대의 문제가 발생함을 시사하며 다음 내용으로 연결합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

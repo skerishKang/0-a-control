@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">피드포워드 신경망 구조</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.3 • FEEDFORWARD NEURAL NETWORKS 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.3 • 피드포워드 신경망 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.7 The hidden layer forming a new representation of the input. (b) shows the representation of the hidden layer, h, compared to the original input representation x in (a). Notice that the input point [0, 1] has been collapsed with the input point [1, 0], making it possible to linearly separate the positive and negative cases of XOR. After Goodfellow et al. (2016).]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.7 입력에 대한 새로운 표현을 형성하는 은닉층. (b)는 (a)의 원래 입력 표현 $\mathbf{x}$와 비교한 은닉층 $\mathbf{h}$의 표현을 보여줍니다. 입력 포인트 [0, 1]이 입력 포인트 [1, 0]과 겹쳐지도록(collapsed) 변환되어 XOR의 긍정 사례와 부정 사례를 선형적으로 분리할 수 있게 되었음에 주목하십시오. Goodfellow 등(2016)을 따름.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.7. 은닉층을 통한 데이터의 공간 변환 및 선형 분리 가능성 확보를 시각화한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.7 The hidden layer forming a new representation of the input. (b) shows the representation of the hidden layer, h, compared to the original input representation x in (a). Notice that the input point [0, 1] has been collapsed with the input point [1, 0], making it possible to linearly separate the positive and negative cases of XOR. After Goodfellow et al. (2016).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.7 입력에 대한 새로운 표현을 형성하는 은닉층. (b)는 (a)의 원래 입력 표현 $\mathbf{x}$와 비교한 은닉층 $\mathbf{h}$의 표현을 보여줍니다. 입력 포인트 [0, 1]이 입력 포인트 [1, 0]과 겹쳐지도록(collapsed) 변환되어 XOR의 긍정 사례와 부정 사례를 선형적으로 분리할 수 있게 되었음에 주목하십시오. Goodfellow 등(2016)을 따름.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.7 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(visually, in Fig. 7.5) that a single unit cannot solve the XOR problem. We'll return to this question on page 10.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] (시각적으로는 그림 7.5에서 보았듯이) 단일 유닛으로는 XOR 문제를 해결할 수 없습니다. 이 질문에 대해서는 10페이지에서 다시 다루겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 유닛의 한계에 대해 보충 설명을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.3 Feedforward Neural Networks</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.3 피드포워드 신경망(Feedforward Neural Networks)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>피드포워드 신경망의 구조와 작동 원리에 대해 본격적으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's now walk through a slightly more formal presentation of the simplest kind of neural network, the feedforward network. A feedforward network is a multilayer network in which the units are connected with no cycles; the outputs from units in each layer are passed to units in the next higher layer, and no outputs are passed back to lower layers. (In Chapter 9 we'll introduce networks with cycles, called recurrent neural networks.)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 가장 단순한 종류의 신경망인 피드포워드 네트워크에 대해 좀 더 공식적으로 살펴보겠습니다. 피드포워드 네트워크는 유닛들이 순환(cycle) 없이 연결된 다층 네트워크입니다. 각 층의 유닛에서 나온 출력은 다음 상위 층의 유닛으로 전달되며, 하위 층으로는 어떤 출력도 다시 전달되지 않습니다. (9장에서는 순환 구조를 가진 순환 신경망, 즉 RNN을 소개할 예정입니다.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>피드포워드 네트워크의 핵심 정의(순환 없음, 계층적 전달)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>feedforward network</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>피드포워드 네트워크(feedforward network)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정보가 입력에서 출력 방향으로만 흐르는 망 구조입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For historical reasons multilayer networks, especially feedforward networks, are sometimes called multi-layer perceptrons (or MLPs); this is a technical misnomer, since the units in modern multilayer networks aren't perceptrons (perceptrons are purely linear, but modern networks are made up of units with non-linearities like sigmoids), but at some point the name stuck.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>역사적인 이유로 다층 네트워크, 특히 피드포워드 네트워크는 때때로 '다층 퍼셉트론(multi-layer perceptrons, MLP)'이라고 불립니다. 기술적으로 이는 잘못된 명칭인데, 현대의 다층 네트워크 유닛들은 퍼셉트론이 아니기 때문입니다(퍼셉트론은 순수하게 선형적이지만, 현대 네트워크는 시그모이드와 같은 비선형 유닛들로 구성됩니다). 하지만 어느 시점부터 이 이름이 굳어졌습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MLP라는 용어의 유래와 기술적인 부적합성(퍼셉트론 vs 비선형 유닛)을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>multi-layer perceptrons
+MLP</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다층 퍼셉트론(multi-layer perceptrons)
+MLP</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>피드포워드 신경망을 부르는 관용적인 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Simple feedforward networks have three kinds of nodes: input units, hidden units, and output units. Fig. 7.8 shows a picture.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단순한 피드포워드 네트워크에는 세 종류의 노드가 있습니다: 입력 유닛(input units), 은닉 유닛(hidden units), 그리고 출력 유닛(output units)입니다. 그림 7.8이 이를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망의 세 가지 기본 층 구성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The input layer x is a vector of simple scalar values just as we saw in Fig. 7.2. The core of the neural network is the hidden layer h formed of hidden units h_i, each of which is a neural unit as described in Section 7.1, taking a weighted sum of its inputs and then applying a non-linearity. In the standard architecture, each layer is fully-connected, meaning that each unit in each layer takes as input the outputs from all the units in the previous layer, and there is a link between every pair of units from two adjacent layers. Thus each hidden unit sums over all the input units.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력층 $\mathbf{x}$는 그림 7.2에서 보았듯이 단순한 스칼라값들의 벡터입니다. 신경망의 핵심은 은닉 유닛 $h_i$들로 구성된 은닉층 $\mathbf{h}$입니다. 각 은닉 유닛은 7.1절에서 설명한 것과 같은 신경 유닛으로, 입력값들의 가중치 합을 구한 뒤 비선형성을 적용합니다. 표준적인 구조에서 각 층은 '전결합(fully-connected, 완전 연결)'되어 있습니다. 이는 각 층의 모든 유닛이 이전 층의 모든 유닛으로부터 출력을 입력으로 받으며, 인접한 두 층 사이의 모든 유닛 쌍 사이에 연결(link)이 존재함을 의미합니다. 따라서 각 은닉 유닛은 모든 입력 유닛의 값을 합산하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉층의 역할과 전결합(fully-connected) 레이어의 구조적 특징을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>hidden layer
+fully-connected</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>은닉층(hidden layer)
+전결합(fully-connected)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 내부의 핵심 처리 층과 연결 방식을 나타내는 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall that a single hidden unit has as parameters a weight vector and a bias. We represent the parameters for the entire hidden layer by combining the weight vector and bias for each unit i into a single weight matrix W and a single bias vector b for the whole layer (see Fig. 7.8). Each element W_ji of the weight matrix W represents the weight of the connection from the ith input unit x_i to the jth hidden unit h_j.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단일 은닉 유닛은 가중치 벡터와 바이어스를 파라미터로 갖는다는 점을 상기하십시오. 우리는 각 유닛 $i$의 가중치 벡터와 바이어스를 결합하여, 층 전체에 대해 하나의 가중치 행렬 $\mathbf{W}$와 하나의 바이어스 벡터 $\mathbf{b}$로 파라미터를 표현합니다(그림 7.8 참조). 가중치 행렬 $\mathbf{W}$의 각 원소 $W_{ji}$는 $i$번째 입력 유닛 $x_i$에서 $j$번째 은닉 유닛 $h_j$로 가는 연결의 가중치를 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개별 유닛의 파라미터를 행렬과 벡터 형태로 통합하여 관리하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">행렬 연산 및 활성화 함수</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.8 A simple 2-layer feedforward network, with one hidden layer, one output layer, and one input layer (the input layer is usually not counted when enumerating layers).]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.8 하나의 은닉층, 하나의 출력층, 그리고 하나의 입력층으로 구성된 단순한 2층 피드포워드 네트워크(층의 개수를 셀 때 입력층은 대개 포함하지 않습니다).]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.8. 전결합 계층 구조를 가진 표준적인 MLP 도식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.8 A simple 2-layer feedforward network, with one hidden layer, one output layer, and one input layer (the input layer is usually not counted when enumerating layers).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.8 하나의 은닉층, 하나의 출력층, 그리고 하나의 입력층으로 구성된 단순한 2층 피드포워드 네트워크(층의 개수를 셀 때 입력층은 대개 포함하지 않습니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.8 캡션입니다. 가중 행렬 W(W)와 U(U)가 입력-은닉, 은닉-출력 간에 배치되어 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The advantage of using a single matrix W for the weights of the entire layer is that now the hidden layer computation for a feedforward network can be done very efficiently with simple matrix operations. In fact, the computation only has three steps: multiplying the weight matrix by the input vector x, adding the bias vector b, and applying the activation function g (such as the sigmoid, tanh, or ReLU activation function defined above).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전체 층의 가중치에 대해 단일 행렬 $\mathbf{W}$를 사용할 때의 장점은 피드포워드 네트워크의 은닉층 계산을 단순한 행렬 연산(matrix operations)으로 매우 효율적으로 수행할 수 있다는 점입니다. 실제로 계산은 세 단계로 이루어집니다: 가중치 행렬과 입력 벡터 $\mathbf{x}$를 곱하고, 바이어스 벡터 $\mathbf{b}$를 더한 뒤, 활성화 함수 $g$(위에서 정의한 시그모이드, tanh, 또는 ReLU 등)를 적용하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬 연산을 통한 계산 효율성 확보와 3단계 연산 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The output of the hidden layer, the vector h, is thus the following; (for this example we'll use the sigmoid function \sigma as our activation function):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 은닉층의 출력인 벡터 $\mathbf{h}$는 다음과 같습니다. (이 예제에서는 시그모이드 함수 $\sigma$를 활성화 함수로 사용합니다.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉층의 벡터 연산 결과 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>h = \sigma(\mathbf{Wx} + \mathbf{b}) (7.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>h = \sigma(\mathbf{Wx} + \mathbf{b}) (7.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.8). 은닉층 연산을 벡터/행렬 형태로 나타낸 핵심 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Notice that we're applying the \sigma function here to a vector, while in Eq. 7.3 it was applied to a scalar. We're thus allowing \sigma(\cdot), and indeed any activation function g(\cdot), to apply to a vector element-wise, so g[z_1, z_2, z_3] = [g(z_1), g(z_2), g(z_3)].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>식 7.3에서는 시그모이드 함수를 스칼라값에 적용했던 반면, 여기서는 벡터에 적용하고 있음에 주목하십시오. 즉, 우리는 $\sigma(\cdot)$를 비롯하여 모든 활성화 함수 $g(\cdot)$가 벡터의 각 요소에 대해 개별적으로(element-wise) 적용될 수 있도록 허용합니다. 따라서 $g[z_1, z_2, z_3] = [g(z_1), g(z_2), g(z_3)]$가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터에 대한 활성화 함수의 요소별(element-wise) 적용 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's introduce some constants to represent the dimensionalities of these vectors and matrices. We'll refer to the input layer as layer 0 of the network, and have n_0 represent the number of inputs, so x is a vector of real numbers of dimension n_0, or more formally x \in \mathbb{R}^{n_0}, a column vector of dimensionality [n_0, 1]. Let's call the hidden layer layer 1 and the output layer layer 2. The hidden layer has dimensionality n_1, so h \in \mathbb{R}^{n_1} and also b \in \mathbb{R}^{n_1} (since each hidden unit can take a different bias value). And the weight matrix W has dimensionality W \in \mathbb{R}^{n_1 \times n_0}, i.e. [n_1, n_0].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 벡터와 행렬들의 차원(dimensionalities)을 나타내기 위한 몇 가지 상수를 도입해 봅시다. 우리는 입력층을 네트워크의 0번 층으로 지칭하고, $n_0$를 입력의 수로 정하겠습니다. 따라서 $\mathbf{x}$는 $n_0$차원의 실숫값 벡터이며, 더 공식적으로는 $\mathbf{x} \in \mathbb{R}^{n_0}$로 표기되는 $[n_0, 1]$ 차원의 열 벡터입니다. 은닉층은 1번 층, 출력층은 2번 층으로 부르겠습니다. 은닉층은 $n_1$차원이며, 따라서 $\mathbf{h} \in \mathbb{R}^{n_1}$이고 $\mathbf{b} \in \mathbb{R}^{n_1}$입니다(각 은닉 유닛은 서로 다른 바이어스 값을 가질 수 있기 때문입니다). 그리고 가중치 행렬 $\mathbf{W}$는 $\mathbf{W} \in \mathbb{R}^{n_1 \times n_0}$ 차원, 즉 $[n_1, n_0]$의 크기를 갖습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 레이어와 파라미터들의 수학적 차원(dimensionality)을 공식적으로 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Take a moment to convince yourself that the matrix multiplication in Eq. 7.8 will compute the value of each h_j as \sigma(\sum_{i=1}^{n_0} W_{ji}x_i + b_j).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>식 7.8의 행렬 곱셈이 각 $h_j$의 값을 $\sigma(\sum_{i=1}^{n_0} W_{ji}x_i + b_j)$로 계산해 낼 것임을 잠시 확인해 보시기 바랍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬 곱 연산이 개별 유닛의 가중치 합 계산과 동일함을 확인시킵니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As we saw in Section 7.2, the resulting value h (for hidden but also for hypothesis) forms a representation of the input. The role of the output layer is to take this new representation h and compute a final output. This output could be a real-valued number, but in many cases the goal of the network is to make some sort of classification decision, and so we will focus on the case of classification.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.2절에서 보았듯이, 결과값 $\mathbf{h}$(hidden 또는 hypothesis를 의미)는 입력에 대한 '표현(representation)'을 형성합니다. 출력층의 역할은 이 새로운 표현 $\mathbf{h}$를 받아 최종 출력을 계산하는 것입니다. 이 출력은 실숫값일 수도 있지만, 많은 경우 네트워크의 목표는 어떤 종류의 분류 결정을 내리는 것이므로, 우리는 분류 작업 사례에 집중할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉층을 통해 형성된 표현이 출력층의 입력으로 쓰이는 흐름을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we are doing a binary task like sentiment classification, we might have a single output node, and its scalar value y is the probability of positive versus negative sentiment. If we are doing multinomial classification, such as assigning a part-of-speech tag, we might have one output node for each potential part-of-speech, whose output value is the probability of that part-of-speech, and the values of all the output</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>만약 감성 분류(sentiment classification)와 같은 이진 분류 작업을 수행한다면 단일 출력 노드를 가질 수 있으며, 그 스칼라값 $y$는 긍정 대 부정 감성의 확률이 될 것입니다. 만약 품사 태깅과 같은 다중 분류(multinomial classification)를 수행한다면 잠재적인 각 품사마다 하나씩의 출력 노드를 가질 수 있고, 그 출력값은 해당 품사일 확률을 나타내며 모든 출력 노드들의 값은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>작업 종류(이진/다중 분류)에 따른 출력층 구성 방식을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

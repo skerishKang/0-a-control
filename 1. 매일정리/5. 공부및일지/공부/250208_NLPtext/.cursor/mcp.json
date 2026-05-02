@@ -1,0 +1,161 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ]
+    },
+    "terminal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@dillip285/mcp-terminal"
+      ],
+      "config": {
+        "allowedCommands": [
+          "npm", "npx", "node", "git", "python", "pip", "pipx", "pipenv", "poetry", "pytest", "tox", "flake8", "pylint", "black", "isort", "mypy", "coverage", "cProfile", "pyinstrument", "ab", "wrk", "siege", "locust", "k6", "hey", "pytest-benchmark", "curl", "http", "ls", "dir", "mysql"
+        ],
+        "defaultTimeout": 30000
+      }
+    },
+    "googleSearch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "g-search-mcp"
+      ]
+    },
+    "perplexitySearch": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@arjunkmrm/perplexity-search"
+      ]
+    },
+    "deepResearch": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@ameeralns/DeepResearchMCP"
+      ]
+    },
+    "youtube-data-mcp-server": {
+      "command": "youtube-data-mcp-server",
+      "args": [
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "YOUTUBE_API_KEY": "AIzaSyD2KEEdCEcvZrUFIXuuQKbhj3lev8ZMIDo"
+      }
+    },
+    "docReader": {
+      "command": "python",
+      "args": [
+        "C:\\Users\\padiemdev\\Documents\\docReader\\docReader.py"
+      ]
+    },
+    "driveMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@rishipradeep-think41/drive-mcp"
+      ]
+    },
+    "showfivePlaywright": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@showfive/playwright-mcp-server"
+      ]
+    },
+    "microsoftPlaywright": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@microsoft/playwright-mcp"
+      ]
+    },
+    "browserbase": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@browserbasehq/mcp-browserbase"
+      ]
+    },
+    "desktopCommander": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@wonderwhy-er/desktop-commander"
+      ]
+    },
+    "markdownDownloader": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@dazeb/markdown-downloader"
+      ]
+    },
+    "googleWorkspace": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/google-workspace-server"
+      ]
+    },
+    "gmailBackupMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@rishipradeep-think41/gmail-backupmcp"
+      ]
+    },
+    "gsuiteMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@rishipradeep-think41/gsuite-mcp"
+      ]
+    },
+    "figmaMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@ai-zerolab/mcp-figma"
+      ]
+    },
+    "youtubeDataSmithery": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@icraft2170/youtube-data-mcp-server"
+      ]
+    },
+    "documentEditMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@alejandroBallesterosC/document-edit-mcp"
+      ]
+    },
+    "documentReaderSmithery": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@jbchouinard/mcp-document-reader"
+      ]
+    },
+    "krokiMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@tkoba1974/mcp-kroki"
+      ]
+    },
+    "dicomMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@ChristianHinge/dicom-mcp"
+      ]
+    },
+    "pdf2mdMcp": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@FutureUnreal/mcp-pdf2md"
+      ]
+    },
+    "pdfReaderTrafflux": {
+      "command": "remote",
+      "args": [
+        "https://smithery.ai/server/@trafflux/pdf-reader-mcp"
+      ]
+    }
+  }
+} 

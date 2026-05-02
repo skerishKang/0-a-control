@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>07 Pages 13 14</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.4 • ACOUSTIC PHONETICS AND SIGNALS 13</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.4 • 음향 음성학 및 신호 13</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>of samples of a sound is N, the power is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>...음향 표본의 수가 N일 때, 전력(power)은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전력의 수학적 정의를 도입하는 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\text{Power} = \frac{1}{N} \sum_{i=1}^N x_i^2 \quad (25.7)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>\text{Power} = \frac{1}{N} \sum_{i=1}^N x_i^2 \quad (25.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신호 전력 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Rather than power, we more often refer to the intensity of the sound, which normalizes the power to the human auditory threshold and is measured in dB. If P_0 is the auditory threshold pressure = 2 \times 10^{-5} Pa, then intensity is defined as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전력보다는 소리의 강도(intensity)를 더 자주 언급하는데, 이는 전력을 인간의 청각 임계값에 맞춰 정규화한 것으로 dB 단위로 측정됩니다. 만약 P_0가 청각 임계 압력 = 2 \times 10^{-5} Pa라면, 강도는 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전력과 강도의 차이 및 데시벨(dB) 단위의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\text{Intensity} = 10 \log_{10} \frac{1}{N P_0^2} \sum_{i=1}^N x_i^2 \quad (25.8)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>\text{Intensity} = 10 \log_{10} \frac{1}{N P_0^2} \sum_{i=1}^N x_i^2 \quad (25.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리 강도(Intensity, dB) 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>intensity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>강도(intensity)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리의 물리적 세기를 나타내는 척도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.12 Intensity plot for the sentence “Is it a long movie?” from the CallHome corpus, again shown below the waveform plot. Labels include: is, it, a, long, movie?]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.12 CallHome 말뭉치에서 추출한 "Is it a long movie?" 문장의 강도 도표. 다시 한 번 파형 도표 아래에 표시되었습니다. 레이블: is, it, a, long, movie?]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시간에 따른 소리 강도의 변화를 보여주는 그래프입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.12 Intensity plot for the sentence “Is it a long movie?”. Note the intensity peaks at each vowel and the especially high peak for the word long.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.12 "Is it a long movie?" 문장의 강도 도표. 각 모음에서의 강도 정점과 특히 "long"이라는 단어에서의 높은 정점에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>강도 도표에서 모음과 강조된 단어의 특성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Two important perceptual properties, pitch and loudness, are related to frequency and intensity. The pitch of a sound is the mental sensation, or perceptual correlate, of fundamental frequency; in general, if a sound has a higher fundamental frequency we perceive it as having a higher pitch. We say “in general” because the relationship is not linear, since human hearing has different acuities for different frequencies. Roughly speaking, human pitch perception is most accurate between 100 Hz and 1000 Hz and in this range pitch correlates linearly with frequency. Human hearing represents frequencies above 1000 Hz less accurately, and above this range, pitch correlates logarithmically with frequency. Logarithmic representation means that the differences between high frequencies are compressed and hence not as accurately perceived. There are various psychoacoustic models of pitch perception scales. One common model is the mel scale (Stevens et al. 1937, Stevens and Volkmann 1940). A mel is a unit of pitch defined such that pairs of sounds which are perceptually equidistant in pitch are separated by an equal number of mels. The mel frequency m can be computed from the raw acoustic frequency f as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 가지 중요한 지각적 속성인 음고(pitch)와 음량(loudness)은 주파수 및 강도와 관련이 있습니다. 소리의 음고는 기본 주파수에 대한 정신적 감각 또는 지각적 상관물입니다. 일반적으로 소리의 기본 주파수가 높으면 우리는 그것을 더 높은 음고로 지각합니다. "일반적으로"라고 말하는 이유는 인간의 청각이 주파수마다 예민도가 다르기 때문에 그 관계가 선형적이지 않기 때문입니다. 대략적으로 말해서, 인간의 음고 지각은 100 Hz에서 1000 Hz 사이에서 가장 정확하며, 이 범위에서 음고는 주파수와 선형적으로 상관됩니다. 인간의 청각은 1000 Hz 이상의 주파수를 덜 정확하게 표현하며, 이 범위를 넘어서면 음고는 주파수와 로그적으로 상관됩니다. 로그적 표현은 높은 주파수들 사이의 차이가 압축되어 정확하게 지각되지 않음을 의미합니다. 음고 지각 척도에 대한 다양한 심리 음향 모델이 있습니다. 일반적인 모델 중 하나는 멜 척도(mel scale)입니다(Stevens et al. 1937, Stevens and Volkmann 1940). 멜(mel)은 지각적으로 음고 차이가 동일한 소리 쌍들이 동일한 멜 수만큼 떨어져 있도록 정의된 음고 단위입니다. 멜 주파수 m은 가공되지 않은 음향 주파수 f로부터 다음과 같이 계산할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음고(지각)와 주파수(물리)의 비선형적 관계와 이를 보정하기 위한 멜 척도를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>pitch</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음고(pitch)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리의 높낮이에 대한 인간의 주관적 지각입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>멜(Mel)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 청각적 특성을 반영한 주파수 단위입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>m = 1127 \ln(1 + \frac{f}{700}) \quad (25.9)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>m = 1127 \ln(1 + \frac{f}{700}) \quad (25.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주파수(Hz)를 멜(mel) 단위로 변환하는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As we’ll see in Chapter 26, the mel scale plays an important role in speech recognition.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26장에서 살펴보겠지만, 멜 척도는 음성 인식에서 중요한 역할을 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>멜 척도의 실무적 중요성을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 25 • PHONETICS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제25장 • 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The loudness of a sound is the perceptual correlate of the power. So sounds with higher amplitudes are perceived as louder, but again the relationship is not linear. First of all, as we mentioned above when we defined µ-law compression, humans have greater resolution in the low-power range; the ear is more sensitive to small power differences. Second, it turns out that there is a complex relationship between power, frequency, and perceived loudness; sounds in certain frequency ranges are perceived as being louder than those in other frequency ranges.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>소리의 음량(loudness)은 전력의 지각적 상관물입니다. 따라서 진폭이 큰 소리는 더 크게 들리지만, 이 역시 관계가 선형적이지 않습니다. 우선 앞서 µ-law 압축을 정의할 때 언급했듯이, 인간은 저전력 범위에서 더 높은 해상도를 가지며 귀는 작은 전력 차이에 더 민감합니다. 둘째, 전력, 주파수 및 지각된 음량 사이에는 복잡한 관계가 있음이 밝혀졌습니다. 특정 주파수 범위의 소리는 다른 주파수 범위의 소리보다 더 크게 지각됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음량(지각)과 전력/진폭(물리)의 관계, 그리고 주파수에 따른 음량 지각의 차이를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Various algorithms exist for automatically extracting F0. In a slight abuse of terminology, these are called pitch extraction algorithms. The autocorrelation method of pitch extraction, for example, correlates the signal with itself at various offsets. The offset that gives the highest correlation gives the period of the signal. There are various publicly available pitch extraction toolkits; for example, an augmented autocorrelation pitch tracker is provided with Praat (Boersma and Weenink, 2005).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>F0를 자동으로 추출하기 위한 다양한 알고리즘이 존재합니다. 용어의 약간의 오용이지만, 이들은 음고 추출(pitch extraction) 알고리즘이라고 불립니다. 예를 들어 자기 상관(autocorrelation) 방식의 음고 추출은 신호를 다양한 오프셋에서 자신과 상관시킵니다. 가장 높은 상관관계를 나타내는 오프셋이 신호의 주기를 제공합니다. 공개적으로 사용 가능한 다양한 음고 추출 툴킷이 있습니다. 예를 들어 증강 자기 상관 음고 추적기가 Praat(Boersma and Weenink, 2005)과 함께 제공됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자동 음고 추출 방식(자기 상관법)과 대표적인 도구인 Praat을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>pitch extraction</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음고 추출(pitch extraction)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 신호에서 기본 주파수(F0)를 찾아내는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.4.4 Interpretation of Phones from a Waveform</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.4.4 파형을 통한 음소 해석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시각적인 파형의 특징을 통해 어떤 말소리인지 분석하는 방법을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Much can be learned from a visual inspection of a waveform. For example, vowels are pretty easy to spot. Recall that vowels are voiced; another property of vowels is that they tend to be long and are relatively loud (as we can see in the intensity plot in Fig. 25.12). Length in time manifests itself directly on the x-axis, and loudness is related to (the square of) amplitude on the y-axis. We saw in the previous section that voicing is realized by regular peaks in amplitude of the kind we saw in Fig. 25.9, each major peak corresponding to an opening of the vocal folds. Figure 25.13 shows the waveform of the short sentence “she just had a baby”. We have labeled this waveform with word and phone labels. Notice that each of the six vowels in Fig. 25.13, [iy], [ax], [ae], [ax], [ey], [iy], all have regular amplitude peaks indicating voicing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파형을 육안으로 검사하는 것만으로도 많은 것을 배울 수 있습니다. 예를 들어 모음은 찾아내기가 꽤 쉽습니다. 모음은 유성음이라는 점을 상기하십시오. 모음의 또 다른 특징은 길게 지속되는 경향이 있고 상대적으로 소리가 크다는 점입니다(그림 25.12의 강도 도표에서 볼 수 있듯이). 시간상의 길이는 x축에 직접 나타나고, 음량은 y축의 진폭(의 제곱)과 관련이 있습니다. 우리는 앞 섹션에서 유성음이 그림 25.9에서 본 것과 같은 규칙적인 진폭 정점으로 구현된다는 것을 보았습니다. 각 주요 정점은 성대의 열림에 해당합니다. 그림 25.13은 "she just had a baby"라는 짧은 문장의 파형을 보여줍니다. 우리는 이 파형에 단어와 음소 레이블을 달았습니다. 그림 25.13에 있는 6개의 모음 [iy], [ax], [ae], [ax], [ey], [iy]가 모두 유성음을 나타내는 규칙적인 진폭 정점을 가지고 있음에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파형에서 모음의 시각적 특징(길이, 큰 진폭, 규칙적인 정점)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.13 A waveform of the sentence “She just had a baby” from the Switchboard corpus (conversation 4325). Labels include word and phone levels. Words: she, just, had, a, baby. Phones: sh, iy, j, ax, s, h, ae, dx, ax, b, ey, b, iy]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.13 Switchboard 말뭉치(대화 4325)에서 추출한 "She just had a baby" 문장의 파형. 단어 및 음소 수준의 레이블이 포함되어 있습니다. 단어: she, just, had, a, baby. 음소: sh, iy, j, ax, s, h, ae, dx, ax, b, ey, b, iy]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 전체의 파형과 각 단어/음소의 대응 관계를 보여주는 도표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.13 A waveform of the sentence “She just had a baby” from the Switchboard corpus (conversation 4325). The speaker is female, was 20 years old in 1991, which is approximately when the recording was made, and speaks the South Midlands dialect of American English.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.13 Switchboard 말뭉치(대화 4325)에서 추출한 "She just had a baby" 문장의 파형. 화자는 여성이며 1991년 당시에 약 20세였고 미국 영어의 사우스 미들랜즈(South Midlands) 방언을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파형 데이터의 출처와 화자 정보를 제공합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For a stop consonant, which consists of a closure followed by a release, we can often see a period of silence or near silence followed by a slight burst of amplitude. We can see this for both of the [b]’s in baby in Fig. 25.13.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>폐쇄 후에 파열이 이어지는 파열음(stop consonant)의 경우, 종종 묵음 또는 거의 묵음에 가까운 구간 뒤에 약간의 진폭 파열(burst)이 나타나는 것을 볼 수 있습니다. 그림 25.13의 "baby"에 있는 두 [b] 모두에서 이를 확인할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파형에서 파열음(특히 [b])의 시각적 특징인 묵음 구간과 파열을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another phone that is often quite recognizable in a waveform is a fricative. Recall that fricatives, especially very strident fricatives like [sh], are made when a narrow channel for airflow causes noisy, turbulent air. The resulting hissy sounds have a noisy, irregular waveform. This can be seen somewhat in Fig. 25.13; it’s even clearer in Fig. 25.14, where we’ve magnified just the first word she.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파형에서 종종 꽤 잘 식별되는 또 다른 음소는 마찰음입니다. 마찰음, 특히 [sh]와 같이 강한 마찰음은 공기 흐름을 위한 좁은 통로가 소란스럽고 난류적인 공기를 유발할 때 만들어진다는 점을 상기하십시오. 그 결과 발생하는 '쉿' 하는 소리는 시끄럽고 불규칙한 파형을 가집니다. 이는 그림 25.13에서도 어느 정도 볼 수 있지만, 첫 단어 "she"만 확대한 그림 25.14에서 더욱 명확합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파형에서 마찰음(특히 [sh])의 불규칙하고 소음 같은 특징을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

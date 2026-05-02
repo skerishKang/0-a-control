@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">통계적 유의성 검정 기초</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.9 • STATISTICAL SIGNIFICANCE TESTING 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.9 • 통계적 유의성 검정 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Training Iterations
+1 Dev Training
+2 Dev Training
+...
+10 Training Dev
+Testing
+Test Set</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>학습 반복(Training Iterations)
+1 개발 학습
+2 개발 학습
+...
+10 학습 개발
+테스트(Testing)
+테스트 세트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.7. 10-폴드 교차 검증의 모식도입니다. 학습 세트 내에서 개발(검증) 세트를 나누는 방식과 별도의 독립된 테스트 세트를 유지하는 구성을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 4.7 10-fold cross-validation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 4.7 10-폴드 교차 검증.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.7의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>such as F1, or accuracy. Perhaps we want to know if our logistic regression sentiment classifier A (Chapter 5) gets a higher F1 score than our naive Bayes sentiment classifier B on a particular test set x. Let's call M(A,x) the score that system A gets on test set x, and δ(x) the performance difference between A and B on x:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] $F_1$이나 정확도 같은 지표를 사용하여 비교합니다. 예를 들어, 특정 테스트 세트 $x$에서 로지스틱 회귀 감성 분류기 A(제5장)가 나이브 베이즈 감성 분류기 B보다 더 높은 $F_1$ 점수를 얻었는지 알고 싶다고 합시다. 시스템 A가 테스트 세트 $x$에서 얻은 점수를 $M(A, x)$라고 하고, $x$에서의 A와 B 사이의 성능 차이를 $\delta(x)$라고 부르겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 시스템의 성능 점수 차이를 나타내는 수식을 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>δ(x) = M(A, x) − M(B, x) (4.19)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\delta(x) = M(A, x) - M(B, x) (4.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.19). 시스템 성능 차이값 $\delta$에 대한 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>effect size</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>효과 크기(effect size)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 집단 사이의 성능 차이의 크기를 나타내는 지표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We would like to know if δ(x) > 0, meaning that our logistic regression classifier has a higher F1 than our naive Bayes classifier on X. δ(x) is called the effect size; a bigger δ means that A seems to be way better than B; a small δ means A seems to be only a little better. Why don't we just check if δ(x) is positive? Suppose we do, and we find that the F1 score of A is higher than B's by .04. Can we be certain that A is better? We cannot! That's because A might just be accidentally better than B on this particular x. We need something more: we want to know if A's superiority over B is likely to hold again if we checked another test set x′, or under some other set of circumstances.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 $\delta(x) > 0$인지 알고자 합니다. 이는 테스트 세트 $x$에서 로지스틱 회귀 분류기가 나이브 베이즈 분류기보다 더 높은 $F_1$ 점수를 가짐을 의미합니다. 이 $\delta(x)$를 효과 크기(effect size)라고 부릅니다. $\delta$가 크다는 것은 A가 B보다 훨씬 나아 보인다는 뜻이고, $\delta$가 작다는 것은 A가 단지 조금 더 나아 보인다는 뜻입니다. 그런데 왜 단순히 $\delta(x)$가 양수인지만 확인하면 안 될까요? 점수를 확인했더니 A의 $F_1$ 스코어가 B보다 0.04 높았다고 가정해 봅시다. 이 결과만으로 A가 더 뛰어나다고 확신할 수 있을까요? 그럴 수 없습니다! 왜냐하면 특정 데이터셋 $x$에서 A가 우연히 B보다 잘했을 수도 있기 때문입니다. 우리는 더 확실한 증거가 필요합니다. 즉, 다른 테스트 세트 $x'$이나 다른 상황에서도 A의 우위가 유지될 가능성이 높은지 알고 싶은 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>성능 차이가 단순한 우연일 가능성을 배제하기 위해 통계적 검증이 왜 필요한지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the paradigm of statistical hypothesis testing, we test this by formalizing two hypotheses.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>통계적 가설 검정의 패러다임에서는, 두 가지 가설을 공식화하여 이를 테스트합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가설 검정의 기본 단계인 귀무 가설과 대립 가설 설정을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>H0 : δ(x) ≤ 0, H1 : δ(x) > 0 (4.20)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>H_0 : \delta(x) \leq 0, H_1 : \delta(x) > 0 (4.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.20). 귀무 가설($H_0$)과 대립 가설($H_1$)에 대한 수학적 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>null hypothesis</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>귀무 가설(null hypothesis)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'차이가 없다' 혹은 '기존과 다르지 않다'는 기본 가설로, 우리가 기각하고자 하는 대상입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The hypothesis H0, called the null hypothesis, supposes that δ(x) is actually negative or zero, meaning that A is not better than B. We would like to know if we can confidently rule out this hypothesis, and instead support H1, that A is better. We do this by creating a random variable X ranging over all test sets. Now we ask how likely is it, if the null hypothesis H0 was correct, that among these test sets we would encounter the value of δ(x) that we found. We formalize this likelihood as the p-value: the probability, assuming the null hypothesis H0 is true, of seeing the δ(x) that we saw or one even greater</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>귀무 가설(null hypothesis)이라 불리는 가설 $H_0$은 $\delta(x)$가 실제로는 음수이거나 0이라고 가정합니다. 즉, A가 B보다 낫지 않다는 뜻입니다. 우리는 이 가설을 확신을 가지고 배제(rule out)할 수 있는지, 그리고 대신 A가 더 낫다는 $H_1$을 지지할 수 있는지 알고 싶습니다. 이를 위해 가능한 모든 테스트 세트들을 범위로 하는 랜덤 변수 $X$를 만듭니다. 그런 다음, 만약 귀무 가설 $H_0$이 맞다면, 이러한 테스트 세트들 사이에서 우리가 발견한 $\delta(x)$ 값이 나타날 가능성은 얼마나 되는지 묻습니다. 우리는 이 가능성을 P-값(p-value)으로 공식화합니다. 즉, 귀무 가설 $H_0$이 참이라고 가정할 때, 우리가 관찰한 $\delta(x)$ 혹은 그보다 더 큰 값을 보게 될 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>귀무 가설을 기각하기 위한 지표인 P-값의 개념적 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>p-value</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P-값(p-value)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>귀무 가설 하에서 관찰된 결과(또는 그보다 극단적인 결과)가 나타날 확률입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(δ(X) ≥ δ(x)|H0 is true) (4.21)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(\delta(X) \geq \delta(x) | H_0 \text{ is true}) (4.21)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.21). P-값의 확률적 정의를 수식으로 나타낸 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>So in our example, this p-value is the probability that we would see δ(x) assuming A is not better than B. If δ(x) is huge (let's say A has a very respectable F1 of .9 and B has a terrible F1 of only .2 on x), we might be surprised, since that would be extremely unlikely to occur if H0 were in fact true, and so the p-value would be low</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 우리의 예시에서 이 P-값은 A가 B보다 낫지 않다고 가정할 때 $\delta(x)$를 볼 확률입니다. 만약 $\delta(x)$가 매우 크다면(예를 들어 $x$에서 A는 0.9라는 훌륭한 $F_1$을 기록하고 B는 0.2라는 형편없는 점수를 기록한 경우), 우리는 놀랄 것입니다. 왜냐하면 실제로 $H_0$이 참이라면 그렇게 큰 격차가 발생할 가능성이 극히 희박하기 때문입니다. 따라서 이 경우 P-값은 낮게 나타날 것입니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관찰된 성능 차이가 클수록 P-값이 낮아지고, 이는 귀무 가설의 설득력을 떨어뜨리는 증거가 됨을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">부트스트랩 검정</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 4 • NAIVE BAYES AND SENTIMENT CLASSIFICATION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(unlikely to have such a large δ if A is in fact not better than B). But if δ(x) is very small, it might be less surprising to us even if H0 were true and A is not really better than B, and so the p-value would be higher.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] (A가 실제로 B보다 낫지 않다면 그렇게 큰 $\delta$가 나타나기 어려울 것이기 때문입니다). 반면 $\delta(x)$가 매우 작다면, $H_0$이 참이고 A가 B보다 특별히 낫지 않더라도 그런 결과가 나오는 것이 덜 놀라울 것이며, 따라서 P-값은 높게 나타날 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>성능 차이($\delta$)의 크기와 P-값 사이의 관계를 보충 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A very small p-value means that the difference we observed is very unlikely under the null hypothesis, and we can reject the null hypothesis. What counts as very small? It is common to use values like .05 or .01 as the thresholds. A value of .01 means that if the p-value (the probability of observing the δ we saw assuming H0 is true) is less than .01, we reject the null hypothesis and assume that A is indeed better than B. We say that a result (e.g., "A is better than B") is statistically significant if the δ we saw has a probability that is below the threshold and we therefore reject this null hypothesis.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>매우 작은 P-값은 우리가 관찰한 차이가 귀무 가설 하에서 발생할 가능성이 매우 낮음을 의미하며, 우리는 귀무 가설을 기각할 수 있습니다. '매우 작다'는 기준은 무엇일까요? 일반적으로 0.05나 0.01 같은 값들을 문턱값(thresholds)으로 사용합니다. 0.01이라는 값은 $H_0$이 참이라고 가정할 때 우리가 본 $\delta$가 관찰될 확률(P-값)이 0.01 미만이면, 귀무 가설을 기각하고 A가 실제로 B보다 낫다고 가정한다는 뜻입니다. 우리가 관찰한 $\delta$가 문턱값보다 낮은 확률을 가져서 귀무 가설을 기각하게 되었을 때, 그 결과(예: "A가 B보다 낫다")를 통계적으로 유의미하다(statistically significant)고 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유의 수준(threshold)의 개념과 '통계적 유의성'의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>statistically significant</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>통계적으로 유의미한(statistically significant)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관찰된 성능 차이가 우연에 의한 것이 아니라 모델의 진정한 차이에서 비롯되었을 가능성이 매우 높은 상태를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do we compute this probability we need for the p-value? In NLP we generally don't use simple parametric tests like t-tests or ANOVAs that you might be familiar with. Parametric tests make assumptions about the distributions of the test statistic (such as normality) that don't generally hold in our cases. So in NLP we usually use non-parametric tests based on sampling: we artificially create many versions of the experimental setup. For example, if we had lots of different test sets x′ we could just measure all the δ(x′) for all the x′. That gives us a distribution. Now we set a threshold (like .01) and if we see in this distribution that 99% or more of those deltas are smaller than the delta we observed, i.e. that p-value(x)—the probability of seeing a δ(x) as big as the one we saw, is less than .01, then we can reject the null hypothesis and agree that δ(x) was a sufficiently surprising difference and A is really a better algorithm than B.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P-값을 위해 필요한 이 확률을 어떻게 계산할까요? NLP에서는 대개 보통 익숙할 수도 있는 T-검정(t-tests)이나 분산 분석(ANOVAs) 같은 단순한 모수적 검정(parametric tests)을 사용하지 않습니다. 모수적 검정은 테스트 통계량의 분포(예: 정규성)에 대한 가정들을 전제로 하는데, NLP 사례에서는 일반적으로 이러한 가정들이 성립하지 않기 때문입니다. 그래서 NLP에서는 대개 샘플링에 기반한 비모수적 검정(non-parametric tests)을 사용합니다. 즉, 실험 환경의 다양한 버전들을 인위적으로 만들어냅니다. 예를 들어, 수많은 서로 다른 테스트 세트 $x'$이 있다면 모든 $x'$에 대해 $\delta(x')$를 측정할 수 있을 것입니다. 이를 통해 분포를 얻게 됩니다. 이제 문턱값(예: 0.01)을 설정하고, 이 분포에서 해당 델타들의 99% 이상이 우리가 관찰한 델타보다 작다면—즉 우리가 본 것만큼 큰 $\delta(x)$를 보게 될 확률인 $P\text{-value}(x)$가 0.01보다 작다면—우리는 귀무 가설을 기각하고 $\delta(x)$가 충분히 놀라운 차이였으며 A가 실제로 B보다 더 나은 알고리즘이라는 점에 동의할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP 데이터의 특성상 정규 분포를 가정한 모수적 검정보다 샘플링 기반의 비모수적 검정이 더 적합하다는 점을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are two common non-parametric tests used in NLP: approximate randomization (Noreen, 1989) and the bootstrap test. We will describe bootstrap below, showing the paired version of the test, which again is most common in NLP. Paired tests are those in which we compare two sets of observations that are aligned: each observation in one set can be paired with an observation in another. This happens naturally when we are comparing the performance of two systems on the same test set; we can pair the performance of system A on an individual observation xi with the performance of system B on the same xi.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NLP에서 사용되는 두 가지 흔한 비모수적 검정은 근사 랜덤화(approximate randomization, Noreen, 1989)와 부트스트랩 검정(bootstrap test)입니다. 아래에서는 NLP에서 가장 흔하게 쓰이는 검정의 쌍체(paired) 버전을 중심으로 부트스트랩에 대해 설명하겠습니다. 쌍체 검정이란 서로 정렬된(aligned) 두 관찰 세트를 비교하는 검정입니다. 즉, 한 세트의 각 관찰값이 다른 세트의 관찰값과 짝을 이룰 수 있는 경우입니다. 이는 동일한 테스트 세트에서 두 시스템의 성능을 비교할 때 자연스럽게 발생합니다. 개별 관찰치 $x_i$에 대한 시스템 A의 성능과 똑같은 $x_i$에 대한 시스템 B의 성능을 짝지을 수 있기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP에서 널리 쓰이는 비모수적 검정 기법들과, 동일 데이터에 대해 두 시스템을 직접 비교하는 쌍체 검정의 개념을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>approximate randomization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>근사 랜덤화(approximate randomization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 시스템의 출력을 무작위로 섞어보는 방식을 통해 유의성을 검정하는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>paired</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>쌍체(paired)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동일한 입력 데이터에 대해 두 모델의 출력을 일대일로 매칭하여 비교하는 설정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.9.1 The Paired Bootstrap Test</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.9.1 쌍체 부트스트랩 검정(The Paired Bootstrap Test)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부트스트랩 샘플링을 이용한 구체적인 유의성 검정 방법을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The bootstrap test (Efron and Tibshirani, 1993) can apply to any metric; from precision, recall, or F1 to the BLEU metric used in machine translation. The word bootstrapping refers to repeatedly drawing large numbers of smaller samples with replacement (called bootstrap samples) from an original larger sample. The intuition of the bootstrap test is that we can create many virtual test sets from an observed test set by repeatedly sampling from it. The method only makes the assumption that the sample is representative of the population.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부트스트랩 검정(Efron and Tibshirani, 1993)은 정밀도, 재현율, $F_1$에서부터 기계 번역에서 사용되는 BLEU 지표에 이르기까지 어떠한 지표에도 적용될 수 있습니다. 부트스트랩(bootstrapping)이라는 단어는 원래의 큰 샘플로부터 중복을 허용한(replacement) 작은 샘플들(부트스트랩 샘플이라고 함)을 대량으로 반복 추출하는 행위를 의미합니다. 부트스트랩 검정의 직관은 관찰된 하나의 테스트 세트로부터 반복 샘플링을 통해 수많은 '가상 테스트 세트'를 만들어낼 수 있다는 점입니다. 이 방법은 해당 샘플이 모집단을 잘 대변한다는 점만을 유일한 가설로 삼습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부트스트랩 검정의 핵심 원리인 '복원 추출을 통한 가상 테스트 세트 생성'을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>bootstrap test</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부트스트랩 검정(bootstrap test)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>통계적 추정치의 신뢰도를 평가하기 위해 널리 쓰이는 리샘플링(resampling) 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>bootstrapping</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부트스트랩(bootstrapping)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>복원 추출(resampling with replacement)을 반복 수행하는 과정을 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consider a tiny text classification example with a test set x of 10 documents. The first row of Fig. 4.8 shows the results of two classifiers (A and B) on this test set, with each document labeled by one of the four possibilities: (A and B both right, both wrong, A right and B wrong, A wrong and B right); a slash through a letter (B) means that that classifier got the answer wrong. On the first document both A and B get the correct answer (AB), while on the second document A got it right but B got it wrong (AB). If we assume for simplicity that our metric is accuracy, A has an accuracy of .70 and B of .50, so δ(x) is .20.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>10개의 문서로 구성된 테스트 세트 $x$를 사용하는 작은 텍스트 분류 예시를 생각해 봅시다. 그림 4.8의 첫 번째 행은 이 테스트 세트에 대한 두 분류기(A와 B)의 결과를 보여주며, 각 문서는 네 가지 가능성 중 하나로 표시됩니다: (A와 B 모두 정답, 둘 다 오답, A는 정답이나 B는 오답, A는 오답이나 B는 정답). 문자 위의 슬래시($\cancel{B}$)는 해당 분류기가 오답을 냈음을 의미합니다. 첫 번째 문서에서는 A와 B 모두 정답을 맞혔고(AB), 두 번째 문서에서는 A는 맞혔으나 B는 틀렸습니다($A\cancel{B}$). 단순화를 위해 지표를 정확도라고 가정하면, A의 정확도는 0.70이고 B는 0.50이므로 $\delta(x)$는 0.20입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부트스트랩 검정 과정을 설명하기 위한 구체적인 소규모 데이터 예시를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now we create a large number b (perhaps 10^5) of virtual test sets x(i), each of size n = 10. Fig. 4.8 shows a couple examples. To create each virtual test set x(i), we</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 우리는 각각 크기 $n=10$인 수많은 가상 테스트 세트 $x^{(i)}$를 대량으로($b=10^5$ 정도) 생성합니다. 그림 4.8은 몇 가지 예시를 보여줍니다. 각 가상 테스트 세트 $x^{(i)}$를 만들기 위해, 우리는 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 부트스트랩 샘플링을 통해 가상 테스트 세트를 구성하는 단계로 넘어갑니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

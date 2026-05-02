@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Discourse Coherence</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">22 Discourse Coherence</div>
+<h1>Discourse Coherence</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">센터링 이론</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7 CHAPTER 22 • DISCOURSE COHERENCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7 제22장 • 담화 응집성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22.4 Centering Theory</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22.4 센터링 이론(Centering Theory)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화 내에서 개체가 어떻게 유지되고 전이되는지를 통해 응집성을 모델링하는 이론을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Centering theory is a model of local discourse coherence that focuses on the relationship between attentional state, the use of referring expressions, and the coherence of the discourse. It tracks how entities are introduced, continued, or shifted in focus.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>센터링 이론은 주의 집중 상태(attentional state), 지칭 표현의 사용, 그리고 담화 응집성 사이의 관계에 초점을 맞춘 지역 담화 응집성 모델입니다. 이는 개체들이 어떻게 도입되고, 유지되며, 주의의 초점이 어떻게 전이되는지를 추적합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화의 미시적 수준에서의 개체 관리 메커니즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>centering theory</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>센터링 이론(Centering Theory)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Grosz, Joshi, and Weinstein(1995)에 의해 정립된 이론입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - Center of Attention: The entity that is the current focus of the discourse.
+    - Forward-Looking Centers (Cf): A ranked list of all entities in a segment that could become the focus of the next segment.
+    - Backward-Looking Center (Cb): The single entity that connects the current segment to the previous one.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 주의의 중심(Center of Attention): 담화의 현재 초점인 개체입니다.
+    - 전방 지향 센터(Forward-Looking Centers, Cf): 다음 세그먼트의 초점이 될 수 있는 현재 세그먼트 내의 모든 개체들의 순위 목록입니다.
+    - 후방 지향 센터(Backward-Looking Center, Cb): 현재 세그먼트를 이전 세그먼트와 연결하는 단일 개체입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>센터링 이론의 핵심 구성 요소인 Cf와 Cb를 정의합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">센터링 이론에서의 전이</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 22 • DISCOURSE COHERENCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제22장 • 담화 응집성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22.4.1 Transitions in Centering Theory</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22.4.1 센터링 이론에서의 전이(Transitions)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화가 진행됨에 따라 Cb와 Cf의 관계가 어떻게 변하는지에 따른 전이 유형을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - Continue: The Cb of the current segment is the same as the Cb of the previous segment and is the most highly ranked Cf.
+    - Retain: The Cb is maintained, but it's not the most highly ranked Cf (indicating a potential shift).
+    - Smooth Shift: The Cb shifts to a new entity, which becomes the most highly ranked Cf.
+    - Rough Shift: The Cb shifts to a new entity, but it is not the most highly ranked Cf.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 유지(Continue): 현재 세그먼트의 Cb가 이전 세그먼트의 Cb와 같고, 가장 높은 순위의 Cf인 경우입니다.
+    - 보유(Retain): Cb가 유지되지만, 가장 높은 순위의 Cf는 아닌 경우입니다(잠재적 초점 변화를 암시).
+    - 부드러운 전이(Smooth Shift): Cb가 새로운 개체로 바뀌고, 그 개체가 가장 높은 순위의 Cf가 되는 경우입니다.
+    - 거친 전이(Rough Shift): Cb가 새로운 개체로 바뀌지만, 그 개체가 가장 높은 순위의 Cf가 아닌 경우입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화의 응집도 수준을 결정하는 4가지 전이 유형을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Coherence is linked to the type of transitions used. Generally, a sequence of Continue transitions is more coherent than a sequence of Shifting transitions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>응집성은 사용된 전이 유형과 연결됩니다. 일반적으로 계속(Continue) 전이의 시퀀스는 전이(Shift) 시퀀스보다 더 높은 응집성을 가집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전이 유형을 통해 담화의 질(응집성)을 평가하는 원리에 대해 다릅니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.nextElementSibling;
+    const isHidden = panel.hidden;
+    panel.hidden = !isHidden;
+    btn.textContent = isHidden ? 'study_note 접기' : 'study_note 보기';
+    btn.setAttribute('aria-expanded', isHidden);
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => { b.textContent = 'study_note 접기'; b.setAttribute('aria-expanded', 'true'); });
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => { b.textContent = 'study_note 보기'; b.setAttribute('aria-expanded', 'false'); });
+});
+</script>
+</body>
+</html>

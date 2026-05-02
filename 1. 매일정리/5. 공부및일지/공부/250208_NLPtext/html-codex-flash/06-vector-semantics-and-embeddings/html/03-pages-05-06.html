@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 5-6 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 5-6 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">벡터 의미론 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.2 • VECTOR SEMANTICS 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.2 • 벡터 의미론 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.2 Vector Semantics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.2 벡터 의미론</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 의미를 다차원 공간상의 벡터로 표현하는 이론적 배경을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How should we represent the meaning of a word? In the n-gram models of Chapter 3, and throughout much of the history of NLP, our only representation of a word was as a string of letters, or an index in a vocabulary list.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어의 의미를 어떻게 표현해야 할까요? 3장의 n-gram 모델을 비롯하여 NLP 역사의 상당 기간 동안, 단어에 대한 우리의 유일한 표현은 문자열이거나 어휘 목록의 인덱스뿐이었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고전적인 기호 기반 표현 방식의 한계를 다시 한번 짚어줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter we introduce vector semantics, the standard modern way to represent meaning. The fundamental idea of vector semantics is to represent a word as a point in some multi-dimensional semantic space. This point is represented by a vector of numbers. These vectors are often called embeddings, because the word is "embedded" in a particular space.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 의미를 표현하는 표준적인 현대적 방식인 벡터 의미론(vector semantics)을 소개합니다. 벡터 의미론의 기본 아이디어는 단어를 다차원 의미 공간상의 한 점으로 표현하는 것입니다. 이 점은 숫자로 이루어진 벡터로 나타내어집니다. 단어가 특정 공간에 "박혀(embedded)" 있기 때문에 이러한 벡터들을 흔히 임베딩(embeddings)이라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 의미론과 임베딩의 핵심 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We've seen the roots of this idea already; the 3-dimensional affective model of Osgood et al. (1957) from the previous section (page 4) was an early example of representing word meaning as a vector. Beginning in the 1970s and 1980s, vectors began to be used for representing word meaning for many applications, and the 2013 introduction of word2vec (Mikolov et al., 2013) made them the standard tool for all of NLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이미 이 아이디어의 뿌리를 보았습니다. 이전 섹션(4페이지)에서 다룬 Osgood 등(1957)의 3차원 정서 모델은 단어 의미를 벡터로 표현한 초기 사례였습니다. 1970년대와 1980년대부터 다양한 응용 프로그램을 위해 단어 의미를 벡터로 표현하기 시작했으며, 2013년 word2vec(Mikolov et al., 2013)의 등장은 이를 모든 NLP의 표준 도구로 만들었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 의미론의 역사적 흐름과 word2vec이 가져온 전성기를 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3 Words and Vectors</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3 단어와 벡터</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 벡터로 변환하는 구체적인 방법론을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are many ways to represent word meaning as a vector. One very simple way is to use a one-hot vector, a vector of length |V| (the size of the vocabulary) that has a 1 at a particular index and 0 everywhere else. For example, if the vocabulary is [aardvark, abacus, ..., zebra], the one-hot vector for abacus might be [0, 1, 0, ..., 0].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 의미를 벡터로 표현하는 방법에는 여러 가지가 있습니다. 매우 간단한 방법 중 하나는 원핫 벡터(one-hot vector)를 사용하는 것입니다. 이는 어휘 목록 크기 |V|와 같은 길이를 가진 벡터로, 특정 인덱스에만 1이 있고 나머지는 모두 0인 벡터입니다. 예를 들어 어휘 목록이 [aardvark, abacus, ..., zebra]라면, abacus에 대한 원핫 벡터는 [0, 1, 0, ..., 0]이 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 기초적인 벡터 표현인 원핫 벡터의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One-hot vectors have two main disadvantages. First, they are very high-dimensional and sparse (mostly 0s). Second, they have no representation of similarity; any two one-hot vectors are orthogonal (their dot product is 0), so there is no way to tell that cat is more similar to dog than it is to refrigerator. In this chapter we'll see how to create dense vectors that are lower dimensional and represent similarity.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>원핫 벡터에는 두 가지 주요 단점이 있습니다. 첫째, 차원이 매우 높고 희소(sparse, 대부분이 0)합니다. 둘째, 유사성을 표현하지 못합니다. 어떤 두 원핫 벡터도 서로 직교(orthogonal, 내적이 0)하므로, cat이 refrigerator보다 dog와 더 유사하다는 것을 알 방법이 없습니다. 이 장에서는 차원이 낮으면서 유사성을 표현할 수 있는 밀집 벡터(dense vectors)를 만드는 방법을 살펴볼 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원핫 벡터의 한계(고차원, 유사성 결여)와 이를 해결하기 위한 밀집 벡터의 필요성을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3.1 Words and Context: The Co-occurrence Matrix</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3.1 단어와 맥락: 공기 행렬(Co-occurrence Matrix)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어들이 함께 등장하는 빈도를 기반으로 벡터를 구성하는 첫 번째 밀집 표현 방식을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The term-document matrix was developed in the 1960s and 1970s for information retrieval, but it is also a way to represent words as vectors. In a term-document matrix, each row is a word (a term) and each column is a document in a collection. Each entry in the matrix represents the count of how many times that word occurs in that document.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어-문서 행렬(term-document matrix)은 1960년대와 1970년대에 정보 검색을 위해 개발되었지만, 단어를 벡터로 표현하는 방법이기도 합니다. 단어-문서 행렬에서 각 행은 단어(용어, term)이고 각 열은 컬렉션 내의 문서입니다. 행렬의 각 항목은 해당 단어가 해당 문서에서 몇 번 나타나는지를 나타내는 횟수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서 내 단어 빈도를 이용한 고전적인 단어-문서 행렬의 구조를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 6.1 shows a small term-document matrix for four words in four different Shakespeare plays. The row for each word is a vector, and we can compare these vectors to see how similar they are.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.1은 네 개의 서로 다른 셰익스피어 희곡에 나타나는 네 단어에 대한 작은 단어-문서 행렬을 보여줍니다. 각 단어에 대한 행은 하나의 벡터이며, 우리는 이 벡터들을 비교하여 얼마나 유사한지 확인할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세익스피어 희곡 예시를 통해 단어 벡터를 어떻게 추출하고 비교하는지 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | As You Like It | Twelfth Night | Julius Caesar | Henry V |
+|---|---|---|---|---|
+| battle | 1 | 0 | 7 | 13 |
+| soldier | 2 | 10 | 12 | 52 |
+| fool | 37 | 58 | 1 | 5 |
+| clown | 6 | 117 | 0 | 0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 뜻대로 하세요 (As You Like It) | 십이야 (Twelfth Night) | 줄리어스 시저 (Julius Caesar) | 헨리 5세 (Henry V) |
+|---|---|---|---|---|
+| battle (전투) | 1 | 0 | 7 | 13 |
+| soldier (병사) | 2 | 10 | 12 | 52 |
+| fool (바보) | 37 | 58 | 1 | 5 |
+| clown (광대) | 6 | 117 | 0 | 0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세익스피어 희곡에서의 단어 출현 빈도 예시입니다. 'battle'과 'soldier'의 출현 양상이 비슷함을 시각적으로 알 수 있습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">단어-문서 행렬, 단어-단어 공기 행렬</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.1 A small term-document matrix, showing the counts of four words in four plays. Each cell represents the number of times a word occurs in a play.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.1 작은 단어-문서 행렬. 네 편의 희곡에 나타나는 네 단어의 빈도를 보여줍니다. 각 셀은 해당 단어가 해당 희곡에서 나타나는 횟수를 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>5페이지의 표와 연결된 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Notice in Fig. 6.1 that the word battle is more similar to soldier than it is to fool or clown. Similarly, fool and clown are more similar to each other than they are to battle or soldier. We can visualize this similarity by plotting the word vectors as points in space. Fig. 6.2 shows the word vectors for battle and fool in a 2-dimensional space (using only the first two dimensions of our 4-dimensional matrix).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.1에서 'battle'이라는 단어가 'fool'이나 'clown'보다 'soldier'와 더 유사하다는 점에 주목하십시오. 마찬가지로 'fool'과 'clown'은 'battle'이나 'soldier'보다 서로 더 유사합니다. 단어 벡터들을 공간상의 점으로 표시함으로써 이러한 유사성을 시각화할 수 있습니다. 그림 6.2는 (4차원 행렬의 처음 두 차원만 사용하여) 2차원 공간에 표시한 'battle'과 'fool'의 단어 벡터를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬의 수치 데이터를 기하학적 공간으로 투영하여 '의미적 유사성'이 '공간적 거리'로 변환되는 과정을 시각화합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The term-document matrix was first introduced in Salton's (1971) vector space model, the foundational idea for information retrieval. In this model, documents can also be represented as vectors (the columns of the matrix), and words can be represented as vectors (the rows of the matrix).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어-문서 행렬은 정보 검색의 기초적 아이디어인 살튼(Salton, 1971)의 벡터 공간 모델(vector space model)에서 처음 도입되었습니다. 이 모델에서 문서는 벡터(행렬의 열)로 표현될 수 있고, 단어 또한 벡터(행렬의 행)로 표현될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정보 검색 시스템의 근간인 벡터 공간 모델을 소개합니다. 문서와 단어를 동일한 차원의 벡터로 다룰 수 있다는 점이 핵심입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3.2 Words as Vectors: Word-Word Co-occurrence</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3.2 단어로 표현된 벡터: 단어-단어 공기(Word-Word Co-occurrence)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서 단위가 아닌 주변 단어들과의 공기 빈도를 기반으로 한 더 정밀한 단어-단어 행렬을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In many applications, we are interested in representing the meaning of a word not by looking at which documents it occurs in, but by looking at which words occur near it. This gives us a word-word co-occurrence matrix (also called a term-term matrix or a word-context matrix).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 응용 프로그램에서 우리는 단어가 어떤 문서에 나타나는지뿐만 아니라 어떤 단어들이 그 근처에 나타나는지 봄으로써 단어의 의미를 표현하는 데 관심을 가집니다. 이를 통해 단어-단어 공기 행렬(word-word co-occurrence matrix)(단어-단어 행렬 또는 단어-문맥 행렬이라고도 함)을 얻을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'단어-문서' 관계에서 보다 직접적인 '단어-단어' 관계로 관심사를 확장합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In a word-word matrix, the rows are words in the vocabulary, and the columns are also words in the vocabulary. Each cell represents the number of times the row word (the target word) and the column word (the context word) occur together in a context window. A context window is a set of words surrounding the target word (e.g., the 4 words to the left and 4 words to the right).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어-단어 행렬에서 행은 어휘 목록 내의 단어들이고, 열 또한 어휘 목록 내의 단어들입니다. 각 셀은 행의 단어(대상 단어, target word)와 열의 단어(문맥 단어, context word)가 문맥 창(context window) 내에서 함께 나타나는 횟수를 나타냅니다. 문맥 창은 대상 단어를 둘러싼 일련의 단어들을 의미합니다 (예: 왼쪽 4단어와 오른쪽 4단어).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 창을 정의하고, 이를 통해 단어 간의 국소적인 공기 관계를 데이터화하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | aardvark | computer | data | pinch | sugar |
+|---|---|---|---|---|---|
+| apricot | 0 | 0 | 0 | 1 | 1 |
+| pineapple | 0 | 0 | 0 | 1 | 1 |
+| digital | 0 | 2 | 1 | 0 | 1 |
+| information | 0 | 1 | 6 | 0 | 0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | aardvark (땅돼지) | computer (컴퓨터) | data (데이터) | pinch (꼬집다/한 꼬집) | sugar (설탕) |
+|---|---|---|---|---|---|
+| apricot (살구) | 0 | 0 | 0 | 1 | 1 |
+| pineapple (파인애플) | 0 | 0 | 0 | 1 | 1 |
+| digital (디지털) | 0 | 2 | 1 | 0 | 1 |
+| information (정보) | 0 | 1 | 6 | 0 | 0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어-단어 공기 행렬의 예시입니다. 'apricot'과 'pineapple'은 'pinch', 'sugar'와 함께 등장하는 패턴이 유사하여 의미적으로 가깝게 표현될 것임을 알 수 있습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

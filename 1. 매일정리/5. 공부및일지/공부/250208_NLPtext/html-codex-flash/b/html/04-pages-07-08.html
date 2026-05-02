@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Appendix B: Spelling Correction</title>
+<style>
+
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix B: Spelling Correction and the Noisy Channel</div>
+<h1>Spelling Correction and the Noisy Channel</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Appendix B.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For this reason, it is important to use larger language models than unigrams. For example, if we use the Corpus of Contemporary American English to compute bigram probabilities for the words actress and across in their context using add-one smoothing, the contextual probability favors actress over across.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이런 이유로 unigram보다 더 큰 언어 모델을 사용하는 것이 중요합니다. 예를 들어 Corpus of Contemporary American English를 사용해 actress와 across의 bigram 확률을 문맥 속에서 add-one smoothing으로 계산하면, 문맥 확률은 across보다 actress를 더 선호합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 교정에서 문맥을 반영하려면 unigram보다 bigram 이상 언어 모델이 필요합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    P("versatile actress whose") = 0.000021 * 0.0010 = 210 x 10^-10
+    P("versatile across whose")  = 0.000021 * 0.000006 = 1 x 10^-10</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    P("versatile actress whose") = 0.000021 * 0.0010 = 210 x 10^-10
+    P("versatile across whose")  = 0.000021 * 0.000006 = 1 x 10^-10</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥을 고려한 bigram 확률 계산에서는 actress가 압도적으로 더 높은 점수를 얻습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Combining the language model with the error model in Fig. B.5, the bigram noisy channel model now chooses the correct word actress. Evaluating spell correction algorithms is generally done by holding out training, development, and test sets from lists of errors.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 B.5의 오류 모델과 언어 모델을 결합하면, bigram noisy channel 모델은 이제 올바른 단어 actress를 선택합니다. 철자 교정 알고리즘의 평가는 일반적으로 오류 목록에서 훈련, 개발, 테스트 세트를 분리하여 수행합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 언어 모델과 오류 모델을 결합해야 실제 정답에 더 가까워집니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>B.2 Real-word spelling errors</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B.2 실제 단어 철자 오류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 영어 단어이지만 문맥상 틀린 철자 오류를 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The noisy channel approach can also be applied to detect and correct real-word spelling errors, errors that result in an actual word of English. This can happen from typographical errors like there for three or because the writer substituted the wrong spelling of a homophone or near-homophone like dessert for desert, or piece for peace.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>noisy channel 접근은 실제 영어 단어가 되어버리는 실제 단어 철자 오류를 탐지하고 교정하는 데에도 적용될 수 있습니다. 이런 오류는 there를 three 대신 쓰는 것 같은 오타나, dessert를 desert 대신 쓰는 것처럼 동음이의어 또는 유사 동음이의어의 잘못된 철자를 사용하는 경우에 발생할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>real-word error는 사전에 있는 단어라서 단순 사전 조회만으로는 잡을 수 없다는 점이 핵심입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    This used to belong to thew queen.
+    They are leaving in about fifteen minuets to go to her house.
+    The design an construction of the system will take more than a year.
+    Can they lave him my messages?
+    The study was conducted mainly be John Black.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    This used to belong to thew queen.
+    They are leaving in about fifteen minuets to go to her house.
+    The design an construction of the system will take more than a year.
+    Can they lave him my messages?
+    The study was conducted mainly be John Black.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모두 사전에 있는 단어들로만 구성되지만 문맥상 잘못된 real-word error 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mays et al. (1991) proposed an algorithm that takes the input sentence X, generates a large set of candidate correction sentences C(X), and then picks the sentence with the highest language model probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mays 등(1991)은 입력 문장 X를 받아 후보 교정 문장들의 큰 집합 C(X)를 생성한 뒤, 언어 모델 확률이 가장 높은 문장을 선택하는 알고리즘을 제안했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>real-word correction은 단어 단위가 아니라 문장 후보 집합을 비교하는 형태로 확장됩니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    only two of thew apples
+    oily two of thew apples
+    only too of thew apples
+    only to of thew apples
+    only tao of the apples
+    only two on thew apples
+    only two off thew apples
+    only two of the apples
+    only two of threw apples
+    only two of thew applies
+    only two of thew dapples</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    only two of thew apples
+    oily two of thew apples
+    only too of thew apples
+    only to of thew apples
+    only tao of the apples
+    only two on thew apples
+    only two off thew apples
+    only two of the apples
+    only two of threw apples
+    only two of thew applies
+    only two of thew dapples</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 문장에서 한 단어만 오류라고 가정하고 생성한 후보 문장 집합의 예입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>W = argmax_{W in C(X)} P(X|W) P(W) (B.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>W = argmax_{W in C(X)} P(X|W) P(W) (B.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>후보 문장 집합 중 noisy channel 점수가 가장 높은 문장을 선택하는 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For P(W), we can use the trigram probability of the sentence. Since these are real words, we need to consider the possibility that the input word is not an error. Let the channel probability of writing a word correctly, P(w|w), be α.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(W)에는 문장의 trigram 확률을 사용할 수 있습니다. 또한 real-word error이므로 입력 단어가 사실은 오류가 아닐 가능성도 고려해야 합니다. 단어를 올바르게 쓸 채널 확률 P(w|w)를 α라고 두겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>real-word correction에서는 원래 단어를 그대로 유지할 가능성을 모델 안에 넣어야 합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    P(x|w) =
+      α                        if x = w
+      (1 - α) / |C(x)|         if x in C(x)
+      0                        otherwise
+    (B.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    P(x|w) =
+      α                        x = w 인 경우
+      (1 - α) / |C(x)|         x 가 C(x)에 속하는 경우
+      0                        그 외의 경우
+    (B.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원래 단어를 유지하는 경우와 다른 후보로 수정되는 경우의 확률을 단순하게 나눈 모델입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can replace the equal distribution of 1 - α in Eq. B.8 with the more sophisticated edit probabilities from Eq. B.6. Suppose we see the string two of thew. The author might really have intended the rare word thew, but it could also be a typo for the, thaw, threw, them, or thwe.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>식 B.8에서 1 - α를 균등 분배하는 대신 식 B.6의 더 정교한 편집 확률을 사용할 수 있습니다. 예를 들어 two of thew라는 문자열을 보면, 작성자가 실제로 희귀 단어 thew를 의도했을 수도 있지만 the, thaw, threw, them, thwe의 오타일 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 균등 분배 대신 confusion matrix 기반 편집 확률을 적용하면 훨씬 현실적인 채널 모델이 됩니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    P(the|two of)   = 0.476012
+    P(thew|two of)  = 9.95051 x 10^-8
+    P(thaw|two of)  = 2.09267 x 10^-7
+    P(threw|two of) = 8.9064 x 10^-7
+    P(them|two of)  = 0.00144488
+    P(thwe|two of)  = 5.18681 x 10^-9</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    P(the|two of)   = 0.476012
+    P(thew|two of)  = 9.95051 x 10^-8
+    P(thaw|two of)  = 2.09267 x 10^-7
+    P(threw|two of) = 8.9064 x 10^-7
+    P(them|two of)  = 0.00144488
+    P(thwe|two of)  = 5.18681 x 10^-9</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>two of라는 좌문맥에서 각 후보 단어의 언어 모델 확률 예시입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+
+</script>
+</body>
+</html>

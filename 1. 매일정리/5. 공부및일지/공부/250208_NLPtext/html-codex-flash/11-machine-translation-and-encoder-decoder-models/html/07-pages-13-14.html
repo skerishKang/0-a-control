@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Machine Translation and Encoder-Decoder Models</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">11 Machine Translation and Encoder-Decoder Models</div>
+<h1>Machine Translation and Encoder-Decoder Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>11. Machine Translation and Encoder-Decoder Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">11.5 빔 서치(Beam Search)</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The weights Ws , which are then trained during normal end-to-end training, give the network the ability to learn which aspects of similarity between the decoder and encoder states are important to the current application. This bilinear model also allows the encoder and decoder to use different dimensional vectors, whereas the simple dot-product attention requires the encoder and decoder hidden states have the same dimensionality.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...가중치 $W_s$는 일반적인 엔드투엔드 학습 중에 함께 학습되며, 디코더와 인코더 상태 사이의 어떤 유사성 측면이 현재의 응용 분야에서 중요한지 학습할 수 있는 능력을 네트워크에 부여합니다. 이러한 쌍선형(bilinear) 모델은 또한 인코더와 디코더가 서로 다른 차원의 벡터를 사용할 수 있게 해주는데, 반면 단순한 내적 어텐션은 인코더와 디코더의 은닉 상태가 동일한 차원을 가질 것을 요구합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>매개변수화된 어텐션 스코어링 방식($W_s$ 도입)이 갖는 장점(중요 유사성 학습, 벡터 차원의 유연성)을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>11.5 • BEAM SEARCH 13</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>11.5 • 빔 서치(Beam Search) 13</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>11.5 Beam Search</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>11.5 빔 서치(Beam Search)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역의 디코딩 과정에서 최적의 문장을 찾아내기 위한 탐색 알고리즘인 빔 서치를 다루는 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The decoding algorithm we gave above for generating translations has a problem (as does the autoregressive generation we introduced in Chapter 9 for generating from a conditional language model). Recall that algorithm: at each time step in decoding, the output yt is chosen by computing a softmax over the set of possible outputs (the vocabulary, in the case of language modeling or MT), and then choosing the highest probability token (the argmax):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>번역 생성을 위해 위에서 제시했던 디코딩 알고리즘에는 문제점이 있습니다(9장에서 조건부 언어 모델로부터 생성을 위해 도입했던 자기 회귀 생성 방식도 마찬가지입니다). 그 알고리즘을 떠올려 보십시오. 디코딩의 매 시점에서 가능한 출력 집합(언어 모델링이나 MT의 경우 어휘 집합)에 대해 소프트맥스를 계산한 다음, 가장 확률이 높은 토큰을 선택합니다(argmax).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>매 순간 가장 확률이 높은 단어 하나만 선택하는 '탐욕적 디코딩'의 문제점을 제기합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">structural_formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>yˆt = argmaxw∈V P(w|x, y1...yt−1) (11.19)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>\hat{y}_t = \text{argmax}_{w \in V} P(w|x, y_1...y_{t-1}) (11.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현재 시점에서 국소적으로 가장 높은 확률을 가진 단어를 선택하는 수식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>greedy</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>탐욕적(greedy)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체적인 결과보다는 현재 가장 이득이 되는 선택을 하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Choosing the single most probable token to generate at each step is called greedy decoding; a greedy algorithm is one that make a choice that is locally optimal, whether or not it will turn out to have been the best choice with hindsight.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>매 단계에서 생성할 가장 확률이 높은 단 하나개의 토큰을 선택하는 것을 탐욕적 디코딩(greedy decoding)이라고 합니다. 탐욕적 알고리즘은 나중에 돌아보았을 때 그것이 최선의 선택이었는지 여부와 상관없이, 현재 지점에서 국소적으로 최적인 선택을 내리는 알고리즘입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>탐욕적 디코딩의 정의를 내립니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>search tree</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>탐색 트리(search tree)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가능한 모든 선택의 경로를 트리 구조로 나타낸 것입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Indeed, greedy search is not optimal, and may not find the highest probability translation. The problem is that the token that looks good to the decoder now might turn out later to have been the wrong choice! Let’s see this by looking at the search tree, a graphical representation of the choices the decoder makes in searching for the best translation, in which we view the decoding problem as a heuristic state-space search and systematically explore the space of possible outputs. In such a search tree, the branches are the actions, in this case the action of generating a token, and the nodes are the states, in this case the state of having generated a particular prefix. We are searching for the best action sequence, i.e. the target string with the highest probability. Fig. 11.11 demonstrates the problem, using a made-up example. Notice that the most probable sequence is ok ok /s (with a probability of .4*.7*1.0), but a greedy search algorithm will fail to find it, because it incorrectly chooses yes as the first word since it has the highest local probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제로 탐욕적 탐색은 최적이 아니며, 가장 확률이 높은 번역을 찾아내지 못할 수도 있습니다. 문제는 현재 디코더에 좋아 보이는 토큰이 나중에 잘못된 선택이었음이 밝혀질 수 있다는 점입니다! 이를 가장 좋은 번역을 찾기 위해 디코더가 내리는 선택들을 시각적으로 표현한 탐색 트리(search tree)를 통해 살펴봅시다. 여기서 우리는 디코딩 문제를 휴리스틱 상태 공간 탐색으로 간주하고 가능한 출력 공간을 체계적으로 탐색합니다. 이러한 탐색 트리에서 가지(branches)는 행동(이 경우 토큰 생성 행동)이고, 노드(nodes)는 상태(이 경우 특정 접두사를 생성한 상태)입니다. 우리는 가장 높은 확률을 가진 타깃 문자열, 즉 최선의 행동 시퀀스를 찾고 있습니다. 그림 11.11은 가상의 예시를 통해 이 문제를 보여줍니다. 가장 확률이 높은 시퀀스는 'ok ok /s'(확률 .4*.7*1.0 = 0.28)이지만, 탐욕적 탐색 알고리즘은 'yes'가 국소적 확률이 가장 높다는 이유로 첫 단어로 'yes'를 잘못 선택하기 때문에 이 시퀀스를 찾지 못하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>국소적인 최적 선택이 전체 문장의 최적 시퀀스를 보장하지 않는다는 점을 탐색 트리 예시를 통해 증명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall from Chapter 8 that for part-of-speech tagging we used dynamic programming search (the Viterbi algorithm) to address this problem. Unfortunately, dynamic programming is not applicable to generation problems with long-distance dependencies between the output decisions. The only method guaranteed to find the best solution is exhaustive search: computing the probability of every one of the VT possible sentences (for some length value T) which is obviously too slow.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8장에서 품사 태깅을 위해 이 문제를 해결하고자 동적 계획법 탐색(비터비 알고리즘)을 사용했던 것을 기억해 보십시오. 불행히도 동적 계획법은 출력 결정들 사이에 장거리 의존성이 존재하는 생성 문제에는 적용할 수 없습니다. 최선의 해결책을 찾는 것이 보장된 유일한 방법은 모든 가능한 $V^T$개의 문장(일정 길이 $T$에 대해)의 확률을 계산하는 전수 조사(exhaustive search)뿐인데, 이는 명백히 너무 느립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비터비 알고리즘을 사용할 수 없는 이유(장거리 의존성)와 전수 조사의 불가능성(계산량 폭발)을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>beam search</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>빔 서치(beam search)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전수 조사와 탐욕적 탐색 사이의 절충안으로, 매 단계 상위 k개의 후보를 유지하며 탐색하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>beam width</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>빔 폭(beam width)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치에서 유지하는 후보의 개수 k를 의미합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Instead, decoding in MT and other sequence generation problems generally uses a method called beam search. In beam search, instead of choosing the best token to generate at each timestep, we keep k possible tokens at each step. This fixed-size memory footprint k is called the beam width, on the metaphor of a flashlight beam that can be parameterized to be wider or narrower.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대신 MT 및 기타 시퀀스 생성 문제에서의 디코딩은 일반적으로 빔 서치(beam search)라고 불리는 방법을 사용합니다. 빔 서치에서는 매 시점 생성할 최상의 단어 하나를 선택하는 대신, 매 단계에서 $k$개의 가능한 토큰 후보를 유지합니다. 이 고정된 크기의 메모리 점유량 $k$를 빔 폭(beam width)이라고 부르는데, 이는 더 넓게 혹은 좁게 조정할 수 있는 손전등 불빛의 폭에 비유한 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치의 개념과 핵심 매개변수인 '빔 폭'에 대해 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus at the first step of decoding, we compute a softmax over the entire vocabulary, assigning a probability to each word. We then select the k-best options from this softmax output. These initial k outputs are the search frontier and these k initial</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 디코딩의 첫 번째 단계에서 우리는 전체 어휘에 대해 소프트맥스를 계산하여 각 단어에 확률을 할당합니다. 그런 다음 이 소프트맥스 출력에서 상위 $k$개의 옵션을 선택합니다. 이 초기 $k$개의 출력은 탐색 전선(search frontier)이 되며, 이 $k$개의 초기 [단어들은...]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치의 첫 번째 단계(초기 k개 후보 선정)를 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 11 • MACHINE TRANSLATION AND ENCODER-DECODER MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제11장 • 기계 번역 및 인코더-디코더 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 11.11 A search tree for generating the target string T = t1, t2, ...]
+start --(0.4)--&gt; ok --(0.7)--&gt; ok --(1.0)--&gt; &lt;/s&gt; (Total probability: 0.28)
+start --(0.4)--&gt; ok --(0.2)--&gt; yes --(1.0)--&gt; &lt;/s&gt;
+start --(0.5)--&gt; yes --(0.3)--&gt; ok --(1.0)--&gt; &lt;/s&gt; (Total probability: 0.15)
+start --(0.5)--&gt; yes --(0.4)--&gt; yes --(1.0)--&gt; &lt;/s&gt; (Total probability: 0.20)
+start --(0.1)--&gt; &lt;/s&gt; (Total probability: 0.1)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 11.11 타깃 문자열 T = t1, t2, ...를 생성하기 위한 탐색 트리]
+시작 --(0.4)--&gt; ok --(0.7)--&gt; ok --(1.0)--&gt; &lt;/s&gt; (전체 확률: 0.28)
+시작 --(0.4)--&gt; ok --(0.2)--&gt; yes --(1.0)--&gt; &lt;/s&gt;
+시작 --(0.5)--&gt; yes --(0.3)--&gt; ok --(1.0)--&gt; &lt;/s&gt; (전체 확률: 0.15)
+시작 --(0.5)--&gt; yes --(0.4)--&gt; yes --(1.0)--&gt; &lt;/s&gt; (전체 확률: 0.20)
+시작 --(0.1)--&gt; &lt;/s&gt; (전체 확률: 0.1)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>탐욕적 탐색으로 'yes'(0.5)를 고르면 얻게 될 최선의 문장(0.20)보다, 처음에 확률이 낮은 'ok'(0.4)를 선택했을 때 더 높은 전체 확률(0.28)을 가진 문장을 얻을 수 있음을 보여주는 사례입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 11.11 A search tree for generating the target string T = t1 , t2 , ... from the vocabulary V = {yes, ok, &lt;s&gt;}, given the source string, showing the probability of generating each token from that state. Greedy search would choose yes at the first time step followed by yes, instead of the globally most probable sequence ok ok.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.11 소스 문자열이 주어졌을 때 어휘 집합 V = {yes, ok, &lt;s&gt;}로부터 타깃 문자열 $T = t_1, t_2, ...$를 생성하기 위한 탐색 트리로, 각 상태에서 각 토큰이 생성될 확률을 보여줍니다. 탐욕적 탐색은 전역적으로 가장 확률이 높은 시퀀스인 'ok ok' 대신, 첫 번째 시간 단계에서 'yes'를 선택하고 이어서 'yes'를 선택할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 11.11에 대한 상세 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>words are called hypotheses. A hypothesis is an output sequence, a translation-so-far, together with its probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...초기 단어들은 가설(hypotheses)이라고 불립니다. 가설은 현재까지의 번역 결과인 출력 시퀀스와 그에 따른 확률을 함께 지칭하는 말입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치에서 관리하는 중간 결과물을 가리키는 '가설'이라는 용어를 정의합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>At subsequent steps, each of the k best hypotheses is extended incrementally by being passed to distinct decoders, which each generate a softmax over the entire vocabulary to extend the hypothesis to every possible next token. Each of these k * V hypotheses is scored by P(yi|x, y&lt;i): the product of the probability of current word choice multiplied by the probability of the path that led to it. we then prune the k * V hypotheses down to the k best hypotheses, so there are never more than k hypotheses at the frontier of the search, and never more than k decoders.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이어지는 단계에서, $k$개의 베스트 가설 각각은 별도의 디코더로 전달되어 점진적으로 확장됩니다. 각 디코더는 전체 어휘에 대해 소프트맥스를 생성하여 가설을 가능한 모든 다음 토큰으로 확장합니다. 이러한 $k \times V$개의 가설 각각은 $P(y_i|x, y_{&lt;i})$에 의해 점수가 매겨집니다. 이는 현재 단어 선택의 확률과 그곳으로 이끈 경로의 확률을 곱한 값입니다. 그런 다음 $k \times V$개의 가설을 상위 $k$개의 베스트 가설로 가지치기(prune)합니다. 따라서 탐색 전선에는 $k$개를 넘는 가설이 존재하지 않으며, 디코더 역시 $k$개를 넘지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>매 단계마다 $k$개의 가설을 확장하고 다시 상위 $k$개만 남기는 빔 서치의 순환 과정을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 11.12 illustrates this process with a beam width of 2. This process continues until a &lt;/s&gt; is generated indicating that a complete candidate output has been found. At this point, the completed hypothesis is removed from the frontier and the size of the beam is reduced by one. The search continues until the beam has been reduced to 0. The result will be k hypotheses.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.12는 빔 폭이 2인 경우의 이 과정을 보여줍니다. 이 과정은 완전한 후보 출력이 발견되었음을 나타내는 &lt;/s&gt;가 생성될 때까지 계속됩니다. 이 시점에서 완료된 가설은 탐색 전선에서 제거되고 빔의 크기는 1씩 줄어듭니다. 탐색은 빔의 크기가 0이 될 때까지 계속되며, 최종 결과물은 $k$개의 가설이 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치의 종료 조건(빔 크기가 0이 될 때까지)과 결과물 도출 방식을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s see how the scoring works in detail, scoring each node by its log probability. Recall from Eq. 11.10 that we can use the chain rule of probability to break down p(y|x) into the product of the probability of each word given its prior context, which we can turn into a sum of logs (for an output string of length t):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로그 확률을 사용하여 각 노드의 점수를 매기는 방식에 대해 자세히 알아봅시다. 수식 11.10에서 확률의 체인 룰을 사용하여 $p(y|x)$를 이전 문맥이 주어졌을 때 각 단어의 확률의 곱으로 분해할 수 있었음을 떠올려 보십시오. 이를 (길이 $t$의 출력 문자열에 대해) 로그의 합으로 바꿀 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률의 곱을 로그의 합으로 변환하여 점수를 계산하는 수학적 배경을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">structural_formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(y) = log P(y|x)
+= log (P(y1|x)P(y2|y1, x)P(y3|y1, y2, x)...P(yt|y1, ..., yt−1, x))
+= Σ log P(yi|y1, ..., yi−1, x) (11.20)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>score(y) = log P(y|x)
+= log (P(y1|x)P(y2|y1, x)P(y3|y1, y2, x)...P(yt|y1, ..., yt−1, x))
+= \sum_{i=1}^t \log P(y_i|y_1, ..., y_{i-1}, x) (11.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 전체의 확률($p(y|x)$)을 각 시점의 로그 확률들의 합으로 계산하는 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus at each step, to compute the probability of a partial translation, we simply add the log probability of the prefix translation so far to the log probability of generating the next token. Fig. 11.13 shows the scoring for the example sentence shown in Fig. 11.12, using some simple made-up probabilities. Log probabilities are negative or 0, and the max of two log probabilities is the one that is greater (closer to 0). Fig. 11.14 gives the algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 각 단계에서 부분 번역의 확률을 계산하려면, 지금까지의 접두사 번역의 로그 확률에 다음 토큰을 생성할 로그 확률을 더하기만 하면 됩니다. 그림 11.13은 그림 11.12에 제시된 예문 문장에 대해 가상의 간단한 확률을 사용하여 점수를 매기는 과정을 보여줍니다. 로그 확률은 음수이거나 0이며, 두 로그 확률 중 최댓값은 더 큰 값(0에 더 가까운 값)입니다. 그림 11.14는 해당 알고리즘을 제시합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로그 확률 합산을 통한 가설 평가 방식과 0에 가까울수록 확률이 높다는 특성을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One problem arises from the fact that the completed hypotheses may have different lengths. Because models generally assign lower probabilities to longer strings, a naive algorithm would also choose shorter strings for y. This was not an issue during the earlier steps of decoding; due to the breadth-first nature of beam search</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 가지 문제는 완료된 가설들이 서로 다른 길이를 가질 수 있다는 사실에서 발생합니다. 모델은 일반적으로 문자열이 길어질수록 더 낮은 확률을 할당하기 때문에, 단순한 알고리즘은 타깃 $y$로 더 짧은 문자열을 선택하게 됩니다. 이는 디코딩의 초기 단계에서는 문제가 되지 않았습니다. 빔 서치의 너비 우선 탐색적 특성으로 인해 [매 단계 동일한 길이의 가설들을 비교했기 때문입니다...]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>길이가 서로 다른 가설들을 비교할 때 짧은 문장이 유리해지는 문제를 지적합니다. (결말 미완성)</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

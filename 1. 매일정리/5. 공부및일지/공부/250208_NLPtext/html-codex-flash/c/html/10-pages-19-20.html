@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>C. Statistical Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Draft</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">Exercises</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>EXERCISES 19</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습문제 19</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Section header for the exercises at the end of Appendix C.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.2 Modify the algorithm for conversion to CNF from Chapter 13 to correctly handle rule probabilities. Make sure that the resulting CNF assigns the same total probability to each parse tree.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13장의 CNF 변환 알고리즘을 수정하여 규칙 확률을 올바르게 처리하십시오. 결과 CNF가 각 파스 트리에 동일한 전체 확률을 할당하는지 확인하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Exercise about maintaining probabilistic consistency when converting context-free grammar to Chomsky Normal Form.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.3 Recall that Exercise 13.3 asked you to update the CKY algorithm to handle unit productions directly rather than converting them to CNF. Extend this change to probabilistic CKY.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습문제 13.3에서 CKY 알고리즘을 CNF로 변환하는 대신 단위 생성(unit productions)을 직접 처리하도록 업데이트하라고 요청한 바 있습니다. 이 변경 사항을 확률적 CKY(probabilistic CKY)로 확장하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Adapting the CKY algorithm to handle unary rules (unit productions) within a probabilistic framework.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.4 Fill out the rest of the probabilistic CKY chart in Fig. C.4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.4의 확률적 CKY 차트의 나머지 부분을 채우십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Practical exercise applying the probabilistic CKY parsing algorithm to a specific chart.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.5 Sketch how the CKY algorithm would have to be augmented to handle lexicalized probabilities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘화된 확률(lexicalized probabilities)을 처리하기 위해 CKY 알고리즘을 어떻게 보완해야 하는지 스케치하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Conceptual exercise on extending the standard PCKY to handle lexical head-word information (lexicalized PCFGs).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.6 Implement your lexicalized extension of the CKY algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘화된 확장이 적용된 CKY 알고리즘을 구현하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Programming exercise for implementing lexicalized probabilistic CKY.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">References</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 Appendix C • Statistical Constituency Parsing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 부록 C • 통계적 성분 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Title of the appendix section summarizing the topic.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Abney, S. P., R. E. Schapire, and Y. Singer. 1999. Boosting applied to tagging and PP attachment. EMNLP/VLC.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Abney 외(1999). 태깅 및 전치사구(PP) 부착에 적용된 부스팅. EMNLP/VLC.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>A paper on using boosting techniques for part-of-speech tagging and prepositional phrase attachment.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Baker, J. K. 1979. Trainable grammars for speech recognition. Speech Communication Papers for the 97th Meeting of the Acoustical Society of America.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Baker(1979). 음성 인식을 위한 훈련 가능한 문법. 미국 음향 학회 제97회 회의 음성 통신 논문.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on trainable grammars, foundational for probabilistic parsing in speech recognition.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bangalore, S. and A. K. Joshi. 1999. Supertagging: An approach to almost parsing. Computational Linguistics, 25(2):237–265.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bangalore 및 Joshi(1999). 슈퍼태깅: 거의 구문 분석에 가까운 접근 방식. Computational Linguistics.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduces the concept of "supertagging" to simplify the parsing task.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Black, E., F. Jelinek, J. D. Lafferty, D. M. Magerman, R. L. Mercer, and S. Roukos. 1992. Towards history-based grammars: Using richer models for probabilistic parsing. Proceedings DARPA Speech and Natural Language Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Black 외(1992). 이력 기반 문법을 향하여: 확률적 구문 분석을 위한 더 풍부한 모델 사용. DARPA 음성 및 자연어 워크숍 논문집.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Research on "history-based" parsing models that go beyond context-free assumptions.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bod, R. 1993. Using an annotated corpus as a stochastic grammar. EACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bod(1993). 주석이 달린 코퍼스를 확률 문법으로 사용하기. EACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Research on Data-Oriented Parsing (DOP), using corpus examples directly as grammar rules.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Booth, T. L. 1969. Probabilistic representation of formal languages. IEEE Conference Record of the 1969 Tenth Annual Symposium on Switching and Automata Theory.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Booth(1969). 형식 언어의 확률적 표현. IEEE 스위칭 및 오토마타 이론 심포지엄.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early foundational work on probabilistic formal languages.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Booth, T. L. and R. A. Thompson. 1973. Applying probability measures to abstract languages. IEEE Transactions on Computers, C-22(5):442–450.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Booth 및 Thompson(1973). 추상 언어에 확률 측정 적용. IEEE Transactions on Computers.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mathematical foundations for applying probability theory to formal/abstract languages.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bresnan, J., editor. 1982. The Mental Representation of Grammatical Relations. MIT Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bresnan, 편집(1982). 문법 관계의 정신적 표상. MIT Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>A classic work in Lexical-Functional Grammar (LFG) and linguistic theory.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Brill, E. and P. Resnik. 1994. A rule-based approach to prepositional phrase attachment disambiguation. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Brill 및 Resnik(1994). 전치사구 부착 중의성 해소를 위한 규칙 기반 접근 방식. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Landmark paper on rule-based (transformation-based) learning for PP attachment.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Briscoe, T. and J. Carroll. 1993. Generalized probabilistic LR parsing of natural language (corpora) with unification-based grammars. Computational Linguistics, 19(1):25–59.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Briscoe 및 Carroll(1993). 통합 기반 문법을 사용한 자연어의 일반화된 확률적 LR 구문 분석. Computational Linguistics.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Research on combining probabilistic methods with LR parsing and unification grammars.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Charniak, E. 1997. Statistical parsing with a context-free grammar and word statistics. AAAI.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Charniak(1997). 문맥 자유 문법과 단어 통계를 이용한 통계적 구문 분석. AAAI.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>High-performance parsing using simple PCFGs augmented with lexical statistics.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chelba, C. and F. Jelinek. 2000. Structured language modeling. Computer Speech and Language, 14:283–332.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Chelba 및 Jelinek(2000). 구조화된 언어 모델링. Computer Speech and Language.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Language modeling that incorporates syntactic structure, improving on traditional N-grams.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Collins, M. 1996. A new statistical parser based on bigram lexical dependencies. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Collins(1996). 바이그램 어휘 의존성에 기반한 새로운 통계적 파서. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduces the Collins parser, a highly influential lexicalized PCFG parser.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Collins, M. 1999. Head-Driven Statistical Models for Natural Language Parsing. Ph.D. thesis, University of Pennsylvania, Philadelphia.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Collins(1999). 자연어 구문 분석을 위한 헤드 기반 통계 모델. 펜실베이니아 대학교 박사 학위 논문.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Comprehensive exposition of head-driven, lexicalized statistical parsing models.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Francis, H. S., M. L. Gregory, and L. A. Michaelis. 1999. Are lexical subjects deviant? CLS-99. University of Chicago.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Francis 외(1999). 어휘 주어는 일탈적인가? CLS-99. 시카고 대학교.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Linguistic study on the properties and distribution of subjects in corpora.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Franz, A. 1997. Independence assumptions considered harmful. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Franz(1997). 해로운 것으로 간주되는 독립성 가정. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Critiques common independence assumptions in NLP models, advocating for more complex feature interactions.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Givón, T. 1990. Syntax: A Functional Typological Introduction. John Benjamins.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Givón(1990). 통사론: 기능적 유형론적 입문. John Benjamins.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>A foundational text in functional and typological syntax.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hindle, D. and M. Rooth. 1990. Structural ambiguity and lexical relations. Proceedings DARPA Speech and Natural Language Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hindle 및 Rooth(1990). 구조적 중의성과 어휘 관계. DARPA 음성 및 자연어 워크숍 논문집.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Research on using lexical associations to resolve structural ambiguities like PP attachment.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hindle, D. and M. Rooth. 1991. Structural ambiguity and lexical relations. ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hindle 및 Rooth(1991). 구조적 중의성과 어휘 관계. ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Extended version of their research on lexical relations and structural ambiguity.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 21</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jelinek, F. and J. D. Lafferty. 1991. Computation of the probability of initial substring generation by stochastic context-free grammars. Computational Linguistics, 17(3):315–323.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jelinek 및 Lafferty(1991). 확률적 문맥 자유 문법에 의한 초기 하위 문자열 생성 확률 계산. Computational Linguistics.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Algorithms for calculating "prefix probabilities" in PCFGs.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 22</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jelinek, F., J. D. Lafferty, D. M. Magerman, R. L. Mercer, A. Ratnaparkhi, and S. Roukos. 1994. Decision tree parsing using a hidden derivation model. ARPA Human Language Technologies Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jelinek 외(1994). 은닉 유도 모델을 사용한 의사결정 트리 구문 분석. ARPA HLT 워크숍.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early use of decision trees in complex statistical parsing tasks.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 23</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Johnson, M. 1998. PCFG models of linguistic tree representations. Computational Linguistics, 24(4):613–632.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Johnson(1998). 언어 트리 표현의 PCFG 모델. Computational Linguistics.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Analyzes how the design of tree representations affects the performance of PCFGs.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 24</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Joshi, A. K. 1985. Tree adjoining grammars: How much context-sensitivity is required to provide reasonable structural descriptions? In David R. Dowty, Lauri Karttunen, and Arnold Zwicky, editors, Natural Language Parsing, pages 206–250. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Joshi(1985). 트리 부속 문법(TAG): 타당한 구조적 설명을 제공하기 위해 얼마나 많은 문맥 민감성이 필요한가? Cambridge University Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduces Tree Adjoining Grammars (TAG), a "mildly context-sensitive" formalism.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 25</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Joshi, A. K. and B. Srinivas. 1994. Disambiguation of super parts of speech (or supertags): Almost parsing. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Joshi 및 Srinivas(1994). 슈퍼 품사(또는 슈퍼태그)의 중의성 해소: 거의 구문 분석. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational paper on supertagging for TAG.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 26</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klein, D. and C. D. Manning. 2001. Parsing and hyper-graphs. IWPT-01.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klein 및 Manning(2001). 구문 분석 및 하이퍼그래프. IWPT-01.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Framework for viewing various parsing algorithms as operations on hypergraphs.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 27</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klein, D. and C. D. Manning. 2003a. A* parsing: Fast exact Viterbi parse selection. HLT-NAACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klein 및 Manning(2003a). A* 구문 분석: 빠른 정밀 비터비 파스 선택. HLT-NAACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Application of A* search to speed up the finding of the best parse tree.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 28</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klein, D. and C. D. Manning. 2003b. Accurate unlexicalized parsing. HLT-NAACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klein 및 Manning(2003b). 정확한 비어휘화 구문 분석. HLT-NAACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Shows that PCFGs with carefully designed state splits can perform as well as lexicalized models.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 29</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lafferty, J. D., D. Sleator, and D. Temperley. 1992. Grammatical trigrams: A probabilistic model of link grammar. AAAI Fall Symposium on Probabilistic Approaches to Natural Language.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lafferty 외(1992). 문법적 트리그램: 링크 문법의 확률 모델. AAAI 가을 심포지엄.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Probabilistic extension of Link Grammar.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 30</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lari, K. and S. J. Young. 1990. The estimation of stochastic context-free grammars using the Inside-Outside algorithm. Computer Speech and Language, 4:35–56.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lari 및 Young(1990). Inside-Outside 알고리즘을 이용한 확률적 문맥 자유 문법의 추정. Computer Speech and Language.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational paper on the EM algorithm (Inside-Outside) for unsupervised PCFG learning.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 31</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Magerman, D. M. and M. P. Marcus. 1991. Pearl: A probabilistic chart parser. EACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Magerman 및 Marcus(1991). Pearl: 확률적 차트 파서. EACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Description of an early probabilistic chart parser.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 32</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Manning, C. D. and H. Schütze. 1999. Foundations of Statistical Natural Language Processing. MIT Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Manning 및 Schütze(1999). 통계적 자연어 처리 기초. MIT Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The classic comprehensive textbook on statistical NLP.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 33</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Marcus, M. P. 1990. Summary of session 9: Automatic acquisition of linguistic structure. Proceedings DARPA Speech and Natural Language Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Marcus(1990). 세션 9 요약: 언어 구조의 자동 획득. DARPA 음성 및 자연어 워크숍 논문집.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Summary of research trends in automatically learning grammars from corpora.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 34</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ney, H. 1991. Dynamic programming parsing for context-free grammars in continuous speech recognition. IEEE Transactions on Signal Processing, 39(2):336–340.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ney(1991). 연속 음성 인식에서 문맥 자유 문법을 위한 동적 프로그래밍 구문 분석. IEEE Transactions on Signal Processing.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Integration of parsing and speech recognition using dynamic programming.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 35</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Petrov, S., L. Barrett, R. Thibaux, and D. Klein. 2006. Learning accurate, compact, and interpretable tree annotation. COLING/ACL.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Petrov 외(2006). 정확하고 콤팩트하며 해석 가능한 트리 주어 학습. COLING/ACL.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Research on Berkeley Parser, using automated state-splitting to improve PCFGs.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 36</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pollard, C. and I. A. Sag. 1994. Head-Driven Phrase Structure Grammar. University of Chicago Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Pollard 및 Sag(1994). 헤드 기반 구문 구조 문법(HPSG). University of Chicago Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational text for HPSG.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 37</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ratnaparkhi, A., J. C. Reynar, and S. Roukos. 1994. A maximum entropy model for prepositional phrase attachment. ARPA Human Language Technologies Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ratnaparkhi 외(1994). 전치사구 부착을 위한 최대 엔트로피 모델. ARPA HLT 워크숍.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Application of Maximum Entropy (MaxEnt) models to PP attachment.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 38</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Resnik, P. 1992. Probabilistic tree-adjoining grammar as a framework for statistical natural language processing. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Resnik(1992). 통계적 자연어 처리를 위한 프레임워크로서의 확률적 트리 부속 문법. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Probabilistic formulation of Tree Adjoining Grammars.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 39</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Salomaa, A. 1969. Probabilistic and weighted grammars. Information and Control, 15:529–544.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Salomaa(1969). 확률 및 가중치 문법. Information and Control.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early mathematical theory of weighted formal languages.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 40</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Schabes, Y. 1990. Mathematical and Computational Aspects of Lexicalized Grammars. Ph.D. thesis, University of Pennsylvania, PA.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Schabes(1990). 어휘화된 문법의 수학적 및 계산적 측면. 펜실베이니아 대학교 박사 학위 논문.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational research on the computational properties of lexicalized grammars (like TAG).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 41</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Schabes, Y. 1992. Stochastic lexicalized tree-adjoining grammars. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Schabes(1992). 확률적 어휘화된 트리 부속 문법. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introducing stochastic elements to lexicalized TAG.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 42</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Schabes, Y., A. Abeillé, and A. K. Joshi. 1988. Parsing strategies with 'lexicalized' grammars: Applications to Tree Adjoining Grammars. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Schabes 외(1988). '어휘화된' 문법을 이용한 구문 분석 전략: 트리 부속 문법에의 응용. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Strategies for efficient parsing when using large, lexicalized grammars.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 43</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Stetina, J. and M. Nagao. 1997. Corpus based PP attachment ambiguity resolution with a semantic dictionary. Proceedings of the Fifth Workshop on Very Large Corpora.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Stetina 및 Nagao(1997). 의미 사전을 이용한 코퍼스 기반 PP 부착 중의성 해소. VLC 워크숍 논문집.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Combining corpus data with semantic knowledge bases for parsing.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 44</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Stolcke, A. 1995. An efficient probabilistic context-free parsing algorithm that computes prefix probabilities. Computational Linguistics, 21(2):165–202.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Stolcke(1995). 접두사 확률을 계산하는 효율적인 확률적 문맥 자유 구문 분석 알고리즘. Computational Linguistics.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Detailed algorithm for prefix probabilities in PCFGs, based on Earley parsing.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

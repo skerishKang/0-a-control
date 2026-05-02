@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.1 • THE AUTOMATIC SPEECH RECOGNITION TASK 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.1 • 자동 음성 인식 과제 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+  read speech
+  conversational speech</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+  낭독체 음성
+  대화체 음성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성의 유형을 구분하는 두 가지 핵심 용어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second dimension of variation is who the speaker is talking to. Humans speaking to machines (either dictating or talking to a dialogue system) are easier to recognize than humans speaking to humans. Read speech, in which humans are reading out loud, for example in audio books, is also relatively easy to recognize. Recognizing the speech of two humans talking to each other in conversational speech, for example, for transcribing a business meeting, is the hardest. It seems that when humans talk to machines, or read without an audience present, they simplify their speech quite a bit, talking more slowly and more clearly.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>변화의 두 번째 차원은 화자가 누구에게 말하고 있는가입니다. 기계에게 말하는 인간(구술하거나 대화 시스템에 말하는 경우)은 인간끼리 말하는 경우보다 인식하기 쉽습니다. 예를 들어 오디오북처럼 인간이 소리 내어 읽는 낭독체 음성(Read speech)도 상대적으로 인식하기 쉽습니다. 비즈니스 회의를 전사하는 것과 같이 대화체 음성(conversational speech)에서 서로 대화하는 두 사람의 음성을 인식하는 것이 가장 어렵습니다. 인간이 기계에게 말하거나 청중 없이 글을 읽을 때, 더 천천히 그리고 더 명확하게 말함으로써 자신의 음성을 상당히 단순화하는 것으로 보입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>화자의 대화 상대에 따른 인식 난이도 차이를 설명합니다. 대화체보다 낭독체가, 인간 간 대화보다 인간-기계 대화가 더 인식하기 쉽습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A third dimension of variation is channel and noise. Speech is easier to recognize if its recorded in a quiet room with head-mounted microphones than if it’s recorded by a distant microphone on a noisy city street, or in a car with the window open.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>변화의 세 번째 차원은 채널과 소음입니다. 소음이 심한 도시 거리의 멀리 떨어진 마이크나 창문을 열어둔 차 안에서 녹음된 음성보다, 머리에 착용하는 마이크(head-mounted microphones)를 사용하여 조용한 방에서 녹음된 음성이 더 인식하기 쉽습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>녹음 환경(소음, 마이크 거리)이 인식 성능에 미치는 영향을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A final dimension of variation is accent or speaker-class characteristics. Speech is easier to recognize if the speaker is speaking the same dialect or variety that the system was trained on. Speech by speakers of regional or ethnic dialects, or speech by children can be quite difficult to recognize if the system is only trained on speakers of standard dialects, or only adult speakers.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>변화의 마지막 차원은 억양 또는 화자 계층의 특성입니다. 화자가 시스템이 학습한 것과 동일한 방언이나 변이형(variety)으로 말할 때 음성 인식이 더 쉽습니다. 시스템이 표준어 화자나 성인 화자만을 대상으로 학습되었다면, 지역 방언이나 소수 민족 방언 화자의 음성, 또는 어린이의 음성은 인식하기 매우 어려울 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>화자의 특성(방언, 연령 등)과 학습 데이터 간의 일치 여부가 인식 성능에 중요함을 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A number of publicly available corpora with human-created transcripts are used to create ASR test and training sets to explore this variation; we mention a few of them here since you will encounter them in the literature.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 다양성을 탐색하기 위해 사람이 작성한 전사문이 포함된 여러 공개 말뭉치(corpora)가 ASR 테스트 및 학습 세트 구축에 사용됩니다. 문헌에서 자주 접하게 될 몇 가지 주요 말뭉치를 여기서 언급하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>ASR 연구 및 개발에 널리 사용되는 주요 데이터셋(말뭉치)들을 소개하기 위한 도입부입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>LibriSpeech</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LibriSpeech</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>낭독체 음성 데이터셋의 대표 사례입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>LibriSpeech is a large open-source read-speech 16 kHz dataset with over 1000 hours of audio books from the LibriVox project, with transcripts aligned at the sentence level (Panayotov et al., 2015). It is divided into an easier (“clean”) and a more difficult portion (“other”) with the clean portion of higher recording quality and with accents closer to US English. This was done by running a speech recognizer (trained on read speech from the Wall Street Journal) on all the audio, computing the WER for each speaker based on the gold transcripts, and dividing the speakers roughly in half, with recordings from lower-WER speakers called “clean” and recordings from higher-WER speakers “other”.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LibriSpeech는 LibriVox 프로젝트의 오디오북 1,000시간 이상의 분량을 포함하는 대규모 오픈 소스 낭독체 음성 16kHz 데이터셋으로, 문장 단위로 정렬된 전사문을 제공합니다(Panayotov et al., 2015). 이는 더 쉬운 부분("clean")과 더 어려운 부분("other")으로 나뉘는데, "clean" 부분은 녹음 품질이 더 높고 억양이 미국 영어에 더 가깝습니다. 이는 모든 오디오에 대해 (Wall Street Journal의 낭독체 음성으로 학습된) 음성 인식기를 실행하고, 정답 전사문을 바탕으로 각 화자의 WER(단어 오류율)을 계산한 뒤, 화자를 대략 절반으로 나누어 WER이 낮은 화자의 녹음은 "clean", 높은 화자의 녹음은 "other"로 분류하여 이루어졌습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LibriSpeech 데이터셋의 구성과 분류 기준(clean vs other)을 상세히 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Switchboard</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Switchboard</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전화 대화 음성 데이터셋의 대표 사례입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Switchboard corpus of prompted telephone conversations between strangers was collected in the early 1990s; it contains 2430 conversations averaging 6 minutes each, totaling 240 hours of 8 kHz speech and about 3 million words (Godfrey et al., 1992). Switchboard has the singular advantage of an enormous amount of auxiliary hand-done linguistic labeling, including parses, dialogue act tags, phonetic and prosodic labeling, and discourse and information structure.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>낯선 사람들 사이의 유도된 전화 대화를 담은 Switchboard 말뭉치는 1990년대 초에 수집되었습니다. 여기에는 평균 6분 길이의 대화 2,430개가 포함되어 있으며, 총 240시간의 8kHz 음성과 약 300만 단어로 구성됩니다(Godfrey et al., 1992). Switchboard는 구문 분석, 대화 행위 태그, 음성 및 운율 레이블링, 담화 및 정보 구조를 포함하여 수작업으로 이루어진 방대한 양의 보조 언어학적 레이블링이 있다는 독보적인 장점이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Switchboard 데이터셋의 규모와 풍부한 언어학적 주석 정보를 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CALLHOME</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CALLHOME</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자연스러운 전화 대화 데이터셋입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The CALLHOME corpus was collected in the late 1990s and consists of 120 unscripted 30-minute telephone conversations between native speakers of English who were usually close friends or family (Canavan et al., 1997).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CALLHOME 말뭉치는 1990년대 후반에 수집되었으며, 주로 가까운 친구나 가족 사이인 영어 원어민들 간의 대본 없는 30분짜리 전화 대화 120개로 구성됩니다(Canavan et al., 1997).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>친밀한 관계 사이의 비정형 대화를 다루는 CALLHOME 데이터셋을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Santa Barbara Corpus of Spoken American English (Du Bois et al., 2005) is a large corpus of naturally occurring everyday spoken interactions from all over the United States, mostly face-to-face conversation, but also town-hall meetings, food preparation, on-the-job talk, and classroom lectures. The corpus was anonymized by removing personal names and other identifying information (replaced by pseudonyms in the transcripts, and masked in the audio).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Santa Barbara 미국 영어 구어 말뭉치(Du Bois et al., 2005)는 미국 전역에서 수집된 일상적인 언어 상호작용을 담은 대규모 말뭉치입니다. 주로 대면 대화이지만, 마을 회의, 요리 준비, 직장 내 대화, 강의실 수업 등도 포함됩니다. 이 말뭉치는 개인 이름 및 기타 식별 정보를 제거하여 익명화되었습니다(전사문에서는 가명으로 대체되고 오디오에서는 마스킹 처리됨).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일상생활의 다양한 상황을 포괄하는 Santa Barbara 말뭉치의 특징을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CORAAL</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CORAAL</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>아프리카계 미국어(AAL) 연구를 위한 말뭉치입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CORAAL is a collection of over 150 sociolinguistic interviews with African American speakers, with the goal of studying African American Language (AAL), the many variations of language used in African American communities (Kendall and Farrington, 2020). The interviews are anonymized with transcripts aligned at the utterance level.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CORAAL은 아프리카계 미국인 사회에서 사용되는 다양한 언어 변이형인 아프리카계 미국어(AAL)를 연구할 목적으로 수집된 아프리카계 미국인 화자들과의 사회언어학적 인터뷰 150개 이상의 모음입니다(Kendall and Farrington, 2020). 인터뷰는 발화 단위로 정렬된 전사문과 함께 익명화되어 제공됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 사회 집단의 언어적 특성을 다루는 CORAAL 말뭉치를 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHiME</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CHiME</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소음 환경에서의 강건한 음성 인식을 위한 챌린지입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The CHiME Challenge is a series of difficult shared tasks with corpora that deal with robustness in ASR. The CHiME 5 task, for example, is ASR of conversational speech in real home environments (specifically dinner parties). The</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CHiME 챌린지는 ASR의 강건성(robustness)을 다루는 말뭉치를 이용한 일련의 어려운 공동 과제들입니다. 예를 들어 CHiME 5 과제는 실제 가정 환경(특히 저녁 파티)에서의 대화체 음성에 대한 ASR입니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소음이 많은 실제 환경에서의 인식 성능을 평가하는 CHiME 챌린지를 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">26.2 ASR을 위한 특징 추출: 로그 멜 스펙트럼</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 26 • AUTOMATIC SPEECH RECOGNITION AND TEXT-TO-SPEECH</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제26장 • 자동 음성 인식 및 텍스트 음성 변환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>corpus contains recordings of twenty different dinner parties in real homes, each with four participants, and in three locations (kitchen, dining area, living room), recorded both with distant room microphones and with body-worn mikes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 말뭉치는 실제 가정에서 열린 20개의 서로 다른 저녁 파티 녹음본을 포함하며, 각 파티에는 4명의 참가자가 있었고 세 곳의 장소(주방, 식사 공간, 거실)에서 녹음되었습니다. 멀리 떨어진 실내 마이크와 몸에 착용하는 마이크를 모두 사용하여 녹음되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CHiME 5 데이터셋의 상세한 녹음 환경을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>HKUST</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HKUST</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>홍콩 과기대에서 제작한 중국어(만다린) 전화 음성 말뭉치입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>HKUST Mandarin Telephone Speech corpus has 1206 ten-minute telephone conversations between speakers of Mandarin across China, including transcripts of the conversations, which are between either friends or strangers (Liu et al., 2006).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HKUST 만다린 전화 음성 말뭉치는 중국 전역의 만다린 화자들 사이의 10분짜리 전화 대화 1,206개를 포함하고 있습니다. 친구 또는 낯선 사람들 사이의 대화 전사본도 포함되어 있습니다(Liu et al., 2006).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어 ASR 연구를 위한 데이터셋인 HKUST를 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>AISHELL-1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>AISHELL-1</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대규모 중국어 낭독체 음성 말뭉치입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>AISHELL-1 corpus contains 170 hours of Mandarin read speech of sentences taken from various domains, read by different speakers mainly from northern China (Bu et al., 2017).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>AISHELL-1 말뭉치는 주로 중국 북부 지역의 다양한 화자들이 여러 분야에서 발췌한 문장들을 읽은 170시간 분량의 만다린 낭독체 음성을 포함하고 있습니다(Bu et al., 2017).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>또 다른 주요 중국어 데이터셋인 AISHELL-1을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.1 shows the rough percentage of incorrect words (the word error rate, or WER, defined on page 15) from state-of-the-art systems on some of these tasks. Note that the error rate on read speech (like the LibriSpeech audiobook corpus) is around 2%; this is a solved task, although these numbers come from systems that require enormous computational resources. By contrast, the error rate for transcribing conversations between humans is much higher; 5.8 to 11% for the Switchboard and CALLHOME corpora. The error rate is higher yet again for speakers of varieties like African American Vernacular English, and yet again for difficult conversational tasks like transcription of 4-speaker dinner party speech, which can have error rates as high as 81.3%. Character error rates (CER) are also much lower for read Mandarin speech than for natural conversation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.1은 이러한 몇 가지 과제에 대한 최신(state-of-the-art) 시스템의 대략적인 오인식 단어 비율(15페이지에서 정의된 단어 오류율, WER)을 보여줍니다. LibriSpeech 오디오북 말뭉치와 같은 낭독체 음성의 오류율은 약 2%입니다. 이는 비록 막대한 컴퓨팅 자원을 필요로 하는 시스템의 결과이긴 하지만, 이미 해결된 과제로 간주됩니다. 반면, 인간 사이의 대화를 전사하는 오류율은 훨씬 높아서 Switchboard 및 CALLHOME 말뭉치의 경우 5.8~11%에 달합니다. 아프리카계 미국인 흑인 영어(AAVE)와 같은 변이형 화자의 경우 오류율은 더 높아지며, 4명이 참여하는 저녁 파티 대화 전사와 같은 어려운 대화 과제는 오류율이 무려 81.3%에 달할 수 있습니다. 중국어(만다린)의 경우에도 문자 오류율(CER)이 자연스러운 대화보다 낭독체 음성에서 훨씬 낮게 나타납니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>과제의 특성에 따른 시스템의 성능(WER/CER) 차이를 요약하여 보여줍니다. 낭독체보다 대화체가, 그리고 소음이 많은 다수 대화 환경이 훨씬 어렵다는 점을 수치로 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>
+  English Tasks | WER%
+  LibriSpeech audiobooks 960hour clean | 1.4
+  LibriSpeech audiobooks 960hour other | 2.6
+  Switchboard telephone conversations between strangers | 5.8
+  CALLHOME telephone conversations between family | 11.0
+  Sociolinguistic interviews, CORAAL (AAL) | 27.0
+  CHiME5 dinner parties with body-worn microphones | 47.9
+  CHiME5 dinner parties with distant microphones | 81.3
+  Chinese (Mandarin) Tasks | CER%
+  AISHELL-1 Mandarin read speech corpus | 6.7
+  HKUST Mandarin Chinese telephone conversations | 23.5</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>
+  영어 과제 | WER%
+  LibriSpeech 오디오북 960시간 clean | 1.4
+  LibriSpeech 오디오북 960시간 other | 2.6
+  Switchboard 낯선 사람들 간의 전화 대화 | 5.8
+  CALLHOME 가족 간의 전화 대화 | 11.0
+  사회언어학적 인터뷰, CORAAL (AAL) | 27.0
+  CHiME5 저녁 파티 (몸에 착용하는 마이크 사용) | 47.9
+  CHiME5 저녁 파티 (먼 거리의 마이크 사용) | 81.3
+  중국어(만다린) 과제 | CER%
+  AISHELL-1 만다린 낭독체 음성 말뭉치 | 6.7
+  HKUST 만다린 중국어 전화 대화 | 23.5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다양한 ASR 과제별 최신 시스템의 성능 수치를 정리한 표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.1 Rough Word Error Rates (WER = % of words misrecognized) reported around 2020 for ASR on various American English recognition tasks, and character error rates (CER) for two Chinese recognition tasks.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.1 2020년경 보고된 다양한 미국 영어 인식 과제에 대한 ASR의 대략적인 단어 오류율(WER = 오인식된 단어 비율) 및 두 가지 중국어 인식 과제에 대한 문자 오류율(CER).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 26.1의 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.2 Feature Extraction for ASR: Log Mel Spectrum</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.2 ASR을 위한 특징 추출: 로그 멜 스펙트럼</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 신호에서 특징을 추출하는 구체적인 방법에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>feature vector</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>특징 벡터(feature vector)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 신호의 특성을 수치로 표현한 벡터입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first step in ASR is to transform the input waveform into a sequence of acoustic feature vectors, each vector representing the information in a small time window of the signal. Let’s see how to convert a raw wavefile to the most commonly used features, sequences of log mel spectrum vectors. A speech signal processing course is recommended for more details.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ASR의 첫 번째 단계는 입력 파형을 일련의 음향 특징 벡터 시퀀스로 변환하는 것인데, 각 벡터는 신호의 짧은 시간 창(time window) 내의 정보를 나타냅니다. 가공되지 않은 웨이브 파일을 가장 일반적으로 사용되는 특징인 로그 멜 스펙트럼 벡터 시퀀스로 변환하는 방법을 살펴봅시다. 더 자세한 내용은 음성 신호 처리 과정을 참고하는 것을 추천합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식의 전처리 과정인 특징 추출의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.2.1 Sampling and Quantization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.2.1 샘플링 및 양자화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>아날로그 신호를 디지털 신호로 바꾸는 기초 단계를 다룹니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall from Section ?? that the first step is to convert the analog representations (first air pressure and then analog electric signals in a microphone) into a digital signal.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>?? 섹션에서 보았듯이, 첫 번째 단계는 아날로그 표현(먼저 공기 압력, 그다음 마이크의 아날로그 전기 신호)을 디지털 신호로 변환하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>아날로그 음성 신호가 디지털 데이터로 변환되는 과정을 상기시킵니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

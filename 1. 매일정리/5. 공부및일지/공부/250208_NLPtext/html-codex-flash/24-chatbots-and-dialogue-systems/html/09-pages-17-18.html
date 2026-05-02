@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; }
+th { background: var(--source-bg); font-weight: 700; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Regenerated from MD</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">제한적 문법, 템플릿 생성 및 대화 상태 아키텍처</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The ASR component can also be made dependent on the dialogue state. For example, if the system has just asked the user "What city are you departing from?", the ASR language model component can be constrained to assign high probability to answers with city names. This can be done by training a language model on answers to this question, or by hand-writing finite-state or context-free grammars for such sentences. A language model that is completely dependent on dialogue state is called a restrictive grammar; usually real systems mix restrictive grammars with more general language models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ASR 구성 요소는 대화 상태에 따라 달라질 수 있습니다. 예를 들어, 시스템이 사용자에게 "어느 도시에서 출발하시나요?"라고 질문했다면, ASR 언어 모델 구성 요소는 도시 이름이 포함된 답변에 높은 확률을 할당하도록 제한될 수 있습니다. 이는 해당 질문에 대한 답변으로 언어 모델을 훈련시키거나, 그러한 문장에 대한 유한 상태 또는 문맥 자유 문법을 직접 작성함으로써 가능합니다. 대화 상태에 완전히 의존하는 언어 모델을 제한적 문법(restrictive grammar)이라고 하며, 보통 실제 시스템은 제한적 문법과 더 일반적인 언어 모델을 혼합하여 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 맥락에 맞춰 음성 인식의 정확도를 높이는 제한적 문법의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>restrictive grammar</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제한적 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 상태에 따라 인식 가능한 범위를 좁혀 정확도를 높이는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>template-based generation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>템플릿 기반 생성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미리 정의된 문장 틀에 변수를 채워 넣어 응답을 만드는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>prompt</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>프롬프트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시스템이 사용자에게 입력을 유도하기 위해 던지는 질문이나 안내 문구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The natural language generation module of any dialogue system produces the utterances that the system says to the user. Frame-based systems tend to use template-based generation, in which all or most of the words in the sentence to be uttered to the user are prespecified by the dialogue designer. Sentences created by these templates are often called prompts. Templates might be completely fixed (like 'Hello, how can I help you?'), or can include some variables that are filled in by the generator, as in the following:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모든 대화 시스템의 자연어 생성 모듈은 시스템이 사용자에게 말하는 발언을 생성합니다. 프레임 기반 시스템은 템플릿 기반 생성을 사용하는 경향이 있는데, 여기서는 사용자에게 발언할 문장의 전체 또는 대부분의 단어가 대화 설계자에 의해 미리 지정됩니다. 이러한 템플릿에 의해 생성된 문장을 종종 프롬프트라고 부릅니다. 템플릿은 완전히 고정되어 있거나('안녕하세요, 무엇을 도와드릴까요?'), 다음과 같이 생성기에 의해 채워지는 일부 변수를 포함할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자연어 생성(NLG) 단계에서 템플릿과 프롬프트의 역할을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>What time do you want to leave CITY-ORIG?
+  Will you return to CITY-ORIG from CITY-DEST?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CITY-ORIG에서 몇 시에 출발하시겠습니까?
+  CITY-DEST에서 CITY-ORIG로 돌아오실 건가요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>변수(CITY-ORIG 등)가 포함된 응답 템플릿의 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It's possible to do some simple grounding even in templated generation. Consider the unnaturalness of this example from Cohen et al. (2004):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>템플릿 기반 생성에서도 간단한 접지(grounding)가 가능합니다. Cohen 등(2004)의 다음 예시에서 나타나는 부자연스러움을 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화의 맥락을 연결하는 접지(grounding)의 중요성을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(24.5) System: Did you want to review some more of your personal profile?
+  Caller: No.
+  System: What's next?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(24.5) 시스템: 개인 프로필을 좀 더 검토하시겠습니까?
+  발신자: 아니요.
+  시스템: 다음은 무엇입니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사용자의 응답에 대한 확인이나 연결어 없이 바로 다음 질문으로 넘어가 부자연스러운 대화 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Without an acknowledgment, the caller doesn't know that the system has understood her 'No'. The use of Okay below adds grounding to the templated response What's next?, making (24.6) a much more natural response than (24.5):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확인(acknowledgment)이 없으면, 발신자는 시스템이 자신의 '아니요'를 이해했는지 알 수 없습니다. 아래에서 'Okay'를 사용하면 'What's next?'라는 템플릿 응답에 접지를 추가하여, (24.6)을 (24.5)보다 훨씬 더 자연스러운 응답으로 만듭니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'Okay'와 같은 짧은 확인어가 대화의 자연스러움을 어떻게 높이는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(24.6) System: Did you want to review some more of your personal profile?
+  Caller: No.
+  System: Okay, what's next?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(24.6) 시스템: 개인 프로필을 좀 더 검토하시겠습니까?
+  발신자: 아니요.
+  시스템: 알겠습니다(Okay), 다음은 무엇입니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>접지가 포함된 보다 자연스러운 대화 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The rule-based GUS approach is very common in industrial applications. As was true with the rule-based approach to information extraction, it has the advantage of high precision, and if the domain is narrow enough and experts are available, can provide sufficient coverage as well. On the other hand, the handwritten rules or grammars can be both expensive and slow to create, and handwritten rules can suffer from recall problems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>규칙 기반의 GUS 접근 방식은 산업 분야에서 매우 흔합니다. 정보 추출에 대한 규칙 기반 접근 방식과 마찬가지로, 높은 정밀도(precision)라는 장점이 있으며, 도메인이 충분히 좁고 전문가가 있다면 충분한 커버리지(coverage)를 제공할 수도 있습니다. 반면, 수작업 규칙이나 문법은 생성하는 데 비용과 시간이 많이 들 수 있으며, 수작업 규칙은 재현율(recall) 문제로 어려움을 겪을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 시스템의 장점(정밀도)과 단점(비용, 재현율)을 정리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.4 The Dialogue-State Architecture</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.4 대화 상태 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임 기반보다 더 정교한 현대적 대화 시스템 구조에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern research systems for task-based dialogue are based on a more sophisticated version of the frame-based architecture called the dialogue-state or belief-state architecture. Figure 24.12 shows the six components of a typical dialogue-state system. The speech recognition and synthesis components deal with spoken language processing; we'll return to them in Chapter 26.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>태스크 기반 대화를 위한 현대 연구 시스템은 대화 상태(dialogue-state) 또는 믿음 상태(belief-state) 아키텍처라고 불리는 프레임 기반 아키텍처의 더 정교한 버전을 기반으로 합니다. 그림 24.12는 전형적인 대화 상태 시스템의 6가지 구성 요소를 보여줍니다. 음성 인식 및 합성 구성 요소는 음성 언어 처리를 담당하며, 이에 대해서는 26장에서 다시 다룰 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 상태 아키텍처의 기본 개념과 구성 요소를 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">대화 상태 추적기 및 대화 행위</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.12 Architecture of a dialogue-state system for task-oriented dialogue from Williams et al. (2016a).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.12 Williams 등(2016a)의 과업 지향 대화를 위한 대화 상태 시스템 아키텍처.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>ASR, SLU, DST, Dialog Policy, NLG, TTS로 이어지는 대화 시스템의 전체적인 흐름을 보여주는 다이어그램입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue state tracker maintains the current state of the dialogue (which include the user's most recent dialogue act, plus the entire set of slot-filler constraints the user has expressed so far). The dialogue policy decides what the system should do or say next. The dialogue policy in GUS was simple: ask questions until the frame was full and then report back the results of some database query. But a more sophisticated dialogue policy can help a system decide when to answer the user's questions, when to instead ask the user a clarification question, when to make a suggestion, and so on. Finally, dialogue state systems have a natural language generation component. In GUS, the sentences that the generator produced were all from pre-written templates. But a more sophisticated generation component can condition on the exact context to produce turns that seem much more natural.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 상태 추적기(dialogue state tracker)는 대화의 현재 상태(사용자의 가장 최근 대화 행위와 지금까지 사용자가 표현한 모든 슬롯 채우기 제약 조건을 포함)를 유지합니다. 대화 정책(dialogue policy)은 시스템이 다음에 무엇을 하거나 말해야 할지 결정합니다. GUS의 대화 정책은 간단했습니다: 프레임이 찰 때까지 질문을 던지고 데이터베이스 쿼리 결과를 보고하는 것이었습니다. 그러나 더 정교한 대화 정책은 시스템이 사용자의 질문에 언제 답할지, 언제 명확화 질문(clarification question)을 던질지, 언제 제안을 할지 등을 결정하는 데 도움을 줄 수 있습니다. 마지막으로, 대화 상태 시스템에는 자연어 생성 구성 요소가 있습니다. GUS에서 생성기가 만든 문장은 모두 미리 작성된 템플릿에서 나왔습니다. 그러나 더 정교한 생성 구성 요소는 정확한 문맥에 맞춰 훨씬 더 자연스러운 발언을 생성할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 상태 추적기, 대화 정책, 자연어 생성 구성 요소의 역할을 GUS와 비교하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As of the time of this writing, most commercial system are architectural hybrids, based on GUS architecture augmented with some dialogue-state components, but there are a wide variety of dialogue-state systems being developed in research labs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 글을 쓰는 현재, 대부분의 상업용 시스템은 GUS 아키텍처에 일부 대화 상태 구성 요소를 추가한 하이브리드 형태이지만, 연구실에서는 매우 다양한 대화 상태 시스템이 개발되고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현재 산업계와 학계의 시스템 구축 현황을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.4.1 Dialogue Acts</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.4.1 대화 행위</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템이 이해하고 생성해야 할 문장의 의도적 범주에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue acts</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 행위</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>화자의 발언이 대화에서 수행하는 역할(질문, 답변, 확인 등)을 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dialogue-state systems make use of dialogue acts. Dialogue acts represent the interactive function of the turn or sentence, combining the idea of speech acts and grounding into a single representation. Different types of dialogue systems require labeling different kinds of acts, and so the tagset—defining what a dialogue act is exactly— tends to be designed for particular tasks.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 상태 시스템은 대화 행위(dialogue acts)를 사용합니다. 대화 행위는 발언이나 문장의 상호작용적 기능을 나타내며, 화행(speech acts)과 접지(grounding)의 개념을 하나의 표현으로 결합합니다. 대화 시스템의 종류에 따라 서로 다른 종류의 행위를 레이블링해야 하므로, 대화 행위가 정확히 무엇인지 정의하는 태그 세트(tagset)는 특정 과업에 맞게 설계되는 경향이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 행위의 정의와 시스템별 특화된 태그 세트 사용에 대해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.13 shows a tagset for a restaurant recommendation system, and Fig. 24.14 shows these tags labeling a sample dialogue from the HIS system (Young et al., 2010). This example also shows the content of each dialogue acts, which are the slot fillers being communicated. So the user might INFORM the system that they want Italian food near a museum, or CONFIRM with the system that the price is reasonable.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.13은 식당 추천 시스템을 위한 태그 세트를 보여주며, 그림 24.14는 HIS 시스템(Young 등, 2010)의 샘플 대화에 이러한 태그가 레이블링된 것을 보여줍니다. 이 예시는 또한 전달되는 슬롯 채우기 값인 각 대화 행위의 내용(content)을 보여줍니다. 예를 들어 사용자는 박물관 근처의 이탈리아 음식을 원한다고 시스템에 알리거나(INFORM), 가격이 적당한지 시스템에 확인(CONFIRM)할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 행위 태그 세트의 실제 활용 사례와 슬롯 정보와의 결합 방식을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

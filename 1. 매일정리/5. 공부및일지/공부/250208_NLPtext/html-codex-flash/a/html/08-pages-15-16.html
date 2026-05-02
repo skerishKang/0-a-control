@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-15">Page 15</a><a class="chip" href="#page-16">Page 16</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-15">
+<header class="page-header"><h2>Page 15</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For this, we will need to know the probability of being in state j at time t, which we will call gamma_t(j): gamma_t(j) = P(qt = j | O, λ). Once again, we will compute this by including the observation sequence in the probability:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 위해, 시간 t에서 상태 j에 있을 확률을 알아야 하며, 이를 gamma_t(j)라고 부릅니다: gamma_t(j) = P(qt = j | O, λ). 다시 한번, 관측 시퀀스를 확률에 포함시켜 이를 계산할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of state occupancy probability gamma_t.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>gamma_t(j) = P(qt = j, O | λ) / P(O | λ) (A.26)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>gamma_t(j) = P(qt = j, O | λ) / P(O | λ) (A.26)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Calculating gamma_t using joint probability.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.13 The computation of gamma_t(j), the probability of being in state j at time t. Note that gamma is really a degenerate case of xi and hence this figure is like a version of Fig. A.12 with state i collapsed with state j.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.13 시간 t에서 상태 j에 있을 확률인 gamma_t(j)의 계산. gamma는 실제로는 xi의 특수한 사례(상태 i와 j가 합쳐진 경우)이며, 따라서 이 그림은 그림 A.12에서 상태 i와 상태 j를 하나로 합친 버전과 같음에 유의하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Relationship between xi and gamma.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>gamma_t(j) = (αt(j) βt(j)) / P(O | λ) (A.27)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>gamma_t(j) = (αt(j) βt(j)) / P(O | λ) (A.27)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Simplified formula for gamma_t using alpha and beta.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>b_hat_j(vk) = (Σ_{t=1, s.t. Ot=vk}^{T} gamma_t(j)) / (Σ_{t=1}^{T} gamma_t(j)) (A.28)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>b_hat_j(vk) = (Σ_{t=1, s.t. Ot=vk}^{T} gamma_t(j)) / (Σ_{t=1}^{T} gamma_t(j)) (A.28)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Final re-estimation formula for emission probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    function FORWARD-BACKWARD(observations of len T, output vocabulary V, hidden state set Q) returns HMM=(A,B)
+      initialize A and B
+      iterate until convergence
+        E-step
+          gamma_t(j) = (αt(j) βt(j)) / αT(qF) for all t and j
+          xi_t(i,j) = (αt(i) aij bj(ot+1) βt+1(j)) / αT(qF) for all t, i, and j
+        M-step
+          a_hat_ij = Σ_{t=1}^{T-1} xi_t(i,j) / Σ_{t=1}^{T-1} Σ_{k=1}^{N} xi_t(i,k)
+          b_hat_j(vk) = Σ_{t=1, s.t. Ot=vk}^{T} gamma_t(j) / Σ_{t=1}^{T} gamma_t(j)
+      return A, B</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    function FORWARD-BACKWARD(길이 T의 관측치, 출력 어휘 V, 은닉 상태 집합 Q) returns HMM=(A,B)
+      A와 B 초기화
+      수렴할 때까지 반복
+        E-단계 (Expectation step)
+          모든 t와 j에 대해, gamma_t(j) = (αt(j) βt(j)) / αT(qF)
+          모든 t, i, j에 대해, xi_t(i,j) = (αt(i) aij bj(ot+1) βt+1(j)) / αT(qF)
+        M-단계 (Maximization step)
+          a_hat_ij = Σ_{t=1}^{T-1} xi_t(i,j) / Σ_{t=1}^{T-1} Σ_{k=1}^{N} xi_t(i,k)
+          b_hat_j(vk) = Σ_{t=1, s.t. Ot=vk}^{T} gamma_t(j) / Σ_{t=1}^{T} gamma_t(j)
+      return A, B</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Complete Forward-Backward (Baum-Welch) algorithm.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-16">
+<header class="page-header"><h2>Page 16</h2>
+<div class="page-subtitle">A.6 Summary</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Although in principle the forward-backward algorithm can do completely unsupervised learning of the A and B parameters, in practice the initial conditions are very important. For this reason the algorithm is often given extra information. For example, for HMM-based speech recognition, the HMM structure is often set by hand, and only the emission (B) and (non-zero) A transition probabilities are trained from a set of observation sequences O.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>원칙적으로 전방-후방 알고리즘은 A와 B 매개변수에 대해 완전한 비지도 학습을 수행할 수 있지만, 실제로는 초기 조건이 매우 중요합니다. 이러한 이유로 알고리즘에 추가 정보가 제공되는 경우가 많습니다. 예를 들어, HMM 기반 음성 인식의 경우 HMM 구조는 수동으로 설정하고, 일련의 관측 시퀀스 O로부터 방출 확률(B)과 (0이 아닌) 전이 확률(A)만을 훈련시킵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Practical considerations and the importance of initialization in EM.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.6 Summary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.6 요약</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Summary of the chapter.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>|
+    - Hidden Markov models (HMMs) are a way of relating a sequence of observations to a sequence of hidden classes or hidden states that explain the observations.
+    - The process of discovering the sequence of hidden states, given the sequence of observations, is known as decoding or inference. The Viterbi algorithm is commonly used for decoding.
+    - The parameters of an HMM are the A transition probability matrix and the B observation likelihood matrix. Both can be trained with the Baum-Welch or forward-backward algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    - 은닉 마르코프 모델(HMM)은 일련의 관측치를 그 관측치를 설명하는 일련의 은닉 클래스 또는 은닉 상태와 연관시키는 방법입니다.
+    - 관측 시퀀스가 주어졌을 때 은닉 상태 시퀀스를 찾아내는 과정을 디코딩(decoding) 또는 추론(inference)이라고 합니다. 디코딩에는 비터비(Viterbi) 알고리즘이 일반적으로 사용됩니다.
+    - HMM의 매개변수는 전이 확률 행렬 A와 관측 우도 행렬 B입니다. 두 매개변수 모두 바움-웰치(Baum-Welch) 또는 전방-후방(forward-backward) 알고리즘으로 훈련할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Core concepts summary.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>서지 및 역사적 노트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>History of the field.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As we discussed in Chapter 8, Markov chains were first used by Markov (1913), to predict whether an upcoming letter in Pushkin’s Eugene Onegin would be a vowel or a consonant. The hidden Markov model was developed by Baum and colleagues at the Institute for Defense Analyses in Princeton (Baum and Petrie 1966, Baum and Eagon 1967).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8장에서 논의했듯이, 마르코프 체인은 푸시킨의 '예브게니 오네긴'에서 다음에 올 글자가 모음일지 자음일지를 예측하기 위해 마르코프(1913)가 처음 사용했습니다. 은닉 마르코프 모델은 프린스턴 국방 분석 연구소의 바움과 동료들에 의해 개발되었습니다 (Baum and Petrie 1966, Baum and Eagon 1967).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Origins of Markov models.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Viterbi algorithm was first applied to speech and language processing in the context of speech recognition by Vintsyuk (1968) but has what Kruskal (1983) calls a “remarkable history of multiple independent discovery and publication”. Kruskal and others give at least the following independently-discovered variants of the algorithm published in four separate fields:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비터비 알고리즘은 빈츄크(Vintsyuk, 1968)에 의해 음성 인식 분야의 언어 처리에 처음 적용되었으나, 크러스컬(Kruskal, 1983)이 언급했듯이 "여러 분야에서 독립적으로 발견되고 발표된 놀라운 역사"를 가지고 있습니다. 크러스컬과 다른 학자들은 네 가지 서로 다른 분야에서 발표된, 독립적으로 발견된 알고리즘의 변형들을 적어도 다음과 같이 제시합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Multiple independent discovery of the Viterbi algorithm.</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

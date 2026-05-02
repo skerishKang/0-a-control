@@ -1,0 +1,3397 @@
+[
+  {
+    "page": 1,
+    "elements": [
+      {
+        "type": "text",
+        "content": "Speech and Language Processing.\nDaniel Jurafsky & James H. Martin.\nCopyright © 2021.\nAll\nrights reserved.\nDraft of September 21, 2021.",
+        "bbox": [
+          95.4010009765625,
+          39.82692337036133,
+          476.1729431152344,
+          57.26205062866211
+        ]
+      },
+      {
+        "type": "text",
+        "content": "CHAPTER\n4",
+        "bbox": [
+          98.38999938964844,
+          118.42036437988281,
+          152.85789489746094,
+          201.70553588867188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Naive Bayes and Sentiment\nClassiﬁcation",
+        "bbox": [
+          167.33099365234375,
+          142.0784454345703,
+          491.3231201171875,
+          192.27056884765625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Classiﬁcation lies at the heart of both human and machine intelligence. Deciding\nwhat letter, word, or image has been presented to our senses, recognizing faces\nor voices, sorting mail, assigning grades to homeworks; these are all examples of\nassigning a category to an input. The potential challenges of this task are highlighted\nby the fabulist Jorge Luis Borges 1964, who imagined classifying animals into:",
+        "bbox": [
+          160.1999969482422,
+          212.80157470703125,
+          493.1999206542969,
+          270.6752014160156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(a) those that belong to the Emperor, (b) embalmed ones, (c) those that\nare trained, (d) suckling pigs, (e) mermaids, (f) fabulous ones, (g) stray\ndogs, (h) those that are included in this classiﬁcation, (i) those that\ntremble as if they were mad, (j) innumerable ones, (k) those drawn with\na very ﬁne camel’s hair brush, (l) others, (m) those that have just broken\na ﬂower vase, (n) those that resemble ﬂies from a distance.",
+        "bbox": [
+          185.10699462890625,
+          276.4441223144531,
+          468.2938537597656,
+          346.1826477050781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Many language processing tasks involve classiﬁcation, although luckily our classes\nare much easier to deﬁne than those of Borges. In this chapter we introduce the naive\nBayes algorithm and apply it to text categorization, the task of assigning a label or\ntext\ncategorization",
+        "bbox": [
+          102.07298278808594,
+          352.30352783203125,
+          501.04034423828125,
+          387.709228515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "category to an entire text or document.\nWe focus on one common text categorization task, sentiment analysis, the ex-\nsentiment\nanalysis",
+        "bbox": [
+          115.7099609375,
+          388.1695251464844,
+          493.19854736328125,
+          411.62322998046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "traction of sentiment, the positive or negative orientation that a writer expresses\ntoward some object. A review of a movie, book, or product on the web expresses the\nauthor’s sentiment toward the product, while an editorial or political text expresses\nsentiment toward a candidate or political action. Extracting consumer or public sen-\ntiment is thus relevant for ﬁelds from marketing to politics.\nThe simplest version of sentiment analysis is a binary classiﬁcation task, and\nthe words of the review provide excellent cues. Consider, for example, the follow-\ning phrases extracted from positive and negative reviews of movies and restaurants.\nWords like great, richly, awesome, and pathetic, and awful and ridiculously are very\ninformative cues:",
+        "bbox": [
+          160.19996643066406,
+          411.98858642578125,
+          493.200927734375,
+          529.6380004882812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+ ...zany characters and richly applied satire, and some great plot twists\n−It was pathetic. The worst part about it was the boxing scenes...\n+ ...awesome caramel sauce and sweet toasty almonds. I love this place!\n−...awful pizza and ridiculously overpriced...",
+        "bbox": [
+          185.10704040527344,
+          535.3529052734375,
+          481.245361328125,
+          583.4275512695312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Spam detection is another important commercial application, the binary clas-\nspam detection",
+        "bbox": [
+          99.45903015136719,
+          589.45751953125,
+          493.1991882324219,
+          599.5110473632812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "siﬁcation task of assigning an email to one of the two classes spam or not-spam.\nMany lexical and other features can be used to perform this classiﬁcation. For ex-\nample you might quite reasonably be suspicious of an email containing phrases like\n“online pharmaceutical” or “WITHOUT ANY COST” or “Dear Winner”.\nAnother thing we might want to know about a text is the language it’s written\nin. Texts on social media, for example, can be in any number of languages and\nwe’ll need to apply different processing. The task of language id is thus the ﬁrst\nlanguage id",
+        "bbox": [
+          110.27798461914062,
+          601.3269653320312,
+          493.2052307128906,
+          683.197021484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "step in most language processing pipelines. Related text classiﬁcation tasks like au-\nthorship attribution— determining a text’s author— are also relevant to the digital\nauthorship\nattribution",
+        "bbox": [
+          112.083984375,
+          685.0985107421875,
+          493.20257568359375,
+          709.5211791992188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "humanities, social sciences, and forensic linguistics.",
+        "bbox": [
+          160.19998168945312,
+          709.1004028320312,
+          367.7309265136719,
+          719.06298828125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 2,
+    "elements": [
+      {
+        "type": "text",
+        "content": "2\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          374.60150146484375,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Finally, one of the oldest tasks in text classiﬁcation is assigning a library sub-\nject category or topic label to a text. Deciding whether a research paper concerns\nepidemiology or instead, perhaps, embryology, is an important component of infor-\nmation retrieval. Various sets of subject categories exist, such as the MeSH (Medical\nSubject Headings) thesaurus. In fact, as we will see, subject category classiﬁcation\nis the task for which the naive Bayes algorithm was invented in 1961.\nClassiﬁcation is essential for tasks below the level of the document as well.\nWe’ve already seen period disambiguation (deciding if a period is the end of a sen-\ntence or part of a word), and word tokenization (deciding if a character should be\na word boundary). Even language modeling can be viewed as classiﬁcation: each\nword can be thought of as a class, and so predicting the next word is classifying the\ncontext-so-far into a class for each next word. A part-of-speech tagger (Chapter 8)\nclassiﬁes each occurrence of a word in a sentence as, e.g., a noun or a verb.\nThe goal of classiﬁcation is to take a single observation, extract some useful\nfeatures, and thereby classify the observation into one of a set of discrete classes.\nOne method for classifying text is to use handwritten rules. There are many areas of\nlanguage processing where handwritten rule-based classiﬁers constitute a state-of-\nthe-art system, or at least part of it.\nRules can be fragile, however, as situations or data change over time, and for\nsome tasks humans aren’t necessarily good at coming up with the rules. Most cases\nof classiﬁcation in language processing are instead done via supervised machine\nlearning, and this will be the subject of the remainder of this chapter. In supervised\nsupervised\nmachine\nlearning\nlearning, we have a data set of input observations, each associated with some correct\noutput (a ‘supervision signal’). The goal of the algorithm is to learn how to map\nfrom a new observation to a correct output.\nFormally, the task of supervised classiﬁcation is to take an input x and a ﬁxed\nset of output classes Y = y1,y2,...,yM and return a predicted class y ∈Y. For text\nclassiﬁcation, we’ll sometimes talk about c (for “class”) instead of y as our output\nvariable, and d (for “document”) instead of x as our input variable. In the supervised\nsituation we have a training set of N documents that have each been hand-labeled\nwith a class: (d1,c1),....,(dN,cN). Our goal is to learn a classiﬁer that is capable of\nmapping from a new document d to its correct class c ∈C. A probabilistic classiﬁer\nadditionally will tell us the probability of the observation being in the class. This\nfull distribution over the classes can be useful information for downstream decisions;\navoiding making discrete decisions early on can be useful when combining systems.\nMany kinds of machine learning algorithms are used to build classiﬁers. This\nchapter introduces naive Bayes; the following one introduces logistic regression.\nThese exemplify two ways of doing classiﬁcation. Generative classiﬁers like naive\nBayes build a model of how a class could generate some input data. Given an ob-\nservation, they return the class most likely to have generated the observation. Dis-\ncriminative classiﬁers like logistic regression instead learn what features from the\ninput are most useful to discriminate between the different possible classes. While\ndiscriminative systems are often more accurate and hence more commonly used,\ngenerative classiﬁers still have a role.",
+        "bbox": [
+          94.96502685546875,
+          111.56245422363281,
+          475.2052307128906,
+          635.5979614257812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.1\nNaive Bayes Classiﬁers",
+        "bbox": [
+          77.40106964111328,
+          657.7269897460938,
+          278.97625732421875,
+          674.9423828125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In this section we introduce the multinomial naive Bayes classiﬁer, so called be-\nnaive Bayes\nclassiﬁer",
+        "bbox": [
+          91.70004272460938,
+          695.8232421875,
+          475.1998596191406,
+          709.5211181640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cause it is a Bayesian classiﬁer that makes a simplifying (naive) assumption about",
+        "bbox": [
+          142.20004272460938,
+          709.1004028320312,
+          475.1998596191406,
+          719.06298828125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 3,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.1\n•\nNAIVE BAYES CLASSIFIERS\n3",
+        "bbox": [
+          321.6159973144531,
+          84.38048553466797,
+          493.2002868652344,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "how the features interact.\nThe intuition of the classiﬁer is shown in Fig. 4.1. We represent a text document\nas if it were a bag-of-words, that is, an unordered set of words with their position\nbag-of-words",
+        "bbox": [
+          104.94796752929688,
+          111.56245422363281,
+          493.199951171875,
+          145.43606567382812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ignored, keeping only their frequency in the document. In the example in the ﬁgure,\ninstead of representing the word order in all the phrases like “I love this movie” and\n“I would recommend it”, we simply note that the word I occurred 5 times in the\nentire excerpt, the word it 6 times, the words love, recommend, and movie once, and\nso on.",
+        "bbox": [
+          160.19989013671875,
+          147.4284210205078,
+          493.2008361816406,
+          205.21109008789062
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page3_vis3.png",
+        "bbox": [
+          205.28472900390625,
+          214.3173370361328,
+          517.5178833007812,
+          460.3192138671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.1\nIntuition of the multinomial naive Bayes classiﬁer applied to a movie review. The position of the\nwords is ignored (the bag of words assumption) and we make use of the frequency of each word.",
+        "bbox": [
+          95.40101623535156,
+          457.09210205078125,
+          493.20526123046875,
+          477.099365234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Naive Bayes is a probabilistic classiﬁer, meaning that for a document d, out of\nall classes c ∈C the classiﬁer returns the class ˆc which has the maximum posterior\nprobability given the document. In Eq. 4.1 we use the hat notation ˆ to mean “our\nˆ",
+        "bbox": [
+          141.58999633789062,
+          492.6059875488281,
+          493.1993713378906,
+          526.656005859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "estimate of the correct class”.",
+        "bbox": [
+          160.1999969482422,
+          528.6484375,
+          277.7786865234375,
+          538.6110229492188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆc = argmax\nc∈C\nP(c|d)\n(4.1)",
+        "bbox": [
+          285.9880065917969,
+          549.6537475585938,
+          493.2005920410156,
+          567.9915771484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "This idea of Bayesian inference has been known since the work of Bayes (1763),\nBayesian\ninference",
+        "bbox": [
+          117.4509506225586,
+          576.0172729492188,
+          493.20361328125,
+          589.7151489257812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and was ﬁrst applied to text classiﬁcation by Mosteller and Wallace (1964). The\nintuition of Bayesian classiﬁcation is to use Bayes’ rule to transform Eq. 4.1 into\nother probabilities that have some useful properties. Bayes’ rule is presented in\nEq. 4.2; it gives us a way to break down any conditional probability P(x|y) into\nthree other probabilities:",
+        "bbox": [
+          160.199951171875,
+          589.29443359375,
+          493.20074462890625,
+          647.0780029296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(x|y) = P(y|x)P(x)",
+        "bbox": [
+          284.83099365234375,
+          647.3807373046875,
+          367.3844909667969,
+          664.2705688476562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(y)\n(4.2)",
+        "bbox": [
+          336.3909912109375,
+          654.4844360351562,
+          493.2003173828125,
+          671.1055908203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can then substitute Eq. 4.2 into Eq. 4.1 to get Eq. 4.3:",
+        "bbox": [
+          175.14401245117188,
+          677.2464599609375,
+          403.4768981933594,
+          687.2090454101562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(d|c)P(c)",
+        "bbox": [
+          362.7650146484375,
+          696.9217529296875,
+          407.5164794921875,
+          707.0675659179688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆc = argmax\nc∈C\nP(c|d) = argmax\nc∈C",
+        "bbox": [
+          244.6990203857422,
+          703.6668090820312,
+          360.4635314941406,
+          722.003662109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(d)\n(4.3)",
+        "bbox": [
+          375.4779968261719,
+          704.0264892578125,
+          493.2003173828125,
+          720.6466064453125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 4,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          374.60150146484375,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can conveniently simplify Eq. 4.3 by dropping the denominator P(d). This\nis possible because we will be computing P(d|c)P(c)",
+        "bbox": [
+          142.20001220703125,
+          111.33189392089844,
+          475.1982116699219,
+          135.47305297851562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(d)\nfor each possible class. But P(d)\ndoesn’t change for each class; we are always asking about the most likely class for\nthe same document d, which must have the same probability P(d). Thus, we can\nchoose the class that maximizes this simpler formula:",
+        "bbox": [
+          142.19998168945312,
+          125.27995300292969,
+          475.21044921875,
+          172.65316772460938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆc = argmax\nc∈C\nP(c|d) = argmax\nc∈C\nP(d|c)P(c)\n(4.4)",
+        "bbox": [
+          227.89398193359375,
+          186.2418975830078,
+          475.2003479003906,
+          204.57875061035156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We call Naive Bayes a generative model because we can read Eq. 4.4 as stating\na kind of implicit assumption about how a document is generated: ﬁrst a class is\nsampled from P(c), and then the words are generated by sampling from P(d|c). (In\nfact we could imagine generating artiﬁcial documents, or at least their word counts,\nby following this process). We’ll say more about this intuition of generative models\nin Chapter 5.\nTo return to classiﬁcation: we compute the most probable class ˆc given some\ndocument d by choosing the class which has the highest product of two probabilities:\nthe prior probability of the class P(c) and the likelihood of the document P(d|c):\nprior\nprobability",
+        "bbox": [
+          93.41203308105469,
+          208.1776123046875,
+          475.2044372558594,
+          314.8472900390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "likelihood",
+        "bbox": [
+          97.36302947998047,
+          317.7804260253906,
+          127.80032348632812,
+          325.0032958984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "prior\nz}|{\nP(c)\n(4.5)",
+        "bbox": [
+          345.0840148925781,
+          324.6514587402344,
+          475.2003173828125,
+          352.5230712890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "likelihood\nz }| {\nP(d|c)",
+        "bbox": [
+          300.3470458984375,
+          325.923583984375,
+          340.6556396484375,
+          352.3465881347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆc = argmax\nc∈C",
+        "bbox": [
+          252.9500274658203,
+          342.3300476074219,
+          299.24053955078125,
+          360.53875732421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Without loss of generalization, we can represent a document d as a set of features\nf1, f2,..., fn:",
+        "bbox": [
+          143.69497680664062,
+          364.0459899902344,
+          475.1989440917969,
+          387.02020263671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "prior\nz}|{\nP(c)\n(4.6)",
+        "bbox": [
+          359.79400634765625,
+          396.92047119140625,
+          475.2003173828125,
+          424.7920837402344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "likelihood\nz\n}|\n{\nP(f1, f2,...., fn|c)",
+        "bbox": [
+          285.6359558105469,
+          398.1914367675781,
+          355.37646484375,
+          425.6712341308594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆc = argmax\nc∈C",
+        "bbox": [
+          238.23898315429688,
+          414.5989074707031,
+          284.52947998046875,
+          432.8066101074219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Unfortunately, Eq. 4.6 is still too hard to compute directly: without some sim-\nplifying assumptions, estimating the probability of every possible combination of\nfeatures (for example, every possible set of words and positions) would require huge\nnumbers of parameters and impossibly large training sets. Naive Bayes classiﬁers\ntherefore make two simplifying assumptions.\nThe ﬁrst is the bag of words assumption discussed intuitively above: we assume\nposition doesn’t matter, and that the word “love” has the same effect on classiﬁcation\nwhether it occurs as the 1st, 20th, or last word in the document. Thus we assume\nthat the features f1, f2,..., fn only encode word identity and not position.\nThe second is commonly called the naive Bayes assumption: this is the condi-\nnaive Bayes\nassumption",
+        "bbox": [
+          91.70101928710938,
+          436.42645263671875,
+          475.2051696777344,
+          555.7171020507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "tional independence assumption that the probabilities P(fi|c) are independent given\nthe class c and hence can be ‘naively’ multiplied as follows:",
+        "bbox": [
+          142.20001220703125,
+          555.6187133789062,
+          475.20013427734375,
+          577.8959350585938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(f1, f2,...., fn|c) = P(f1|c)·P(f2|c)·...·P(fn|c)\n(4.7)",
+        "bbox": [
+          207.01007080078125,
+          585.7816772460938,
+          475.2007141113281,
+          596.983154296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The ﬁnal equation for the class chosen by a naive Bayes classiﬁer is thus:",
+        "bbox": [
+          142.2000732421875,
+          604.349365234375,
+          434.273681640625,
+          614.3119506835938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cNB = argmax\nc∈C\nP(c)\nY",
+        "bbox": [
+          245.33706665039062,
+          621.6842041015625,
+          343.4722900390625,
+          642.1935424804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "f∈F\nP(f|c)\n(4.8)",
+        "bbox": [
+          331.0780944824219,
+          623.856689453125,
+          475.2007141113281,
+          645.5165405273438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "To apply the naive Bayes classiﬁer to text, we need to consider word positions, by\nsimply walking an index through every word position in the document:",
+        "bbox": [
+          142.20010375976562,
+          652.890380859375,
+          475.1997985839844,
+          674.8089599609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "positions ←all word positions in test document",
+        "bbox": [
+          209.92210388183594,
+          682.6947021484375,
+          407.479736328125,
+          693.0169677734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cNB = argmax\nc∈C\nP(c)\nY",
+        "bbox": [
+          231.12109375,
+          697.125244140625,
+          341.57427978515625,
+          717.6345825195312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i∈positions\nP(wi|c)\n(4.9)",
+        "bbox": [
+          317.9780578613281,
+          699.2966918945312,
+          475.2007141113281,
+          720.7875366210938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 5,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.2\n•\nTRAINING THE NAIVE BAYES CLASSIFIER\n5",
+        "bbox": [
+          260.91400146484375,
+          84.33849334716797,
+          493.2003173828125,
+          94.39205932617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Naive Bayes calculations, like calculations for language modeling, are done in log\nspace, to avoid underﬂow and increase speed. Thus Eq. 4.9 is generally instead\nexpressed as",
+        "bbox": [
+          160.20001220703125,
+          111.56245422363281,
+          493.199951171875,
+          145.43606567382812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cNB = argmax\nc∈C\nlogP(c)+\nX",
+        "bbox": [
+          232.96401977539062,
+          157.6513214111328,
+          365.26898193359375,
+          178.1605987548828
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i∈positions\nlogP(wi|c)\n(4.10)",
+        "bbox": [
+          340.84002685546875,
+          159.82276916503906,
+          493.2008972167969,
+          181.31361389160156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "By considering features in log space, Eq. 4.10 computes the predicted class as a lin-\near function of input features. Classiﬁers that use a linear combination of the inputs\nto make a classiﬁcation decision —like naive Bayes and also logistic regression—\nare called linear classiﬁers.\nlinear\nclassiﬁers",
+        "bbox": [
+          116.10704040527344,
+          193.4944610595703,
+          493.19989013671875,
+          241.7362518310547
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.2\nTraining the Naive Bayes Classiﬁer",
+        "bbox": [
+          95.40103912353516,
+          262.74310302734375,
+          378.61163330078125,
+          279.95849609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "How can we learn the probabilities P(c) and P(fi|c)? Let’s ﬁrst consider the maxi-\nmum likelihood estimate. We’ll simply use the frequencies in the data. For the class\nprior P(c) we ask what percentage of the documents in our training set are in each\nclass c. Let Nc be the number of documents in our training data with class c and\nNdoc be the total number of documents. Then:",
+        "bbox": [
+          160.20004272460938,
+          301.8528747558594,
+          493.2000732421875,
+          361.6440734863281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(c) = Nc",
+        "bbox": [
+          295.3610534667969,
+          370.1440124511719,
+          340.51336669921875,
+          386.8515930175781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(4.11)",
+        "bbox": [
+          471.5379943847656,
+          377.8209533691406,
+          493.2008361816406,
+          386.787353515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Ndoc",
+        "bbox": [
+          326.96600341796875,
+          383.7229919433594,
+          344.3909912109375,
+          394.7546081542969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "To learn the probability P(fi|c), we’ll assume a feature is just the existence of a word\nin the document’s bag of words, and so we’ll want P(wi|c), which we compute as\nthe fraction of times the word wi appears among all words in all documents of topic\nc. We ﬁrst concatenate all documents with category c into one big “category c” text.\nThen we use the frequency of wi in this concatenated document to give a maximum\nlikelihood estimate of the probability:",
+        "bbox": [
+          160.19998168945312,
+          404.8337707519531,
+          493.2042236328125,
+          474.9319763183594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(wi|c) =\ncount(wi,c)\nP\nw∈V count(w,c)\n(4.12)",
+        "bbox": [
+          264.8030090332031,
+          486.4598388671875,
+          493.2007751464844,
+          512.9146118164062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Here the vocabulary V consists of the union of all the word types in all classes, not\njust the words in one class c.\nThere is a problem, however, with maximum likelihood training. Imagine we\nare trying to estimate the likelihood of the word “fantastic” given class positive, but\nsuppose there are no training documents that both contain the word “fantastic” and\nare classiﬁed as positive. Perhaps the word “fantastic” happens to occur (sarcasti-\ncally?) in the class negative. In such a case the probability for this feature will be\nzero:",
+        "bbox": [
+          160.199951171875,
+          522.302490234375,
+          493.2033996582031,
+          615.9510498046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(“fantastic”|positive) = count(“fantastic”,positive)\nP\nw∈V count(w,positive)\n= 0\n(4.13)",
+        "bbox": [
+          208.0589599609375,
+          625.4369506835938,
+          493.2007751464844,
+          651.8916015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "But since naive Bayes naively multiplies all the feature likelihoods together, zero\nprobabilities in the likelihood term for any class will cause the probability of the\nclass to be zero, no matter the other evidence!\nThe simplest solution is the add-one (Laplace) smoothing introduced in Chap-\nter 3. While Laplace smoothing is usually replaced by more sophisticated smoothing",
+        "bbox": [
+          160.199951171875,
+          661.2794189453125,
+          493.1998291015625,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 6,
+    "elements": [
+      {
+        "type": "text",
+        "content": "6\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          374.60150146484375,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "algorithms in language modeling, it is commonly used in naive Bayes text catego-\nrization:",
+        "bbox": [
+          142.2000274658203,
+          111.56245422363281,
+          475.1997375488281,
+          133.48007202148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(wi|c) =\ncount(wi,c)+1\nP\nw∈V (count(w,c)+1) =\ncount(wi,c)+1\n\u0000P\nw∈V count(w,c)\n\u0001\n+|V|",
+        "bbox": [
+          176.14903259277344,
+          144.4279022216797,
+          440.0655517578125,
+          171.4215850830078
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(4.14)",
+        "bbox": [
+          453.5379638671875,
+          152.15890502929688,
+          475.2007751464844,
+          161.12530517578125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Note once again that it is crucial that the vocabulary V consists of the union of all the\nword types in all classes, not just the words in one class c (try to convince yourself\nwhy this must be true; see the exercise at the end of the chapter).\nWhat do we do about words that occur in our test data but are not in our vocab-\nulary at all because they did not occur in any training document in any class? The\nsolution for such unknown words is to ignore them—remove them from the test\nunknown word",
+        "bbox": [
+          81.18394470214844,
+          182.6114044189453,
+          475.2008056640625,
+          252.35006713867188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "document and not include any probability for them at all.\nFinally, some systems choose to completely ignore another class of words: stop\nwords, very frequent words like the and a. This can be done by sorting the vocabu-\nstop words",
+        "bbox": [
+          94.36592102050781,
+          254.3424835205078,
+          475.200439453125,
+          288.216064453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "lary by frequency in the training set, and deﬁning the top 10–100 vocabulary entries\nas stop words, or alternatively by using one of the many predeﬁned stop word lists\navailable online. Then each instance of these stop words is simply removed from\nboth training and test documents as if it had never occurred. In most text classiﬁca-\ntion applications, however, using a stop word list doesn’t improve performance, and\nso it is more common to make use of the entire vocabulary and not use a stop word\nlist.\nFig. 4.2 shows the ﬁnal algorithm.",
+        "bbox": [
+          142.19992065429688,
+          290.2084655761719,
+          475.1997985839844,
+          383.85699462890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "function TRAIN NAIVE BAYES(D, C) returns log P(c) and log P(w|c)",
+        "bbox": [
+          151.6649932861328,
+          414.3462829589844,
+          409.6628723144531,
+          423.6363830566406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "for each class c ∈C\n# Calculate P(c) terms\nNdoc = number of documents in D\nNc = number of documents from D in class c",
+        "bbox": [
+          151.6649627685547,
+          432.50628662109375,
+          339.9302673339844,
+          465.0583801269531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "logprior[c]←log Nc",
+        "bbox": [
+          160.63095092773438,
+          462.8251647949219,
+          239.7593231201172,
+          478.0203857421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Ndoc\nV←vocabulary of D\nbigdoc[c]←append(d) for d ∈D with class c\nfor each word w in V\n# Calculate P(w|c) terms\ncount(w,c)←# of occurrences of w in bigdoc[c]",
+        "bbox": [
+          160.63099670410156,
+          475.0461730957031,
+          386.42132568359375,
+          525.953369140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "loglikelihood[w,c]←log\ncount(w,c) + 1\nP\nw′ in V (count (w′,c) + 1)\nreturn logprior, loglikelihood, V",
+        "bbox": [
+          151.6649932861328,
+          526.3524780273438,
+          370.61090087890625,
+          557.58935546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "function TEST NAIVE BAYES(testdoc,logprior, loglikelihood, C, V) returns best c",
+        "bbox": [
+          151.66497802734375,
+          573.8241577148438,
+          450.080078125,
+          582.9494018554688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "for each class c ∈C\nsum[c]←logprior[c]\nfor each position i in testdoc\nword←testdoc[i]\nif word ∈V\nsum[c]←sum[c]+ loglikelihood[word,c]\nreturn argmaxc sum[c]",
+        "bbox": [
+          151.66493225097656,
+          591.8182983398438,
+          323.0577392578125,
+          668.9925537109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.2\nThe naive Bayes algorithm, using add-1 smoothing. To use add-α smoothing\ninstead, change the +1 to +α for loglikelihood counts in training.",
+        "bbox": [
+          142.20004272460938,
+          682.3231201171875,
+          475.20111083984375,
+          703.0317993164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 7,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.3\n•\nWORKED EXAMPLE\n7",
+        "bbox": [
+          355.86700439453125,
+          84.33849334716797,
+          493.2002868652344,
+          94.39205932617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.3\nWorked example",
+        "bbox": [
+          95.4010009765625,
+          107.84001922607422,
+          250.40847778320312,
+          125.055419921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Let’s walk through an example of training and testing naive Bayes with add-one\nsmoothing. We’ll use a sentiment analysis domain with the two classes positive\n(+) and negative (-), and take the following miniature training and test documents\nsimpliﬁed from actual movie reviews.",
+        "bbox": [
+          160.20001220703125,
+          147.25843811035156,
+          493.19976806640625,
+          193.08706665039062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Cat\nDocuments\nTraining -\njust plain boring\n-\nentirely predictable and lacks energy\n-\nno surprises and very few laughs\n+\nvery powerful\n+\nthe most fun ﬁlm of the summer\nTest\n?\npredictable with no fun",
+        "bbox": [
+          222.77099609375,
+          199.29351806640625,
+          430.6301574707031,
+          281.8750915527344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The prior P(c) for the two classes is computed via Eq. 4.11 as\nNc\nNdoc :",
+        "bbox": [
+          175.14398193359375,
+          287.454345703125,
+          443.6615905761719,
+          304.86004638671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(−) = 3",
+        "bbox": [
+          273.42401123046875,
+          309.4974365234375,
+          313.32830810546875,
+          326.20404052734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "5\nP(+) = 2",
+        "bbox": [
+          308.34698486328125,
+          309.4974670410156,
+          372.1392822265625,
+          333.0380859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "5\nThe word with doesn’t occur in the training set, so we drop it completely (as\nmentioned above, we don’t use unknown word models for naive Bayes). The like-\nlihoods from the training set for the remaining three words “predictable”, “no”, and\n“fun”, are as follows, from Eq. 4.14 (computing the probabilities for the remainder\nof the words in the training set is left as an exercise for the reader):",
+        "bbox": [
+          160.19998168945312,
+          323.0754699707031,
+          493.19970703125,
+          394.5930480957031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(“predictable”|−) =\n1+1\n14+20\nP(“predictable”|+) = 0+1",
+        "bbox": [
+          200.79197692871094,
+          403.82391357421875,
+          448.92230224609375,
+          427.5960693359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "9+20",
+        "bbox": [
+          425.96099853515625,
+          417.4029235839844,
+          451.41357421875,
+          427.5960693359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(“no”|−) =\n1+1\n14+20\nP(“no”|+) = 0+1",
+        "bbox": [
+          235.09298706054688,
+          429.8609313964844,
+          414.6222839355469,
+          453.6330871582031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "9+20",
+        "bbox": [
+          391.6600036621094,
+          443.43994140625,
+          417.1125793457031,
+          453.6330871582031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(“fun”|−) =\n0+1\n14+20\nP(“fun”|+) = 1+1",
+        "bbox": [
+          231.77499389648438,
+          455.89794921875,
+          417.9393005371094,
+          479.6700744628906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "9+20",
+        "bbox": [
+          394.9779968261719,
+          469.4769287109375,
+          420.4305725097656,
+          479.6700744628906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "For the test sentence S = “predictable with no fun”, after removing the word ‘with’,\nthe chosen class, via Eq. 4.9, is therefore computed as follows:",
+        "bbox": [
+          160.19998168945312,
+          487.91546630859375,
+          493.1996765136719,
+          509.8340759277344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "5 × 2×2×1",
+        "bbox": [
+          307.4599914550781,
+          518.9347534179688,
+          361.30126953125,
+          542.8360595703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(−)P(S|−) = 3",
+        "bbox": [
+          235.62997436523438,
+          519.29443359375,
+          312.4412536621094,
+          536.0020141601562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "343\n= 6.1×10−5",
+        "bbox": [
+          336.24700927734375,
+          523.6237182617188,
+          417.27215576171875,
+          542.8360595703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "5 × 1×1×2",
+        "bbox": [
+          307.4599914550781,
+          546.3078002929688,
+          361.30126953125,
+          570.2090454101562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(+)P(S|+) = 2",
+        "bbox": [
+          235.6300048828125,
+          546.6674194335938,
+          312.4413146972656,
+          563.3740234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "293\n= 3.2×10−5",
+        "bbox": [
+          336.24700927734375,
+          550.9957885742188,
+          417.27215576171875,
+          570.2090454101562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The model thus predicts the class negative for the test sentence.",
+        "bbox": [
+          160.1999969482422,
+          577.6849975585938,
+          412.9705810546875,
+          587.8240356445312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.4\nOptimizing for Sentiment Analysis",
+        "bbox": [
+          95.4010009765625,
+          609.906005859375,
+          375.6333312988281,
+          627.1213989257812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "While standard naive Bayes text classiﬁcation can work well for sentiment analysis,\nsome small changes are generally employed that improve performance.\nFirst, for sentiment classiﬁcation and a number of other text classiﬁcation tasks,\nwhether a word occurs or not seems to matter more than its frequency. Thus it\noften improves performance to clip the word counts in each document at 1 (see\nthe end of the chapter for pointers to these results). This variant is called binary",
+        "bbox": [
+          160.20001220703125,
+          649.324462890625,
+          493.2010192871094,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 8,
+    "elements": [
+      {
+        "type": "text",
+        "content": "8\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          374.60150146484375,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "multinomial naive Bayes or binary NB. The variant uses the same Eq. 4.10 except\nbinary NB",
+        "bbox": [
+          95.4930419921875,
+          111.47148895263672,
+          475.2021789550781,
+          121.52505493164062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "that for each document we remove all duplicate words before concatenating them\ninto the single big document. Fig. 4.3 shows an example in which a set of four\ndocuments (shortened and text-normalized for this example) are remapped to binary,\nwith the modiﬁed counts shown in the table on the right. The example is worked\nwithout add-1 smoothing to make the differences clearer. Note that the results counts\nneed not be 1; the word great has a count of 2 even for Binary NB, because it appears\nin multiple documents.",
+        "bbox": [
+          142.20004272460938,
+          123.51747131347656,
+          475.2048034667969,
+          205.21115112304688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "NB\nBinary\nCounts\nCounts\n+\n−\n+\n−\nand\n2\n0\n1\n0\nboxing\n0\n1\n0\n1\nﬁlm\n1\n0\n1\n0\ngreat\n3\n1\n2\n1\nit\n0\n1\n0\n1\nno\n0\n1\n0\n1\nor\n0\n1\n0\n1\npart\n0\n1\n0\n1\npathetic\n0\n1\n0\n1\nplot\n1\n1\n1\n1\nsatire\n1\n0\n1\n0\nscenes\n1\n2\n1\n2\nthe\n0\n2\n0\n1\ntwists\n1\n1\n1\n1\nwas\n0\n2\n0\n1\nworst\n0\n1\n0\n1",
+        "bbox": [
+          354.1650085449219,
+          222.1584014892578,
+          460.1169128417969,
+          413.8390808105469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Four original documents:",
+        "bbox": [
+          149.6719970703125,
+          240.488525390625,
+          257.9056396484375,
+          250.4511260986328
+        ]
+      },
+      {
+        "type": "text",
+        "content": "−it was pathetic the worst part was the\nboxing scenes\n−no plot twists or great scenes\n+ and satire and great plot twists\n+ great scenes great ﬁlm",
+        "bbox": [
+          161.85699462890625,
+          256.6578063964844,
+          332.8249206542969,
+          314.8010559082031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "After per-document binarization:",
+        "bbox": [
+          149.6719970703125,
+          321.18548583984375,
+          292.0773620605469,
+          331.1480712890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "−it was pathetic the worst part boxing\nscenes\n−no plot twists or great scenes\n+ and satire great plot twists\n+ great scenes ﬁlm",
+        "bbox": [
+          161.85699462890625,
+          337.35577392578125,
+          332.82489013671875,
+          395.49798583984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.3\nAn example of binarization for the binary naive Bayes algorithm.",
+        "bbox": [
+          143.19700622558594,
+          419.6950988769531,
+          425.93475341796875,
+          428.7433776855469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A second important addition commonly made when doing text classiﬁcation for\nsentiment is to deal with negation. Consider the difference between I really like this\nmovie (positive) and I didn’t like this movie (negative). The negation expressed by\ndidn’t completely alters the inferences we draw from the predicate like. Similarly,\nnegation can modify a negative word to produce a positive review (don’t dismiss this\nﬁlm, doesn’t let us get bored).\nA very simple baseline that is commonly used in sentiment analysis to deal with\nnegation is the following: during text normalization, prepend the preﬁx NOT to\nevery word after a token of logical negation (n’t, not, no, never) until the next punc-\ntuation mark. Thus the phrase",
+        "bbox": [
+          142.1999969482422,
+          442.6444396972656,
+          475.2036437988281,
+          560.2040405273438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "didn’t like this movie , but I",
+        "bbox": [
+          172.3369903564453,
+          565.630859375,
+          329.2480773925781,
+          575.5934448242188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "becomes",
+        "bbox": [
+          157.1439971923828,
+          581.8494262695312,
+          192.00314331054688,
+          591.81201171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "didn’t NOT_like NOT_this NOT_movie , but I",
+        "bbox": [
+          172.3369903564453,
+          597.2398681640625,
+          392.0126037597656,
+          607.2024536132812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Newly formed ‘words’ like NOT like, NOT recommend will thus occur more of-\nten in negative document and act as cues for negative sentiment, while words like\nNOT bored, NOT dismiss will acquire positive associations. We will return in Chap-\nter 16 to the use of parsing to deal more accurately with the scope relationship be-\ntween these negation words and the predicates they modify, but this simple baseline\nworks quite well in practice.\nFinally, in some situations we might have insufﬁcient labeled training data to\ntrain accurate naive Bayes classiﬁers using all words in the training set to estimate\npositive and negative sentiment. In such cases we can instead derive the positive",
+        "bbox": [
+          142.1999969482422,
+          613.281982421875,
+          475.2017517089844,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 9,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.5\n•\nNAIVE BAYES FOR OTHER TEXT CLASSIFICATION TASKS\n9",
+        "bbox": [
+          201.9459991455078,
+          84.38048553466797,
+          493.2002868652344,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and negative word features from sentiment lexicons, lists of words that are pre-\nsentiment\nlexicons",
+        "bbox": [
+          115.70999145507812,
+          110.04527282714844,
+          493.1986999511719,
+          123.74418640136719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "annotated with positive or negative sentiment. Four popular lexicons are the General\nInquirer (Stone et al., 1966), LIWC (Pennebaker et al., 2007), the opinion lexicon\nGeneral\nInquirer",
+        "bbox": [
+          119.4439697265625,
+          123.42650604248047,
+          493.2012023925781,
+          147.1671600341797
+        ]
+      },
+      {
+        "type": "text",
+        "content": "LIWC\nof Hu and Liu (2004) and the MPQA Subjectivity Lexicon (Wilson et al., 2005).\nFor example the MPQA subjectivity lexicon has 6885 words, 2718 positive and\n4912 negative, each marked for whether it is strongly or weakly biased. Some sam-\nples of positive and negative words from the MPQA lexicon include:",
+        "bbox": [
+          125.73497009277344,
+          147.4284210205078,
+          493.19976806640625,
+          193.25607299804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+ : admirable, beautiful, conﬁdent, dazzling, ecstatic, favor, glee, great\n−: awful, bad, bias, catastrophe, cheat, deny, envious, foul, harsh, hate",
+        "bbox": [
+          185.10696411132812,
+          200.12388610839844,
+          473.6933288574219,
+          223.58004760742188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A common way to use lexicons in a naive Bayes classiﬁer is to add a feature\nthat is counted whenever a word from that lexicon occurs. Thus we might add a\nfeature called ‘this word occurs in the positive lexicon’, and treat all instances of\nwords in the lexicon as counts for that one feature, instead of counting each word\nseparately. Similarly, we might add as a second feature ‘this word occurs in the\nnegative lexicon’ of words in the negative lexicon. If we have lots of training data,\nand if the test data matches the training data, using just two features won’t work as\nwell as using all the words. But when training data is sparse or not representative of\nthe test set, using dense lexicon features instead of sparse individual-word features\nmay generalize better.\nWe’ll return to this use of lexicons in Chapter 20, showing how these lexicons\ncan be learned automatically, and how they can be applied to many other tasks be-\nyond sentiment classiﬁcation.",
+        "bbox": [
+          160.19996643066406,
+          230.6784210205078,
+          493.19989013671875,
+          384.10296630859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.5\nNaive Bayes for other text classiﬁcation tasks",
+        "bbox": [
+          95.40096282958984,
+          406.94891357421875,
+          447.8003234863281,
+          424.164306640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In the previous section we pointed out that naive Bayes doesn’t require that our\nclassiﬁer use all the words in the training data as features. In fact features in naive\nBayes can express any property of the input text we want.\nConsider the task of spam detection, deciding if a particular piece of email is\nspam detection",
+        "bbox": [
+          99.45797729492188,
+          446.39532470703125,
+          493.2010192871094,
+          492.2239074707031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "an example of spam (unsolicited bulk email) — and one of the ﬁrst applications of\nnaive Bayes to text classiﬁcation (Sahami et al., 1998).\nA common solution here, rather than using all the words as individual features,\nis to predeﬁne likely sets of words or phrases as features, combined with features\nthat are not purely linguistic. For example the open-source SpamAssassin tool1",
+        "bbox": [
+          160.19998168945312,
+          494.21630859375,
+          493.1998291015625,
+          551.9988403320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "predeﬁnes features like the phrase “one hundred percent guaranteed”, or the feature\nmentions millions of dollars, which is a regular expression that matches suspiciously\nlarge sums of money. But it also includes features like HTML has a low ratio of text\nto image area, that aren’t purely linguistic and might require some sophisticated\ncomputation, or totally non-linguistic features about, say, the path that the email\ntook to arrive. More sample SpamAssassin features:",
+        "bbox": [
+          160.19998168945312,
+          553.9923095703125,
+          493.20458984375,
+          623.7308959960938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "• Email subject line is all capital letters\n• Contains phrases of urgency like “urgent reply”\n• Email subject line contains “online pharmaceutical”\n• HTML has unbalanced “head” tags\n• Claims you can be removed from the list\nFor other tasks, like language id—determining what language a given piece\nlanguage id",
+        "bbox": [
+          110.27799987792969,
+          627.84033203125,
+          493.2034606933594,
+          699.6958618164062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nhttps://spamassassin.apache.org",
+        "bbox": [
+          160.1999969482422,
+          710.2257080078125,
+          299.4781799316406,
+          718.25
+        ]
+      }
+    ]
+  },
+  {
+    "page": 10,
+    "elements": [
+      {
+        "type": "text",
+        "content": "10\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "of text is written in—the most effective naive Bayes features are not words at all,\nbut character n-grams, 2-grams (‘zw’) 3-grams (‘nya’, ‘ Vo’), or 4-grams (‘ie z’,\n‘thei’), or, even simpler byte n-grams, where instead of using the multibyte Unicode\ncharacter representations called codepoints, we just pretend everything is a string of\nraw bytes. Because spaces count as a byte, byte n-grams can model statistics about\nthe beginning or ending of words. A widely used naive Bayes system, langid.py\n(Lui and Baldwin, 2012) begins with all possible n-grams of lengths 1-4, using fea-\nture selection to winnow down to the most informative 7000 ﬁnal features.\nLanguage ID systems are trained on multilingual text, such as Wikipedia (Wiki-\npedia text in 68 different languages was used in (Lui and Baldwin, 2011)), or newswire.\nTo make sure that this multilingual text correctly reﬂects different regions, dialects,\nand socioeconomic classes, systems also add Twitter text in many languages geo-\ntagged to many regions (important for getting world English dialects from countries\nwith large Anglophone populations like Nigeria or India), Bible and Quran transla-\ntions, slang websites like Urban Dictionary, corpora of African American Vernacular\nEnglish (Blodgett et al., 2016), and so on (Jurgens et al., 2017).",
+        "bbox": [
+          142.20001220703125,
+          111.56245422363281,
+          483.767578125,
+          300.85321044921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.6\nNaive Bayes as a Language Model",
+        "bbox": [
+          77.40100860595703,
+          324.2581787109375,
+          354.9649963378906,
+          341.47357177734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "As we saw in the previous section, naive Bayes classiﬁers can use any sort of fea-\nture: dictionaries, URLs, email addresses, network features, phrases, and so on. But\nif, as in the previous section, we use only individual word features, and we use all\nof the words in the text (not a subset), then naive Bayes has an important similar-\nity to language modeling. Speciﬁcally, a naive Bayes model can be viewed as a\nset of class-speciﬁc unigram language models, in which the model for each class\ninstantiates a unigram language model.\nSince the likelihood features from the naive Bayes model assign a probability to\neach word P(word|c), the model also assigns a probability to each sentence:",
+        "bbox": [
+          142.20001220703125,
+          363.7265930175781,
+          475.1999206542969,
+          469.3301086425781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(s|c) =\nY",
+        "bbox": [
+          257.29901123046875,
+          482.42437744140625,
+          317.94024658203125,
+          494.74261474609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i∈positions\nP(wi|c)\n(4.15)",
+        "bbox": [
+          294.3440246582031,
+          484.5968322753906,
+          475.2006530761719,
+          506.087646484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Thus consider a naive Bayes model with the classes positive (+) and negative (-)\nand the following model parameters:",
+        "bbox": [
+          142.20004272460938,
+          514.6510620117188,
+          475.2006530761719,
+          536.7460327148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "w\nP(w|+) P(w|-)\nI\n0.1\n0.2\nlove 0.1\n0.001\nthis\n0.01\n0.01\nfun\n0.05\n0.005\nﬁlm 0.1\n0.1\n...\n...\n...",
+        "bbox": [
+          267.12200927734375,
+          550.643798828125,
+          350.279052734375,
+          633.0950317382812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Each of the two columns above instantiates a language model that can assign a\nprobability to the sentence “I love this fun ﬁlm”:",
+        "bbox": [
+          142.19998168945312,
+          647.20849609375,
+          475.19989013671875,
+          669.1270751953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(“I love this fun ﬁlm”|+) = 0.1×0.1×0.01×0.05×0.1 = 0.0000005",
+        "bbox": [
+          147.68798828125,
+          693.7968139648438,
+          444.8060302734375,
+          704.1190795898438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(“I love this fun ﬁlm”|−) = 0.2×0.001×0.01×0.005×0.1 = .0000000010",
+        "bbox": [
+          147.68798828125,
+          708.7407836914062,
+          469.7129211425781,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 11,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.7\n•\nEVALUATION: PRECISION, RECALL, F-MEASURE\n11",
+        "bbox": [
+          227.82899475097656,
+          83.74553680419922,
+          493.2005920410156,
+          93.79910278320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "As it happens, the positive model assigns a higher probability to the sentence:\nP(s|pos) > P(s|neg). Note that this is just the likelihood part of the naive Bayes\nmodel; once we multiply in the prior a full naive Bayes model might well make a\ndifferent classiﬁcation decision.",
+        "bbox": [
+          160.20001220703125,
+          111.56251525878906,
+          493.20526123046875,
+          157.39114379882812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.7\nEvaluation: Precision, Recall, F-measure",
+        "bbox": [
+          95.40100860595703,
+          180.6361083984375,
+          416.3650817871094,
+          197.85150146484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "To introduce the methods for evaluating text classiﬁcation, let’s ﬁrst consider some\nsimple binary detection tasks. For example, in spam detection, our goal is to label\nevery text as being in the spam category (“positive”) or not in the spam category\n(“negative”). For each item (email document) we therefore need to know whether\nour system called it spam or not. We also need to know whether the email is actually\nspam or not, i.e. the human-deﬁned labels for each document that we are trying to\nmatch. We will refer to these human labels as the gold labels.\ngold labels",
+        "bbox": [
+          113.08804321289062,
+          220.09852600097656,
+          493.20452880859375,
+          301.7921447753906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Or imagine you’re the CEO of the Delicious Pie Company and you need to know\nwhat people are saying about your pies on social media, so you build a system that\ndetects tweets concerning Delicious Pie. Here the positive class is tweets about\nDelicious Pie and the negative class is all other tweets.\nIn both cases, we need a metric for knowing how well our spam detector (or\npie-tweet-detector) is doing. To evaluate any system for detecting things, we start\nby building a confusion matrix like the one shown in Fig. 4.4. A confusion matrix\nconfusion\nmatrix",
+        "bbox": [
+          116.10003662109375,
+          303.60809326171875,
+          493.2038879394531,
+          387.8921813964844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "is a table for visualizing how an algorithm performs with respect to the human gold\nlabels, using two dimensions (system output and gold labels), and each cell labeling\na set of possible outcomes. In the spam detection case, for example, true positives\nare documents that are indeed spam (indicated by human-created gold labels) that\nour system correctly said were spam. False negatives are documents that are indeed\nspam but our system incorrectly labeled as non-spam.\nTo the bottom right of the table is the equation for accuracy, which asks what\npercentage of all the observations (for the spam or pie examples that means all emails\nor tweets) our system labeled correctly. Although accuracy might seem a natural\nmetric, we generally don’t use it for text classiﬁcation tasks. That’s because accuracy\ndoesn’t work well when the classes are unbalanced (as indeed they are with spam,\nwhich is a large majority of email, or with tweets, which are mainly not about pie).",
+        "bbox": [
+          160.20004272460938,
+          387.470458984375,
+          493.2041015625,
+          528.9398803710938
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page11_vis3.png",
+        "bbox": [
+          175.98330688476562,
+          445.7184753417969,
+          512.6287231445312,
+          784.2930908203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.4\nA confusion matrix for visualizing how well a binary classiﬁcation system per-\nforms against gold standard labels.",
+        "bbox": [
+          160.1999969482422,
+          662.1881103515625,
+          493.2049560546875,
+          682.1943969726562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "To make this more explicit, imagine that we looked at a million tweets, and\nlet’s say that only 100 of them are discussing their love (or hatred) for our pie,",
+        "bbox": [
+          160.1999969482422,
+          697.1444702148438,
+          493.1998291015625,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 12,
+    "elements": [
+      {
+        "type": "text",
+        "content": "12\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "while the other 999,900 are tweets about something completely unrelated. Imagine a\nsimple classiﬁer that stupidly classiﬁed every tweet as “not about pie”. This classiﬁer\nwould have 999,900 true negatives and only 100 false negatives for an accuracy of\n999,900/1,000,000 or 99.99%! What an amazing accuracy level! Surely we should\nbe happy with this classiﬁer? But of course this fabulous ‘no pie’ classiﬁer would\nbe completely useless, since it wouldn’t ﬁnd a single one of the customer comments\nwe are looking for. In other words, accuracy is not a good metric when the goal is\nto discover something that is rare, or at least not completely balanced in frequency,\nwhich is a very common situation in the world.\nThat’s why instead of accuracy we generally turn to two other metrics shown in\nFig. 4.4: precision and recall. Precision measures the percentage of the items that\nprecision",
+        "bbox": [
+          99.84098815917969,
+          111.56245422363281,
+          475.199951171875,
+          241.07717895507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "the system detected (i.e., the system labeled as positive) that are in fact positive (i.e.,\nare positive according to the human gold labels). Precision is deﬁned as",
+        "bbox": [
+          142.19998168945312,
+          243.06959533691406,
+          475.1998291015625,
+          264.9872131347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Precision =\ntrue positives\ntrue positives + false positives",
+        "bbox": [
+          221.94497680664062,
+          279.47259521484375,
+          394.2620544433594,
+          303.0140686035156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Recall measures the percentage of items actually present in the input that were\nrecall",
+        "bbox": [
+          110.68199920654297,
+          311.67449951171875,
+          475.2002868652344,
+          321.7280578613281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "correctly identiﬁed by the system. Recall is deﬁned as",
+        "bbox": [
+          142.1999969482422,
+          323.721435546875,
+          357.8006896972656,
+          333.6840515136719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Recall =\ntrue positives\ntrue positives + false negatives",
+        "bbox": [
+          227.22000122070312,
+          345.8184509277344,
+          388.986572265625,
+          369.3600769042969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Precision and recall will help solve the problem with the useless “nothing is\npie” classiﬁer. This classiﬁer, despite having a fabulous accuracy of 99.99%, has\na terrible recall of 0 (since there are no true positives, and 100 false negatives, the\nrecall is 0/100). You should convince yourself that the precision at ﬁnding relevant\ntweets is equally problematic. Thus precision and recall, unlike accuracy, emphasize\ntrue positives: ﬁnding the things that we are supposed to be looking for.\nThere are many ways to deﬁne a single metric that incorporates aspects of both\nprecision and recall. The simplest of these combinations is the F-measure (van\nF-measure",
+        "bbox": [
+          95.03799438476562,
+          382.8884582519531,
+          475.2004699707031,
+          476.5369873046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Rijsbergen, 1975) , deﬁned as:",
+        "bbox": [
+          142.1999969482422,
+          478.5303649902344,
+          263.7735595703125,
+          488.49298095703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Fβ = (β 2 +1)PR",
+        "bbox": [
+          267.0350036621094,
+          493.1588439941406,
+          337.21527099609375,
+          515.7249145507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "β 2P+R",
+        "bbox": [
+          297.2980041503906,
+          509.669921875,
+          330.8591613769531,
+          521.326416015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The β parameter differentially weights the importance of recall and precision,\nbased perhaps on the needs of an application. Values of β > 1 favor recall, while\nvalues of β < 1 favor precision. When β = 1, precision and recall are equally bal-\nanced; this is the most frequently used metric, and is called Fβ=1 or just F1:\nF1",
+        "bbox": [
+          119.7760009765625,
+          528.0184326171875,
+          475.2028503417969,
+          575.9080200195312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "F1 = 2PR",
+        "bbox": [
+          285.218017578125,
+          583.3240356445312,
+          328.2243347167969,
+          601.4825439453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P+R\n(4.16)",
+        "bbox": [
+          308.30499267578125,
+          590.2454833984375,
+          475.20062255859375,
+          606.8656005859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "F-measure comes from a weighted harmonic mean of precision and recall. The\nharmonic mean of a set of numbers is the reciprocal of the arithmetic mean of recip-\nrocals:",
+        "bbox": [
+          142.20001220703125,
+          609.7464599609375,
+          475.1999816894531,
+          643.6190795898438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "HarmonicMean(a1,a2,a3,a4,...,an) =\nn\n1\na1 + 1",
+        "bbox": [
+          175.47500610351562,
+          645.6414794921875,
+          375.6932678222656,
+          674.779541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "an\n(4.17)",
+        "bbox": [
+          408.7049865722656,
+          652.386474609375,
+          475.2005920410156,
+          673.6902465820312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "a2 + 1",
+        "bbox": [
+          350.5989990234375,
+          658.1869506835938,
+          375.4821472167969,
+          674.779541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "a3 +...+ 1",
+        "bbox": [
+          370.2590026855469,
+          658.1869506835938,
+          413.92816162109375,
+          674.779541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and hence F-measure is",
+        "bbox": [
+          142.19998168945312,
+          679.7054443359375,
+          235.9879150390625,
+          689.6680297851562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "\u0013\nF = (β 2 +1)PR",
+        "bbox": [
+          343.6419982910156,
+          692.2919311523438,
+          429.71429443359375,
+          712.6696166992188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "R\nor\n\u0012\nwith β 2 = 1−α",
+        "bbox": [
+          238.75599670410156,
+          695.768310546875,
+          341.62042236328125,
+          723.2876586914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "F =\n1\nα 1",
+        "bbox": [
+          162.42198181152344,
+          696.138427734375,
+          216.07327270507812,
+          721.3864135742188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "β 2P+R\n(4.18)",
+        "bbox": [
+          389.7959899902344,
+          702.8834838867188,
+          475.2005920410156,
+          720.4594116210938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P +(1−α) 1",
+        "bbox": [
+          191.01800537109375,
+          708.6839599609375,
+          242.85116577148438,
+          723.8135375976562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "α",
+        "bbox": [
+          327.5889892578125,
+          710.496826171875,
+          333.8753967285156,
+          720.4594116210938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 13,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.8\n•\nTEST SETS AND CROSS-VALIDATION\n13",
+        "bbox": [
+          280.4209899902344,
+          84.38048553466797,
+          493.20062255859375,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Harmonic mean is used because it is a conservative metric; the harmonic mean of\ntwo values is closer to the minimum of the two values than the arithmetic mean is.\nThus it weighs the lower of the two numbers more heavily.",
+        "bbox": [
+          160.20004272460938,
+          111.56245422363281,
+          493.1999816894531,
+          145.43606567382812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.7.1\nEvaluating with more than two classes",
+        "bbox": [
+          160.20004272460938,
+          163.37213134765625,
+          391.2104187011719,
+          175.32733154296875
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page13_vis3.png",
+        "bbox": [
+          184.75640869140625,
+          172.66297912597656,
+          468.65899658203125,
+          493.5963134765625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Up to now we have been describing text classiﬁcation tasks with only two classes.\nBut lots of classiﬁcation tasks in language processing have more than two classes.\nFor sentiment analysis we generally have 3 classes (positive, negative, neutral) and\neven more classes are common for tasks like part-of-speech tagging, word sense\ndisambiguation, semantic role labeling, emotion detection, and so on. Luckily the\nnaive Bayes algorithm is already a multi-class classiﬁcation algorithm.",
+        "bbox": [
+          160.20004272460938,
+          184.0734405517578,
+          493.1999206542969,
+          253.81210327148438
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page13_vis10.png",
+        "bbox": [
+          330.136474609375,
+          300.2134094238281,
+          366.0243225097656,
+          341.5872802734375
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page13_vis11.png",
+        "bbox": [
+          294.47723388671875,
+          341.35870361328125,
+          366.0243225097656,
+          362.1599426269531
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page13_vis12.png",
+        "bbox": [
+          258.8179626464844,
+          341.35870361328125,
+          294.705810546875,
+          362.1599426269531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.5\nConfusion matrix for a three-class categorization task, showing for each pair of\nclasses (c1,c2), how many documents from c1 were (in)correctly assigned to c2",
+        "bbox": [
+          160.1999969482422,
+          407.9161071777344,
+          493.2049865722656,
+          429.50439453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "But we’ll need to slightly modify our deﬁnitions of precision and recall. Con-\nsider the sample confusion matrix for a hypothetical 3-way one-of email catego-\nrization decision (urgent, normal, spam) shown in Fig. 4.5. The matrix shows, for\nexample, that the system mistakenly labeled one spam document as urgent, and we\nhave shown how to compute a distinct precision and recall value for each class. In\norder to derive a single metric that tells us how well the system is doing, we can com-\nbine these values in two ways. In macroaveraging, we compute the performance\nmacroaveraging",
+        "bbox": [
+          96.03500366210938,
+          444.0834655761719,
+          493.2054748535156,
+          525.7769775390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "for each class, and then average over classes. In microaveraging, we collect the de-\nmicroaveraging",
+        "bbox": [
+          97.63800048828125,
+          527.678466796875,
+          493.20147705078125,
+          537.7319946289062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cisions for all classes into a single confusion matrix, and then compute precision and\nrecall from that table. Fig. 4.6 shows the confusion matrix for each class separately,\nand shows the computation of microaveraged and macroaveraged precision.\nAs the ﬁgure shows, a microaverage is dominated by the more frequent class (in\nthis case spam), since the counts are pooled. The macroaverage better reﬂects the\nstatistics of the smaller classes, and so is more appropriate when performance on all\nthe classes is equally important.",
+        "bbox": [
+          160.1999969482422,
+          539.724365234375,
+          493.199951171875,
+          621.41796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.8\nTest sets and Cross-validation",
+        "bbox": [
+          95.40099334716797,
+          645.6869506835938,
+          339.5498352050781,
+          662.90234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The training and testing procedure for text classiﬁcation follows what we saw with\nlanguage modeling (Section ??): we use the training set to train the model, then use\nthe development test set (also called a devset) to perhaps tune some parameters,\ndevelopment\ntest set",
+        "bbox": [
+          106.66000366210938,
+          685.1893920898438,
+          493.2017517089844,
+          721.4761352539062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "devset",
+        "bbox": [
+          126.65299987792969,
+          722.97119140625,
+          145.80091857910156,
+          730.194091796875
+        ]
+      }
+    ]
+  },
+  {
+    "page": 14,
+    "elements": [
+      {
+        "type": "image",
+        "src": "images/page14_vis3.png",
+        "bbox": [
+          71.89099884033203,
+          40.06217956542969,
+          480.69940185546875,
+          321.1429748535156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "14\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Pooled\nClass 3: Spam\nClass 2: Normal\nClass 1: Urgent",
+        "bbox": [
+          102.83635711669922,
+          116.69794464111328,
+          442.168701171875,
+          126.44928741455078
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.6\nSeparate confusion matrices for the 3 classes from the previous ﬁgure, showing the pooled confu-\nsion matrix and the microaveraged and macroaveraged precision.",
+        "bbox": [
+          77.4010009765625,
+          255.74012756347656,
+          475.2051696777344,
+          275.74639892578125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and in general decide what the best model is. Once we come up with what we think\nis the best model, we run it on the (hitherto unseen) test set to report its performance.\nWhile the use of a devset avoids overﬁtting the test set, having a ﬁxed train-\ning set, devset, and test set creates another problem: in order to save lots of data\nfor training, the test set (or devset) might not be large enough to be representative.\nWouldn’t it be better if we could somehow use all our data for training and still use\nall our data for test? We can do this by cross-validation.\ncross-validation",
+        "bbox": [
+          79.04598999023438,
+          290.8744812011719,
+          475.19989013671875,
+          372.5680236816406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In cross-validation, we choose a number k, and partition our data into k disjoint\nsubsets called folds. Now we choose one of those k folds as a test set, train our\nfolds",
+        "bbox": [
+          113.1309814453125,
+          374.3839416503906,
+          475.20361328125,
+          396.4779968261719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "classiﬁer on the remaining k −1 folds, and then compute the error rate on the test\nset. Then we repeat with another fold as the test set, again training on the other k−1\nfolds. We do this sampling process k times and average the test set error rate from\nthese k runs to get an average error rate. If we choose k = 10, we would train 10\ndifferent models (each on 90% of our data), test the model 10 times, and average\nthese 10 values. This is called 10-fold cross-validation.\n10-fold\ncross-validation",
+        "bbox": [
+          79.04598999023438,
+          398.1117248535156,
+          475.2041931152344,
+          470.6230163574219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The only problem with cross-validation is that because all the data is used for\ntesting, we need the whole corpus to be blind; we can’t examine any of the data\nto suggest possible features and in general see what’s going on, because we’d be\npeeking at the test set, and such cheating would cause us to overestimate the perfor-\nmance of our system. However, looking at the corpus to understand what’s going\non is important in designing NLP systems! What to do? For this reason, it is com-\nmon to create a ﬁxed training set and test set, then do 10-fold cross-validation inside\nthe training set, but compute error rate the normal way in the test set, as shown in\nFig. 4.7.",
+        "bbox": [
+          142.19998168945312,
+          470.2023010253906,
+          475.19989013671875,
+          575.8058471679688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.9\nStatistical Signiﬁcance Testing",
+        "bbox": [
+          77.4009780883789,
+          597.9508056640625,
+          328.21221923828125,
+          615.1661987304688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In building systems we often need to compare the performance of two systems. How\ncan we know if the new system we just built is better than our old one? Or better than\nthe some other system described in the literature? This is the domain of statistical\nhypothesis testing, and in this section we introduce tests for statistical signiﬁcance\nfor NLP classiﬁers, drawing especially on the work of Dror et al. (2020) and Berg-\nKirkpatrick et al. (2012).\nSuppose we’re comparing the performance of classiﬁers A and B on a metric M",
+        "bbox": [
+          142.19998168945312,
+          637.3692626953125,
+          475.1998291015625,
+          719.0628662109375
+        ]
+      }
+    ]
+  },
+  {
+    "page": 15,
+    "elements": [
+      {
+        "type": "image",
+        "src": "images/page15_vis3.png",
+        "bbox": [
+          191.74240112304688,
+          63.49211120605469,
+          637.2208251953125,
+          346.9432067871094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "such as F1, or accuracy. Perhaps we want to know if our logistic regression senti-\nment classiﬁer A (Chapter 5) gets a higher F1 score than our naive Bayes sentiment\nclassiﬁer B on a particular test set x. Let’s call M(A,x) the score that system A gets\non test set x, and δ(x) the performance difference between A and B on x:",
+        "bbox": [
+          160.1999969482422,
+          290.76446533203125,
+          493.2040710449219,
+          337.37139892578125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "δ(x) = M(A,x)−M(B,x)\n(4.19)",
+        "bbox": [
+          269.38409423828125,
+          347.67376708984375,
+          493.2008972167969,
+          358.775390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We would like to know if δ(x) > 0, meaning that our logistic regression classiﬁer\nhas a higher F1 than our naive Bayes classiﬁer on X. δ(x) is called the effect size;\neffect size",
+        "bbox": [
+          115.92703247070312,
+          369.2068786621094,
+          493.2025451660156,
+          392.8600158691406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "a bigger δ means that A seems to be way better than B; a small δ means A seems to\nbe only a little better.\nWhy don’t we just check if δ(x) is positive? Suppose we do, and we ﬁnd that\nthe F1 score of A is higher than B’s by .04. Can we be certain that A is better? We\ncannot! That’s because A might just be accidentally better than B on this particular x.\nWe need something more: we want to know if A’s superiority over B is likely to hold\nagain if we checked another test set x′, or under some other set of circumstances.\nIn the paradigm of statistical hypothesis testing, we test this by formalizing two\nhypotheses.",
+        "bbox": [
+          160.20001220703125,
+          393.1709289550781,
+          493.2040100097656,
+          498.951904296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H0 : δ(x) ≤0",
+        "bbox": [
+          291.60601806640625,
+          510.0336608886719,
+          349.83929443359375,
+          521.8609008789062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H1 : δ(x) > 0\n(4.20)",
+        "bbox": [
+          291.60601806640625,
+          525.1067504882812,
+          493.2008361816406,
+          536.8048706054688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The hypothesis H0, called the null hypothesis, supposes that δ(x) is actually nega-\nnull hypothesis",
+        "bbox": [
+          99.54501342773438,
+          546.509765625,
+          493.2012023925781,
+          557.5820922851562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "tive or zero, meaning that A is not better than B. We would like to know if we can\nconﬁdently rule out this hypothesis, and instead support H1, that A is better.\nWe do this by creating a random variable X ranging over all test sets. Now we\nask how likely is it, if the null hypothesis H0 was correct, that among these test sets\nwe would encounter the value of δ(x) that we found. We formalize this likelihood\nas the p-value: the probability, assuming the null hypothesis H0 is true, of seeing\np-value",
+        "bbox": [
+          122.99801635742188,
+          558.5198364257812,
+          493.20526123046875,
+          629.9389038085938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "the δ(x) that we saw or one even greater",
+        "bbox": [
+          160.20001220703125,
+          630.1967163085938,
+          321.2855224609375,
+          641.169189453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(δ(X) ≥δ(x)|H0 is true)\n(4.21)",
+        "bbox": [
+          267.7490234375,
+          651.4705810546875,
+          493.2008361816406,
+          663.2978515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "So in our example, this p-value is the probability that we would see δ(x) assuming\nA is not better than B. If δ(x) is huge (let’s say A has a very respectable F1 of .9\nand B has a terrible F1 of only .2 on x), we might be surprised, since that would be\nextremely unlikely to occur if H0 were in fact true, and so the p-value would be low",
+        "bbox": [
+          160.20001220703125,
+          673.0037231445312,
+          493.2038269042969,
+          720.56787109375
+        ]
+      }
+    ]
+  },
+  {
+    "page": 16,
+    "elements": [
+      {
+        "type": "text",
+        "content": "16\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(unlikely to have such a large δ if A is in fact not better than B). But if δ(x) is very\nsmall, it might be less surprising to us even if H0 were true and A is not really better\nthan B, and so the p-value would be higher.\nA very small p-value means that the difference we observed is very unlikely\nunder the null hypothesis, and we can reject the null hypothesis. What counts as very\nsmall? It is common to use values like .05 or .01 as the thresholds. A value of .01\nmeans that if the p-value (the probability of observing the δ we saw assuming H0 is\ntrue) is less than .01, we reject the null hypothesis and assume that A is indeed better\nthan B. We say that a result (e.g., “A is better than B”) is statistically signiﬁcant if\nstatistically\nsigniﬁcant",
+        "bbox": [
+          92.89205932617188,
+          111.33189392089844,
+          475.2053527832031,
+          218.89427185058594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "the δ we saw has a probability that is below the threshold and we therefore reject\nthis null hypothesis.\nHow do we compute this probability we need for the p-value? In NLP we gen-\nerally don’t use simple parametric tests like t-tests or ANOVAs that you might be\nfamiliar with. Parametric tests make assumptions about the distributions of the test\nstatistic (such as normality) that don’t generally hold in our cases. So in NLP we\nusually use non-parametric tests based on sampling: we artiﬁcially create many ver-\nsions of the experimental setup. For example, if we had lots of different test sets x′",
+        "bbox": [
+          142.20005798339844,
+          219.15956115722656,
+          475.20526123046875,
+          312.8081970214844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "we could just measure all the δ(x′) for all the x′. That gives us a distribution. Now\nwe set a threshold (like .01) and if we see in this distribution that 99% or more of\nthose deltas are smaller than the delta we observed, i.e. that p-value(x)—the proba-\nbility of seeing a δ(x) as big as the one we saw, is less than .01, then we can reject\nthe null hypothesis and agree that δ(x) was a sufﬁciently surprising difference and\nA is really a better algorithm than B.\nThere are two common non-parametric tests used in NLP: approximate ran-\ndomization (Noreen, 1989) and the bootstrap test. We will describe bootstrap\napproximate\nrandomization",
+        "bbox": [
+          82.45500946044922,
+          312.8829040527344,
+          475.20257568359375,
+          410.6682434082031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "below, showing the paired version of the test, which again is most common in NLP.\nPaired tests are those in which we compare two sets of observations that are aligned:\npaired",
+        "bbox": [
+          107.86500549316406,
+          410.4425354003906,
+          475.19976806640625,
+          432.3601379394531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "each observation in one set can be paired with an observation in another. This hap-\npens naturally when we are comparing the performance of two systems on the same\ntest set; we can pair the performance of system A on an individual observation xi\nwith the performance of system B on the same xi.",
+        "bbox": [
+          142.20001220703125,
+          434.3525390625,
+          475.1998291015625,
+          480.9186706542969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.9.1\nThe Paired Bootstrap Test",
+        "bbox": [
+          142.2000274658203,
+          497.4021911621094,
+          311.7845458984375,
+          509.3573913574219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The bootstrap test (Efron and Tibshirani, 1993) can apply to any metric; from pre-\nbootstrap test",
+        "bbox": [
+          85.47402954101562,
+          517.7265625,
+          475.19659423828125,
+          527.7800903320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cision, recall, or F1 to the BLEU metric used in machine translation. The word\nbootstrapping refers to repeatedly drawing large numbers of smaller samples with\nbootstrapping",
+        "bbox": [
+          84.4560317993164,
+          529.7725219726562,
+          475.20062255859375,
+          551.6901245117188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "replacement (called bootstrap samples) from an original larger sample. The intu-\nition of the bootstrap test is that we can create many virtual test sets from an observed\ntest set by repeatedly sampling from it. The method only makes the assumption that\nthe sample is representative of the population.\nConsider a tiny text classiﬁcation example with a test set x of 10 documents. The\nﬁrst row of Fig. 4.8 shows the results of two classiﬁers (A and B) on this test set,\nwith each document labeled by one of the four possibilities: (A and B both right,\nboth wrong, A right and B wrong, A wrong and B right); a slash through a letter\n(\u0013B) means that that classiﬁer got the answer wrong. On the ﬁrst document both A\nand B get the correct class (AB), while on the second document A got it right but B\ngot it wrong (A\u0013B). If we assume for simplicity that our metric is accuracy, A has an\naccuracy of .70 and B of .50, so δ(x) is .20.\nNow we create a large number b (perhaps 105) of virtual test sets x(i), each of\nsize n = 10. Fig. 4.8 shows a couple examples. To create each virtual test set x(i), we",
+        "bbox": [
+          142.20001220703125,
+          553.5925903320312,
+          475.2030944824219,
+          719.0631103515625
+        ]
+      }
+    ]
+  },
+  {
+    "page": 17,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.9\n•\nSTATISTICAL SIGNIFICANCE TESTING\n17",
+        "bbox": [
+          274.0849914550781,
+          84.34050750732422,
+          493.2005920410156,
+          94.39407348632812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "repeatedly (n = 10 times) select a cell from row x with replacement. For example, to\ncreate the ﬁrst cell of the ﬁrst virtual test set x(1), if we happened to randomly select\nthe second cell of the x row; we would copy the value A\u0013B into our new cell, and\nmove on to create the second cell of x(1), each time sampling (randomly choosing)\nfrom the original x with replacement.",
+        "bbox": [
+          160.1999969482422,
+          111.33189392089844,
+          493.2053527832031,
+          169.34609985351562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10 A% B% δ()\nx\nAB A\u0013B AB \u0000AB A\u0013B \u0000AB A\u0013B AB \u0000A\u0013B A\u0013B .70\n.50\n.20\nx(1)\nA\u0013B AB A\u0013B \u0000AB \u0000AB A\u0013B \u0000AB AB \u0000A\u0013B AB .60\n.60\n.00\nx(2)\nA\u0013B AB \u0000A\u0013B \u0000AB \u0000AB AB \u0000AB A\u0013B AB AB .60\n.70 -.10\n...\nx(b)",
+        "bbox": [
+          163.18899536132812,
+          180.6126251220703,
+          490.2242126464844,
+          266.6727294921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.8\nThe paired bootstrap test: Examples of b pseudo test sets x(i) being created\nfrom an initial true test set x. Each pseudo test set is created by sampling n = 10 times with\nreplacement; thus an individual sample is a single cell, a document with its gold label and\nthe correct or incorrect performance of classiﬁers A and B. Of course real test sets don’t have\nonly 10 examples, and b needs to be large as well.",
+        "bbox": [
+          160.199951171875,
+          266.0129699707031,
+          493.2030334472656,
+          322.0693359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Now that we have the b test sets, providing a sampling distribution, we can do\nstatistics on how often A has an accidental advantage. There are various ways to\ncompute this advantage; here we follow the version laid out in Berg-Kirkpatrick\net al. (2012). Assuming H0 (A isn’t better than B), we would expect that δ(X), esti-\nmated over many test sets, would be zero; a much higher value would be surprising,\nsince H0 speciﬁcally assumes A isn’t better than B. To measure exactly how surpris-\ning is our observed δ(x) we would in other circumstances compute the p-value by\ncounting over many test sets how often δ(x(i)) exceeds the expected zero value by\nδ(x) or more:",
+        "bbox": [
+          160.19989013671875,
+          335.0079650878906,
+          493.20361328125,
+          441.5672912597656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b\nX",
+        "bbox": [
+          298.40399169921875,
+          450.7513732910156,
+          312.7999572753906,
+          468.80096435546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "p-value(x) = 1",
+        "bbox": [
+          235.9438934326172,
+          454.6253356933594,
+          296.1011962890625,
+          471.33294677734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1\n1\n\u0010\nδ(x(i))−δ(x) ≥0\n\u0011",
+        "bbox": [
+          299.86798095703125,
+          457.244384765625,
+          405.4996337890625,
+          482.77923583984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b",
+        "bbox": [
+          291.1210021972656,
+          468.02801513671875,
+          296.102294921875,
+          477.9906005859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(We use the notation 1(x) to mean “1 if x is true, and 0 otherwise”.) However,\nalthough it’s generally true that the expected value of δ(X) over many test sets,\n(again assuming A isn’t better than B) is 0, this isn’t true for the bootstrapped test\nsets we created. That’s because we didn’t draw these samples from a distribution\nwith 0 mean; we happened to create them from the original test set x, which happens\nto be biased (by .20) in favor of A. So to measure how surprising is our observed\nδ(x), we actually compute the p-value by counting over many test sets how often\nδ(x(i)) exceeds the expected value of δ(x) by δ(x) or more:",
+        "bbox": [
+          160.199951171875,
+          489.11346435546875,
+          493.203857421875,
+          585.9484252929688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b\nX",
+        "bbox": [
+          300.9169921875,
+          595.13134765625,
+          315.3129577636719,
+          613.1820068359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "p-value(x) = 1",
+        "bbox": [
+          230.93003845214844,
+          599.0064697265625,
+          298.6153259277344,
+          615.7140502929688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1\n1\n\u0010\nδ(x(i))−δ(x) ≥δ(x)\n\u0011",
+        "bbox": [
+          302.3809814453125,
+          601.6253051757812,
+          421.36163330078125,
+          627.1602783203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b",
+        "bbox": [
+          293.6340026855469,
+          612.4089965820312,
+          298.61529541015625,
+          622.37158203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b\nX",
+        "bbox": [
+          300.9169921875,
+          630.7913208007812,
+          315.3129577636719,
+          648.8419799804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= 1",
+        "bbox": [
+          278.719970703125,
+          634.66650390625,
+          298.6152648925781,
+          651.3740844726562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1\n1\n\u0010\nδ(x(i)) ≥2δ(x)\n\u0011",
+        "bbox": [
+          302.3809814453125,
+          637.2852783203125,
+          397.504638671875,
+          662.8202514648438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(4.22)",
+        "bbox": [
+          471.5379638671875,
+          642.1669311523438,
+          493.2007751464844,
+          651.1333618164062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b",
+        "bbox": [
+          293.6340026855469,
+          648.0690307617188,
+          298.61529541015625,
+          658.0316162109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "So if for example we have 10,000 test sets x(i) and a threshold of .01, and in only\n47 of the test sets do we ﬁnd that δ(x(i)) ≥2δ(x), the resulting p-value of .0047 is\nsmaller than .01, indicating δ(x) is indeed sufﬁciently surprising, and we can reject\nthe null hypothesis and conclude A is better than B.",
+        "bbox": [
+          160.19989013671875,
+          669.6184692382812,
+          493.2045593261719,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 18,
+    "elements": [
+      {
+        "type": "text",
+        "content": "18\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "function BOOTSTRAP(test set x, num of samples b) returns p-value(x)",
+        "bbox": [
+          160.63099670410156,
+          125.5091781616211,
+          417.1027526855469,
+          134.6343994140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Calculate δ(x) # how much better does algorithm A do than B on x\ns = 0\nfor i = 1 to b do\nfor j = 1 to n do\n# Draw a bootstrap sample x(i) of size n\nSelect a member of x at random and add it to x(i)",
+        "bbox": [
+          158.3899383544922,
+          143.61949157714844,
+          405.7690124511719,
+          196.62933349609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Calculate δ(x(i))\n# how much better does algorithm A do than B on x(i)",
+        "bbox": [
+          174.0808868408203,
+          196.71669006347656,
+          438.9346618652344,
+          208.28973388671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "s←s + 1 if δ(x(i)) ≥2δ(x)\np-value(x) ≈s",
+        "bbox": [
+          160.63082885742188,
+          207.67567443847656,
+          276.770751953125,
+          229.50628662109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "b\n# on what % of the b samples did algorithm A beat expectations?\nreturn p-value(x)\n# if very few did, our observed δ is probably not accidental",
+        "bbox": [
+          160.63101196289062,
+          220.54000854492188,
+          459.24365234375,
+          241.16680908203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 4.9\nA version of the paired bootstrap algorithm after Berg-Kirkpatrick et al. (2012).",
+        "bbox": [
+          143.19700622558594,
+          255.9261016845703,
+          475.20489501953125,
+          264.974365234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The full algorithm for the bootstrap is shown in Fig. 4.9. It is given a test set x, a\nnumber of samples b, and counts the percentage of the b bootstrap test sets in which\nδ(x∗(i)) > 2δ(x). This percentage then acts as a one-sided empirical p-value",
+        "bbox": [
+          142.20001220703125,
+          285.36700439453125,
+          475.2011413574219,
+          320.1954040527344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.10\nAvoiding Harms in Classiﬁcation",
+        "bbox": [
+          77.40103149414062,
+          346.68701171875,
+          354.10418701171875,
+          363.90240478515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "It is important to avoid harms that may result from classiﬁers, harms that exist both\nfor naive Bayes classiﬁers and for the other classiﬁcation algorithms we introduce\nin later chapters.\nOne class of harms is representational harms (Crawford 2017, Blodgett et al.\nrepresentational\nharms",
+        "bbox": [
+          77.50802612304688,
+          386.3104248046875,
+          475.20037841796875,
+          435.3381042480469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2020), harms caused by a system that demeans a social group, for example by per-\npetuating negative stereotypes about them. For example Kiritchenko and Moham-\nmad (2018) examined the performance of 200 sentiment analysis systems on pairs of\nsentences that were identical except for containing either a common African Amer-\nican ﬁrst name (like Shaniqua) or a common European American ﬁrst name (like\nStephanie), chosen from the Caliskan et al. (2017) study discussed in Chapter 6.\nThey found that most systems assigned lower sentiment and more negative emotion\nto sentences with African American names, reﬂecting and perpetuating stereotypes\nthat associate African Americans with negative emotions (Popp et al., 2003).\nIn other tasks classiﬁers may lead to both representational harms and other\nharms, such as censorship. For example the important text classiﬁcation task of\ntoxicity detection is the task of detecting hate speech, abuse, harassment, or other\ntoxicity\ndetection",
+        "bbox": [
+          99.71804809570312,
+          434.13140869140625,
+          475.2038269042969,
+          577.819091796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "kinds of toxic language. While the goal of such classiﬁers is to help reduce soci-\netal harm, toxicity classiﬁers can themselves cause harms. For example, researchers\nhave shown that some widely used toxicity classiﬁers incorrectly ﬂag as being toxic\nsentences that are non-toxic but simply mention minority identities like women\n(Park et al., 2018), blind people (Hutchinson et al., 2020) or gay people (Dixon\net al., 2018), or simply use linguistic features characteristic of varieties like African-\nAmerican Vernacular English (Sap et al. 2019, Davidson et al. 2019). Such false\npositive errors, if employed by toxicity detection systems without human oversight,\ncould lead to the censoring of discourse by or about these groups.\nThese model problems can be caused by biases or other problems in the training\ndata; in general, machine learning systems replicate and even amplify the biases\nin their training data. But these problems can also be caused by the labels (for",
+        "bbox": [
+          142.20004272460938,
+          577.5933227539062,
+          475.2000427246094,
+          719.0629272460938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 19,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4.11\n•\nSUMMARY\n19",
+        "bbox": [
+          383.4620056152344,
+          84.38048553466797,
+          493.2005615234375,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "example due to biases in the human labelers), by the resources used (like lexicons,\nor model components like pretrained embeddings), or even by model architecture\n(like what the model is trained to optimized). While the mitigation of these biases\n(for example by carefully considering the training data sources) is an important area\nof research, we currently don’t have general solutions. For this reason it’s important,\nwhen introducing any NLP model, to study these these kinds of factors and make\nthem clear. One way to do this is by releasing a model card (Mitchell et al., 2019)\nmodel card",
+        "bbox": [
+          111.094970703125,
+          111.56245422363281,
+          493.2021484375,
+          193.25613403320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "for each version of a model. A model card documents a machine learning model\nwith information like:",
+        "bbox": [
+          160.19996643066406,
+          195.24855041503906,
+          493.19976806640625,
+          217.16714477539062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "• training algorithms and parameters\n• training data sources, motivation, and preprocessing\n• evaluation data sources, motivation, and preprocessing\n• intended use and users\n• model performance across different demographic or other groups and envi-\nronmental situations",
+        "bbox": [
+          176.6389617919922,
+          222.0735626220703,
+          493.200439453125,
+          291.81219482421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.11\nSummary",
+        "bbox": [
+          95.40096282958984,
+          313.25213623046875,
+          209.69400024414062,
+          330.467529296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "This chapter introduced the naive Bayes model for classiﬁcation and applied it to\nthe text categorization task of sentiment analysis.",
+        "bbox": [
+          160.19996643066406,
+          352.5796203613281,
+          493.20001220703125,
+          374.5881652832031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "• Many language processing tasks can be viewed as tasks of classiﬁcation.\n• Text categorization, in which an entire text is assigned a class from a ﬁnite set,\nincludes such tasks as sentiment analysis, spam detection, language identi-\nﬁcation, and authorship attribution.\n• Sentiment analysis classiﬁes a text as reﬂecting the positive or negative orien-\ntation (sentiment) that a writer expresses toward some object.\n• Naive Bayes is a generative model that makes the bag of words assumption\n(position doesn’t matter) and the conditional independence assumption (words\nare conditionally independent of each other given the class)\n• Naive Bayes with binarized features seems to work better for many text clas-\nsiﬁcation tasks.\n• Classiﬁers are evaluated based on precision and recall.\n• Classiﬁers are trained using distinct training, dev, and test sets, including the\nuse of cross-validation in the training set.\n• Statistical signiﬁcance tests should be used to determine whether we can be\nconﬁdent that one version of a classiﬁer is better than another.\n• Designers of classiﬁers should carefully consider harms that may be caused\nby the model, including its training data and other components, and report\nmodel characteristics in a model card.",
+        "bbox": [
+          176.6389617919922,
+          379.4035949707031,
+          493.2039794921875,
+          614.3140258789062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bibliographical and Historical Notes",
+        "bbox": [
+          95.40097045898438,
+          633.5130004882812,
+          348.3468933105469,
+          650.7283935546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Multinomial naive Bayes text classiﬁcation was proposed by Maron (1961) at the\nRAND Corporation for the task of assigning subject categories to journal abstracts.\nHis model introduced most of the features of the modern form presented here, ap-\nproximating the classiﬁcation task with one-of categorization, and implementing\nadd-δ smoothing and information-based feature selection.",
+        "bbox": [
+          160.19998168945312,
+          661.2794189453125,
+          493.19976806640625,
+          719.8424072265625
+        ]
+      }
+    ]
+  },
+  {
+    "page": 20,
+    "elements": [
+      {
+        "type": "text",
+        "content": "20\nCHAPTER 4\n•\nNAIVE BAYES AND SENTIMENT CLASSIFICATION",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          379.5824890136719,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The conditional independence assumptions of naive Bayes and the idea of Bayes-\nian analysis of text seems to have arisen multiple times. The same year as Maron’s\npaper, Minsky (1961) proposed a naive Bayes classiﬁer for vision and other arti-\nﬁcial intelligence problems, and Bayesian techniques were also applied to the text\nclassiﬁcation task of authorship attribution by Mosteller and Wallace (1963). It had\nlong been known that Alexander Hamilton, John Jay, and James Madison wrote\nthe anonymously-published Federalist papers in 1787–1788 to persuade New York\nto ratify the United States Constitution. Yet although some of the 85 essays were\nclearly attributable to one author or another, the authorship of 12 were in dispute\nbetween Hamilton and Madison. Mosteller and Wallace (1963) trained a Bayesian\nprobabilistic model of the writing of Hamilton and another model on the writings\nof Madison, then computed the maximum-likelihood author for each of the disputed\nessays. Naive Bayes was ﬁrst applied to spam detection in Heckerman et al. (1998).",
+        "bbox": [
+          142.1999969482422,
+          111.56245422363281,
+          475.279541015625,
+          264.9872131347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Metsis et al. (2006), Pang et al. (2002), and Wang and Manning (2012) show\nthat using boolean attributes with multinomial naive Bayes works better than full\ncounts. Binary multinomial naive Bayes is sometimes confused with another variant\nof naive Bayes that also use a binary representation of whether a term occurs in\na document: Multivariate Bernoulli naive Bayes. The Bernoulli variant instead\nestimates P(w|c) as the fraction of documents that contain a term, and includes a\nprobability for whether a term is not in a document. McCallum and Nigam (1998)\nand Wang and Manning (2012) show that the multivariate Bernoulli variant of naive\nBayes doesn’t work as well as the multinomial algorithm for sentiment or other text\ntasks.\nThere are a variety of sources covering the many kinds of text classiﬁcation\ntasks. For sentiment analysis see Pang and Lee (2008), and Liu and Zhang (2012).\nStamatatos (2009) surveys authorship attribute algorithms. On language identiﬁca-\ntion see Jauhiainen et al. (2018); Jaech et al. (2016) is an important early neural\nsystem. The task of newswire indexing was often used as a test case for text classi-\nﬁcation algorithms, based on the Reuters-21578 collection of newswire articles.\nSee Manning et al. (2008) and Aggarwal and Zhai (2012) on text classiﬁcation;\nclassiﬁcation in general is covered in machine learning textbooks (Hastie et al. 2001,\nWitten and Frank 2005, Bishop 2006, Murphy 2012).\nNon-parametric methods for computing statistical signiﬁcance were used ﬁrst in\nNLP in the MUC competition (Chinchor et al., 1993), and even earlier in speech\nrecognition (Gillick and Cox 1989, Bisani and Ney 2004). Our description of the\nbootstrap draws on the description in Berg-Kirkpatrick et al. (2012). Recent work\nhas focused on issues including multiple test sets and multiple metrics (Søgaard et al.\n2014, Dror et al. 2017).\nFeature selection is a method of removing features that are unlikely to generalize\nwell. Features are generally ranked by how informative they are about the classiﬁca-\ntion decision. A very common metric, information gain, tells us how many bits of\ninformation\ngain",
+        "bbox": [
+          91.06500244140625,
+          266.9796142578125,
+          475.20465087890625,
+          601.4600830078125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "information the presence of the word gives us for guessing the class. Other feature\nselection metrics include χ2, pointwise mutual information, and GINI index; see\nYang and Pedersen (1997) for a comparison and Guyon and Elisseeff (2003) for an\nintroduction to feature selection.",
+        "bbox": [
+          142.1999969482422,
+          601.724365234375,
+          475.2024841308594,
+          647.5529174804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Exercises",
+        "bbox": [
+          77.40100860595703,
+          669.0579223632812,
+          143.11219787597656,
+          686.2733154296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.1\nAssume the following likelihoods for each word being part of a positive or\nnegative movie review, and equal prior probabilities for each class.",
+        "bbox": [
+          142.20001220703125,
+          697.0543823242188,
+          475.2001037597656,
+          719.0629272460938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 21,
+    "elements": [
+      {
+        "type": "text",
+        "content": "EXERCISES\n21",
+        "bbox": [
+          423.37298583984375,
+          84.38848114013672,
+          493.2005615234375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "pos\nneg\nI\n0.09 0.16\nalways 0.07 0.06\nlike\n0.29 0.06\nforeign 0.04 0.15\nﬁlms\n0.08 0.11",
+        "bbox": [
+          288.9020080566406,
+          109.96846008300781,
+          364.49822998046875,
+          180.10610961914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "What class will Naive bayes assign to the sentence “I always like foreign\nﬁlms.”?",
+        "bbox": [
+          185.1070098876953,
+          187.4975128173828,
+          493.2003479003906,
+          209.41610717773438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.2\nGiven the following short movie reviews, each labeled with a genre, either\ncomedy or action:",
+        "bbox": [
+          160.20001220703125,
+          215.800537109375,
+          493.2003173828125,
+          237.80911254882812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1. fun, couple, love, love\ncomedy\n2. fast, furious, shoot\naction\n3. couple, ﬂy, fast, fun, fun\ncomedy\n4. furious, shoot, shoot, fun\naction\n5. ﬂy, fast, shoot, love\naction",
+        "bbox": [
+          194.57200622558594,
+          243.19757080078125,
+          346.8394775390625,
+          305.05712890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and a new document D:",
+        "bbox": [
+          185.10704040527344,
+          310.5364990234375,
+          279.4826965332031,
+          320.4991149902344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "fast, couple, shoot, ﬂy",
+        "bbox": [
+          207.02503967285156,
+          325.9784851074219,
+          294.9250793457031,
+          335.94110107421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "compute the most likely class for D. Assume a naive Bayes classiﬁer and use\nadd-1 smoothing for the likelihoods.",
+        "bbox": [
+          185.10704040527344,
+          341.42047119140625,
+          493.20050048828125,
+          363.33807373046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4.3\nTrain two models, multinomial naive Bayes and binarized naive Bayes, both\nwith add-1 smoothing, on the following document counts for key sentiment\nwords, with positive or negative class assigned as noted.",
+        "bbox": [
+          160.20004272460938,
+          369.7235107421875,
+          493.2004089355469,
+          403.6870422363281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "doc “good” “poor” “great” (class)\nd1. 3\n0\n3\npos\nd2. 0\n1\n2\npos\nd3. 1\n3\n0\nneg\nd4. 1\n5\n2\nneg\nd5. 0\n2\n0\nneg",
+        "bbox": [
+          188.09603881835938,
+          411.2234191894531,
+          337.036865234375,
+          480.96197509765625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Use both naive Bayes models to assign a class (pos or neg) to this sentence:",
+        "bbox": [
+          185.10704040527344,
+          488.3543701171875,
+          486.1668395996094,
+          498.3169860839844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A good, good plot and great characters, but poor acting.",
+        "bbox": [
+          207.02503967285156,
+          503.7963562011719,
+          429.28057861328125,
+          513.7589721679688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Recall from page 6 that with naive Bayes text classiﬁcation, we simply ignore\n(throw out) any word that never occurred in the training document. (We don’t\nthrow out words that appear in some classes but not others; that’s what add-\none smoothing is for.) Do the two models agree or disagree?",
+        "bbox": [
+          185.10704040527344,
+          519.2383422851562,
+          493.2002868652344,
+          565.0669555664062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 22,
+    "elements": [
+      {
+        "type": "text",
+        "content": "22\nChapter 4\n•\nNaive Bayes and Sentiment Classiﬁcation",
+        "bbox": [
+          79.89199829101562,
+          83.60047912597656,
+          330.9793701171875,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Aggarwal, C. C. and C. Zhai. 2012. A survey of text classiﬁ-\ncation algorithms. In Charu C. Aggarwal and ChengX-\niang Zhai, editors, Mining text data, pages 163–222.\nSpringer.",
+        "bbox": [
+          77.4010009765625,
+          113.07353973388672,
+          269.3293151855469,
+          149.43768310546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Hu, M. and B. Liu. 2004. Mining and summarizing customer\nreviews. KDD.\nHutchinson, B., V. Prabhakaran, E. Denton, K. Webster,\nY. Zhong, and S. Denuyl. 2020. Social biases in NLP\nmodels as barriers for persons with disabilities. ACL.\nJaech, A., G. Mulcaire, S. Hathi, M. Ostendorf, and N. A.\nSmith. 2016. Hierarchical character-word models for lan-\nguage identiﬁcation. ACL Workshop on NLP for Social\nMedia.\nJauhiainen, T., M. Lui, M. Zampieri, T. Baldwin, and\nK. Lind´en. 2018. Automatic language identiﬁcation in\ntexts: A survey. ArXiv preprint arXiv:1804.08186.\nJurgens, D., Y. Tsvetkov, and D. Jurafsky. 2017. Incorpo-\nrating dialectal variability for socially equitable language\nidentiﬁcation. ACL.\nKiritchenko, S. and S. M. Mohammad. 2018. Examining\ngender and race bias in two hundred sentiment analysis\nsystems. *SEM.\nLiu, B. and L. Zhang. 2012.\nA survey of opinion min-\ning and sentiment analysis. In Charu C. Aggarwal and\nChengXiang Zhai, editors, Mining text data, pages 415–\n464. Springer.\nLui, M. and T. Baldwin. 2011. Cross-domain feature selec-\ntion for language identiﬁcation. IJCNLP.\nLui, M. and T. Baldwin. 2012. langid.py: An off-the-shelf\nlanguage identiﬁcation tool. ACL.\nManning, C. D., P. Raghavan, and H. Sch¨utze. 2008. Intro-\nduction to Information Retrieval. Cambridge.\nMaron, M. E. 1961. Automatic indexing: an experimental\ninquiry. Journal of the ACM, 8(3):404–417.\nMcCallum, A. and K. Nigam. 1998. A comparison of event\nmodels for naive bayes text classiﬁcation. AAAI/ICML-98\nWorkshop on Learning for Text Categorization.\nMetsis, V., I. Androutsopoulos, and G. Paliouras. 2006.\nSpam ﬁltering with naive bayes-which naive bayes?\nCEAS.\nMinsky, M. 1961. Steps toward artiﬁcial intelligence. Pro-\nceedings of the IRE, 49(1):8–30.\nMitchell, M., S. Wu, A. Zaldivar, P. Barnes, L. Vasserman,\nB. Hutchinson, E. Spitzer, I. D. Raji, and T. Gebru. 2019.\nModel cards for model reporting. ACM FAccT.\nMosteller, F. and D. L. Wallace. 1963. Inference in an au-\nthorship problem: A comparative study of discrimination\nmethods applied to the authorship of the disputed feder-\nalist papers. Journal of the American Statistical Associa-\ntion, 58(302):275–309.\nMosteller, F. and D. L. Wallace. 1964. Inference and Dis-\nputed Authorship: The Federalist. Springer-Verlag. 1984\n2nd edition: Applied Bayesian and Classical Inference.\nMurphy, K. P. 2012. Machine learning: A probabilistic per-\nspective. MIT press.\nNoreen, E. W. 1989. Computer Intensive Methods for Testing\nHypothesis. Wiley.\nPang, B. and L. Lee. 2008. Opinion mining and sentiment\nanalysis. Foundations and trends in information retrieval,\n2(1-2):1–135.\nPang, B., L. Lee, and S. Vaithyanathan. 2002.\nThumbs\nup? Sentiment classiﬁcation using machine learning tech-\nniques. EMNLP.",
+        "bbox": [
+          283.2749938964844,
+          113.07360076904297,
+          475.20318603515625,
+          718.9375610351562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bayes, T. 1763. An Essay Toward Solving a Problem in the\nDoctrine of Chances, volume 53. Reprinted in Facsimiles\nof Two Papers by Bayes, Hafner Publishing, 1963.",
+        "bbox": [
+          77.40098571777344,
+          153.7794189453125,
+          269.3304443359375,
+          180.8197021484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Berg-Kirkpatrick, T., D. Burkett, and D. Klein. 2012. An\nempirical investigation of statistical signiﬁcance in NLP.\nEMNLP.",
+        "bbox": [
+          77.40098571777344,
+          185.3026123046875,
+          269.32928466796875,
+          212.20172119140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bisani, M. and H. Ney. 2004. Bootstrap estimates for conﬁ-\ndence intervals in ASR performance evaluation. ICASSP.",
+        "bbox": [
+          77.40098571777344,
+          216.68560791015625,
+          269.32891845703125,
+          234.11968994140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bishop, C. M. 2006. Pattern recognition and machine learn-\ning. Springer.",
+        "bbox": [
+          77.40098571777344,
+          238.46142578125,
+          269.3273010253906,
+          256.0377197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Blodgett, S. L., S. Barocas, H. Daum´e III, and H. Wallach.\n2020. Language (technology) is power: A critical survey\nof “bias” in NLP. ACL.",
+        "bbox": [
+          77.40099334716797,
+          260.48065185546875,
+          269.32928466796875,
+          287.41973876953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Blodgett, S. L., L. Green, and B. O’Connor. 2016. Demo-\ngraphic dialectal variation in social media: A case study\nof African-American English. EMNLP.",
+        "bbox": [
+          77.40099334716797,
+          291.9036560058594,
+          269.32928466796875,
+          318.802734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Borges, J. L. 1964. The analytical language of John Wilkins.\nUniversity of Texas Press. Trans. Ruth L. C. Simms.",
+        "bbox": [
+          77.40098571777344,
+          323.14447021484375,
+          269.3265075683594,
+          340.7197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Caliskan, A., J. J. Bryson, and A. Narayanan. 2017. Seman-\ntics derived automatically from language corpora contain\nhuman-like biases. Science, 356(6334):183–186.",
+        "bbox": [
+          77.40098571777344,
+          345.2036437988281,
+          269.32928466796875,
+          372.10272216796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Chinchor, N., L. Hirschman, and D. L. Lewis. 1993. Eval-\nuating Message Understanding systems: An analysis of\nthe third Message Understanding Conference. Computa-\ntional Linguistics, 19(3):409–449.",
+        "bbox": [
+          77.40098571777344,
+          376.58563232421875,
+          269.3293151855469,
+          412.94970703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Crawford, K. 2017.\nThe trouble with bias.\nKeynote at\nNeurIPS.",
+        "bbox": [
+          77.40098571777344,
+          417.4326171875,
+          269.3288879394531,
+          434.86669921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Davidson, T., D. Bhattacharya, and I. Weber. 2019. Racial\nbias in hate speech and abusive language detection\ndatasets. Third Workshop on Abusive Language Online.",
+        "bbox": [
+          77.40098571777344,
+          439.3506164550781,
+          269.329345703125,
+          466.24969482421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Dixon, L., J. Li, J. Sorensen, N. Thain, and L. Vasserman.\n2018. Measuring and mitigating unintended bias in text\nclassiﬁcation. 2018 AAAI/ACM Conference on AI, Ethics,\nand Society.",
+        "bbox": [
+          77.40097045898438,
+          470.73260498046875,
+          269.3292236328125,
+          507.0956726074219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Dror, R., G. Baumer, M. Bogomolov, and R. Reichart. 2017.",
+        "bbox": [
+          77.40096282958984,
+          511.57958984375,
+          269.328857421875,
+          519.5496826171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Replicability analysis for natural language processing:\nTesting signiﬁcance with multiple datasets. TACL, 5:471–\n–486.",
+        "bbox": [
+          87.36396026611328,
+          521.0435791015625,
+          269.3292541503906,
+          547.9426879882812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Dror, R., L. Peled-Cohen, S. Shlomov, and R. Reichart.\n2020. Statistical Signiﬁcance Testing for Natural Lan-\nguage Processing, volume 45 of Synthesis Lectures on\nHuman Language Technologies. Morgan & Claypool.",
+        "bbox": [
+          77.40097045898438,
+          552.4265747070312,
+          269.3288879394531,
+          588.7896728515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Efron, B. and R. J. Tibshirani. 1993. An introduction to the\nbootstrap. CRC press.",
+        "bbox": [
+          77.40095520019531,
+          593.1314086914062,
+          269.32781982421875,
+          610.7076416015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Gillick, L. and S. J. Cox. 1989. Some statistical issues in the\ncomparison of speech recognition algorithms. ICASSP.",
+        "bbox": [
+          77.40094757080078,
+          615.1905517578125,
+          269.3289489746094,
+          632.6256713867188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Guyon, I. and A. Elisseeff. 2003. An introduction to variable\nand feature selection. JMLR, 3:1157–1182.",
+        "bbox": [
+          77.40097045898438,
+          637.1085815429688,
+          269.328857421875,
+          654.543701171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Hastie, T., R. J. Tibshirani, and J. H. Friedman. 2001. The\nElements of Statistical Learning. Springer.",
+        "bbox": [
+          77.4009780883789,
+          658.8854370117188,
+          269.3271179199219,
+          676.460693359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Heckerman, D., E. Horvitz, M. Sahami, and S. T. Dumais.\n1998. A bayesian approach to ﬁltering junk e-mail. AAAI-\n98 Workshop on Learning for Text Categorization.",
+        "bbox": [
+          77.40099334716797,
+          680.944580078125,
+          269.3289489746094,
+          707.8436889648438
+        ]
+      }
+    ]
+  },
+  {
+    "page": 23,
+    "elements": [
+      {
+        "type": "text",
+        "content": "Exercises\n23",
+        "bbox": [
+          433.2560119628906,
+          84.43647766113281,
+          493.2009582519531,
+          94.39907836914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Park, J. H., J. Shin, and P. Fung. 2018. Reducing gender bias\nin abusive language detection. EMNLP.",
+        "bbox": [
+          95.4010009765625,
+          113.07353973388672,
+          287.32891845703125,
+          130.5086669921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Pennebaker, J. W., R. J. Booth, and M. E. Francis. 2007.\nLinguistic Inquiry and Word Count: LIWC 2007. Austin,\nTX.",
+        "bbox": [
+          95.40101623535156,
+          134.9915771484375,
+          287.3289489746094,
+          161.89068603515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Popp, D., R. A. Donovan, M. Crawford, K. L. Marsh, and\nM. Peele. 2003. Gender, race, and speech style stereo-\ntypes. Sex Roles, 48(7-8):317–325.",
+        "bbox": [
+          95.40101623535156,
+          166.37359619140625,
+          287.32940673828125,
+          193.272705078125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Sahami, M., S. T. Dumais, D. Heckerman, and E. Horvitz.\n1998. A Bayesian approach to ﬁltering junk e-mail. AAAI\nWorkshop on Learning for Text Categorization.",
+        "bbox": [
+          95.40101623535156,
+          197.756591796875,
+          287.3290100097656,
+          224.65570068359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Sap, M., D. Card, S. Gabriel, Y. Choi, and N. A. Smith. 2019.",
+        "bbox": [
+          95.40103149414062,
+          229.13861083984375,
+          287.32891845703125,
+          237.10870361328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The risk of racial bias in hate speech detection. ACL.",
+        "bbox": [
+          105.36402893066406,
+          238.46142578125,
+          274.4475402832031,
+          246.57269287109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Søgaard, A., A. Johannsen, B. Plank, D. Hovy, and H. M.\nAlonso. 2014. What’s in a p-value in NLP? CoNLL.",
+        "bbox": [
+          95.40101623535156,
+          251.05657958984375,
+          287.3289794921875,
+          268.49066162109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Stamatatos, E. 2009. A survey of modern authorship attribu-\ntion methods. JASIST, 60(3):538–556.",
+        "bbox": [
+          95.40101623535156,
+          272.97454833984375,
+          287.3289489746094,
+          290.40863037109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Stone, P., D. Dunphry, M. Smith, and D. Ogilvie. 1966.\nThe General Inquirer: A Computer Approach to Content\nAnalysis. MIT Press.",
+        "bbox": [
+          95.40100860595703,
+          294.89154052734375,
+          287.329345703125,
+          321.7906188964844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "van Rijsbergen, C. J. 1975. Information Retrieval. Butter-\nworths.",
+        "bbox": [
+          95.40100860595703,
+          326.13336181640625,
+          287.3299255371094,
+          343.7086181640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Wang, S. and C. D. Manning. 2012. Baselines and bigrams:\nSimple, good sentiment and topic classiﬁcation. ACL.",
+        "bbox": [
+          95.40101623535156,
+          348.1915283203125,
+          287.3289794921875,
+          365.6266174316406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Wilson, T., J. Wiebe, and P. Hoffmann. 2005.\nRecogniz-\ning contextual polarity in phrase-level sentiment analysis.\nEMNLP.",
+        "bbox": [
+          95.40098571777344,
+          370.1095275878906,
+          287.32928466796875,
+          397.00860595703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Witten, I. H. and E. Frank. 2005.\nData Mining: Practi-\ncal Machine Learning Tools and Techniques, 2nd edition.\nMorgan Kaufmann.",
+        "bbox": [
+          95.40098571777344,
+          401.3513488769531,
+          287.3285217285156,
+          428.3916015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Yang, Y. and J. Pedersen. 1997.\nA comparative study on\nfeature selection in text categorization. ICML.",
+        "bbox": [
+          95.4010009765625,
+          432.87451171875,
+          287.32891845703125,
+          450.30859375
+        ]
+      }
+    ]
+  }
+]

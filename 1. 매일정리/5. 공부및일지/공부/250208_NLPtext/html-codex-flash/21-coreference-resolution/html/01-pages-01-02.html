@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">21 Coreference Resolution</div>
+<h1>Coreference Resolution</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl>
+<dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl>
+<dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header"><h2>Page 1</h2><div class="page-subtitle">상호 참조 해소 소개</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 21 Coreference Resolution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제21장 상호 참조 해소(Coreference Resolution)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>21장의 시작입니다. 텍스트 내에서 서로 다른 언어적 표현들이 동일한 실세계 개체를 가리키는 관계를 식별하는 기술을 다룹니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"Victoria Chen, Chief Financial Officer of Megabucks Bank, saw her pay rise by 20% last year. She said that she was pleased with the increase."</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"Megabucks 은행의 최고 재무 책임자인 Victoria Chen은 작년에 자신의 급여가 20% 인상되는 것을 보았습니다. 그녀는 그 인상분에 만족한다고 말했습니다."</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 해소의 필요성을 보여주는 예시 문장입니다. 여기서 'Victoria Chen', 'her', 'She', 'she'는 모두 동일한 인물을 가리킵니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Coreference resolution is the task of finding all expressions that refer to the same entity in a text. These expressions are called mentions, and the set of mentions that refer to the same entity is called a coreference chain or cluster.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>상호 참조 해소는 텍스트 내에서 동일한 개체를 지칭하는 모든 표현을 찾는 작업입니다. 이러한 표현들을 언급(mentions)이라고 부르며, 동일한 개체를 가리키는 언급들의 집합을 상호 참조 체인(coreference chain) 또는 클러스터(cluster)라고 합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'언급(mention)'과 '상호 참조 체인(chain)'이라는 핵심 용어를 정의합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>coreference resolution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>상호 참조 해소(coreference resolution)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지식 그래프 구축이나 문서 요약 등 텍스트의 맥락을 파악해야 하는 상위 NLP 태스크에서 매우 중요한 역할을 합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.1 Coreference Phenomena: Terminology</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.1 상호 참조 현상: 용어 정리</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 현상을 구체적으로 분류하기 위한 기초 어휘와 개념들을 다룹니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header"><h2>Page 2</h2><div class="page-subtitle">용어 정리 - 언급(Mentions)</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">subsection_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.1.1 Mentions</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.1.1 언급(Mentions)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조의 구성 단위인 '언급'의 종류에 대해 알아봅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A mention is a linguistic expression that refers to an entity. Mentions can be noun phrases (NPs), pronouns, or even nested structures. There are three main types of mentions:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언급은 개체를 가리키는 언어적 표현입니다. 언급은 명사구(NP), 대명사, 또는 중첩된 구조일 수도 있습니다. 언급에는 크게 세 가지 유형이 있습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급이 될 수 있는 문법적 형태들을 나열합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">list</div></div><div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    - Proper Nouns: "Victoria Chen", "Megabucks Bank"
+    - Definitive Noun Phrases: "the Sultan", "the woman"
+    - Pronouns: "she", "it", "his", "himself"</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 고유 명사: "Victoria Chen", "Megabucks Bank"
+    - 한정 명사구: "the Sultan", "the woman"
+    - 대명사: "she", "it", "his", "himself"</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급의 세 가지 주요 범주와 그 예시입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>anaphora / cataphora</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전방 참조(anaphora) / 후방 참조(cataphora)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>참조 대상이 앞에 나오는지(anaphora), 뒤에 나오는지(cataphora)를 구분하는 용어입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 6</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Anaphora occurs when a mention refers back to a previously introduced entity (the antecedent). Cataphora is less common and occurs when the mention refers to an entity introduced later in the text.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전방 참조(Anaphora)는 표현이 이전에 도입된 개체(선행사)를 다시 가리킬 때 발생합니다. 후방 참조(Cataphora)는 덜 일반적이며, 표현이 텍스트의 나중에 도입되는 개체를 가리킬 때 발생합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>참조 방향에 따른 현상의 정의를 명확히 합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

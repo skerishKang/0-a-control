@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages 11-12 | Regular Expressions, Text Normalization, Edit Distance</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1f1b16;
+      --muted: #6f675d;
+      --line: #ddd2c2;
+      --accent: #8c5a2b;
+      --accent-soft: #f1e2cf;
+      --note-bg: #faf4ea;
+      --source-bg: #f5f3ef;
+      --translation-bg: #fff8ea;
+      --shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%),
+        linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 241, 232, 0.88);
+      border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .quick-nav,
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fcf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .meta-card dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .meta-card dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .page {
+      margin-bottom: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff8eb, #f5ead8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blocks {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fffdfa;
+    }
+
+    .block-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .block-title {
+      font-weight: 800;
+    }
+
+    .block-type {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .block-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .source,
+    .translation,
+    .note-panel {
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .source {
+      background: var(--source-bg);
+    }
+
+    .translation {
+      background: var(--translation-bg);
+    }
+
+    .note-panel {
+      background: var(--note-bg);
+    }
+
+    .source pre,
+    .translation pre,
+    .note-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: inherit;
+    }
+
+    .mono pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-toggle {
+      align-self: start;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-panel[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero,
+      .page-header,
+      .blocks,
+      .block-head,
+      .block-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="doc-meta">
+        <div class="eyebrow">02 PDF / HTML Sample</div>
+        <h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+      </div>
+      <div class="quick-nav">
+        <a class="chip" href="#page-11">Page 11</a>
+        <a class="chip" href="#page-12">Page 12</a>
+      </div>
+      <div class="actions">
+        <button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+        <button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Study Edition</div>
+      <h2>Pages 11-12 Annotated Page</h2>
+      <p>단어 유형/토큰, 표제어, 힙스 법칙, 코퍼스와 언어 다양성을 다릅니다.</p>
+      <div class="hero-grid">
+        <dl class="meta-card">
+          <dt>Source</dt>
+          <dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Workflow</dt>
+          <dd>html-codex-flash</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Status</dt>
+          <dd>Accepted</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="page" id="page-11">
+      <header class="page-header">
+        <h2>Page 11</h2>
+        <div class="page-subtitle">단어 유형, 토큰, 힙스 법칙</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>duce other complications with regard to defining words. Let's look at one utterance from Switchboard; an utterance is the spoken correlate of a sentence:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>단어를 정의하는 데 있어 또 다른 복잡한 문제들이 발생합니다. 스위치보드(Switchboard) 코퍼스에서 추출한 하나의 발화(utterance)를 살펴봅시다. 발화란 문장에 대응되는 구어적 실체를 의미합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>구어(spoken language) 데이터에서 문장에 해당하는 단위를 '발화(utterance)'라고 부릅니다. 이는 텍스트 데이터의 문장과는 다른 특성을 가집니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>utterance</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>발화(utterance)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>구어에서 한 번의 호흡이나 의미 단위로 내뱉는 말의 묶음을 뜻합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>I do uh main- mainly business data processing</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>I do uh main- mainly business data processing (저는 어, 주- 주로 비즈니스 데이터 처리를 합니다)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 구어 데이터의 예시로, 중간에 말이 끊기거나 'uh'와 같은 추임새가 섞여 있는 것을 볼 수 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>This utterance has two kinds of disfluencies. The broken-off word main- is called a fragment. Words like uh and um are called fillers or filled pauses. Should we consider these to be words? Again, it depends on the application. If we are building a speech transcription system, we might want to eventually strip out the disfluencies.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 발화에는 두 가지 종류의 비유창성(disfluencies)이 나타납니다. 'main-'처럼 중간에 끊긴 단어는 파편(fragment)이라고 부릅니다. 'uh'나 'um' 같은 단어들은 충진어(fillers) 또는 채워진 일시 정지(filled pauses)라고 합니다. 이것들을 단어로 간주해야 할까요? 이 역시 애플리케이션에 따라 다릅니다. 만약 우리가 음성 전사(speech transcription) 시스템을 구축한다면, 결국 이러한 비유창성 요소들을 제거하고 싶을 것입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>구어 시스템 구축 시 마주하는 비유창성 요소들인 파편(fragment)과 충진어(fillers)를 정의합니다. 이를 단어로 처리할지 여부는 목적에 따라 결정됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>disfluency
+fragment
+filled pause</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>비유창성(disfluency)
+파편(fragment)
+채워진 일시 정지(filled pause)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>구어 분석에서 말이 매끄럽게 이어지지 않는 현상과 그 세부 유형들을 일컫는 용어들입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>But we also sometimes keep disfluencies around. Disfluencies like uh or um are actually helpful in speech recognition in predicting the upcoming word, because they may signal that the speaker is restarting the clause or idea, and so for speech recognition they are treated as regular words. Because people use different disfluencies they can also be a cue to speaker identification. In fact Clark and Fox Tree (2002) showed that uh and um have different meanings. What do you think they are?</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>하지만 때로는 비유창성 요소들을 유지하기도 합니다. 'uh'나 'um' 같은 비유창성은 실제로 음성 인식에서 다음에 올 단어를 예측하는 데 도움이 될 수 있는데, 이는 화자가 절(clause)이나 아이디어를 다시 시작하려 한다는 신호가 될 수 있기 때문입니다. 따라서 음성 인식에서는 이를 일반 단어처럼 취급합니다. 또한 사람마다 사용하는 비유창성 요소가 다르기 때문에 화자 식별(speaker identification)의 단서가 되기도 합니다. 실제로 클라크와 폭스 트리(Clark and Fox Tree, 2002)는 'uh'와 'um'이 서로 다른 의미를 가지고 있음을 보여주었습니다. 그것들이 무엇이라고 생각하시나요?</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>비유창성 요소가 단순한 소음이 아니라 화자의 상태나 정체성을 파악하는 정보원으로서 가치를 가질 수 있음을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Are capitalized tokens like They and uncapitalized tokens like they the same word? These are lumped together in some tasks (speech recognition), while for part-of-speech or named-entity tagging, capitalization is a useful feature and is retained.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>'They'와 같이 대문자로 시작하는 토큰과 'they'처럼 소문자로 된 토큰은 같은 단어일까요? 어떤 작업(음성 인식)에서는 이들을 하나로 묶어 처리하는 반면, 품사 부착(part-of-speech tagging)이나 개체명 인식(named-entity tagging)에서는 대문자 여부가 유용한 특징(feature)이 되므로 그대로 유지합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대소문자 구분이 작업의 성격에 따라 중요한 정보가 될 수도, 무시해야 할 차이가 될 수도 있음을 보여줍니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>How about inflected forms like cats versus cat? These two words have the same lemma cat but are different wordforms. A lemma is a set of lexical forms having the same stem, the same major part-of-speech, and the same word sense. The wordform is the full inflected or derived form of the word. For morphologically complex languages like Arabic, we often need to deal with lemmatization. For many tasks in English, however, wordforms are sufficient.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>'cats'와 'cat' 같은 굴절 형태들은 어떨까요? 이 두 단어는 동일한 표제어(lemma)인 'cat'을 공유하지만 서로 다른 어형(wordforms)입니다. 표제어는 동일한 어간, 동일한 주요 품사, 그리고 동일한 단어 의미를 가진 어휘 형태들의 집합입니다. 어형은 단어의 완전한 굴절 또는 파생 형태입니다. 아랍어와 같이 형태론적으로 복잡한 언어의 경우, 우리는 흔히 표제어 추출(lemmatization) 과정을 거쳐야 합니다. 하지만 영어의 많은 작업에서는 어형만으로도 충분한 경우가 많습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>표제어(lemma)와 어형(wordform)의 차이점을 정의합니다. 표제어 추출은 문법적 변형을 제거하고 기본형을 찾는 중요한 전처리 단계입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>lemma
+wordform</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>표제어(lemma)
+어형(wordform)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 기본 사전형인 표제어와, 실제 텍스트에 나타나는 다양한 변형 형태인 어형을 구분하는 개념입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>How many words are there in English? To answer this question we need to distinguish two ways of talking about words. Types are the number of distinct words in a corpus; if the set of words in the vocabulary is V, the number of types is the vocabulary size |V|. Tokens are the total number N of running words. If we ignore punctuation, the following Brown sentence has 16 tokens and 14 types:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>영어에는 얼마나 많은 단어가 있을까요? 이 질문에 답하기 위해 우리는 단어를 이야기하는 두 가지 방식을 구분해야 합니다. 유형(Types)은 코퍼스에 나타나는 서로 다른 단어의 수입니다. 어휘 집합이 V라면, 유형의 수는 어휘 크기인 |V|가 됩니다. 토큰(Tokens)은 사용된 단어의 총 개수 N을 의미합니다. 문장 부호를 무시한다면, 다음의 브라운 코퍼스 문장에는 16개의 토큰과 14개의 유형이 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>코퍼스의 규모를 측정하는 두 가지 척도인 토큰(전체 사용 횟수)과 유형(유니크한 단어 수)을 정의합니다. 유형의 수는 곧 어휘 목록의 크기를 의미합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>word type
+word token</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>단어 유형(word type)
+단어 토큰(word token)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>유니크한 단어의 개수(유형)와 전체 단어의 개수(토큰)를 뜻하는 기초적이며 중요한 통계 용어입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 12</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>They picnicked by the pool, then lay back on the grass and looked at the stars.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>They picnicked by the pool, then lay back on the grass and looked at the stars. (그들은 수영장가에서 소풍을 즐겼고, 풀밭에 누워 별들을 바라보았다.)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>총 16개의 단어로 이루어져 있지만, 'the'와 같은 단어가 반복되므로 유니크한 단어(유형)는 14개가 되는 예시 문장입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 13</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>When we speak about the number of words in the language, we are generally referring to word types.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>우리가 한 언어의 단어 개수에 대해 말할 때는, 일반적으로 단어 유형(word types)을 의미합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 언어나 분야의 어휘 규모를 논할 때는 중복을 제외한 단어 유형의 개수가 기준이 됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 14</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: Corpus | Tokens = N | Types = |V|
+row 2: Shakespeare | 884 thousand | 31 thousand
+row 3: Brown corpus | 1 million | 38 thousand
+row 4: Switchboard telephone conversations | 2.4 million | 20 thousand
+row 5: COCA | 440 million | 2 million
+row 6: Google n-grams | 1 trillion | 13 million</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 코퍼스 | 토큰 수 = N | 유형 수 = |V|
+행 2: 셰익스피어 전집 | 88만 4천 | 3만 1천
+행 3: 브라운 코퍼스 | 100만 | 3만 8천
+행 4: 스위치보드 전화 대화 | 240만 | 2만
+행 5: COCA (미국 현대 영어 코퍼스) | 4억 4천만 | 200만
+행 6: 구글 N-gram | 1조 | 1,300만</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>다양한 코퍼스의 토큰 수와 유형 수의 관계를 보여줍니다. 데이터의 규모(토큰 수)가 커짐에 따라 어휘의 종류(유형 수)도 늘어나지만, 그 증가 속도는 점차 둔화되는 양상을 보입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 15</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.11 Rough numbers of types and tokens for some English language corpora. The largest, the Google n-grams corpus, contains 13 million types, but this count only includes types appearing 40 or more times, so the true number would be much larger.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.11 일부 영어 코퍼스에 대한 유형 수와 토큰 수의 대략적인 수치. 가장 큰 규모인 구글 N-gram 코퍼스는 1,300만 개의 유형을 포함하고 있지만, 이 수치는 40번 이상 나타난 유형들만 포함한 것이므로 실제 수치는 훨씬 더 클 것입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>코퍼스 통계 수치를 설명하는 캡션입니다. 구글 데이터의 경우 희귀 단어들을 제외했음에도 막대한 어휘 규모를 보여준다는 점이 특징입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 16</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Fig. 2.11 shows the rough numbers of types and tokens computed from some popular English corpora. The larger the corpora we look at, the more word types we find, and in fact this relationship between the number of types |V| and number of tokens N is called Herdan's Law (Herdan, 1960) or Heaps' Law (Heaps, 1978) after its discoverers (in linguistics and information retrieval respectively). It is shown in Eq. 2.1, where k and β are positive constants, and 0 < β < 1.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.11은 널리 사용되는 일부 영어 코퍼스에서 계산된 유형 수와 토큰 수의 대략적인 수치를 보여줍니다. 우리가 보는 코퍼스의 규모가 커질수록 더 많은 단어 유형을 발견하게 되는데, 실제로 유형의 수 |V|와 토큰의 수 N 사이의 이러한 관계는 발견자들의 이름을 따서 (각각 언어학과 정보 검색 분야에서) 허단 법칙(Herdan's Law, 1960) 또는 힙스 법칙(Heaps' Law, 1978)이라고 불립니다. 이는 식 2.1에 나타나 있으며, 여기서 k와 β는 양의 상수이고 0 < β < 1입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>코퍼스의 크기(N)와 어휘의 크기(|V|) 사이의 수학적 관계인 힙스 법칙을 소개합니다. 데이터가 늘어남에 따라 새로운 단어가 발견되는 속도가 어떻게 변하는지 수학적으로 모델링합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 17</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Herdan's Law
+Heaps' Law</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>허단 법칙 (Herdan's Law)
+힙스 법칙 (Heaps' Law)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 수의 증가 법칙을 일컫는 고유 명칭입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 18</div>
+            <div class="block-type">formula</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>|V| = k N^β (2.1)</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>|V| = k N^β (2.1)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>힙스 법칙의 수식입니다. 어휘 크기가 전체 토큰 수의 거듭제곱(β < 1)에 비례한다는 것을 보여주며, 이는 어휘의 증가 속도가 점차 느려짐을 의미합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-12">
+      <header class="page-header">
+        <h2>Page 12</h2>
+        <div class="page-subtitle">코퍼스와 언어 다양성</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>12 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>12 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 장 제목과 페이지 번호(12) 정보입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The value of β depends on the corpus size and the genre, but at least for the large corpora in Fig. 2.11, β ranges from .67 to .75. Roughly then we can say that the vocabulary size for a text goes up significantly faster than the square root of its length in words.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>β 값은 코퍼스의 크기와 장르에 따라 달라지지만, 적어도 그림 2.11에 제시된 대규모 코퍼스들의 경우 β는 0.67에서 0.75 사이의 범위를 가집니다. 대략적으로 말하자면, 텍스트의 어휘 크기는 단어 길이의 제곱근보다 훨씬 더 빠르게 증가한다고 할 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>힙스 법칙에서 지수 β의 일반적인 범위를 설명합니다. 이는 데이터가 늘어날 때 새로운 단어가 추가되는 양상이 단순 제곱근(0.5)보다 더 가파르다는 점을 시사합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Another measure of the number of words in the language is the number of lemmas instead of wordform types. Dictionaries can help in giving lemma counts; dictionary entries or boldface forms are a very rough upper bound on the number of lemmas (since some lemmas have multiple boldface forms). The 1989 edition of the Oxford English Dictionary had 615,000 entries.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>한 언어의 단어 수를 측정하는 또 다른 방법은 어형 유형 대신 표제어(lemmas)의 개수를 세는 것입니다. 사전은 표제어 개수를 파악하는 데 유용한 도구가 될 수 있습니다. 사전 항목이나 굵은 표제어 형태는 표제어 수의 아주 대략적인 상한선이 됩니다(일부 표제어는 여러 개의 굵은 표제어 형태를 가질 수 있기 때문입니다). 1989년판 옥스퍼드 영어 사전(OED)에는 615,000개의 항목이 수록되어 있었습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 변형을 제외한 기본 사전형인 표제어 관점에서의 단어 규모를 설명합니다. 사전의 수록어 개수는 해당 언어의 표제어 규모를 가늠하는 지표가 됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">section_title</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.3 Corpora</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.3 코퍼스 (말뭉치)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>자연어 처리의 핵심 원천인 코퍼스(말뭉치)의 개념과 특성을 깊이 있게 다루는 새로운 섹션입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Words don't appear out of nowhere. Any particular piece of text that we study is produced by one or more specific speakers or writers, in a specific dialect of a specific language, at a specific time, in a specific place, for a specific function.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>단어는 갑자기 나타나는 것이 아닙니다. 우리가 연구하는 모든 텍스트는 하나 이상의 구체적인 화자나 저자에 의해, 특정 언어의 특정 방언으로, 특정 시간에, 특정 장소에서, 특정한 목적을 위해 생산됩니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트가 가진 맥락적(발화자, 방언, 시간, 장소 등) 특성을 강조합니다. 코퍼스는 이러한 맥락의 집합체입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Perhaps the most important dimension of variation is the language. NLP algorithms are most useful when they apply across many languages. The world has 7097 languages at the time of this writing, according to the online Ethnologue catalog (Simons and Fennig, 2018). It is important to test algorithms on more than one language, and particularly on languages with different properties; by contrast there is an unfortunate current tendency for NLP algorithms to be developed or tested just on English (Bender, 2019). Even when algorithms are developed beyond English, they tend to be developed for the official languages of large industrialized nations (Chinese, Spanish, Japanese, German etc.), but we don't want to limit tools to just these few languages. Furthermore, most languages also have multiple varieties, often spoken in different regions or by different social groups. Thus, for example, if we're processing text that uses features of African American English (AAE) or African American Vernacular English (AAVE) — the variations of English used by millions of people in African American communities (King 2020) — we must use NLP tools that function with features of those varieties. Twitter posts might use features often used by speakers of African American English, such as constructions like iont (I don't in Mainstream American English (MAE)), or talmbout corresponding to MAE talking about, both examples that influence word segmentation (Blodgett et al. 2016, Jones 2015).</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>변이의 가장 중요한 차원은 아마도 언어일 것입니다. NLP 알고리즘은 많은 언어에 걸쳐 적용될 때 가장 유용합니다. 온라인 Ethnologue 목록(Simons and Fennig, 2018)에 따르면, 이 글을 쓰는 시점에 세계에는 7097개의 언어가 있습니다. 알고리즘은 둘 이상의 언어, 특히 서로 다른 성질을 가진 언어들에서 시험되어야 합니다. 그러나 불행하게도 현재 NLP 알고리즘은 영어만을 대상으로 개발되거나 시험되는 경향이 있습니다(Bender, 2019). 영어를 넘어 개발되는 경우에도 대개는 대규모 산업 국가들의 공식 언어(중국어, 스페인어, 일본어, 독일어 등)를 위해 개발되는 경향이 있지만, 우리는 분석 도구가 이러한 소수의 언어들에만 국한되는 것을 원치 않습니다. 더욱이 대부분의 언어에는 여러 변종이 존재하며, 이들은 대개 서로 다른 지역이나 사회 집단에 의해 사용됩니다. 따라서 예를 들어 아프리카계 미국인 영어(AAE) 또는 아프리카계 미국인 구어체 영어(AAVE) — 수백만 명의 아프리카계 미국인 공동체 사람들이 사용하는 영어의 변종(King 2020) — 의 특징이 담긴 텍스트를 처리할 때면, 해당 변종의 언어적 특성을 반영하여 작동하는 NLP 도구를 반드시 사용해야 합니다. 트위터 게시물에는 아프리카계 미국인 영어 화자들이 자주 사용하는 특징들이 나타날 수 있는데, 예를 들어 주류 미국 영어(MAE)의 "I don't"에 해당하는 "iont"나, MAE의 "talking about"에 해당하는 "talmbout"과 같은 구문들은 단어 분절(word segmentation)에 직접적인 영향을 미치는 사례들입니다(Blodgett et al. 2016, Jones 2015).</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>코퍼스와 NLP 도구가 특정 표준 언어에만 맞춰져서는 안 된다는 점을 강하게 강조하는 문단입니다. 방언과 사회언어학적 변이를 무시하면 실제 언어 데이터를 제대로 처리할 수 없습니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+    function setPanelState(toggle, expanded) {
+      const panel = toggle.nextElementSibling;
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+      panel.hidden = !expanded;
+    }
+
+    toggles.forEach((toggle) => {
+      setPanelState(toggle, false);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setPanelState(toggle, !expanded);
+      });
+    });
+
+    document.querySelector("[data-expand-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, true));
+    });
+
+    document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, false));
+    });
+  </script>
+</body>
+</html>

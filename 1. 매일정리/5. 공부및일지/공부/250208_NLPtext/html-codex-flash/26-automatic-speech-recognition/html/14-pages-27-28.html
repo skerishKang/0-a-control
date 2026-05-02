@@ -1,0 +1,1049 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 27-28 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-27">Page 27</a>
+<a class="chip" href="#page-28">Page 28</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 27-28 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-27">
+<header class="page-header">
+<h2>Page 27</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Allen, J., M. S. Hunnicutt, and D. H. Klatt. 1987. From Text to Speech: The MITalk system. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Allen, J., M. S. Hunnicutt, and D. H. Klatt. 1987. From Text to Speech: The MITalk system. Cambridge University Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the MITalk TTS system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Atal, B. S. and S. Hanauer. 1971. Speech analysis and synthesis by prediction of the speech wave. JASA, 50:637–655.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Atal, B. S. and S. Hanauer. 1971. Speech analysis and synthesis by prediction of the speech wave. JASA, 50:637–655.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on speech prediction.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bahdanau, D., J. Chorowski, D. Serdyuk, P. Brakel, and Y. Bengio. 2016. End-to-end attention-based large vocabulary speech recognition. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bahdanau, D., J. Chorowski, D. Serdyuk, P. Brakel, and Y. Bengio. 2016. End-to-end attention-based large vocabulary speech recognition. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key paper on attention-based ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Baker, J. K. 1975. The DRAGON system – An overview. IEEE Transactions on Acoustics, Speech, and Signal Processing, ASSP-23(1):24–29.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Baker, J. K. 1975. The DRAGON system – An overview. IEEE Transactions on Acoustics, Speech, and Signal Processing, ASSP-23(1):24–29.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Overview of the DRAGON ASR system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Baum, L. E. and J. A. Eagon. 1967. An inequality with applications to statistical estimation for probabilistic functions of Markov processes and to a model for ecology. Bulletin of the American Mathematical Society, 73(3):360–363.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Baum, L. E. and J. A. Eagon. 1967. An inequality with applications to statistical estimation for probabilistic functions of Markov processes and to a model for ecology. Bulletin of the American Mathematical Society, 73(3):360–363.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mathematical foundation for HMMs.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Baum, L. E. and T. Petrie. 1966. Statistical inference for probabilistic functions of finite-state Markov chains. Annals of Mathematical Statistics, 37(6):1554–1563.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Baum, L. E. and T. Petrie. 1966. Statistical inference for probabilistic functions of finite-state Markov chains. Annals of Mathematical Statistics, 37(6):1554–1563.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational HMM paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Black, A. W. and P. Taylor. 1994. CHATR: A generic speech synthesis system. COLING.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Black, A. W. and P. Taylor. 1994. CHATR: A generic speech synthesis system. COLING.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the CHATR synthesis system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bourlard, H. and N. Morgan. 1994. Connectionist Speech Recognition: A Hybrid Approach. Kluwer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bourlard, H. and N. Morgan. 1994. Connectionist Speech Recognition: A Hybrid Approach. Kluwer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Book on hybrid HMM/MLP speech recognition.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bu, H., J. Du, X. Na, B. Wu, and H. Zheng. 2017. AISHELL-1: An open-source Mandarin speech corpus and a speech recognition baseline. O-COCOSDA Proceedings.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bu, H., J. Du, X. Na, B. Wu, and H. Zheng. 2017. AISHELL-1: An open-source Mandarin speech corpus and a speech recognition baseline. O-COCOSDA Proceedings.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the AISHELL-1 corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Canavan, A., D. Graff, and G. Zipperlen. 1997. CALLHOME American English speech LDC97S42. Linguistic Data Consortium.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Canavan, A., D. Graff, and G. Zipperlen. 1997. CALLHOME American English speech LDC97S42. Linguistic Data Consortium.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the CALLHOME corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chan, W., N. Jaitly, Q. Le, and O. Vinyals. 2016. Listen, attend and spell: A neural network for large vocabulary conversational speech recognition. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Chan, W., N. Jaitly, Q. Le, and O. Vinyals. 2016. Listen, attend and spell: A neural network for large vocabulary conversational speech recognition. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The LAS paper, a major milestone in end-to-end ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chorowski, J., D. Bahdanau, K. Cho, and Y. Bengio. 2014. End-to-end continuous speech recognition using attention-based recurrent NN: First results. NeurIPS Deep Learning and Representation Learning Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Chorowski, J., D. Bahdanau, K. Cho, and Y. Bengio. 2014. End-to-end continuous speech recognition using attention-based recurrent NN: First results. NeurIPS Deep Learning and Representation Learning Workshop.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early results on attention-based RNNs for ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Cieri, C., D. Miller, and K. Walker. 2004. The Fisher corpus: A resource for the next generations of speech-to-text. LREC.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Cieri, C., D. Miller, and K. Walker. 2004. The Fisher corpus: A resource for the next generations of speech-to-text. LREC.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the Fisher corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Cooley, J. W. and J. W. Tukey. 1965. An algorithm for the machine calculation of complex Fourier series. Mathematics of Computation, 19(90):297–301.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Cooley, J. W. and J. W. Tukey. 1965. An algorithm for the machine calculation of complex Fourier series. Mathematics of Computation, 19(90):297–301.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The original FFT paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Cooper, F. S., A. M. Liberman, and J. M. Borst. 1951. The interconversion of audible and visible patterns as a basis for research in the perception of speech. Proceedings of the National Academy of Sciences, 37(5):318–325.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Cooper, F. S., A. M. Liberman, and J. M. Borst. 1951. The interconversion of audible and visible patterns as a basis for research in the perception of speech. Proceedings of the National Academy of Sciences, 37(5):318–325.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early research on speech perception patterns.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dahl, G. E., T. N. Sainath, and G. E. Hinton. 2013. Improving deep neural networks for lvcsr using rectified linear units and dropout. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dahl, G. E., T. N. Sainath, and G. E. Hinton. 2013. Improving deep neural networks for lvcsr using rectified linear units and dropout. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Improvements in DNN for ASR using ReLU and dropout.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dahl, G. E., D. Yu, L. Deng, and A. Acero. 2012. Contextdependent pre-trained deep neural networks for largevocabulary speech recognition. IEEE Transactions on audio, speech, and language processing, 20(1):30–42.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dahl, G. E., D. Yu, L. Deng, and A. Acero. 2012. Contextdependent pre-trained deep neural networks for largevocabulary speech recognition. IEEE Transactions on audio, speech, and language processing, 20(1):30–42.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Seminal paper on pre-trained DNNs for LVCSR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>David, Jr., E. E. and O. G. Selfridge. 1962. Eyes and ears for computers. Proceedings of the IRE (Institute of Radio Engineers), 50:1093–1101.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>David, Jr., E. E. and O. G. Selfridge. 1962. Eyes and ears for computers. Proceedings of the IRE (Institute of Radio Engineers), 50:1093–1101.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early vision for computer perception.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Davis, K. H., R. Biddulph, and S. Balashek. 1952. Automatic recognition of spoken digits. JASA, 24(6):637–642.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Davis, K. H., R. Biddulph, and S. Balashek. 1952. Automatic recognition of spoken digits. JASA, 24(6):637–642.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early digit recognition system from Bell Labs.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Davis, S. and P. Mermelstein. 1980. Comparison of parametric representations for monosyllabic word recognition in continuously spoken sentences. IEEE Transactions on Acoustics, Speech, and Signal Processing, 28(4):357–366.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Davis, S. and P. Mermelstein. 1980. Comparison of parametric representations for monosyllabic word recognition in continuously spoken sentences. IEEE Transactions on Acoustics, Speech, and Signal Processing, 28(4):357–366.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Comparison of speech features, often cited for MFCCs.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 21</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Demberg, V. 2006. Letter-to-phoneme conversion for a German text-to-speech system. Diplomarbeit Nr. 47, Universität Stuttgart.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Demberg, V. 2006. Letter-to-phoneme conversion for a German text-to-speech system. Diplomarbeit Nr. 47, Universität Stuttgart.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Work on L2P conversion for German.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 22</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Denes, P. 1959. The design and operation of the mechanical speech recognizer at University College London. Journal of the British Institution of Radio Engineers, 19(4):219–234. Appears together with companion paper (Fry 1959).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Denes, P. 1959. The design and operation of the mechanical speech recognizer at University College London. Journal of the British Institution of Radio Engineers, 19(4):219–234. Appears together with companion paper (Fry 1959).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Description of an early mechanical speech recognizer.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 23</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Deng, L., G. Hinton, and B. Kingsbury. 2013. New types of deep neural network learning for speech recognition and related applications: An overview. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Deng, L., G. Hinton, and B. Kingsbury. 2013. New types of deep neural network learning for speech recognition and related applications: An overview. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Overview of deep learning for ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 24</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dixon, N. and H. Maxey. 1968. Terminal analog synthesis of continuous speech using the diphone method of segment assembly. IEEE Transactions on Audio and Electroacoustics, 16(1):40–50.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Dixon, N. and H. Maxey. 1968. Terminal analog synthesis of continuous speech using the diphone method of segment assembly. IEEE Transactions on Audio and Electroacoustics, 16(1):40–50.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on diphone-based synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 25</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Du Bois, J. W., W. L. Chafe, C. Meyer, S. A. Thompson, R. Englebretson, and N. Martey. 2005. Santa Barbara corpus of spoken American English, Parts 1-4. Philadelphia: Linguistic Data Consortium.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Du Bois, J. W., W. L. Chafe, C. Meyer, S. A. Thompson, R. Englebretson, and N. Martey. 2005. Santa Barbara corpus of spoken American English, Parts 1-4. Philadelphia: Linguistic Data Consortium.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the SBCSAE corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 26</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ebden, P. and R. Sproat. 2015. The Kestrel TTS text normalization system. Natural Language Engineering, 21(3):333.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ebden, P. and R. Sproat. 2015. The Kestrel TTS text normalization system. Natural Language Engineering, 21(3):333.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Description of the Kestrel text normalization system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 27</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>van Esch, D. and R. Sproat. 2018. An expanded taxonomy of semiotic classes for text normalization. INTERSPEECH.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>van Esch, D. and R. Sproat. 2018. An expanded taxonomy of semiotic classes for text normalization. INTERSPEECH.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Work on semiotic classes in text normalization.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 28</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fant, G. M. 1951. Speech communication research. Ing. Vetenskaps Akad. Stockholm, Sweden, 24:331–337.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Fant, G. M. 1951. Speech communication research. Ing. Vetenskaps Akad. Stockholm, Sweden, 24:331–337.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early speech research by Fant.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 29</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fant, G. M. 1986. Glottal flow: Models and interaction. Journal of Phonetics, 14:393–399.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Fant, G. M. 1986. Glottal flow: Models and interaction. Journal of Phonetics, 14:393–399.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Work on glottal flow models.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 30</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Flanagan, J. L. 1972. Speech Analysis, Synthesis, and Perception. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Flanagan, J. L. 1972. Speech Analysis, Synthesis, and Perception. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Classic textbook on speech processing.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 31</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Flanagan, J. L., K. Ishizaka, and K. L. Shipley. 1975. Synthesis of speech from a dynamic model of the vocal cords and vocal tract. The Bell System Technical Journal, 54(3):485–506.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Flanagan, J. L., K. Ishizaka, and K. L. Shipley. 1975. Synthesis of speech from a dynamic model of the vocal cords and vocal tract. The Bell System Technical Journal, 54(3):485–506.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Articulatory synthesis model.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 32</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fry, D. B. 1959. Theoretical aspects of mechanical speech recognition. Journal of the British Institution of Radio Engineers, 19(4):211–218. Appears together with companion paper (Denes 1959).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Fry, D. B. 1959. Theoretical aspects of mechanical speech recognition. Journal of the British Institution of Radio Engineers, 19(4):211–218. Appears together with companion paper (Denes 1959).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Companion paper on mechanical ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 33</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Gillick, L. and S. J. Cox. 1989. Some statistical issues in the comparison of speech recognition algorithms. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Gillick, L. and S. J. Cox. 1989. Some statistical issues in the comparison of speech recognition algorithms. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Statistical methods for ASR comparison.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 34</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Godfrey, J., E. Holliman, and J. McDaniel. 1992. SWITCHBOARD: Telephone speech corpus for research and development. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Godfrey, J., E. Holliman, and J. McDaniel. 1992. SWITCHBOARD: Telephone speech corpus for research and development. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the Switchboard corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 35</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Graff, D. 1997. The 1996 Broadcast News speech and language-model corpus. Proceedings DARPA Speech Recognition Workshop.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Graff, D. 1997. The 1996 Broadcast News speech and language-model corpus. Proceedings DARPA Speech Recognition Workshop.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the Broadcast News corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 36</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Graves, A. 2012. Sequence transduction with recurrent neural networks. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Graves, A. 2012. Sequence transduction with recurrent neural networks. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Paper defining RNN-Transducers.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 37</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Graves, A., S. Fernández, F. Gomez, and J. Schmidhuber. 2006. Connectionist temporal classification: Labelling unsegmented sequence data with recurrent neural networks. ICML.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Graves, A., S. Fernández, F. Gomez, and J. Schmidhuber. 2006. Connectionist temporal classification: Labelling unsegmented sequence data with recurrent neural networks. ICML.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The original CTC paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 38</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Graves, A. and N. Jaitly. 2014. Towards end-to-end speech recognition with recurrent neural networks. ICML.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Graves, A. and N. Jaitly. 2014. Towards end-to-end speech recognition with recurrent neural networks. ICML.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>End-to-end ASR with RNNs.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-28">
+<header class="page-header">
+<h2>Page 28</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Graves, A., A.-r. Mohamed, and G. Hinton. 2013. Speech recognition with deep recurrent neural networks. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Graves, A., A.-r. Mohamed, and G. Hinton. 2013. Speech recognition with deep recurrent neural networks. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Work on deep RNNs for ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hannun, A. 2017. Sequence modeling with CTC. Distill, 2(11).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hannun, A. 2017. Sequence modeling with CTC. Distill, 2(11).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Excellent tutorial on CTC.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hannun, A. Y., A. L. Maas, D. Jurafsky, and A. Y. Ng. 2014. First-pass large vocabulary continuous speech recognition using bi-directional recurrent DNNs. ArXiv preprint arXiv:1408.2873.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hannun, A. Y., A. L. Maas, D. Jurafsky, and A. Y. Ng. 2014. First-pass large vocabulary continuous speech recognition using bi-directional recurrent DNNs. ArXiv preprint arXiv:1408.2873.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Deep Speech model (version 1) paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Harris, C. M. 1953. A study of the building blocks in speech. JASA, 25(5):962–969.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Harris, C. M. 1953. A study of the building blocks in speech. JASA, 25(5):962–969.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on speech building blocks (tape splicing).</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hayashi, T., R. Yamamoto, K. Inoue, T. Yoshimura, S. Watanabe, T. Toda, K. Takeda, Y. Zhang, and X. Tan. 2020. ESPnet-TTS: Unified, reproducible, and integrable open source end-to-end text-to-speech toolkit. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hayashi, T., R. Yamamoto, K. Inoue, T. Yoshimura, S. Watanabe, T. Toda, K. Takeda, Y. Zhang, and X. Tan. 2020. ESPnet-TTS: Unified, reproducible, and integrable open source end-to-end text-to-speech toolkit. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for ESPnet-TTS.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hunt, A. J. and A. W. Black. 1996. Unit selection in a concatenative speech synthesis system using a large speech database. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hunt, A. J. and A. W. Black. 1996. Unit selection in a concatenative speech synthesis system using a large speech database. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key paper on unit selection synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Itakura, F. 1975. Minimum prediction residual principle applied to speech recognition. IEEE Transactions on Acoustics, Speech, and Signal Processing, ASSP-32:67–72.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Itakura, F. 1975. Minimum prediction residual principle applied to speech recognition. IEEE Transactions on Acoustics, Speech, and Signal Processing, ASSP-32:67–72.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Combination of LPC and DP.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ito, K. and L. Johnson. 2017. The lj speech dataset. https://keithito.com/LJ-Speech-Dataset/.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ito, K. and L. Johnson. 2017. The lj speech dataset. https://keithito.com/LJ-Speech-Dataset/.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Popular open-source dataset for TTS.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jaitly, N., P. Nguyen, A. Senior, and V. Vanhoucke. 2012. Application of pretrained deep neural networks to large vocabulary speech recognition. INTERSPEECH.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jaitly, N., P. Nguyen, A. Senior, and V. Vanhoucke. 2012. Application of pretrained deep neural networks to large vocabulary speech recognition. INTERSPEECH.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early DNN application to LVCSR at Google.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jelinek, F. 1969. A fast sequential decoding algorithm using a stack. IBM Journal of Research and Development, 13:675–685.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jelinek, F. 1969. A fast sequential decoding algorithm using a stack. IBM Journal of Research and Development, 13:675–685.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Stack decoding algorithm.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Jelinek, F., R. L. Mercer, and L. R. Bahl. 1975. Design of a linguistic statistical decoder for the recognition of continuous speech. IEEE Transactions on Information Theory, IT-21(3):250–256.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Jelinek, F., R. L. Mercer, and L. R. Bahl. 1975. Design of a linguistic statistical decoder for the recognition of continuous speech. IEEE Transactions on Information Theory, IT-21(3):250–256.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Design of the IBM statistical decoder.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Karita, S., N. Chen, T. Hayashi, T. Hori, H. Inaguma, Z. Jiang, M. Someki, N. E. Y. Soplin, R. Yamamoto, X. Wang, S. Watanabe, T. Yoshimura, and W. Zhang. 2019. A comparative study on transformer vs RNN in speech applications. IEEE ASRU-19.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Karita, S., N. Chen, T. Hayashi, T. Hori, H. Inaguma, Z. Jiang, M. Someki, N. E. Y. Soplin, R. Yamamoto, X. Wang, S. Watanabe, T. Yoshimura, and W. Zhang. 2019. A comparative study on transformer vs RNN in speech applications. IEEE ASRU-19.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Comparison of Transformers and RNNs in speech.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kendall, T. and C. Farrington. 2020. The Corpus of Regional African American Language. Version 2020.05. Eugene, OR: The Online Resources for African American Language Project. http://oraal.uoregon.edu/coraal.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Kendall, T. and C. Farrington. 2020. The Corpus of Regional African American Language. Version 2020.05. Eugene, OR: The Online Resources for African American Language Project. http://oraal.uoregon.edu/coraal.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the CORAAL corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klatt, D. H. 1975. Voice onset time, friction, and aspiration in word-initial consonant clusters. Journal of Speech and Hearing Research, 18:686–706.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klatt, D. H. 1975. Voice onset time, friction, and aspiration in word-initial consonant clusters. Journal of Speech and Hearing Research, 18:686–706.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Phonetic research by Klatt.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klatt, D. H. 1977. Review of the ARPA speech understanding project. JASA, 62(6):1345–1366.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klatt, D. H. 1977. Review of the ARPA speech understanding project. JASA, 62(6):1345–1366.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Review of the early ARPA speech project.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Klatt, D. H. 1982. The Klattalk text-to-speech conversion system. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Klatt, D. H. 1982. The Klattalk text-to-speech conversion system. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the Klattalk system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lang, K. J., A. H. Waibel, and G. E. Hinton. 1990. A time-delay neural network architecture for isolated word recognition. Neural networks, 3(1):23–43.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lang, K. J., A. H. Waibel, and G. E. Hinton. 1990. A time-delay neural network architecture for isolated word recognition. Neural networks, 3(1):23–43.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key TDNN paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lawrence, W. 1953. The synthesis of speech from signals which have a low information rate. In W. Jackson, editor, Communication Theory, pages 460–469. Butterworth.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lawrence, W. 1953. The synthesis of speech from signals which have a low information rate. In W. Jackson, editor, Communication Theory, pages 460–469. Butterworth.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on low-bitrate speech synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>LDC. 1998. LDC Catalog: Hub4 project. University of Pennsylvania. www.ldc.upenn.edu/Catalog/LDC98S71.html.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LDC. 1998. LDC Catalog: Hub4 project. University of Pennsylvania. www.ldc.upenn.edu/Catalog/LDC98S71.html.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Hub4 project catalog entry.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Liu, Y., P. Fung, Y. Yang, C. Cieri, S. Huang, and D. Graff. 2006. HKUST/MTS: A very large scale Mandarin telephone speech corpus. International Conference on Chinese Spoken Language Processing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Liu, Y., P. Fung, Y. Yang, C. Cieri, S. Huang, and D. Graff. 2006. HKUST/MTS: A very large scale Mandarin telephone speech corpus. International Conference on Chinese Spoken Language Processing.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the HKUST Mandarin corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 21</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lowerre, B. T. 1968. The Harpy Speech Recognition System. Ph.D. thesis, Carnegie Mellon University, Pittsburgh, PA.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lowerre, B. T. 1968. The Harpy Speech Recognition System. Ph.D. thesis, Carnegie Mellon University, Pittsburgh, PA.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PhD thesis on the Harpy ASR system.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 22</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Maas, A., Z. Xie, D. Jurafsky, and A. Y. Ng. 2015. Lexiconfree conversational speech recognition with neural networks. NAACL HLT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Maas, A., Z. Xie, D. Jurafsky, and A. Y. Ng. 2015. Lexiconfree conversational speech recognition with neural networks. NAACL HLT.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Work on lexicon-free ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 23</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Maas, A. L., A. Y. Hannun, and A. Y. Ng. 2013. Rectifier nonlinearities improve neural network acoustic models. ICML.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Maas, A. L., A. Y. Hannun, and A. Y. Ng. 2013. Rectifier nonlinearities improve neural network acoustic models. ICML.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Paper demonstrating ReLU benefits in acoustic models.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 24</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Maas, A. L., P. Qi, Z. Xie, A. Y. Hannun, C. T. Lengerich, D. Jurafsky, and A. Y. Ng. 2017. Building dnn acoustic models for large vocabulary speech recognition. Computer Speech & Language, 41:195–213.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Maas, A. L., P. Qi, Z. Xie, A. Y. Hannun, C. T. Lengerich, D. Jurafsky, and A. Y. Ng. 2017. Building dnn acoustic models for large vocabulary speech recognition. Computer Speech & Language, 41:195–213.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Detailed study on building DNN acoustic models.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 25</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mohamed, A., G. E. Dahl, and G. E. Hinton. 2009. Deep Belief Networks for phone recognition. NIPS Workshop on Deep Learning for Speech Recognition and Related Applications.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mohamed, A., G. E. Dahl, and G. E. Hinton. 2009. Deep Belief Networks for phone recognition. NIPS Workshop on Deep Learning for Speech Recognition and Related Applications.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early influential work on DBNs for speech.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 26</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Morgan, N. and H. Bourlard. 1990. Continuous speech recognition using multilayer perceptrons with hidden markov models. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Morgan, N. and H. Bourlard. 1990. Continuous speech recognition using multilayer perceptrons with hidden markov models. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early hybrid HMM/MLP paper.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 27</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Morgan, N. and H. Bourlard. 1995. Neural networks for statistical recognition of continuous speech. Proceedings of the IEEE, 83(5):742–772.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Morgan, N. and H. Bourlard. 1995. Neural networks for statistical recognition of continuous speech. Proceedings of the IEEE, 83(5):742–772.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Comprehensive overview of neural networks in speech recognition.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 28</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>NIST. 2005. Speech recognition scoring toolkit (sctk) version 2.1. http://www.nist.gov/speech/tools/.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NIST. 2005. Speech recognition scoring toolkit (sctk) version 2.1. http://www.nist.gov/speech/tools/.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Standard toolkit for scoring ASR results.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 29</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>NIST. 2007. Matched Pairs Sentence-Segment Word Error (MAPSSWE) Test.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NIST. 2007. Matched Pairs Sentence-Segment Word Error (MAPSSWE) Test.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Statistical significance test for WER.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 30</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Olive, J. P. 1977. Rule synthesis of speech from dyadic units. ICASSP77.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Olive, J. P. 1977. Rule synthesis of speech from dyadic units. ICASSP77.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early work on rule-based synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 31</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>van den Oord, A., S. Dieleman, H. Zen, K. Simonyan, O. Vinyals, A. Graves, N. Kalchbrenner, A. Senior, and K. Kavukcuoglu. 2016. Wavenet: A generative model for raw audio. ArXiv preprint arXiv:1609.03499.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>van den Oord, A., S. Dieleman, H. Zen, K. Simonyan, O. Vinyals, A. Graves, N. Kalchbrenner, A. Senior, and K. Kavukcuoglu. 2016. Wavenet: A generative model for raw audio. ArXiv preprint arXiv:1609.03499.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The WaveNet paper, revolutionizing audio generation.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 32</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Oppenheim, A. V., R. W. Schafer, and T. G. J. Stockham. 1968. Nonlinear filtering of multiplied and convolved signals. Proceedings of the IEEE, 56(8):1264–1291.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Oppenheim, A. V., R. W. Schafer, and T. G. J. Stockham. 1968. Nonlinear filtering of multiplied and convolved signals. Proceedings of the IEEE, 56(8):1264–1291.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Foundational work on homomorphic processing (cepstrum).</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 33</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Panayotov, V., G. Chen, D. Povey, and S. Khudanpur. 2015. Librispeech: an ASR corpus based on public domain audio books. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Panayotov, V., G. Chen, D. Povey, and S. Khudanpur. 2015. Librispeech: an ASR corpus based on public domain audio books. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the LibriSpeech corpus.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 34</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Peterson, G. E., W. S.-Y. Wang, and E. Sivertsen. 1958. Segmentation techniques in speech synthesis. JASA, 30(8):739–742.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Peterson, G. E., W. S.-Y. Wang, and E. Sivertsen. 1958. Segmentation techniques in speech synthesis. JASA, 30(8):739–742.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early segmentation for speech synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 35</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Povey, D., A. Ghoshal, G. Boulianne, L. Burget, O. Glembek, N. Goel, M. Hannemann, P. Motlicek, Y. Qian, P. Schwarz, J. Silovský, G. Stemmer, and K. Veselý. 2011. The Kaldi speech recognition toolkit. ASRU.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Povey, D., A. Ghoshal, G. Boulianne, L. Burget, O. Glembek, N. Goel, M. Hannemann, P. Motlicek, Y. Qian, P. Schwarz, J. Silovský, G. Stemmer, and K. Veselý. 2011. The Kaldi speech recognition toolkit. ASRU.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The primary reference for the Kaldi toolkit.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 36</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Price, P. J., W. Fisher, J. Bernstein, and D. Pallet. 1988. The DARPA 1000-word resource management database for continuous speech recognition. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Price, P. J., W. Fisher, J. Bernstein, and D. Pallet. 1988. The DARPA 1000-word resource management database for continuous speech recognition. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Reference for the Resource Management database.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 37</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pundak, G. and T. N. Sainath. 2016. Lower frame rate neural network acoustic models. INTERSPEECH.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Pundak, G. and T. N. Sainath. 2016. Lower frame rate neural network acoustic models. INTERSPEECH.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Efficiency improvements in neural acoustic models.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 38</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Robinson, T. and F. Fallside. 1991. A recurrent error propagation network speech recognition system. Computer Speech & Language, 5(3):259–274.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Robinson, T. and F. Fallside. 1991. A recurrent error propagation network speech recognition system. Computer Speech & Language, 5(3):259–274.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early RNN system for speech.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 39</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Sagisaka, Y. 1988. Speech synthesis by rule using an optimal selection of non-uniform synthesis units. ICASSP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Sagisaka, Y. 1988. Speech synthesis by rule using an optimal selection of non-uniform synthesis units. ICASSP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early unit selection synthesis.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

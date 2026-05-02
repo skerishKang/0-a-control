@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25-26 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">21 Coreference Resolution</div>
+<h1>Coreference Resolution</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a>
+<a class="chip" href="#page-26">Page 26</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25-26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl>
+<dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl>
+<dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl>
+</div>
+</section>
+
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+<div class="page-subtitle">상호참조 해결의 평가</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.6 Evaluation of Coreference Resolution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.6 상호참조 해결의 평가</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호참조 해결 시스템을 평가하는 과정의 도입부입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Before evaluating a coreference system, we need to extract a test set containing the gold standard coreference links. The coreference links in a document are annotated by marking all the mentions in the document, and then linking each mention to its antecedent. This process clusters the mentions in a document into a set of equivalence classes (the coreference chains) as defined in Section 21.1. We thus evaluate a coreference system by comparing the coreference chains it produced with the gold coreference chains.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>상호참조 시스템을 평가하기 전에, 우리는 골드 표준 상호참조 링크를 포함하는 테스트 세트를 추출해야 합니다. 문서 내의 상호참조 링크는 문서의 모든 언급을 표시한 다음, 각 언급을 선행어에 연결하여 주석이 달립니다. 이 과정은 21.1절에 정의된 바와 같이 문서 내의 언급들을 동치류(상호참조 사슬)의 집합으로 군집화합니다. 따라서 우리는 생성된 상호참조 사슬과 골드 상호참조 사슬을 비교함으로써 상호참조 시스템을 평가합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호참조 시스템 평가를 위해 골드 표준 링크가 필요하며, 시스템이 생성한 상호참조 사슬과 정답 사슬을 비교하여 평가합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As with most systems, we evaluate them by computing precision, recall, and F1. We can compute these over the links between mentions, or over the resulting equivalence classes. Since it turns out there are multiple ways to define precision and recall, the standard way to evaluate coreference is to use 3 metrics (MUC, B3, and CEAF) and to report the average of the 3. We'll summarize B3 and MUC here and give the details of the third, as well as the script used to compute them, at the end of the chapter.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대부분의 시스템과 마찬가지로, 정밀도, 재현율, 그리고 F1을 계산하여 이들을 평가합니다. 우리는 언급들 사이의 링크에 대해, 혹은 그 결과인 동치류에 대해 이들을 계산할 수 있습니다. 정밀도와 재현율을 정의하는 여러 방법이 있기 때문에, 상호참조를 평가하는 표준적인 방법은 3가지 지표(MUC, B3, 그리고 CEAF)를 사용하고 이 3가지의 평균을 보고하는 것입니다. 여기서는 B3와 MUC를 요약하고, 세 번째의 세부 내용과 이들을 계산하는 데 사용되는 스크립트는 장의 끝에서 제공할 것입니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>평가 지표로 정밀도, 재현율, F1을 사용하며, 상호참조의 표준 평가 방법은 MUC, B3, CEAF의 3가지 지표를 평균하여 보고하는 것입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">B3와 MUC 평가 지표</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head"><div class="block-title">Block 1</div><div class="block-type">paragraph</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The B3 (often pronounced B-cubed) algorithm metric (Bagga and Baldwin, 1998) B3 computes a precision and recall for each mention in the document, and then averages them to get overall precision and recall. Let's look at how to compute the B3 precision and recall for a single mention. Recall that a coreference system clusters mentions into equivalence classes (chains). The B3 precision for a given mention i is the percentage of mentions in the system chain for i that are also in the gold chain for i. The B3 recall for a mention is the percentage of mentions in the gold chain for i that are also in the system chain for i:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B3 (종종 B-cubed로 발음됨) 알고리즘 지표(Bagga and Baldwin, 1998)는 문서 내의 각 언급에 대한 정밀도와 재현율을 계산한 다음, 이를 평균 내어 전체 정밀도와 재현율을 구합니다. 단일 언급에 대해 B3 정밀도와 재현율을 어떻게 계산하는지 살펴봅시다. 상호참조 시스템이 언급들을 동치류(사슬)로 군집화한다는 것을 상기하십시오. 주어진 언급 i에 대한 B3 정밀도는 i에 대한 시스템 사슬 내에 있으면서 동시에 i에 대한 골드 사슬에도 속하는 언급들의 비율입니다. 어떤 언급에 대한 B3 재현율은 i에 대한 골드 사슬 내에 있으면서 동시에 i에 대한 시스템 사슬에도 속하는 언급들의 비율입니다:</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>B3 지표는 각 언급별로 정밀도와 재현율을 구한 후 전체의 평균을 계산하는 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 2</div><div class="block-type">formula</div></div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Precision_i = \frac{|System(i) \cap Gold(i)|}{|System(i)|}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Precision_i = \frac{|System(i) \cap Gold(i)|}{|System(i)|}</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급 i의 시스템 결과 중 정답(Gold)과 일치하는 비율입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 3</div><div class="block-type">formula</div></div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Recall_i = \frac{|System(i) \cap Gold(i)|}{|Gold(i)|}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Recall_i = \frac{|System(i) \cap Gold(i)|}{|Gold(i)|}</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급 i의 정답(Gold) 중 시스템 결과와 일치하는 비율입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Total precision and recall are then just the average of the precision and recall for all N mentions i in the document:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러면 전체 정밀도와 재현율은 단지 문서 내의 모든 N개의 언급 i에 대한 정밀도와 재현율의 평균이 됩니다:</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체 정밀도와 재현율 계산 공식에 대한 설명입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 5</div><div class="block-type">formula</div></div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Precision = \sum_{i=1}^{N} \frac{Precision_i}{N}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Precision = \sum_{i=1}^{N} \frac{Precision_i}{N}</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 언급에 대한 B3 정밀도의 평균 공식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 6</div><div class="block-type">formula</div></div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Recall = \sum_{i=1}^{N} \frac{Recall_i}{N}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Recall = \sum_{i=1}^{N} \frac{Recall_i}{N}</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 언급에 대한 B3 재현율의 평균 공식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head"><div class="block-title">Block 7</div><div class="block-type">paragraph</div></div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The widely used older MUC metric (Vilain et al., 1995) evaluates the system based MUC on the number of links that need to be added or deleted to map the system-generated chains to the gold standard chains. A system receives a precision/recall penalty for each incorrectly posited or missed link. However, this definition of a link is ambiguous. Suppose a text has the entities A, B, C, and D, and all 4 are coreferent. Does the gold chain have 3 links (A-B, B-C, C-D) or 6 links (A-B, A-C, A-D, etc.)? The MUC algorithm assumes the minimum number of links are used: so a class with N mentions will have N - 1 links.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>널리 사용된 구형 MUC 지표(Vilain et al., 1995)는 시스템이 생성한 사슬을 골드 표준 사슬로 매핑하기 위해 추가하거나 삭제해야 하는 링크의 수를 기반으로 시스템을 평가합니다. 시스템은 잘못 상정되거나 누락된 각 링크에 대해 정밀도/재현율 페널티를 받습니다. 그러나 링크에 대한 이러한 정의는 모호합니다. 텍스트에 A, B, C, D라는 개체가 있고 4개 모두 상호참조된다고 가정해 봅시다. 골드 사슬은 3개의 링크(A-B, B-C, C-D)를 가지나요, 아니면 6개의 링크(A-B, A-C, A-D 등)를 가지나요? MUC 알고리즘은 최소 링크 수가 사용된다고 가정합니다. 따라서 N개의 언급을 가진 클래스는 N - 1개의 링크를 가집니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MUC 평가 지표는 사슬간 변환에 필요한 최소 링크(N-1)의 추가/삭제 수를 기준으로 패널티를 부여하는 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

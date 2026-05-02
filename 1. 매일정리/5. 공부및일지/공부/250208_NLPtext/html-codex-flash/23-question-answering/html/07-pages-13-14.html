@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13 14 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a><a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13 14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">23.2.2 IR 기반 QA: 리더 (정답 구간 추출)</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.2 • IR-BASED FACTOID QUESTION ANSWERING 13</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.2 • IR 기반 팩토이드 질의응답 13</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.2.2 IR-based QA: Reader (Answer Span Extraction)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.2.2 IR 기반 QA: 리더 (정답 구간 추출)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>검색된 문서에서 실제 정답을 찾아내는 '리더(Reader)' 모델의 작동 방식(구간 추출)에 대해 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>extractive QA</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>추출적 질의응답</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>본문에서 정답이 되는 구절을 그대로 찾아내는 방식의 질의응답입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first stage of IR-based QA is a retriever, for example of the type we saw in Section 23.1. The second stage of IR-based question answering is the **reader**. The reader’s job is to take a passage as input and produce the answer. In the **extractive QA** we discuss here, the answer is a span of text in the passage.5 For example given a question like “How tall is Mt. Everest?” and a passage that contains the clause Reaching 29,029 feet at its summit, a reader will output 29,029 feet.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>IR 기반 QA의 첫 번째 단계는 리트리버(retriever)로, 예를 들어 23.1절에서 살펴본 유형입니다. IR 기반 질의응답의 두 번째 단계는 **리더(reader)**입니다. 리더의 역할은 구절을 입력받아 답변을 생성하는 것입니다. 여기서 논의하는 **추출적 QA(extractive QA)**에서 답변은 구절 내의 텍스트 구간(span)입니다.5 예를 들어 "에베레스트 산의 높이는 얼마인가요?"라는 질문과 "정상의 높이가 29,029피트에 달하며"라는 문구가 포함된 구절이 주어지면, 리더는 "29,029피트"를 출력할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>리더 모델의 정의와 추출적 QA의 개념을 구체적인 예시와 함께 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>span</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구간 (span)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 내에서 정답을 구성하는 연속된 문자열 단위를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The answer extraction task is commonly modeled by **span labeling**: identifying in the passage a **span** (a continuous string of text) that constitutes an answer. Neural algorithms for reading comprehension are given a question q of n tokens q_1, ..., q_n and a passage p of m tokens p_1, ..., p_m. Their goal is thus to compute the probability P(a|q, p) that each possible span a is the answer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정답 추출 작업은 일반적으로 **구간 라벨링(span labeling)**으로 모델링됩니다. 즉, 구절 내에서 답변이 되는 **구간**(연속된 텍스트 문자열)을 식별하는 것입니다. 기계 독해를 위한 신경망 알고리즘에는 n개의 토큰 q_1, ..., q_n으로 이루어진 질문 q와 m개의 토큰 p_1, ..., p_m으로 이루어진 구절 p가 주어집니다. 따라서 이들의 목표는 가능한 모든 구간 a에 대해 그것이 정답일 확률 P(a|q, p)를 계산하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정답 추출을 수학적으로 정규화하여 각 구간의 확률을 구하는 과정으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If each span a starts at position a_s and ends at position a_e, we make the simplifying assumption that this probability can be estimated as P(a|q, p) = P_{start}(a_s | q, p)P_{end}(a_e | q, p). Thus for each token p_i in the passage we’ll compute two probabilities: P_{start}(i) that p_i is the start of the answer span, and P_{end}(i) that p_i is the end of the answer span.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 구간 a가 $a_s$ 위치에서 시작하여 $a_e$ 위치에서 끝난다면, 우리는 이 확률을 $P(a|q, p) = P_{start}(a_s | q, p)P_{end}(a_e | q, p)$로 추정할 수 있다는 단순화된 가정을 합니다. 따라서 구절 내의 각 토큰 $p_i$에 대해 우리는 두 가지 확률을 계산합니다. $p_i$가 정답 구간의 시작일 확률 $P_{start}(i)$와 $p_i$가 정답 구간의 끝일 확률 $P_{end}(i)$입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체 구간의 확률을 시작점 확률과 끝점 확률의 곱으로 분해하여 계산하는 기법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A standard baseline algorithm for reading comprehension is to pass the question and passage to any encoder like BERT (Fig. 23.12), as strings separated with a [SEP] token, resulting in an encoding token embedding for every passage token p_i.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기계 독해를 위한 표준적인 베이스라인 알고리즘은 질문과 구절을 [SEP] 토큰으로 구분된 문자열로서 BERT와 같은 인코더(그림 23.12)에 전달하는 것입니다. 그 결과 구절의 모든 토큰 $p_i$에 대해 인코딩된 토큰 임베딩을 얻게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BERT를 활용하여 질문과 지문을 동시에 인코딩하는 표준적인 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 23.12 An encoder model (using BERT) for span-based question answering from reading-comprehension-based question answering tasks.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 23.12 기계 독해 기반 질의응답 작업에서 구간 기반 질의응답을 위한 인코더 모델(BERT 사용).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BERT를 이용한 구간 추출 모델의 구조도에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For span-based question answering, we represent the question as the first sequence and the passage as the second sequence. We’ll also need to add a linear layer that will be trained in the fine-tuning phase to predict the start and end position of the span. We’ll add two new special vectors: a span-start embedding S and a span-end embedding E, which will be learned in fine-tuning. To get a span-start probability for each output token p'_i, we compute the dot product between S and p'_i and then use a softmax to normalize over all tokens p'_i in the passage:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구간 기반 질의응답을 위해, 우리는 질문을 첫 번째 시퀀스로, 구절을 두 번째 시퀀스로 표현합니다. 또한 파인튜닝 단계에서 구간의 시작과 끝 위치를 예측하도록 훈련될 선형 레이어를 추가해야 합니다. 우리는 파인튜닝 시 학습될 두 개의 새로운 특수 벡터인 구간 시작 임베딩 S와 구간 끝 임베딩 E를 추가할 것입니다. 각 출력 토큰 $p'_i$에 대한 구간 시작 확률을 얻기 위해, S와 $p'_i$ 사이의 내적을 계산한 다음 소프트맥스(softmax)를 사용하여 구절 내의 모든 토큰 $p'_i$에 대해 정규화합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BERT 출력 위에 추가되는 학습 가능한 파라미터(S, E)와 이를 이용해 확률을 계산하는 구체적인 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_{start_i} = \frac{\exp(S \cdot p'_i)}{\sum_j \exp(S \cdot p'_j)} (23.16)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P_{start_i} = \frac{\exp(S \cdot p'_i)}{\sum_j \exp(S \cdot p'_j)} (23.16)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 토큰 i가 정답의 시작점일 확률을 계산하는 소프트맥스 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5 Here we skip the more difficult task of abstractive QA, in which the system can write an answer which is not drawn exactly from the passage.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5 여기서는 시스템이 구절에서 그대로 가져오지 않은 답변을 작성할 수 있는 더 어려운 작업인 생성적(abstractive) QA는 생략합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추출적 QA와 대비되는 생성적 QA의 존재를 언급하는 주석입니다.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">23.3 개체 연결 (Entity Linking)</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 23 • QUESTION ANSWERING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제23장 • 질의응답</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We do the analogous thing to compute a span-end probability:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구간 끝 확률을 계산하기 위해 유사한 작업을 수행합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시작점 확률 계산과 동일한 논리가 끝점에도 적용됨을 알립니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_{end_i} = \frac{\exp(E \cdot p'_i)}{\sum_j \exp(E \cdot p'_j)} (23.17)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P_{end_i} = \frac{\exp(E \cdot p'_i)}{\sum_j \exp(E \cdot p'_j)} (23.17)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 토큰 i가 정답의 끝점일 확률을 계산하는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The score of a candidate span from position i to j is S \cdot p'_i + E \cdot p'_j, and the highest scoring span in which j \ge i is chosen is the model prediction.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위치 i에서 j까지의 후보 구간에 대한 점수는 $S \cdot p'_i + E \cdot p'_j$이며, $j \ge i$인 조건에서 가장 높은 점수를 가진 구간이 모델의 예측값으로 선택됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시작점과 끝점의 점수를 합산하여 최종 구간을 결정하는 기준을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The training loss for fine-tuning is the negative sum of the log-likelihoods of the correct start and end positions for each instance:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파인튜닝을 위한 훈련 손실(loss)은 각 인스턴스에 대한 정답 시작 및 끝 위치의 로그 우도(log-likelihoods)의 음의 합입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 학습에 사용되는 손실 함수의 구성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L = - \log P_{start_i} - \log P_{end_i} (23.18)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L = - \log P_{start_i} - \log P_{end_i} (23.18)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델의 훈련 손실 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many datasets (like SQuAD 2.0 and Natural Questions) also contain (question, passage) pairs in which the answer is not contained in the passage. We thus also need a way to estimate the probability that the answer to a question is not in the document. This is standardly done by treating questions with no answer as having the [CLS] token as the answer, and hence the answer span start and end index will point at [CLS] (Devlin et al., 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 데이터셋(SQuAD 2.0 및 Natural Questions 등)은 답변이 구절 내에 포함되지 않은 (질문, 구절) 쌍도 포함하고 있습니다. 따라서 우리는 질문의 답이 문서에 없을 확률을 추정할 방법도 필요합니다. 이는 표준적으로 답변이 없는 질문에 대해 [CLS] 토큰을 정답으로 간주하고, 정답 구간의 시작 및 끝 인덱스가 [CLS]를 가리키게 함으로써 처리됩니다 (Devlin et al., 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>답변 불가능한 질문(Unanswerable questions)을 처리하기 위해 [CLS] 토큰을 더미 정답 구간으로 활용하는 기법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For many datasets the annotated documents/passages are longer than the maximum 512 input tokens BERT allows, such as Natural Questions whose gold passages are full Wikipedia pages. In such cases, following Alberti et al. (2019), we can create multiple pseudo-passage observations from the labeled Wikipedia page. Each observation is formed by concatenating [CLS], the question, [SEP], and tokens from the document. We walk through the document, sliding a window of size 512 (or rather, 512 minus the question length n minus special tokens) and packing the window of tokens into each next pseudo-passage. The answer span for the observation is either labeled [CLS] (= no answer in this particular window) or the gold-labeled span is marked. The same process can be used for inference, breaking up each retrieved document into separate observation passages and labeling each observation. The answer can be chosen as the span with the highest probability (or nil if no span is more probable than [CLS]).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 데이터셋에서 주석이 달린 문서나 구절은 BERT가 허용하는 최대 512개의 입력 토큰보다 깁니다. 정답 구절이 위키피디아 전체 페이지인 Natural Questions가 그 예입니다. 이런 경우 Alberti et al. (2019)을 따라 라벨링된 위키피디아 페이지로부터 여러 개의 의사 구절(pseudo-passage) 관측치를 만들 수 있습니다. 각 관측치는 [CLS], 질문, [SEP], 그리고 문서의 토큰들을 연결하여 형성됩니다. 우리는 문서를 훑으면서 512 크기의 윈도우(정확히는 512에서 질문 길이 n과 특수 토큰을 뺀 크기)를 슬라이딩하여 각 다음 의사 구절에 토큰 윈도우를 채워 넣습니다. 관측치에 대한 정답 구간은 [CLS](= 이 특정 윈도우 내에는 답이 없음)로 라벨링되거나 정답으로 표기된 구간이 표시됩니다. 동일한 과정을 추론 시에도 사용할 수 있는데, 검색된 각 문서를 별개의 관측 구절들로 나누고 각 관측치에 라벨을 붙입니다. 답변은 가장 높은 확률을 가진 구간으로 선택될 수 있습니다(어떤 구간도 [CLS]보다 확률이 높지 않으면 정답 없음).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BERT의 입력 길이 제한(512토큰)을 극복하기 위해 긴 문서를 겹치는 윈도우로 나누어 처리하는 '슬라이딩 윈도우' 기법을 상세히 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.3 Entity Linking</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.3 개체 연결 (Entity Linking)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트에 등장하는 단어를 실제 세상의 개체(Entity)와 연결하는 기술인 개체 연결을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>entity linking</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체 연결</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지식 기반 QA의 핵심 기술 중 하나입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We’ve now seen the first major paradigm for question answering, IR-based QA. Before we turn to the second major paradigm for question answering, knowledge-based question answering, we introduce the important core technology of **entity linking**, since it is required for any knowledge-based QA algorithm. **Entity linking** is the task of associating a mention in text with the representation of some real-world entity in an ontology (Ji and Grishman, 2011).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이제 질의응답의 첫 번째 주요 패러다임인 IR 기반 QA를 살펴보았습니다. 질의응답의 두 번째 주요 패러다임인 지식 기반 질의응답으로 넘어가기 전에, 모든 지식 기반 QA 알고리즘에 필수적인 중요 핵심 기술인 **개체 연결(entity linking)**을 소개하겠습니다. **개체 연결**은 텍스트 내의 언급(mention)을 온톨로지 상의 실제 세계 개체 표현과 연결하는 작업입니다 (Ji and Grishman, 2011).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지식 기반 QA로 넘어가기 위한 가교로서 개체 연결의 중요성과 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The most common ontology for factoid question-answering is Wikipedia, since Wikipedia is often the source of the text that answers the question. In this usage, each unique Wikipedia page acts as the unique id for a particular entity. This task of deciding which Wikipedia page corresponding to an individual is being referred to by a text mention has its own name: **wikification** (Mihalcea and Csomai, 2007).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>팩토이드 질의응답에서 가장 흔한 온톨로지는 위키피디아입니다. 위키피디아는 질문에 답하는 텍스트의 소스가 되는 경우가 많기 때문입니다. 이 방식에서 각 고유한 위키피디아 페이지는 특정 개체에 대한 고유 ID 역할을 합니다. 텍스트 언급이 가리키는 개체에 해당하는 위키피디아 페이지를 결정하는 이 작업을 별도로 **위키피디아 연결(wikification)**이라고 부릅니다 (Mihalcea and Csomai, 2007).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위키피디아를 온톨로지로 활용하는 개체 연결인 '위키피케이션'의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>wikification</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위키피디아 연결</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 언급을 위키피디아 페이지에 매핑하는 작업입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Since the earliest systems (Mihalcea and Csomai 2007, Cucerzan 2007, Milne and Witten 2008), entity linking is done in (roughly) two stages: **mention detection** and **mention disambiguation**. We’ll give two algorithms, one simple classic baseline that uses **anchor dictionaries** and information from the Wikipedia graph structure (Ferragina and Scaiella, 2011) and one modern neural algorithm (Li et al., 2011).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>초기 시스템(Mihalcea and Csomai 2007, Cucerzan 2007, Milne and Witten 2008) 이후로, 개체 연결은 (대략) **언급 감지(mention detection)**와 **언급 모호성 해소(mention disambiguation)**의 두 단계로 수행됩니다. 우리는 두 가지 알고리즘을 제시할 것입니다. 하나는 **앵커 사전(anchor dictionaries)**과 위키피디아 그래프 구조의 정보를 사용하는 간단하고 고전적인 베이스라인이고 (Ferragina and Scaiella, 2011), 다른 하나는 현대적인 신경망 알고리즘입니다 (Li et al., 2011).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개체 연결의 2단계 과정(감지 및 모호성 해소)과 이어지는 섹션에서 다룰 고전적/현대적 알고리즘을 예고합니다.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

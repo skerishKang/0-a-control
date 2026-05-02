@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25-26 | N-gram Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+th, td { border: 1px solid var(--line); padding: 8px; text-align: left; }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">03 PDF / N-gram Language Models</div>
+<h1>N-gram Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a>
+<a class="chip" href="#page-26">Page 26</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25-26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>3. N-gram Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+<div class="page-subtitle">참고 문헌 및 역사적 고찰</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BIBLIOGRAPHICAL AND HISTORICAL NOTES 25</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌 및 역사적 고찰 25</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>• Both backoff and interpolation require discounting to create a probability distribution.
+• Kneser-Ney smoothing makes use of the probability of a word being a novel continuation. The interpolated Kneser-Ney smoothing algorithm mixes a discounted probability with a lower-order continuation probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>• 백오프(backoff)와 보간(interpolation) 모두 확률 분포를 형성하기 위해 디스카운팅(discounting)이 필요합니다.
+• 크네저-네이(Kneser-Ney) 스무딩은 어떤 단어가 새로운 후속 단어(novel continuation)가 될 확률을 활용합니다. 보간형 크네저-네이 스무딩 알고리즘은 디스카운트된 확률과 하위 차수의 후속 출현 확률을 결합합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 페이지에서 이어지는 요약 불렛 포인트들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌 및 역사적 고찰(Bibliographical and Historical Notes)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>N-그램 모델의 학술적 배경과 발전 과정을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The underlying mathematics of the n-gram was first proposed by Markov (1913), who used what are now called Markov chains (bigrams and trigrams) to predict whether an upcoming letter in Pushkin's Eugene Onegin would be a vowel or a consonant. Markov classified 20,000 letters as V or C and computed the bigram and trigram probability that a given letter would be a vowel given the previous one or two letters. Shannon (1948) applied n-grams to compute approximations to English word sequences. Based on Shannon's work, Markov models were commonly used in engineering, linguistic, and psychological work on modeling word sequences by the 1950s. In a series of extremely influential papers starting with Chomsky (1956) and including Chomsky (1957) and Miller and Chomsky (1963), Noam Chomsky argued that "finite-state Markov processes", while a possibly useful engineering heuristic, were incapable of being a complete cognitive model of human grammatical knowledge. These arguments led many linguists and computational linguists to ignore work in statistical modeling for decades.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>N-그램의 토대가 되는 수학적 원리는 마르코프(Markov, 1913)에 의해 처음 제안되었습니다. 그는 오늘날 마르코프 체인(Markov chains)이라 불리는 방식(바이그램 및 트라이그램)을 사용하여 푸시킨의 『예브게니 오네긴』에서 다음에 올 글자가 모음일지 자음일지를 예측했습니다. 마르코프는 20,000개의 글자를 모음(V) 혹은 자음(C)으로 분류하고, 앞선 하나 혹은 두 개의 글자가 주어졌을 때 다음 글자가 모음일 바이그램 및 트라이그램 확률을 계산했습니다. 이후 섀넌(Shannon, 1948)은 영어 단어 시퀀스의 근사치를 구하기 위해 N-그램을 적용했습니다. 섀넌의 연구를 바탕으로, 마르코프 모델은 1950년대까지 단어 시퀀스 모델링을 연구하는 공학, 언어학, 심리학 분야에서 널리 사용되었습니다. 그러나 Chomsky(1956), Chomsky(1957), Miller와 Chomsky(1963)로 이어지는 매우 영향력 있는 논문들에서 노엄 촘스키(Noam Chomsky)는 "유한 상태 마르코프 과정"이 공학적으로는 유용한 휴리스틱일지 모르나, 인간의 문법적 지식에 대한 완전한 인지 모델이 될 수는 없다고 주장했습니다. 이러한 논쟁은 수십 년 동안 많은 언어학자와 계산 언어학자들이 통계적 모델링 연구를 외면하게 만드는 계기가 되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프의 초기 연구부터 섀넌의 응용, 그리고 촘스키의 비판으로 인해 통계적 모델링이 잠시 정체되었던 초기 역사를 서술합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The resurgence of n-gram models came from Jelinek and colleagues at the IBM Thomas J. Watson Research Center, who were influenced by Shannon, and Baker at CMU, who was influenced by the work of Baum and colleagues. Independently these two labs successfully used n-grams in their speech recognition systems (Baker 1975b, Jelinek 1976, Baker 1975a, Bahl et al. 1983, Jelinek 1990).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>N-그램 모델의 부활은 섀넌의 영향을 받은 IBM Thomas J. Watson 연구소의 옐리넥(Jelinek)과 그 동료들, 그리고 Baum 일행의 연구에 영감을 받은 CMU의 베이커(Baker)에 의해 이루어졌습니다. 두 연구소는 독립적으로 자사의 음성 인식 시스템에 N-그램을 성공적으로 도입했습니다(Baker 1975b, Jelinek 1976, Baker 1975a, Bahl et al. 1983, Jelinek 1990).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식 분야를 통해 N-그램 모델이 다시 주목받게 된 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Add-one smoothing derives from Laplace's 1812 law of succession and was first applied as an engineering solution to the zero frequency problem by Jeffreys (1948) based on an earlier Add-K suggestion by Johnson (1932). Problems with the add-one algorithm are summarized in Gale and Church (1994).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩(Add-one smoothing)은 라플라스의 1812년 승계 법칙(law of succession)에서 유래했으며, 존슨(Johnson, 1932)의 Add-K 제안을 바탕으로 제프리스(Jeffreys, 1948)가 빈도 제로 문제를 해결하기 위한 공학적 해법으로 처음 적용했습니다. 1 더하기 알고리즘이 가진 문제점들은 Gale과 Church(1994)에 잘 정리되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩 기법의 시초인 라플라스 스무딩의 기원을 밝힙니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>class-based n-gram</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>클래스 기반 N-그램(class-based n-gram)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 자체가 아닌 단어가 속한 범주(클래스) 정보를 활용하는 N-그램 변형 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A wide variety of different language modeling and smoothing techniques were proposed in the 80s and 90s, including Good-Turing discounting—first applied to the n-gram smoothing at IBM by Katz (Nádas 1984, Church and Gale 1991)—Witten-Bell discounting (Witten and Bell, 1991), and varieties of class-based n-gram models that used information about word classes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1980년대와 90년대에는 굿-튜링 디스카운팅(IBM의 Katz가 N-그램 스무딩에 처음 적용; Nádas 1984, Church and Gale 1991), 위튼-벨 디스카운팅(Witten and Bell, 1991), 그리고 단어 클래스 정보를 활용하는 다양한 클래스 기반 N-그램 모델을 포함하여 매우 다양한 언어 모델링 및 스무딩 기법들이 제안되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>80~90년대에 쏟아져 나온 다양한 스무딩 및 변형 모델들을 나열합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Starting in the late 1990s, Chen and Goodman performed a number of carefully controlled experiments comparing different discounting algorithms, cache models, class-based models, and other language model parameters (Chen and Goodman 1999, Goodman 2006, inter alia). They showed the advantages of Modified Interpolated Kneser-Ney, which became the standard baseline for n-gram language modeling, especially because they showed that caches and class-based models provided only minor additional improvement. These papers are recommended for any reader with further interest in n-gram language modeling. SRILM (Stolcke, 2002) and KenLM (Heafield 2011, Heafield et al. 2013) are publicly available toolkits for building n-gram language models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1990년대 후반부터 Chen과 Goodman은 다양한 디스카운팅 알고리즘, 캐시 모델, 클래스 기반 모델 및 기타 언어 모델 파라미터들을 비교하는 통제된 실험을 다수 수행했습니다(Chen and Goodman 1999, Goodman 2006 등). 그들은 변형된 보간형 크네저-네이(Modified Interpolated Kneser-Ney)의 우수성을 입증했으며, 이는 N-그램 언어 모델링의 표준 베이스라인이 되었습니다. 특히 캐시나 클래스 기반 모델이 제공하는 추가적인 개선 효과가 미미하다는 사실을 밝혀낸 점이 주요했습니다. N-그램 언어 모델링에 깊은 관심이 있는 독자라면 이 논문들을 읽어보기를 권합니다. SRILM(Stolcke, 2002)과 KenLM(Heafield 2011, Heafield et al. 2013)은 N-그램 언어 모델을 구축하기 위해 공개된 대표적인 툴킷들입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 N-그램 모델의 표준을 정립한 Chen과 Goodman의 연구와 보편적으로 사용되는 도구들을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Modern language modeling is more commonly done with neural network language models, which solve the major problems with n-grams: the number of parameters increases exponentially as the n-gram order increases, and n-grams have no way to generalize from training to test set. Neural language models instead project</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 언어 모델링은 주로 신경망 언어 모델(neural network language models)을 통해 이루어집니다. 신경망 모델은 N-그램의 주요 문제점들, 즉 차수가 높아질수록 파라미터 수가 기하급수적으로 증가한다는 점과 학습 데이터에서 테스트 데이터로 일반화(generalize)할 방법이 없다는 점을 해결해 줍니다. 신경망 언어 모델은 대신 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>N-그램의 한계를 극복하며 등장한 신경망 언어 모델의 등장을 예고합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26 CHAPTER 3 • N-GRAM LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26 제3장 • N-그램 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>words into a continuous space in which words with similar contexts have similar representations. We'll introduce both feedforward language models (Bengio et al. 2006, Schwenk 2007) in Chapter 7, and recurrent language models (Mikolov, 2012) in Chapter 9.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 단어들을 유사한 문맥을 가진 단어끼리 유사한 표현을 갖도록 하는 연속적인 공간(continuous space)으로 투영합니다. 우리는 제7장에서 피드포워드(feedforward) 언어 모델(Bengio et al. 2006, Schwenk 2007)을, 제9장에서 순환(recurrent) 언어 모델(Mikolov, 2012)을 소개할 예정입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 언어 모델의 핵심인 단어 임베딩(연속 공간 투영)과 향후 다룰 모델들을 언급하며 장을 마무리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제(Exercises)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>제3장에서 학습한 내용을 점검하기 위한 연습 문제 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>3.1 Write out the equation for trigram probability estimation (modifying Eq. 3.11). Now write out all the non-zero trigram probabilities for the I am Sam corpus on page 4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.1 트라이그램 확률 추정 공식을 작성십시오 (식 3.11을 수정). 그런 다음 4페이지에 나온 'I am Sam' 코퍼스에 대해 0이 아닌 모든 트라이그램 확률을 작성하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.1입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>3.2 Calculate the probability of the sentence i want chinese food. Give two probabilities, one using Fig. 3.2 and the 'useful probabilities' just below it on page 6, and another using the add-1 smoothed table in Fig. 3.7. Assume the additional add-1 smoothed probabilities P(i|<s>) = 0.19 and P(</s>|food) = 0.40.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.2 'i want chinese food라는 문장의 확률을 계산십시오. 두 가지 확률을 제시해야 하는데, 하나는 6페이지의 그림 3.2와 그 아래 '유용한 확률들'을 사용하는 것이고, 다른 하나는 그림 3.7의 1 더하기 스무딩 테이블을 사용하는 것입니다. 추가적인 1 더하기 스무딩 확률인 $P(i|<s>) = 0.19$와 $P(</s>|food) = 0.40$을 가정하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.2입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.3 Which of the two probabilities you computed in the previous exercise is higher, unsmoothed or smoothed? Explain why.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.3 이전 문제에서 계산한 두 확률 중 어느 것이 더 높습니까? 스무딩하지 않은 것입니까, 스무딩을 적용한 것입니까? 그 이유를 설명하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.3입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.4 We are given the following corpus, modified from the one in the chapter:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.4 본문의 내용을 수정한 다음의 코퍼스가 주어졌다고 가정해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.4의 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre><s> I am Sam </s>
+<s> Sam I am </s>
+<s> I am Sam </s>
+<s> I do not like green eggs and Sam </s></pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre><s> I am Sam </s>
+<s> Sam I am </s>
+<s> I am Sam </s>
+<s> I do not like green eggs and Sam </s></pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.4에서 사용되는 데이터셋입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Using a bigram language model with add-one smoothing, what is P(Sam | am)? Include <s> and </s> in your counts just like any other token.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩을 적용한 바이그램 언어 모델을 사용할 때, $P(Sam | am)$은 얼마입니까? 다른 모든 토큰과 마찬가지로 $<s>$와 $</s>$를 빈도 계산에 포함시키십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.4의 구체적인 질문 내용입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5 Suppose we didn't use the end-symbol </s>. Train an unsmoothed bigram grammar on the following training corpus without using the end-symbol </s>:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5 문장 종료 기호인 $</s>$를 사용하지 않는다고 가정해 봅시다. 종료 기호 $</s>$를 사용하지 않고 다음의 학습 코퍼스에 대해 스무딩되지 않은 바이그램 문법을 학습시키십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.5의 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre><s> a b
+<s> b b
+<s> b a
+<s> a a</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre><s> a b
+<s> b b
+<s> b a
+<s> a a</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.5에서 사용되는 데이터셋입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Demonstrate that your bigram model does not assign a single probability distribution across all sentence lengths by showing that the sum of the probability of the four possible 2 word sentences over the alphabet {a,b} is 1.0, and the sum of the probability of all possible 3 word sentences over the alphabet {a,b} is also 1.0.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>알파벳 $\{a, b\}$로 구성된 가능한 4개의 '2단어 문장'들의 확률 합이 1.0이고, 가능한 모든 '3단어 문장'들의 확률 합 또한 1.0임을 보임으로써, 해당 바이그램 모델이 모든 문장 길이에 대해 단일한 확률 분포를 할당하지 않음을 증명하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>종료 기호를 누락했을 때의 확률적 결함을 증명하는 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>3.6 Suppose we train a trigram language model with add-one smoothing on a given corpus. The corpus contains V word types. Express a formula for estimating P(w3|w1,w2), where w3 is a word which follows the bigram (w1,w2), in terms of various n-gram counts and V. Use the notation c(w1,w2,w3) to denote the number of times that trigram (w1,w2,w3) occurs in the corpus, and so on for bigrams and unigrams.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.6 주어진 코퍼스에 대해 1 더하기 스무딩을 적용한 트라이그램 언어 모델을 학습시킨다고 가정해 봅시다. 코퍼스에는 $V$개의 단어 유형이 포함되어 있습니다. 바이그램 $(w_1, w_2)$ 뒤에 오는 단어 $w_3$에 대한 $P(w_3|w_1,w_2)$ 추정 공식을 다양한 N-그램 빈도와 $V$를 사용하여 표현하십시오. 트라이그램 $(w_1, w_2, w_3)$이 코퍼스에서 발생하는 횟수를 표기하기 위해 $c(w_1, w_2, w_3)$와 같은 표기법을 사용하며, 바이그램과 유니그램에 대해서도 동일한 방식을 적용십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.6입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.7 We are given the following corpus, modified from the one in the chapter:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.7 본문의 내용을 수정한 다음의 코퍼스가 주어졌다고 가정해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.7의 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre><s> I am Sam </s>
+<s> Sam I am </s>
+<s> I am Sam </s>
+<s> I do not like green eggs and Sam </s></pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre><s> I am Sam </s>
+<s> Sam I am </s>
+<s> I am Sam </s>
+<s> I do not like green eggs and Sam </s></pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 3.7에서 사용되는 데이터셋입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

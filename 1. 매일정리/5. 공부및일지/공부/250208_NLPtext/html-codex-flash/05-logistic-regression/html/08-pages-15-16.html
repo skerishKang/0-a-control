@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Logistic Regression</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; }
+th { background: var(--source-bg); }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">05 Logistic Regression</div>
+<h1>Logistic Regression</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>5. Logistic Regression.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">베이지안 해석과 다항 로지스틱 회귀 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.6 • MULTINOMIAL LOGISTIC REGRESSION 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.6 • 다항 로지스틱 회귀 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But where L2 prefers weight vectors with many small weights, L1 prefers sparse solutions with some larger weights but many more weights set to zero. Thus L1 regularization leads to much sparser weight vectors, that is, far fewer features.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 하지만 L2 규제가 많은 수의 작은 가중치를 가진 가중치 벡터를 선호하는 반면, L1 규제는 일부 큰 가중치를 가지되 훨씬 더 많은 가중치를 0으로 설정하는 희소 해(sparse solutions)를 선호합니다. 따라서 L1 규제는 훨씬 더 희소한 가중치 벡터, 즉 훨씬 더 적은 수의 특징을 사용하도록 유도합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>L1 규제가 특징 선택(Feature Selection) 효과를 가져오는 희소성 특성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Both L1 and L2 regularization have Bayesian interpretations as constraints on the prior of how weights should look. L1 regularization can be viewed as a Laplace prior on the weights. L2 regularization corresponds to assuming that weights are distributed according to a Gaussian distribution with mean \mu = 0. In a Gaussian or normal distribution, the further away a value is from the mean, the lower its probability (scaled by the variance \sigma). By using a Gaussian prior on the weights, we are saying that weights prefer to have the value 0. A Gaussian for a weight \theta_j is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L1과 L2 규제 모두 가중치가 어떤 모습이어야 하는가에 대한 사전 분포(prior)의 제약 조건으로서 베이지안 해석이 가능합니다. L1 규제는 가중치에 대한 라플라스 사전 분포(Laplace prior)로 볼 수 있습니다. L2 규제는 가중치가 평균 $\mu=0$인 가우스 분포(Gaussian distribution)를 따른다고 가정하는 것에 대응합니다. 가우스 분포나 정규 분포에서 값이 평균에서 멀어질수록 (분산 $\sigma$에 의해 조정된) 확률은 낮아집니다. 가중치에 가우스 사전 분포를 사용함으로써, 우리는 가중치가 0에 가까운 값을 갖기를 선호한다고 말하는 셈입니다. 가중치 $\theta_j$에 대한 가우스 분포 식은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규제를 통계적 사전 지식(사전 분포)으로 해석하는 베이지안 관점을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\frac{1}{\sqrt{2\pi\sigma_j^2}} \exp \left( -\frac{(\theta_j - \mu_j)^2}{2\sigma_j^2} \right) (5.27)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{1}{\sqrt{2\pi\sigma_j^2}} \exp \left( -\frac{(\theta_j - \mu_j)^2}{2\sigma_j^2} \right) (5.27)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.27). 가중치가 따르는 정규 분포의 확률 밀도 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we multiply each weight by a Gaussian prior on the weight, we are thus maximizing the following constraint:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 가중치에 가우스 사전 분포를 곱하면, 우리는 다음과 같은 제약 조건을 최대화하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터의 우도와 모델의 사전 분포를 결합하여 최대 사후 확률(MAP)을 구하는 논리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\hat{\theta} = \underset{\theta}{\text{argmax}} \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) \times \prod_{j=1}^{n} \frac{1}{\sqrt{2\pi\sigma_j^2}} \exp \left( -\frac{(\theta_j - \mu_j)^2}{2\sigma_j^2} \right) (5.28)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{\theta} = \underset{\theta}{\text{argmax}} \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) \times \prod_{j=1}^{n} \frac{1}{\sqrt{2\pi\sigma_j^2}} \exp \left( -\frac{(\theta_j - \mu_j)^2}{2\sigma_j^2} \right) (5.28)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.28). MAP(Maximum A Posteriori) 추정 방식의 목적 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>which in log space, with \mu = 0, and assuming 2\sigma^2 = 1, corresponds to</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 로그 공간에서 $\mu=0$, $2\sigma^2=1$로 가정하고 정리하면 다음에 대응합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로그를 취해 곱셈을 덧셈과 뺄셈으로 변환하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\hat{\theta} = \underset{\theta}{\text{argmax}} \sum_{i=1}^{m} \log P(y^{(i)}|x^{(i)}) - \alpha \sum_{j=1}^{n} \theta_j^2 (5.29)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{\theta} = \underset{\theta}{\text{argmax}} \sum_{i=1}^{m} \log P(y^{(i)}|x^{(i)}) - \alpha \sum_{j=1}^{n} \theta_j^2 (5.29)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.29). 식 (5.24)와 동일한 형태임에 주목하십시오.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>which is in the same form as Eq. 5.24.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이는 식 (5.24)와 동일한 형식입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>L2 규제가 베이지안 가우스 사전 분포 가정과 수학적으로 동일함을 결론짓습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.6 Multinomial logistic regression</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.6 다항 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 개 이상의 여러 클래스로 데이터를 분류하는 일반적인 경우로 확장합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Sometimes we need more than two classes. Perhaps we might want to do 3-way sentiment classification (positive, negative, or neutral). Or we could be assigning some of the labels we will introduce in Chapter 8, like the part of speech of a word (choosing from 10, 30, or even 50 different parts of speech), or the named entity type of a phrase (choosing from tags like person, location, organization).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>때로는 세 개 이상의 클래스가 필요할 때가 있습니다. 예를 들어 3원 감성 분류(긍정, 부정, 중립)를 하고 싶을 수도 있습니다. 혹은 8장에서 소개할 품사 부착(10개, 30개 또는 50개의 품사 중 선택)이나 구절의 개체명 유형(사람, 장소, 조직과 같은 태그 중 선택)처럼 다양한 라벨을 할당해야 할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다항 분류가 필요한 실제 자연어 처리 작업들의 예시를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>multinomial logistic regression</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다항 로지스틱 회귀(multinomial logistic regression)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 클래스 중 하나로 분류하는 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In such cases we use multinomial logistic regression, also called softmax regression (or, historically, the maxent classifier). In multinomial logistic regression the target y is a variable that ranges over more than two classes; we want to know the probability of y being in each potential class c ∈ C, p(y = c|x).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 경우 우리는 소프트맥스 회귀(softmax regression) 또는 역사적으로는 최대 엔트로피 분류기(maxent classifier)라고도 불리는 다항 로지스틱 회귀(multinomial logistic regression)를 사용합니다. 다항 로지스틱 회귀에서 타겟 $y$는 두 개 이상의 클래스 범위를 갖는 변수입니다. 우리는 $y$가 각 잠재적 클래스 $c \in C$에 속할 확률인 $p(y=c|x)$를 알고 싶어 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다항 로지스틱 회귀의 다른 이름들과 목표 확률을 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>softmax</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>소프트맥스(softmax)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 점수를 받아 확률 분포로 변환해주는 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The multinomial logistic classifier uses a generalization of the sigmoid, called the softmax function, to compute the probability p(y = c|x). The softmax function takes a vector z = [z1, z2, ..., zk] of k arbitrary values and maps them to a probability distribution, with each value in the range (0,1), and all the values summing to 1. Like the sigmoid, it is an exponential function.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다항 로지스틱 분류기는 확률 $p(y=c|x)$를 계산하기 위해 시그모이드의 일반화된 형태인 소프트맥스(softmax) 함수를 사용합니다. 소프트웨어 함수는 $k$개의 임의의 값으로 구성된 벡터 $z = [z_1, z_2, \dots, z_k]$를 입력받아 이를 확률 분포로 대응시킵니다. 이때 각 값은 (0, 1) 범위에 있고, 모든 값의 합은 1이 됩니다. 시그모이드와 마찬가지로 이는 지수 함수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스 함수가 벡터를 확률 분포로 변환하는 메커니즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For a vector z of dimensionality k, the softmax is defined as:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>$k$차원 벡터 $z$에 대해 소프트웨어는 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스 함수의 정의식을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>softmax(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{k} \exp(z_j)} , 1 \le i \le k (5.30)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\text{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{k} \exp(z_j)} , 1 \le i \le k (5.30)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.30). 개별 클래스에 대한 확률을 도출하는 소프트웨어 공식입니다. 분모는 모든 지수값의 합으로 정규화 역할을 합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">소프트맥스 함수의 이해와 다항 분류 특징</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 5 • LOGISTIC REGRESSION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제5장 • 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The softmax of an input vector z = [z1, z2, ..., zk] is thus a vector itself:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 입력 벡터 $z = [z_1, z_2, \dots, z_k]$의 소프트웨어는 그 자체가 벡터가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스의 출력이 벡터 형태임을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\text{softmax}(z) = \begin{bmatrix} \frac{\exp(z_1)}{\sum_{i=1}^{k} \exp(z_i)} , \frac{\exp(z_2)}{\sum_{i=1}^{k} \exp(z_i)} , \dots , \frac{\exp(z_k)}{\sum_{i=1}^{k} \exp(z_i)} \end{bmatrix} (5.31)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\text{softmax}(z) = \begin{bmatrix} \frac{\exp(z_1)}{\sum_{i=1}^{k} \exp(z_i)} , \frac{\exp(z_2)}{\sum_{i=1}^{k} \exp(z_i)} , \dots , \frac{\exp(z_k)}{\sum_{i=1}^{k} \exp(z_i)} \end{bmatrix} (5.31)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.31). 벡터 형식으로 표현된 소프트웨어 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The denominator \sum_{i=1}^{k} \exp(z_i) is used to normalize all the values into probabilities. Thus for example given a vector: z = [0.6, 1.1, −1.5, 1.2, 3.2, −1.1] the resulting (rounded) softmax(z) is [0.055, 0.090, 0.006, 0.099, 0.74, 0.010]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분모인 $\sum_{i=1}^{k} \exp(z_i)$는 모든 값을 확률로 정규화하는 데 사용됩니다. 예를 들어 벡터 $z$가 $z = [0.6, 1.1, -1.5, 1.2, 3.2, -1.1]$로 주어지면, (반올림된) 소프트웨어 결과인 $\text{softmax}(z)$는 $[0.055, 0.090, 0.006, 0.099, 0.74, 0.010]$이 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 수치 예제를 통해 소프트웨어가 어떻게 큰 값을 더 부각시키며 확률 분포를 만드는지 보여줍니다. 특히 3.2라는 가장 큰 값이 0.74라는 높은 확률을 가져감을 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Again like the sigmoid, the input to the softmax will be the dot product between a weight vector w and an input vector x (plus a bias). But now we'll need separate weight vectors (and bias) for each of the K classes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시그모이드와 마찬가지로 소프트웨어의 입력값은 가중치 벡터 $w$와 입력 벡터 $x$의 내적(여기에 편향을 더한 값)이 될 것입니다. 하지만 이제는 $K$개의 각 클래스에 대해 개별적인 가중치 벡터(와 편향)가 필요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다항 분류를 위해 각 클래스마다 고유한 가중치 파라미터 셋이 존재해야 함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>p(y = c|x) = \frac{\exp(w_c \cdot x + b_c)}{\sum_{j=1}^{K} \exp(w_j \cdot x + b_j)} (5.32)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>p(y = c|x) = \frac{\exp(w_c \cdot x + b_c)}{\sum_{j=1}^{K} \exp(w_j \cdot x + b_j)} (5.32)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.32). 다항 로지스틱 회귀에서 특정 클래스 $c$일 확률을 계산하는 최종 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Like the sigmoid, the softmax has the property of squashing values toward 0 or 1. Thus if one of the inputs is larger than the others, it will tend to push its probability toward 1, and suppress the probabilities of the smaller inputs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시그모이드와 마찬가지로 소프트웨어는 값들을 0이나 1로 압착(squash)하는 특성을 가집니다. 따라서 입력 중 하나가 다른 것들보다 크다면, 그 확률을 1로 밀어붙이고 더 작은 입력들의 확률은 억제하는 경향이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스가 가지는 '강조와 억제'의 압착 특성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.6.1 Features in Multinomial Logistic Regression</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.6.1 다항 로지스틱 회귀의 특징</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다항 분류 상황에서 특징과 가중치가 어떻게 결합되는지 상세히 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Features in multinomial logistic regression function similarly to binary logistic regression, with one difference that we'll need separate weight vectors (and biases) for each of the K classes. Recall our binary exclamation point feature x5 from page 4:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다항 로지스틱 회귀에서의 특징들은 이진 로지스틱 회귀와 유사하게 작동하지만, $K$개의 각 클래스에 대해 별도의 가중치 벡터(및 편향)가 필요하다는 점이 다릅니다. 4페이지에 나왔던 이진 느낌표 특징 $x_5$를 떠올려 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞선 예제의 특징($x_5$)을 다항 분류 상황으로 확장하여 재해석합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>x_5 = \begin{cases} 1 & \text{if } "!" \in \text{doc} \\ 0 & \text{otherwise} \end{cases}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>x_5 = \begin{cases} 1 & \text{if } "!" \in \text{doc} \\ 0 & \text{otherwise} \end{cases}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 특징의 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In binary classification a positive weight w5 on a feature influences the classifier toward y = 1 (positive sentiment) and a negative weight influences it toward y = 0 (negative sentiment) with the absolute value indicating how important the feature is. For multinomial logistic regression, by contrast, with separate weights for each class, a feature can be evidence for or against each individual class.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이진 분류에서 특징에 붙은 양수 가중치 $w_5$는 분류기를 $y=1$(긍정 감성) 쪽으로 이끌고, 음수 가중치는 $y=0$(부정 감성) 쪽으로 이끌며 그 절대값은 특징의 중요도를 나타냅니다. 반면 다항 로지스틱 회귀에서는 각 클래스별로 별도의 가중치가 존재하므로, 한 특징이 각 개별 클래스에 대해 긍정적이거나 부정적인 증거가 될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클래스별 개별 가중치 배정 방식이 각 클래스에 대한 독립적인 증거력 평가를 가능하게 함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In 3-way multiclass sentiment classification, for example, we must assign each document one of the 3 classes +, −, or 0 (neutral). Now a feature related to exclamation marks might have a negative weight for 0 documents, and a positive weight for + or − documents:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 3원 다중 클래스 감성 분류에서 우리는 각 문서에 '+', '-', '0'(중립) 중 하나를 할당해야 합니다. 이때 느낌표와 관련된 특징은 중립(0) 문서에 대해서는 음수 가중치를 갖고, 긍정(+)이나 부정(-) 문서에 대해서는 양수 가중치를 가질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구체적인 3원 분류 사례를 통해 특징이 각 클래스마다 다른 기여도를 가질 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>| Feature | Definition | w5,+ | w5,- | w5,0 |
+|---|---|---|---|---|
+| f5(x) | { 1 if "!" ∈ doc, 0 otherwise | 3.5 | 3.1 | −5.3 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 특징 | 정의 | w5,+ | w5,- | w5,0 |
+|---|---|---|---|---|
+| f_5(x) | 문서에 "!"가 포함되면 1, 아니면 0 | 3.5 | 3.1 | -5.3 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>느낌표 특징이 긍정(+)과 부정(-)에는 강한 찬성 증거로, 중립(0)에는 강한 반대 증거로 작용하는 가중치 배정 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because these feature weights are dependent both on the input text and the output class, we sometimes make this dependence explicit and represent the features themselves as f(x, y): a function of both the input and the class. Using such a notation f5(x) above could be represented as three features f5(x, +), f5(x, −), and f5(x, 0), each of which has a single weight.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 특징 가중치들은 입력 텍스트와 출력 클래스 모두에 의존하기 때문에, 우리는 때때로 이 의존성을 명시적으로 드러내어 특징 자체를 입력과 클래스 모두의 함수인 $f(x, y)$로 표현하기도 합니다. 이러한 표기법을 사용하면 위의 $f_5(x)$는 $f_5(x, +), f_5(x, -), f_5(x, 0)$의 세 가지 특징으로 표현될 수 있으며, 각각은 단일 가중치를 갖게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특징을 (입력, 클래스) 쌍의 함수로 표현하는 추상화된 표기법을 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

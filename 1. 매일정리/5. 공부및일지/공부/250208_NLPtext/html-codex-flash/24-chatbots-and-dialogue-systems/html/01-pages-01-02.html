@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">챗봇과 대화 시스템 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 정보와 초안 날짜를 나타내는 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 24 Chatbots & Dialogue Systems</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제24장 챗봇과 대화 시스템</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장에서 다룰 핵심 주제인 챗봇과 대화형 에이전트 시스템에 대한 소개가 시작됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Les lois de la conversation sont en général de ne s'y appesantir sur aucun objet, mais de passer légèrement, sans effort et sans affectation, d'un sujet à un autre ; de savoir y parler de choses frivoles comme de choses sérieuses
+
+[The rules of conversation are, in general, not to dwell on any one subject, but to pass lightly from one to another without effort and without affectation; to know how to speak about trivial topics as well as serious ones;]
+
+The 18th C. Encyclopedia of Diderot, start of the entry on conversation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화의 법칙은 일반적으로 어느 한 주제에 머물지 않고, 노력이나꾸밈없이 한 주제에서 다른 주제로 가볍게 넘어가는 것입니다. 사소한 주제뿐만 아니라 진지한 주제에 대해서도 이야기할 줄 아는 것이 대화입니다.
+
+18세기 디드로의 백과사전, '대화' 항목의 시작 부분</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화의 유연함과 자연스러움에 대한 고전적인 정의를 인용한 에피그래프입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"What ho!" I said.
+"What ho!" said Motty.
+"What ho! What ho!"
+"What ho! What ho! What ho!"
+After that it seemed rather difficult to go on with the conversation.
+P.G. Wodehouse, My Man Jeeves</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"여어!" 내가 말했다.
+"여어!" 모티가 말했다.
+"여어! 여어!"
+"여어! 여어! 여어!"
+그 후에는 대화를 계속 이어가기가 다소 어려운 것 같았다.
+P.G. 우드하우스, 《내 하인 지브스》</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>무의미한 반복으로 인해 대화가 단절되는 상황을 보여주는 유머러스한 인용구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The literature of the fantastic abounds in inanimate objects magically endowed with sentience and the gift of speech. From Ovid's statue of Pygmalion to Mary Shelley's Frankenstein, there is something deeply moving about creating something and then having a chat with it. Legend has it that after finishing his sculpture Moses, Michelangelo thought it so lifelike that he tapped it on the knee and commanded it to speak. Perhaps this shouldn't be surprising. Language is the mark of humanity and sentience, and conversation or dialogue is the most fundamental and specially privileged arena of language. It is the first kind of language we learn as children, and for most of us, it is the kind of language we most commonly indulge in, whether we are ordering curry for lunch or buying spinach, participating in business meetings or talking with our families, booking airline flights or complaining about the weather.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>환상 문학에는 마법처럼 지각력과 언어 능력을 부여받은 무생물에 대한 이야기가 가득합니다. 오비디우스의 피그말리온 조각상부터 메리 셸리의 프랑켄슈타인에 이르기까지, 무언가를 창조하고 그것과 대화를 나누는 것에는 깊은 감동을 주는 무언가가 있습니다. 전설에 따르면 미켈란젤로는 조각상 모세를 완성한 후 너무나 생생한 나머지 무릎을 톡 치며 말하라고 명령했다고 합니다. 아마도 이것은 놀라운 일이 아닐 것입니다. 언어는 인간성과 지각력의 징표이며, 대화(conversation) 또는 담화(dialogue)는 언어의 가장 기본적이고 특별한 영역입니다. 그것은 우리가 어린 시절 가장 먼저 배우는 언어의 형태이며, 점심으로 커리를 주문하거나 시금치를 사는 것, 비즈니스 회의에 참석하거나 가족과 이야기하는 것, 항공편을 예약하거나 날씨에 대해 불평하는 것 등 우리 대부분이 가장 흔하게 사용하는 언어의 형태입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화가 인간의 지성과 지각을 나타내는 가장 핵심적인 수단임을 강조하며 대화 시스템 연구의 동기를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>conversation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>본문에서 강조하는 핵심 개념인 '대화'를 지칭합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>담화/대화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'대화'와 혼용되거나 좀 더 형식적인 맥락에서 사용되는 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This chapter introduces the fundamental algorithms of dialogue systems, or conversational agents. These programs communicate with users in natural language (text, speech, or both), and fall into two classes. Task-oriented dialogue agents use conversation with users to help complete tasks. Dialogue agents in digital assistants (Siri, Alexa, Google Now/Home, Cortana, etc.), give directions, control appliances, find restaurants, or make calls. Conversational agents can answer questions on corporate websites, interface with robots, and even be used for social good: DoNotPay is a "robot lawyer" that helps people challenge incorrect parking fines, apply for emergency housing, or claim asylum if they are refugees.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 대화 시스템(dialogue systems) 또는 대화형 에이전트(conversational agents)의 기본 알고리즘을 소개합니다. 이러한 프로그램은 자연어(텍스트, 음성 또는 둘 모두)로 사용자와 소통하며, 크게 두 가지 클래스로 나뉩니다. 작업 지향형 대화형 에이전트(Task-oriented dialogue agents)는 사용자가 작업을 완료하는 데 도움이 되도록 대화를 사용합니다. 디지털 비서(Siri, Alexa, Google Now/Home, Cortana 등)에 탑재된 대화형 에이전트는 길을 안내하거나, 가전제품을 제어하고, 식당을 찾거나, 전화를 겁니다. 대화형 에이전트는 기업 웹사이트에서 질문에 답하거나, 로봇과 인터페이스하고, 심지어 사회적 이익을 위해 사용될 수도 있습니다. DoNotPay는 잘못된 주차 과태료에 이의를 제기하거나, 긴급 주택을 신청하거나, 난민인 경우 망명을 신청하는 것을 돕는 "로봇 변호사"입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템을 작업 지향형과 일반 대화형(다음 페이지에서 계속됨)으로 구분하여 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue system</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 시스템</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사용자와 대화하는 시스템 전체를 일컫는 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>conversational agent</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화형 에이전트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템의 또 다른 명칭으로, 시스템의 능동적인 성격을 강조합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">챗봇 정의 및 인간 대화의 특징</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 24 • CHATBOTS & DIALOGUE SYSTEMS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제24장 • 챗봇과 대화 시스템</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>contrast, chatbots are systems designed for extended conversations, set up to mimic the unstructured conversations or 'chats' characteristic of human-human interaction, mainly for entertainment, but also for practical purposes like making task-oriented agents more natural. In Section 24.2 we'll discuss the three major chatbot architectures: rule-based systems, information retrieval systems, and encoder-decoder generators. In Section 24.3 we turn to task-oriented agents, introducing the frame-based architecture (the GUS architecture) that underlies most task-based systems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>반면, 챗봇(chatbots)은 엔터테인먼트를 주된 목적으로 하지만 작업 지향형 에이전트를 더 자연스럽게 만드는 것과 같은 실용적인 목적을 위해 인간과 인간 사이의 상호작용 특징인 비구조화된 대화나 '수다'를 모방하도록 설계된 시스템입니다. 24.2절에서는 규칙 기반 시스템, 정보 검색 시스템, 인코더-디코더 생성기라는 세 가지 주요 챗봇 아키텍처를 논의할 것입니다. 24.3절에서는 대부분의 작업 기반 시스템의 기초가 되는 프레임 기반 아키텍처(GUS 아키텍처)를 도입하며 작업 지향형 에이전트를 살펴볼 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>챗봇의 정의와 이 장의 구성을 설명합니다. 챗봇은 비구조화된 대화(chit-chat)에 초점을 맞춥니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.1 Properties of Human Conversation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.1 인간 대화의 특징</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템 설계를 위해 인간 대화의 복잡성을 이해해야 한다는 점을 시사하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Conversation between humans is an intricate and complex joint activity. Before we attempt to design a conversational agent to converse with humans, it is crucial to understand something about how humans converse with each other. Consider some of the phenomena that occur in the conversation between a human travel agent and a human client excerpted in Fig. 24.1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인간 사이의 대화는 뒤얽히고 복잡한 공동 활동입니다. 인간과 대화할 대화형 에이전트를 설계하려고 시도하기 전에, 인간이 서로 어떻게 대화하는지에 대해 이해하는 것이 매우 중요합니다. 그림 24.1에 발췌된 인간 여행사 직원과 인간 고객 사이의 대화에서 발생하는 몇 가지 현상을 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화를 '공동 활동(joint activity)'으로 정의하며, 설계에 앞서 인간 대화 분석의 중요성을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>C1: ...I need to travel in May.
+A2: And, what day in May did you want to travel?
+C3: OK uh I need to be there for a meeting that's from the 12th to the 15th.
+A4: And you're flying into what city?
+C5: Seattle.
+A6: And what time would you like to leave Pittsburgh?
+C7: Uh hmm I don't think there's many options for non-stop.
+A8: Right. There's three non-stops today.
+C9: What are they?
+A10: The first one departs PGH at 10:00am arrives Seattle at 12:05 their time.
+The second flight departs PGH at 5:55pm, arrives Seattle at 8pm. And the last flight departs PGH at 8:15pm arrives Seattle at 10:28pm.
+C11: OK I'll take the 5ish flight on the night before on the 11th.
+A12: On the 11th? OK. Departing at 5:55pm arrives Seattle at 8pm, U.S. Air flight 115.
+C13: OK.
+A14: And you said returning on May 15th?
+C15: Uh, yeah, at the end of the day.
+A16: OK. There's #two non-stops ...#
+C17: #Act...actually #, what day of the week is the 15th?
+A18: It's a Friday.
+C19: Uh hmm. I would consider staying there an extra day til Sunday.
+A20: OK...OK. On Sunday I have ...</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C1: ...5월에 여행을 가야 합니다.
+A2: 네, 5월 몇 일에 여행하기를 원하시나요?
+C3: 12일부터 15일까지 회의가 있어서 거기 가야 합니다.
+A4: 어느 도시로 가시나요?
+C5: 시애틀입니다.
+A6: 피츠버그에서 몇 시에 출발하고 싶으신가요?
+C7: 음, 직항편 옵션이 많지 않을 것 같네요.
+A8: 맞습니다. 오늘은 세 개의 직항편이 있습니다.
+C9: 어떤 것들이 있나요?
+A10: 첫 번째는 오전 10시에 PGH를 출발하여 현지 시간으로 오후 12시 5분에 시애틀에 도착합니다.
+두 번째 비행편은 오후 5시 55분에 PGH를 출발하여 오후 8시에 시애틀에 도착합니다. 그리고 마지막 비행편은 오후 8시 15분에 PGH를 출발하여 오후 10시 28분에 시애틀에 도착합니다.
+C11: 좋습니다. 전날인 11일 오후 5시경 비행기로 하겠습니다.
+A12: 11일 말씀이신가요? 알겠습니다. 오후 5시 55분에 출발하여 오후 8시에 시애틀에 도착하는 US Air 115편입니다.
+C13: 네.
+A14: 그리고 5월 15일에 돌아오신다고 하셨나요?
+C15: 음, 네, 일과가 끝날 때쯤에요.
+A16: 알겠습니다. 직항편이 #두 개...#
+C17: #실...실은#, 15일이 무슨 요일인가요?
+A18: 금요일입니다.
+C19: 음. 일요일까지 하루 더 머무는 것을 고려해 보겠네요.
+A20: 네... 알겠습니다. 일요일에는...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여행 예약을 위한 인간 간의 대화 예시입니다. 겹침(overlap), 수정(correction), 불완전한 문장 등 실제 대화의 복잡성이 나타납니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.1 Part of a phone conversation between a human travel agent (A) and human client (C). The passages framed by # in A16 and C17 indicate overlaps in speech.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.1 인간 여행사 직원(A)과 인간 고객(C) 사이의 전화 대화의 일부. A16과 C17에서 #으로 둘러싸인 구절은 음성의 겹침을 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 24.1에 대한 캡션입니다. 대화 도중 동시에 말하는 상황을 기호로 표시했음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Turns</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>턴(Turns)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화의 기본 단위인 '턴'에 대한 설명이 시작됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>turn</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>턴(차례)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화에서 한 화자가 한 번에 기여하는 단위를 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A dialogue is a sequence of turns (C1, A2, C3, and so on), each a single contribution from one speaker to the dialogue (as if in a game: I take a turn, then you take a turn,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>담화(dialogue)는 턴(C1, A2, C3 등)의 시퀀스이며, 각 턴은 한 화자가 대화에 기여하는 단일 기여분입니다 (마치 게임에서 내가 한 번 하고, 다음엔 당신이 한 번 하는 것처럼,</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화를 순차적인 턴의 흐름으로 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1 By contrast, in popular usage, the word chatbot is often generalized to refer to both task-oriented and chit-chat systems; we'll be using dialogue systems for the former.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 대조적으로, 대중적인 용법에서 '챗봇'이라는 단어는 흔히 작업 지향형 시스템과 수다(chit-chat) 시스템 모두를 지칭하는 데 일반화되어 사용되지만, 우리는 전자(작업 지향형)에 대해서는 '대화 시스템'이라는 용어를 사용할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학술적 정의와 일반적 용법의 차이를 명확히 하는 각주입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

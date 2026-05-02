@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 5-6 | Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">13 Constituency Parsing</div>
+<h1>Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 5-6 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>13. Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">CKY 메인 루프</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The main loop of the CKY algorithm iterates over the length of the subproblems, starting from length 1 and going up to length n. For each length, we iterate over the starting index i of the subproblem. Then we try all possible split points k such that i < k < j.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CKY 알고리즘의 메인 루프는 길이가 1인 것부터 시작하여 문장의 길이인 n에 도달할 때까지 하위 문제의 길이를 반복합니다. 각 길이에 대해 하위 문제의 시작 인덱스 i를 반복하고, i < k < j를 만족하는 모든 가능한 분할 지점 k를 시도합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CKY 알고리즘의 동적인 하위 문제 분할과 반복 절차를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>split point</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분할 지점(split point)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하나의 성분을 두 개의 더 작은 성분으로 나누는 지점 k를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    function CKY-PARSE(words, grammar) returns table
+      for j = 1 to n do
+        table[j-1, j] = {A | A → words[j] is in grammar}
+        for i = j-2 down to 0 do
+          for k = i+1 to j-1 do
+            if A → B C is in grammar and B ∈ table[i, k] and C ∈ table[k, j] then
+              table[i, j] = table[i, j] ∪ {A}
+      return table</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    함수 CKY-PARSE(words, grammar) 반환 table
+      j = 1부터 n까지 반복
+        table[j-1, j] = {A | A → words[j]가 문법에 있음}
+        i = j-2부터 0까지 역순 반복
+          k = i+1부터 j-1까지 반복
+            만약 A → B C가 문법에 있고 B ∈ table[i, k]이며 C ∈ table[k, j]이면
+              table[i, j] = table[i, j] ∪ {A}
+      표(table) 반환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CKY 알고리즘의 의사 코드를 보여줍니다. 단어 기반의 기저 사례와 동적 프로그래밍을 통한 성분 조합 과정을 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This is a recognizer. If the start symbol S is in table[0, n], it means the sentence is valid in the language. To make it a parser, we need to store backpointers in each entry table[i, j] to remember which B and C from which split point k were used to create A.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이것은 인식기(recognizer)입니다. 시작 기호 S가 table[0, n]에 포함되어 있다면, 해당 문장은 그 언어에서 유효하다는 뜻입니다. 이를 파서(parser)로 만들려면 각 칸 table[i, j]에 어떤 분할 지점 k로부터 어떤 B와 C가 사용되어 A가 만들어졌는지를 기억하도록 역추적 포인터(backpointers)를 저장해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 인식기 구조에서 구조를 복원하기 위한 파서로 확장하는 방법을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">CNF로의 변환</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13.2.2 Converting to CNF</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13.2.2 CNF로의 변환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 CFG를 CKY에 사용하기 적합한 CNF로 변환하는 상세 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>equivalency</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>동등성(equivalency)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원래 문법과 변환된 문법이 동일한 언어를 생성하는 속성을 말합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Conversion to CNF involves three main steps. Any grammar can be converted into an equivalent CNF grammar while preserving the strings generated by the grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CNF로의 변환에는 세 가지 주요 단계가 수반됩니다. 모든 문법은 그에 상응하는 CNF 문법으로 변환될 수 있으며, 이때 문법이 생성하는 문자열들은 그대로 유지됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CNF 변환의 기본적인 보장과 주요 단계를 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - 1. Replace all terminal symbols that occur on the RHS of rules that also contain other symbols with new non-terminals and new rules that derive those terminals.
+    - 2. Break down rules with more than two non-terminals on the RHS by introducing intermediate non-terminals.
+    - 3. Remove all unit productions (A → B) and epsilon productions (A → ε).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 1. 하나이상의 기호를 포함하고 있는 규칙의 오른쪽면(RHS)에 단말 기호가 나타날 경우, 새로운 비단말 기호와 해당 단말 기호를 유도하는 규칙으로 대체합니다.
+    - 2. 오른쪽면(RHS)에 세 개 이상의 비단말 기호를 가진 규칙을 중간 비단말 기호를 도입하여 더 작은 규칙들로 쪼갭니다.
+    - 3. 모든 단위 규칙(A → B)과 엡실론 규칙(A → ε)을 제거합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CNF로 변환하기 위해 필요한 구체적인 세 가지 절차를 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>[Example of converting NP → Det Adj N]
+NP → Det Nominal
+Nominal → Adj N</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[NP → Det Adj N 규칙의 변환 예시]
+NP → Det Nominal
+Nominal → Adj N</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>융합적인 규칙을 두 개 이상의 이항 규칙으로 나누는 예시를 보여줍니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Logistic Regression</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">05 Logistic Regression</div>
+<h1>Logistic Regression</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>5. Logistic Regression.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">로지스틱 회귀 소개와 분류 문제의 기본 개념</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 정보와 판본 정보를 담은 헤더 블록입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 5: Logistic Regression</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제5장: 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>제5장의 주제인 로지스틱 회귀(Logistic Regression)를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"And how do you know that these fine begonias are not of equal importance?" Hercule Poirot, in Agatha Christie's The Mysterious Affair at Styles</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"그런데 이 아름다운 베고니아들이 똑같이 중요하지 않다는 걸 어떻게 아셨습니까?" 아가사 크리스티의 『스타일스 저택의 괴사건』 중 에르퀼 푸아로</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장의 시작을 여는 인용구로, 특징(begonias)의 중요성을 판단하는 분류 작업의 핵심을 비유적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Detective stories are as littered with clues as texts are with words. Yet for the poor reader it can be challenging to know how to weigh the author's clues in order to make the crucial classification task: deciding whodunnit.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>탐정 소설이 단서들로 가득 차 있는 것처럼, 텍스트도 단어들로 가득 차 있습니다. 하지만 가련한 독자에게는 중요한 분류 작업, 즉 '누가 범인인가'를 결정하기 위해 작가가 던진 단서들에 어떻게 가중치를 두어야 할지 아는 것이不是很好 않은 일일 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분류 작업에서 단서(특징)에 가중치를 부여하는 로지스틱 회귀의 기본 개념을 탐정 소설에 비유하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>logistic regression</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>본문 옆의 여백 키워드로 현재 다루는 핵심 알고리즘을 표시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter we introduce an algorithm that is admirably suited for discovering the link between features or cues and some particular outcome: logistic regression. Indeed, logistic regression is one of the most important analytic tools in the social and natural sciences. In natural language processing, logistic regression is the base-line supervised machine learning algorithm for classification, and also has a very close relationship with neural networks. As we will see in Chapter 7, a neural network can be viewed as a series of logistic regression classifiers stacked on top of each other. Thus the classification and machine learning techniques introduced here will play an important role throughout the book.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 특징 또는 단서와 특정 결과 사이의 연결 고리를 찾아내는 데 매우 적합한 알고리즘인 로지스틱 회귀를 소개합니다. 실제로 로지스틱 회귀는 사회과학과 자연과학에서 가장 중요한 분석 도구 중 하나입니다. 자연어 처리에서 로지스틱 회귀는 분류를 위한 베이스라인 지도 기계 학습 알고리즘이며, 신경망과도 매우 밀접한 관계가 있습니다. 7장에서 보게 되겠지만, 신경망은 로지스틱 회귀 분류기들을 여러 층으로 쌓아 올린 것으로 볼 수 있습니다. 따라서 여기서 소개하는 분류 및 기계 학습 기법은 책 전체에서 중요한 역할을 할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로지스틱 회귀의 학학문적 중요성과 신경망(Deep Learning)과의 연관성을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Logistic regression can be used to classify an observation into one of two classes (like 'positive sentiment' and 'negative sentiment'), or into one of many classes. Because the mathematics for the two-class case is simpler, we'll describe this special case of logistic regression first in the next few sections, and then briefly summarize the use of multinomial logistic regression for more than two classes in Section 5.6.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀는 관측치를 두 클래스 중 하나('긍정 감성'과 '부정 감성' 등)로 분류하거나, 여러 클래스 중 하나로 분류하는 데 사용할 수 있습니다. 이진 분류(two-class) 사례의 수학적 원리가 더 단순하기 때문에, 다음 몇 개 섹션에서는 로지스틱 회귀의 이 특별한 사례를 먼저 설명하고, 5.6절에서 두 개 이상의 클래스를 위한 다항 로지스틱 회귀(multinomial logistic regression)의 사용법을 간략하게 요약하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 분류(binary classification)를 먼저 배우고 다중 클래스 분류로 확장하는 학습 경로를 안내합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We'll introduce the mathematics of logistic regression in the next few sections. But let's begin with some high-level issues.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 몇 개의 섹션에서 로지스틱 회귀의 수학적 원리를 소개하겠습니다. 하지만 먼저 개념적인 문제들부터 시작해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수학적 상세 분석에 앞서 개념적 이해를 먼저 도모합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Generative and Discriminative Classifiers: The most important difference between naive Bayes and logistic regression is that logistic regression is a discriminative classifier while naive Bayes is a generative classifier.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>생성 및 판별 분류기: 나이브 베이즈와 로지스틱 회귀의 가장 중요한 차이점은 로지스틱 회귀가 판별(discriminative) 분류기인 반면, 나이브 베이즈는 생성(generative) 분류기라는 점입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 학습 모델의 두 가지 큰 패러다임인 생성 모델과 판별 모델의 차이를 화두로 던집니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These are two very different frameworks for how to build a machine learning model. Consider a visual metaphor: imagine we're trying to distinguish dog images from cat images. A generative model would have the goal of understanding what dogs look like and what cats look like. You might literally ask such a model to 'generate', i.e., draw, a dog. Given a test image, the system then asks whether it's the cat model or the dog model that better fits (is less surprised by) the image, and chooses that as its label.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre> 이들은 기계 학습 모델을 구축하는 방식에 있어 매우 다른 두 가지 프레임워크입니다. 시각적인 비유를 들어 봅시다. 우리가 개 이미지와 고양이 이미지를 구분하려고 가정해 봅시다. 생성 모델은 개가 어떻게 생겼고 고양이가 어떻게 생겼는지를 이해하는 것을 목표로 합니다. 여러분은 말 그대로 이런 모델에게 개를 '생성'하라, 즉 그려보라고 요청할 수 있습니다. 테스트 이미지가 주어지면, 시스템은 고양이 모델과 개 모델 중 어느 것이 이 이미지에 더 잘 맞는지(이미지를 보고 덜 놀라워하는지) 묻고, 그것을 라벨로 선택합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 모델의 작동 원리를 직관적인 비유(이미지 생성 및 적합도 측정)를 통해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A discriminative model, by contrast, is only trying to distinguish the classes (perhaps without learning much about them). So maybe all the dogs in the training data are wearing collars and the cats aren't. If that one feature neatly separates the classes, the model is satisfied. If you ask such a model what it knows about cats all it can say is that they don't wear collars.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>반면 판별 모델은 (클래스에 대해 많이 배우지 않고도) 단지 클래스들을 구분하려고만 노력합니다. 예를 들어 학습 데이터의 모든 개는 목줄을 하고 있고 고양이는 그렇지 않다고 합시다. 이 특징 하나가 클래스들을 깔끔하게 분리한다면, 모델은 만족합니다. 이런 모델에게 고양이에 대해 무엇을 아느냐고 묻는다면, 모델이 해줄 수 있는 말은 고양이는 목줄을 하지 않는다는 것뿐입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>판별 모델은 분류의 정확성에 집중하며, 대상의 본질적 모습보다는 구분 가능한 특징 집합을 찾는 데 주력한다는 차이점을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">생성/판별 모델 비교와 기계 학습 분류기 구성 요소</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 5 • LOGISTIC REGRESSION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제5장 • 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More formally, recall that the naive Bayes assigns a class c to a document d not by directly computing P(c|d) but by computing a likelihood and a prior</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>좀 더 형식적으로 말하자면, 나이브 베이즈는 $P(c|d)$를 직접 계산하는 것이 아니라 가능도(likelihood)와 사전 확률(prior)을 계산하여 문서 $d$에 클래스 $c$를 할당한다는 점을 기억하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈의 원리를 수식적으로 다시 짚어줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>likelihood prior
+c_hat = argmax P(d|c) P(c) (5.1)
+c∈C</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가능도 사전 확률
+\hat{c} = \underset{c \in C}{\text{argmax}} P(d|c) P(c) (5.1)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.1). 베이즈 정리에 기반한 생성 모델의 분류 주 공식을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>generative model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>생성 모델(generative model)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터의 생성 과정을 모델링하는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A generative model like naive Bayes makes use of this likelihood term, which expresses how to generate the features of a document if we knew it was of class c.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈와 같은 생성 모델은 이 가능도(likelihood) 항을 활용하는데, 이는 우리가 문서가 클래스 $c$라는 것을 알고 있을 때 문서의 특징들을 어떻게 생성할 것인지를 표현합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 모델에서 가능도 항이 가지는 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>discriminative model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>판별 모델(discriminative model)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 데이터로부터 클래스를 직접 판별하는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By contrast a discriminative model in this text categorization scenario attempts to directly compute P(c|d). Perhaps it will learn to assign a high weight to document features that directly improve its ability to discriminate between possible classes, even if it couldn't generate an example of one of the classes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대조적으로, 이 텍스트 범주화 시나리오에서 판별 모델은 $P(c|d)$를 직접 계산하려고 시도합니다. 이는 아마도 클래스의 사례를 직접 생성할 수는 없더라도, 가능한 클래스들을 구별하는 능력을 직접적으로 향상시키는 문서 특징들에 높은 가중치를 배정하는 법을 배우게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>판별 모델이 직접적으로 사후 확률을 모델링하며 가중치를 학습한다는 핵심적 차이를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Components of a probabilistic machine learning classifier: Like naive Bayes, logistic regression is a probabilistic classifier that makes use of supervised machine learning. Machine learning classifiers require a training corpus of m input/output pairs (x(i), y(i)). (We'll use superscripts in parentheses to refer to individual instances in the training set—for sentiment classification each instance might be an individual document to be classified). A machine learning system for classification then has four components:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 기계 학습 분류기의 구성 요소: 나이브 베이즈와 마찬가지로, 로지스틱 회귀는 지도 기계 학습을 활용하는 확률적 분류기입니다. 기계 학습 분류기는 $m$개의 입력/출력 쌍 $(x^{(i)}, y^{(i)})$으로 이루어진 학습 말뭉치를 필요로 합니다. (학습 세트의 개별 사례를 나타낼 때는 괄호 안의 첨자를 사용하겠습니다. 감성 분류의 경우 각 사례는 분류될 개별 문서가 될 수 있습니다.) 분류를 위한 기계 학습 시스템은 네 가지 구성 요소를 가집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대적 기계 학습 시스템을 구성하는 공통 프레임워크인 네 가지 요소를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. A feature representation of the input. For each input observation x(i), this will be a vector of features [x1, x2, ..., xn]. We will generally refer to feature i for input x(j) as x_i(j), but sometimes simplified as x_i, but we will also see the notation f_i, f_i(x), or, for multiclass classification, f_i(c,x).
+2. A classification function that computes y_hat, the estimated class, via p(y|x). In the next section we will introduce the sigmoid and softmax tools for classification.
+3. An objective function for learning, usually involving minimizing error on training examples. We will introduce the cross-entropy loss function.
+4. An algorithm for optimizing the objective function. We introduce the stochastic gradient descent algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 입력의 특징 표현(feature representation): 각 입력 관측치 $x^{(i)}$에 대해, 이는 특징들의 벡터 $[x_1, x_2, \dots, x_n]$이 될 것입니다. 일반적으로 입력 $x^{(j)}$의 $i$번째 특징을 $x_i^{(j)}$라고 부르겠지만, 때로는 $x_i$로 단순화하기도 하고 $f_i, f_i(x)$ 또는 다중 클래스 분류의 경우 $f_i(c,x)$와 같은 표기도 보게 될 것입니다.
+2. $p(y|x)$를 통해 추정된 클래스인 $\hat{y}$을 계산하는 분류 함수: 다음 섹션에서 분류를 위한 시그모이드(sigmoid)와 소프트맥스(softmax) 도구를 소개하겠습니다.
+3. 학습을 위한 목적 함수(objective function): 보통 학습 예제에 대한 오류를 최소화하는 것을 포함합니다. 교차 엔트로피 손실 함수(cross-entropy loss function)를 소개하겠습니다.
+4. 목적 함수를 최적화하기 위한 알고리즘: 확률적 경사 하강법(stochastic gradient descent) 알고리즘을 소개하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 학습의 4대 요소인 데이터 표현, 모델 구조, 학습 목표, 최적화 방식을 명확히 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Logistic regression has two phases:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀는 두 가지 단계를 거칩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델의 수명 주기인 학습과 테스트 단계를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>training: we train the system (specifically the weights w and b) using stochastic gradient descent and the cross-entropy loss.
+test: Given a test example x we compute p(y|x) and return the higher probability label y = 1 or y = 0.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>학습(training): 확률적 경사 하강법과 교차 엔트로피 손실을 사용하여 시스템(구체적으로는 가중치 $w$와 $b$)을 학습시킵니다.
+테스트(test): 테스트 예제 $x$가 주어지면 $p(y|x)$를 계산하고 더 높은 확률을 가진 라벨 $y=1$ 또는 $y=0$을 반환합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 시에는 가중치를 최적화하고, 테스트 시에는 학습된 가중치를 활용해 확률적 결정을 내린다는 점을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.1 Classification: the sigmoid</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.1 분류: 시그모이드(sigmoid)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 분류에서 확률 값을 도출하는 핵심 함수인 시그모이드를 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The goal of binary logistic regression is to train a classifier that can make a binary decision about the class of a new input observation. Here we introduce the sigmoid classifier that will help us make this decision.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이진 로지스틱 회귀의 목표는 새로운 입력 관측치의 클래스에 대해 이진 결정을 내릴 수 있는 분류기를 학습시키는 것입니다. 여기서는 이 결정을 내리는 데 도움을 줄 시그모이드 분류기를 소개합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시그모이드가 이진 분류에서 0과 1 사이의 확률을 제공하는 역할을 함을 암시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consider a single input observation x, which we will represent by a vector of features [x1, x2, ..., xn] (we'll show sample features in the next subsection). The classifier output y can be 1 (meaning the observation is a member of the class) or 0 (the observation is not a member of the class). We want to know the probability P(y = 1|x) that this observation is a member of the class. So perhaps the decision is "positive</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단일 입력 관측치 $x$를 고려해 봅시다. 우리는 이를 특징 벡터 $[x_1, x_2, \dots, x_n]$으로 표현할 것입니다 (다음 하위 섹션에서 특징 예시들을 보여주겠습니다). 분류기 출력 $y$는 1(해당 관측치가 클래스의 구성원임을 의미) 또는 0(클래스의 구성원이 아님을 의미)이 될 수 있습니다. 우리는 이 관측치가 클래스의 구성원일 확률 $P(y=1|x)$를 알고자 합니다. 따라서 아마도 그 결정은 "긍정 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 특징 벡터가 주어졌을 때 사후 확률을 계산하는 로지스틱 회귀의 수식적 목표를 명확히 합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

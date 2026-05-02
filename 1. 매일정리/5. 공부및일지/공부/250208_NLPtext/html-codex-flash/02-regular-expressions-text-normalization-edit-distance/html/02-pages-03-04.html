@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages 3-4 | Regular Expressions, Text Normalization, Edit Distance</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1f1b16;
+      --muted: #6f675d;
+      --line: #ddd2c2;
+      --accent: #8c5a2b;
+      --accent-soft: #f1e2cf;
+      --note-bg: #faf4ea;
+      --source-bg: #f5f3ef;
+      --translation-bg: #fff8ea;
+      --shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%),
+        linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 241, 232, 0.88);
+      border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .quick-nav,
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fcf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .meta-card dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .meta-card dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .page {
+      margin-bottom: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff8eb, #f5ead8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blocks {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fffdfa;
+    }
+
+    .block-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .block-title {
+      font-weight: 800;
+    }
+
+    .block-type {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .block-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .source,
+    .translation,
+    .note-panel {
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .source {
+      background: var(--source-bg);
+    }
+
+    .translation {
+      background: var(--translation-bg);
+    }
+
+    .note-panel {
+      background: var(--note-bg);
+    }
+
+    .source pre,
+    .translation pre,
+    .note-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: inherit;
+    }
+
+    .mono pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-toggle {
+      align-self: start;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-panel[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero,
+      .page-header,
+      .blocks,
+      .block-head,
+      .block-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="doc-meta">
+        <div class="eyebrow">02 PDF / HTML Sample</div>
+        <h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+      </div>
+      <div class="quick-nav">
+        <a class="chip" href="#page-3">Page 3</a>
+        <a class="chip" href="#page-4">Page 4</a>
+      </div>
+      <div class="actions">
+        <button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+        <button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Study Edition</div>
+      <h2>Pages 3-4 Annotated Page</h2>
+      <p>대괄호, 범위, 부정, 선택성 등 정규 표현식의 핵심 연산자들을 다룹니다.</p>
+      <div class="hero-grid">
+        <dl class="meta-card">
+          <dt>Source</dt>
+          <dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Workflow</dt>
+          <dd>html-codex-flash</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Status</dt>
+          <dd>Accepted</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="page" id="page-3">
+      <header class="page-header">
+        <h2>Page 3</h2>
+        <div class="page-subtitle">대괄호, 범위, 부정 연산자 소개</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.1 • REGULAR EXPRESSIONS 3</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.1 • 정규 표현식 3</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 섹션 번호와 제목, 그리고 페이지 번호를 나타내는 헤더입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Example Patterns Matched
+row 2: /woodchucks/ | "interesting links to woodchucks and lemurs"
+row 3: /a/ | "Mary Ann stopped by Mona's"
+row 4: /!/ | "You've left the burglar behind again!" said Nori</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식 | 일치하는 패턴 예시
+행 2: /woodchucks/ | "interesting links to woodchucks and lemurs"
+행 3: /a/ | "Mary Ann stopped by Mona's"
+행 4: /!/ | "You've left the burglar behind again!" said Nori</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 기본적인 정규 표현식 매칭 사례를 보여 줍니다. 슬래시(/) 사이에 적힌 문자열이 대상 문장에서 그대로 발견되면 일치(match)로 간주합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.1 Some simple regex searches.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.1 몇 가지 간단한 정규 표현식 검색 예시.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>위 표의 내용을 설명하는 캡션입니다. 정규 표현식(regex)을 이용한 기초적인 검색 시나리오를 정의합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>problem with the use of the square braces [ and ]. The string of characters inside the braces specifies a disjunction of characters to match. For example, Fig. 2.2 shows that the pattern /[wW]/ matches patterns containing either w or W.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>대괄호 [ 와 ] 사용 시의 문제입니다. 대괄호 안의 문자열은 일치시킬 문자들의 선택적 집합(disjunction)을 지정합니다. 예를 들어 그림 2.2는 /[wW]/ 패턴이 w 또는 W 중 하나를 포함하는 패턴과 일치함을 보여 줍니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호([])는 여러 문자 중 하나와 일치시키는 '선택적 집합' 개념을 도입합니다. 앞 페이지에서 언급된 대소문자 구분 문제를 해결하는 유용한 도구입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Match | Example Patterns
+row 2: /[wW]oodchuck/ | Woodchuck or woodchuck | "Woodchuck"
+row 3: /[abc]/ | 'a', 'b', or 'c' | "In uomini, in soldati"
+row 4: /[1234567890]/ | any digit | "plenty of 7 to 5"</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식 | 일치 대상 | 패턴 예시
+행 2: /[wW]oodchuck/ | Woodchuck 또는 woodchuck | "Woodchuck"
+행 3: /[abc]/ | 'a', 'b', 또는 'c' | "In uomini, in soldati"
+행 4: /[1234567890]/ | 임의의 한 자리 숫자 | "plenty of 7 to 5"</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호를 활용해 대소문자나 특정 문자 집합, 숫자를 찾아내는 구체적인 예시입니다. 대괄호 하나는 정확히 '문자 하나'의 자리에 대응하며, 그 자리에 올 수 있는 후보들을 나열하는 방식입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.2 The use of the brackets [] to specify a disjunction of characters.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.2 문자들의 선택적 집합을 지정하기 위한 대괄호 []의 사용.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호가 정규 표현식에서 '여러 문자 중 하나'를 선택하는 기능을 수행함을 강조하는 캡션입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The regular expression /[1234567890]/ specifies any single digit. While such classes of characters as digits or letters are important building blocks in expressions, they can get awkward (e.g., it's inconvenient to specify /[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/ to mean "any capital letter"). In cases where there is a well-defined sequence associated with a set of characters, the brackets can be used with the dash (-) to specify any one character in a range. The pattern /[2-5]/ specifies any one of the characters 2, 3, 4, or 5. The pattern /[b-g]/ specifies one of the characters b, c, d, e, f, or g. Some other examples are shown in Fig. 2.3.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>정규 표현식 /[1234567890]/은 임의의 한 자리 숫자를 지정합니다. 숫자나 문자와 같은 문자 클래스는 표현식을 구성하는 중요한 요소이지만, 때로는 작성하기 번거로울 수 있습니다. (예를 들어, "임의의 대문자 하나"를 나타내기 위해 /[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/라고 일일이 쓰는 것은 불편합니다.) 문자 집합에 잘 정의된 순서가 있는 경우, 대괄호 안에 대시(-)를 사용하여 범위 내의 임의의 한 문자를 지정할 수 있습니다. /[2-5]/ 패턴은 2, 3, 4, 5 중 하나를 의미하며, /[b-g]/ 패턴은 b, c, d, e, f, g 중 하나를 의미합니다. 그림 2.3에서 다른 예시들을 볼 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>문자를 일일이 나열하는 대신 대시(-) 기호를 사용해 '범위(range)'를 지정하는 효율적인 문법을 소개합니다. 알파벳이나 숫자는 순서가 정해져 있어 이 방식이 특히 유용합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>range</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>범위</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호 안에서 대시(-)를 사용해 지정하는 문자 범위를 가리키는 핵심 용어입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Match | Example Patterns Matched
+row 2: /[A-Z]/ | an upper case letter | "we should call it 'Drenched Blossoms' "
+row 3: /[a-z]/ | a lower case letter | "my beans were impatient to be hoed!"
+row 4: /[0-9]/ | a single digit | "Chapter 1: Down the Rabbit Hole"</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식 | 일치 대상 | 일치하는 패턴 예시
+행 2: /[A-Z]/ | 대문자 하나 | "we should call it 'Drenched Blossoms' "
+행 3: /[a-z]/ | 소문자 하나 | "my beans were impatient to be hoed!"
+행 4: /[0-9]/ | 임의의 한 자리 숫자 | "Chapter 1: Down the Rabbit Hole"</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대문자 전체, 소문자 전체, 숫자 전체를 범위를 활용해 지정하는 가장 흔한 정규 표현식 패턴들입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.3 The use of the brackets [] plus the dash - to specify a range.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.3 범위를 지정하기 위한 대괄호 []와 대시 -의 사용.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호와 대시의 조합을 통해 넓은 범위의 문자 집합을 간결하게 표현하는 원리를 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The square braces can also be used to specify what a single character cannot be, by use of the caret ^. If the caret ^ is the first symbol after the open square brace [, the resulting character class is negated. For example, the pattern /[^a]/ matches any single character (including special characters) except a. This is only true when the caret is the first symbol after the open square brace. If it occurs anywhere else, it usually stands for a caret; Fig. 2.4 shows some examples.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>대괄호는 캐럿(^) 기호를 사용하여 단일 문자가 될 수 없는 대상을 지정하는 데에도 쓰일 수 있습니다. 캐럿(^)이 여는 대괄호([) 바로 다음의 첫 번째 기호로 오면, 그 결과로 나타나는 문자 클래스는 부정(negated)됩니다. 예를 들어 /[^a]/ 패턴은 a를 제외한 모든 단일 문자(특수 문자 포함)와 일치합니다. 이는 오직 캐럿이 여는 대괄호 바로 다음의 첫 번째 기호일 때만 해당합니다. 그 외의 위치에 캐럿이 나타나면 대개 단순한 캐럿 기호 자체를 의미합니다. 그림 2.4에 몇 가지 예시가 나와 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>캐럿(^) 기호의 위치에 따른 중의적 의미를 설명합니다. 대괄호 시작 직후에 오면 '부정'의 의미를 갖지만, 다른 곳에서는 단순 문자로 취급된다는 점이 핵심입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 12</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Match (single characters) | Example Patterns Matched
+row 2: /[^A-Z]/ | not an upper case letter | "Oyfn pripetchik"
+row 3: /[^Ss]/ | neither 'S' nor 's' | "I have no exquisite reason for't"
+row 4: /[^\.]/ | not a period | "our resident Djinn"
+row 5: /[e^]/ | either 'e' or '^' | "look up ^ now"
+row 6: /a^b/ | the pattern 'a^b' | "look up a^b now"</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식 | 일치 대상 (단일 문자) | 일치하는 패턴 예시
+행 2: /[^A-Z]/ | 대문자가 아님 | "Oyfn pripetchik"
+행 3: /[^Ss]/ | 'S'도 's'도 아님 | "I have no exquisite reason for't"
+행 4: /[^\.]/ | 마침표가 아님 | "our resident Djinn"
+행 5: /[e^]/ | 'e' 또는 '^' | "look up ^ now"
+행 6: /a^b/ | 패턴 'a^b' | "look up a^b now"</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>부정(negation) 기법의 구체적인 매칭 사례를 보여 줍니다. 특히 마침표를 제외하거나, 캐럿 기호 자체가 문자로 쓰이는 경우의 차이를 확인해야 합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 13</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.4 The caret ^ for negation or just to mean ^. See below re: the backslash for escaping the period.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.4 부정을 의미하거나 단순한 ^를 의미하는 캐럿 ^. 마침표를 이스케이프하기 위한 백슬래시에 대해서는 아래를 참조하십시오.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>캐럿 기호의 두 가지 용도를 정리한 캡션입니다. 마침표(.)를 일반 문자로 인식시키기 위한 백슬래시(\) 사용법을 예고하고 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 14</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>How can we talk about optional elements, like an optional s in woodchuck and woodchucks? We can't use the square brackets, because while they allow us to say "s or S", they don't allow us to say "s or nothing". For this we use the question mark /?/, which means "the preceding character or nothing", as shown in Fig. 2.5.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>woodchuck과 woodchucks의 사례처럼 선택적인 s와 같은 요소를 어떻게 표현할 수 있을까요? 대괄호는 "s 또는 S"는 표현할 수 있게 해 주지만 "s 또는 없음"을 표현할 수는 없기에 이 경우에는 사용할 수 없습니다. 이를 위해 "앞선 문자가 나타나거나 혹은 나타나지 않음"을 뜻하는 물음표 /?/를 사용하며, 그림 2.5에서 그 사례를 보여 줍니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>선택성(optionality)을 다루는 메타 문자인 물음표(?)를 소개합니다. 대괄호로 해결할 수 없는 '존재하거나 존재하지 않음'의 문제를 해결하는 도구입니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-4">
+      <header class="page-header">
+        <h2>Page 4</h2>
+        <div class="page-subtitle">물음표와 클레이니 별표 소개</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>4 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 장 제목과 페이지 번호 정보입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Match | Example Patterns Matched
+row 2: /woodchucks?/ | woodchuck or woodchucks | "woodchuck"
+row 3: /colou?r/ | color or colour | "color"</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식 | 일치 대상 | 일치하는 패턴 예시
+행 2: /woodchucks?/ | woodchuck 또는 woodchucks | "woodchuck"
+행 3: /colou?r/ | color 또는 colour | "color"</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>물음표(?)가 어떻게 바로 앞의 문자를 선택적으로 만드는지 보여 줍니다. 철자 차이를 하나의 패턴으로 처리하는 유용한 방식입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.5 The question mark ? marks optionality of the previous expression.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.5 물음표 ?는 앞선 표현의 선택성(optionality)을 표시합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>물음표의 주요 기능을 '선택성 표시'로 정의하고 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>We can think of the question mark as meaning "zero or one instances of the previous character". That is, it's a way of specifying how many of something that we want, something that is very important in regular expressions. For example, consider the language of certain sheep, which consists of strings that look like the following:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>우리는 물음표를 "앞선 문자가 0번 또는 1번 나타남"을 의미한다고 생각할 수 있습니다. 즉, 이는 우리가 원하는 요소가 몇 번 나타나야 하는지를 지정하는 방식이며, 정규 표현식에서 매우 중요한 개념입니다. 예를 들어 다음과 같은 형식의 문자열로 구성된 어떤 '양들의 언어'를 가정해 봅시다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>물음표를 수량자(quantifier) 관점에서 설명합니다. '0 또는 1'이라는 정의가 이후 등장할 별표(*)나 플러스(+) 기호와 대조되는 지점입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>baa!
+baaa!
+baaaa!
+baaaaa!
+...</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>baa!
+baaa!
+baaaa!
+baaaaa!
+...</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 문자가 반복되는 패턴을 시각적으로 보여 주는 예시 목록입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Kleene *</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>클레이니 별표(Kleene *)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>미국의 수학자 스티븐 클레이니의 이름을 딴 반복 연산자 키워드입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>This language consists of strings with a b, followed by at least two a's, followed by an exclamation point. The set of operators that allows us to say things like "some number of as" are based on the asterisk or *, commonly called the Kleene * (generally pronounced "cleany star"). The Kleene star means "zero or more occurrences of the immediately previous character or regular expression". So /a*/ means "any string of zero or more as". This will match a or aaaaaa, but it will also match Off Minor since the string Off Minor has zero a's. So the regular expression for matching one or more a is /aa*/, meaning one a followed by zero or more as. More complex patterns can also be repeated. So /[ab]*/ means "zero or more a's or b's" (not "zero or more right square braces"). This will match strings like aaaa or ababab or bbbb.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 언어는 b 다음에 적어도 두 개의 a가 오고, 그 뒤에 느낌표가 오는 문자열들로 이루어져 있습니다. "어떤 수의 a들" 같은 표현을 가능하게 해 주는 연산자 집합은 별표, 즉 보통 클레이니 별표(Kleene *)라고 불리는 기호 *에 기반합니다. 클레이니 별표는 "바로 앞의 문자 또는 정규 표현식이 0번 이상 나타남"을 뜻합니다. 따라서 /a*/는 "a가 0번 이상 나타나는 임의의 문자열"을 의미합니다. 이것은 a나 aaaaaa와 일치할 뿐 아니라, Off Minor처럼 a가 0개인 문자열과도 일치합니다. 따라서 하나 이상의 a와 일치하는 정규 표현식은 /aa*/이며, 이는 a 하나 다음에 0개 이상의 a가 오는 형태를 뜻합니다. 더 복잡한 패턴도 반복될 수 있습니다. 따라서 /[ab]*/는 "a 또는 b가 0번 이상 나타남"을 의미합니다("오른쪽 대괄호가 0번 이상 나타남"이라는 뜻이 아닙니다). 이 표현은 aaaa, ababab, bbbb 같은 문자열과 일치합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>클레이니 별표(*)는 반복을 표현하는 가장 핵심적인 수량자입니다. 특히 0번도 허용한다는 점 때문에, 해당 문자가 전혀 없는 문자열과도 일치할 수 있다는 점을 꼭 기억해야 합니다. 또한 `[ab]*`처럼 문자 집합과 결합하면 복합적인 반복 패턴을 간단하게 표현할 수 있습니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+    function setPanelState(toggle, expanded) {
+      const panel = toggle.nextElementSibling;
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+      panel.hidden = !expanded;
+    }
+
+    toggles.forEach((toggle) => {
+      setPanelState(toggle, false);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setPanelState(toggle, !expanded);
+      });
+    });
+
+    document.querySelector("[data-expand-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, true));
+    });
+
+    document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, false));
+    });
+  </script>
+</body>
+</html>

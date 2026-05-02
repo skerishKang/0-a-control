@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">유의어, 유사도, 관련성</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.1 • LEXICAL SEMANTICS 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.1 • 어휘 의미론 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>couch/sofa vomit/throw up filbert/hazelnut car/automobile</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>소파(couch/sofa) 구토하다(vomit/throw up) 개암(filbert/hazelnut) 자동차(car/automobile)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>[이전 페이지에서 계속] 다양한 장르나 어감의 차이가 있지만 의미가 거의 같은 유의어 쌍들의 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A more formal definition of synonymy (between words rather than senses) is that two words are synonymous if they are substitutable for one another in any sentence without changing the truth conditions of the sentence, the situations in which the sentence would be true. We often say in this case that the two words have the same propositional meaning.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(의미 단위가 아닌 단어 간의) 유의 관계에 대한 더 형식적인 정의는, 어떤 문장에서 두 단어를 서로 바꾸어 넣어도 그 문장의 진리 조건(truth conditions), 즉 문장이 참이 되는 상황이 변하지 않는다면 두 단어는 유의어라는 것입니다. 이 경우 우리는 두 단어가 동일한 명제적 의미(propositional meaning)를 갖는다고 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>논리학과 언어학적 관점에서 유의어의 엄밀한 정의를 제시합니다. 핵심은 '진리값의 보존'입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>propositional meaning</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명제적 의미(propositional meaning)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장이 나타내는 사실적 정보의 핵심 내용입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While substitutions between some pairs of words like car / automobile or water / H2O are truth preserving, the words are still not identical in meaning. Indeed, probably no two words are absolutely identical in meaning. One of the fundamental tenets of semantics, called the principle of contrast (Girard 1718, Bréal 1897, Clark 1987), states that a difference in linguistic form is always associated with some difference in meaning. For example, the word H2O is used in scientific contexts and would be inappropriate in a hiking guide—water would be more appropriate— and this genre difference is part of the meaning of the word. In practice, the word synonym is therefore used to describe a relationship of approximate or rough synonymy.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>car / automobile이나 water / H2O 같은 일부 단어 쌍들 사이의 교체가 진리를 보존하더라도, 그 단어들의 의미가 완전히 동일한 것은 아닙니다. 실제로 세상에 의미가 절대적으로 동일한 두 단어는 아마 없을 것입니다. 대조 원리(principle of contrast)라 불리는 의미론의 기본 원칙 중 하나(Girard 1718, Bréal 1897, Clark 1987)는 언어적 형태의 차이는 항상 어떤 의미의 차이와 연관되어 있다고 명시합니다. 예를 들어, H2O라는 단어는 과학적 문맥에서 사용되며 하이킹 가이드북에서는 부적절할 것입니다. 거기서는 water가 더 적절하겠지요. 이러한 장르적 차이 또한 단어 의미의 일부입니다. 따라서 실제로는 유의어(synonym)라는 용어가 대략적이거나 대강의 유의 관계를 설명하는 데 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'완벽한 유의어는 없다'는 대조 원리를 설명합니다. 사용 맥락이나 장르적 차이 또한 의미의 일부로 간주됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>principle of contrast</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대조 원리(principle of contrast)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어적 형태가 다르면 의미도 반드시 다르다는 원리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Word Similarity While words don't have many synonyms, most words do have lots of similar words. Cat is not a synonym of dog, but cats and dogs are certainly similar words. In moving from synonymy to similarity, it will be useful to shift from talking about relations between word senses (like synonymy) to relations between words (like similarity). Dealing with words avoids having to commit to a particular representation of word senses, which will turn out to simplify our task.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 유사도 단어에 유의어가 많지는 않겠지만, 대부분의 단어에는 수많은 유사한(similar) 단어들이 있습니다. cat은 dog의 유의어가 아니지만, 고양이와 개는 분명히 유사한 단어들입니다. 유의 관계에서 유사도로 넘어가면서, (유의 관계처럼) 단어 의미(senses) 간의 관계를 이야기하는 것에서 (유사도처럼) 단어 간의 관계를 이야기하는 것으로 전환하는 것이 유용할 것입니다. 단어를 직접 다룸으로써 단어 의미를 어떻게 표현할지에 대한 특정 방식에 얽매이지 않게 되며, 이는 우리의 작업을 단순화해 줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>엄격한 유의 관계보다 더 넓은 개념인 '유사도'의 개념과, 단어 의미보다 단어 자체를 처리하는 공학적 이점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>similarity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유사도(similarity)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 단어가 얼마나 의미적으로 가까운지를 나타내는 정도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The notion of word similarity is very useful in larger semantic tasks. Knowing how similar two words are can help in computing how similar the meaning of two phrases or sentences are, a very important component of tasks like question answering, paraphrasing, and summarization. One way of getting values for word similarity is to ask humans to judge how similar one word is to another. A number of datasets have resulted from such experiments. For example the SimLex-999 dataset (Hill et al., 2015) gives values on a scale from 0 to 10, like the examples below, which range from near-synonyms (vanish, disappear) to pairs that scarcely seem to have anything in common (hole, agreement):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 유사도 개념은 더 큰 의미론적 작업들에서 매우 유용합니다. 두 단어가 얼마나 유사한지 아는 것은 두 구절이나 문장의 의미가 얼마나 유사한지를 계산하는 데 도움이 되며, 이는 질의응답, 패러프레이징(말바꿔쓰기), 요약과 같은 작업의 매우 중요한 구성 요소입니다. 단어 유사도 값을 얻는 한 가지 방법은 인간에게 한 단어가 다른 단어와 얼마나 유사한지 판단해 달라고 요청하는 것입니다. 이러한 실험을 통해 많은 데이터셋이 만들어졌습니다. 예를 들어 SimLex-999 데이터셋(Hill et al., 2015)은 아래 예시처럼 유의어에 가까운 것(vanish, disappear)부터 공통점이 거의 없어 보이는 쌍(hole, agreement)까지 0에서 10 사이의 척도로 값을 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 유사도가 NLP의 상위 작업들에 미치는 영향과, 이를 정량화하기 위한 인간 평가 기반 데이터셋을 예로 듭니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Word 1 | Word 2 | Score |
+|---|---|---|
+| vanish | disappear | 9.8 |
+| belief | impression | 5.95 |
+| muscle | bone | 3.65 |
+| modest | flexible | 0.98 |
+| hole | agreement | 0.3 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 단어 1 | 단어 2 | 점수 |
+|---|---|---|
+| vanish | disappear | 9.8 |
+| belief | impression | 5.95 |
+| muscle | bone | 3.65 |
+| modest | flexible | 0.98 |
+| hole | agreement | 0.3 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>SimLex-999 데이터셋의 예시 값들입니다. 점수가 높을수록 의미적 유사도가 높음을 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Word Relatedness The meaning of two words can be related in ways other than similarity. One such class of connections is called word relatedness (Budanitsky and Hirst, 2006), also traditionally called word association in psychology.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 관련성 두 단어의 의미는 유사도 이외의 방식으로도 관련될 수 있습니다. 이러한 연결 범주 중 하나를 단어 관련성(word relatedness)(Budanitsky and Hirst, 2006)이라 부르며, 심리학에서는 전통적으로 단어 연상(word association)이라고 불렀습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유사도와는 다른 차원의 연결인 '관련성'을 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+relatedness
+association</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>관련성(relatedness)
+연상(association)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유사도보다 포괄적인 개념으로, 공유하는 문맥이나 주제가 있는 경우를 포함합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consider the meanings of the words coffee and cup. Coffee is not similar to cup; they share practically no features (coffee is a plant or a beverage, while a cup is a manufactured object with a particular shape). But coffee and cup are clearly related; they are associated by co-participating in an everyday event (the event of drinking coffee out of a cup). Similarly scalpel and surgeon are not similar but are related eventively (a surgeon tends to make use of a scalpel).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>coffee와 cup의 의미를 생각해 보십시오. 커피는 컵과 유사하지 않습니다. 두 단어는 실제적인 특징들을 거의 공유하지 않습니다(커피는 식물이나 음료인 반면, 컵은 특정 모양을 가진 가공된 물건입니다). 하지만 커피와 컵은 분명히 관련되어 있습니다. 이들은 일상적인 사건(컵으로 커피를 마시는 사건)에 함께 참여함으로써 연관됩니다. 마찬가지로 메스(scalpel)와 외과의(surgeon)는 유사하지 않지만, 사건적으로 관련되어 있습니다(외과의는 메스를 사용하는 경향이 있습니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유사도(비슷한 특징 공유)와 관련성(같은 사건에 등장)의 차이를 명확한 예시로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One common kind of relatedness between words is if they belong to the same semantic field. A semantic field is a set of words which cover a particular semantic domain and bear structured relations with each other. For example, words might be related by being in the semantic field of hospitals (surgeon, scalpel, nurse, anesthetic, hospital), restaurants (waiter, menu, plate, food, chef), or houses (door, roof,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어들 사이의 흔한 관련성 유형 중 하나는 같은 의미장(semantic field)에 속하는 경우입니다. 의미장이란 특정 의미 영역을 포괄하며 서로 구조적인 관계를 맺고 있는 단어들의 집합입니다. 예를 들어, 병원(외과의, 메스, 간호사, 마취제, 병원), 식당(웨이터, 메뉴, 접시, 음식, 요리사), 또는 집(문, 지붕, [다음 페이지에서 계속])이라는 의미장에 속함으로써 단어들이 관련될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 도메인이나 상황을 구성하는 단어들의 묶음인 '의미장'에 의한 관련성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>semantic field</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>의미장(semantic field)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공통된 주제나 도메인을 공유하는 단어 군집입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">의미장, 프레임, 함축 의미</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>kitchen, family, bed). Semantic fields are also related to topic models, like Latent Dirichlet Allocation, LDA, which apply unsupervised learning on large sets of texts to induce sets of associated words from text. Semantic fields and topic models are very useful tools for discovering topical structure in documents.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 주방, 가족, 침대). 의미장은 대량의 텍스트 세트에 비지도 학습을 적용하여 텍스트로부터 연관된 단어 집합을 유도하는 잠재 디리클레 할당(Latent Dirichlet Allocation, LDA)과 같은 주제 모델(topic models)과도 관련이 있습니다. 의미장과 주제 모델은 문서 내에서 주제 구조(topical structure)를 발견하는 데 매우 유용한 도구입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어학의 의미장 개념을 컴퓨터 과학의 '주제 모델링(Topic Modeling)'으로 연결하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>topic models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>주제 모델(topic models)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대량의 문서에서 공통적으로 나타나는 주제들을 통계적으로 추출해내는 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In Chapter 18 we'll introduce more relations between senses like hypernymy or IS-A, antonymy (opposites) and meronymy (part-whole relations).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18장에서는 상위어(hypernymy, IS-A 관계), 반의 관계(antonymy, 반대어), 그리고 부분어 관계(meronymy, 부분-전체 관계)와 같은 의미(senses) 간의 더 많은 관계들을 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>18장에서 다룰 더 구체적인 어휘 관계들을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Semantic Frames and Roles Closely related to semantic fields is the idea of a semantic frame. A semantic frame is a set of words that denote perspectives or participants in a particular type of event. A commercial transaction, for example, is a kind of event in which one entity trades money to another entity in return for some good or service, after which the good changes hands or perhaps the service is performed. This event can be encoded lexically by using verbs like buy (the event from the perspective of the buyer), sell (from the perspective of the seller), pay (focusing on the monetary aspect), or nouns like buyer. Frames have semantic roles (like buyer, seller, goods, money), and words in a sentence can take on these roles.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>의미 프레임과 역할 의미장과 밀접하게 관련된 것이 의미 프레임(semantic frame)이라는 아이디어입니다. 의미 프레임은 특정 유형의 사건에서 관점이나 참여자를 나타내는 단어들의 집합입니다. 예를 들어 상업적 거래(commercial transaction)는 한 주체가 다른 주체에게 재화나 서비스를 대가로 돈을 지불하고, 그 후 재화가 전달되거나 서비스가 수행되는 일종의 사건입니다. 이 사건은 buy(구매자의 관점에서의 사건), sell(판매자의 관점), pay(금전적 측면에 집중), 또는 buyer와 같은 명사를 사용하는 어휘적 방식으로 인코딩될 수 있습니다. 프레임에는 의미 역할(semantic roles)(구매자, 판매자, 상품, 돈 등)이 있으며, 문장 속의 단어들은 이러한 역할을 맡을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 단어 관계를 넘어 특정 '사건'을 중심으로 그 구성 요소와 각 단어의 관점을 정의하는 '프레임' 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>semantic frame</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>의미 프레임(semantic frame)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사건을 구성하는 참여자들과 정해진 관점들의 체계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Knowing that buy and sell have this relation makes it possible for a system to know that a sentence like Sam bought the book from Ling could be paraphrased as Ling sold the book to Sam, and that Sam has the role of the buyer in the frame and Ling the seller. Being able to recognize such paraphrases is important for question answering, and can help in shifting perspective for machine translation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>buy와 sell이 이러한 관계를 가지고 있다는 것을 아는 것은, 시스템이 "Sam은 Ling으로부터 책을 샀다"는 문장을 "Ling은 Sam에게 책을 팔았다"로 말바꿔쓰기(paraphrase)할 수 있다는 것과, 이 프레임에서 Sam이 구매자 역할을, Ling이 판매자 역할을 한다는 것을 알 수 있게 해줍니다. 이러한 패러프레이즈를 인식할 수 있는 능력은 질의응답 시스템에서 중요하며, 기계 번역에서 관점을 전환하는 데 도움을 줄 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임 기반 지식이 어떻게 실제 NLP 엔진에서 문장을 변환하거나 정보를 추출하는 데 기여하는지 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Connotation Finally, words have affective meanings or connotations. The word connotation has different meanings in different fields, but here we use it to mean the aspects of a word's meaning that are related to a writer or reader's emotions, sentiment, opinions, or evaluations. For example some words have positive connotations (happy) while others have negative connotations (sad). Even words whose meanings are similar in other ways can vary in connotation; consider the difference in connotations between fake, knockoff, forgery, on the one hand, and copy, replica, reproduction, on the other, or innocent (positive connotation) and naive (negative connotation). Some words describe positive evaluation (great, love) and others negative evaluation (terrible, hate). Positive or negative evaluation language is called sentiment, as we saw in Chapter 4, and word sentiment plays a role in important tasks like sentiment analysis, stance detection, and applications of NLP to the language of politics and consumer reviews.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>함축 의미 마지막으로, 단어들은 정서적인 의미나 함축 의미(connotations)를 가집니다. '함축 의미'라는 용어는 분야마다 다른 의미를 갖지만, 여기서는 필자나 독자의 감정, 감성, 의견 또는 평가와 관련된 단어 의미의 측면을 나타내는 데 사용합니다. 예를 들어 어떤 단어들은 긍정적인 함축 의미(happy)를 갖는 반면 다른 단어들은 부정적인 함축 의미(sad)를 갖습니다. 다른 면에서는 의미가 유사한 단어들조차 함축 의미에서는 다를 수 있습니다. 한쪽의 fake, knockoff, forgery와 다른 쪽의 copy, replica, reproduction 사이의 함축 의미 차이나, innocent(긍정적 함축)와 naive(부정적 함축) 사이의 차이를 생각해 보십시오. 어떤 단어들은 긍정적인 평가(great, love)를 나타내고 다른 단어들은 부정적인 평가(terrible, hate)를 나타냅니다. 4장에서 보았듯이 긍정적 또는 부정적 평가를 담은 언어를 감성(sentiment)이라고 하며, 단어의 감성은 감성 분석, 입장 탐지(stance detection), 그리고 정치 및 소비자 리뷰 언어에 대한 NLP 적용과 같은 중요한 작업에서 큰 역할을 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>객관적 의미 이면에 담긴 정서적 여운과 평가적 요소를 의미하는 '함축 의미'와 '감성'의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>connotations</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>함축 의미(connotations / affective meaning)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어가 주는 감정적, 평가적 분위기입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sentiment</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>감성(sentiment)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>발화자의 긍정적 혹은 부정적 평가 태도를 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Early work on affective meaning (Osgood et al., 1957) found that words varied along three important dimensions of affective meaning:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정서적 의미에 대한 초기 연구(Osgood et al., 1957)는 단어들이 정서적 의미의 세 가지 중요한 차원을 따라 변화한다는 점을 발견했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정서적 의미를 수치화하기 위한 고전적인 3차원 모델을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>valence: the pleasantness of the stimulus
+arousal: the intensity of emotion provoked by the stimulus
+dominance: the degree of control exerted by the stimulus</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정서가(valence): 자극의 즐거움 정도
+각성(arousal): 자극에 의해 유발되는 감정의 강도
+지배성(dominance): 자극에 의해 발휘되는 통제력의 정도</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>VAD 모델이라고도 불리는 정서 분석의 핵심 지표들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus words like happy or satisfied are high on valence, while unhappy or annoyed are low on valence. Excited is high on arousal, while calm is low on arousal. Controlling is high on dominance, while awed or influenced are low on dominance. Each word is thus represented by three numbers, corresponding to its value on each of the three dimensions:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 happy나 satisfied 같은 단어들은 정서가(valence)가 높고, unhappy나 annoyed는 정서가가 낮습니다. Excited는 각성(arousal)이 높고, calm은 각성이 낮습니다. Controlling은 지배성(dominance)이 높으며, awed나 influenced는 지배성이 낮습니다. 이처럼 각 단어는 세 가지 차원의 값에 해당하는 세 개의 숫자로 표현됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 정서적 특성을 3차원 벡터로 표현할 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | Valence | Arousal | Dominance |
+|---|---|---|---|
+| courageous | 8.05 | 5.5 | 7.38 |
+| music | 7.67 | 5.57 | 6.5 |
+| heartbreak | 2.45 | 5.65 | 3.58 |
+| cub | 6.71 | 3.95 | 4.24 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 정서가(Valence) | 각성(Arousal) | 지배성(Dominance) |
+|---|---|---|---|
+| courageous | 8.05 | 5.5 | 7.38 |
+| music | 7.67 | 5.57 | 6.5 |
+| heartbreak | 2.45 | 5.65 | 3.58 |
+| cub | 6.71 | 3.95 | 4.24 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 단어들에 대한 VAD 점수 예시입니다. 단어의 정서적 뉘앙스가 수치로 변환되는 방식을 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 27-28 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; }
+th { background: var(--source-bg); font-weight: 700; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-27">Page 27</a>
+<a class="chip" href="#page-28">Page 28</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 27-28 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Regenerated from MD</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-27">
+<header class="page-header">
+<h2>Page 27</h2>
+<div class="page-subtitle">ACUTE-EVAL 및 작업 기반 대화 평가</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>evaluation in which annotators look at two separate human-computer conversations (A and B) and choose the one in which the dialogue system participant performed better (interface shown in Fig. 24.19). They answer the following 4 questions (with these particular wordings shown to lead to high agreement):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어노테이터가 두 개의 개별적인 인간-컴퓨터 대화(A와 B)를 보고 대화 시스템 참여자가 더 잘 수행한 것을 선택하는 평가입니다(인터페이스는 그림 24.19에 표시됨). 그들은 다음과 같은 4가지 질문에 답합니다(이 특정 문구들은 높은 일치도를 이끌어내는 것으로 나타났습니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Procedure for observer evaluation using side-by-side comparison.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Engagingness Who would you prefer to talk to for a long conversation?
+Interestingness If you had to say one of these speakers is interesting and one is boring, who would you say is more interesting?
+Humanness Which speaker sounds more human?
+Knowledgeable If you had to say that one speaker is more knowledgeable and one is ignorant, who would you say is more knowledgeable?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Engagingness(매력도) 긴 대화를 위해 누구와 대화하는 것을 선호하십니까?
+Interestingness(흥미도) 이 화자 중 한 명은 흥미롭고 한 명은 지루하다고 해야 한다면, 누가 더 흥미롭다고 하시겠습니까?
+Humanness(인간다움) 어떤 화자가 더 인간처럼 들립니까?
+Knowledgeable(해박함) 한 화자가 더 지루하고 한 화자가 무지하다고 해야 한다면, 누가 더 해박하다고 하시겠습니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key questions in the ACUTE-EVAL method.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.19 The ACUTE-EVAL method asks annotators to compare two dialogues and choose between Speaker 1 (light blue) and Speaker 2 (dark blue), independent of the gray speaker. Figure from Li et al. (2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.19 ACUTE-EVAL 방법은 어노테이터에게 두 대화를 비교하고 회색 화자와 무관하게 화자 1(하늘색)과 화자 2(진한 파란색) 중 하나를 선택하도록 요청합니다. Li 등(2019)의 그림.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Visual representation of the ACUTE-EVAL interface.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Automatic evaluations are generally not used for chatbots. That's because computational measures of generation performance like BLEU or ROUGE or embedding dot products between a chatbot's response and a human response correlate very poorly with human judgments (Liu et al., 2016). These methods perform poorly because there are so many possible responses to any given turn; simple word-overlap or semantic similarity metrics work best when the space of responses is small and lexically overlapping, which is true of generation tasks like machine translation or possibly summarization, but definitely not dialogue.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자동 평가는 일반적으로 챗봇에 사용되지 않습니다. 이는 BLEU나 ROUGE와 같은 생성 성능의 계산 지표나 챗봇의 응답과 인간의 응답 간의 임베딩 내적이 인간의 판단과 매우 낮은 상관관계를 보이기 때문입니다(Liu 등, 2016). 이러한 방법들은 주어진 턴에 대해 가능한 응답이 너무 많기 때문에 성능이 저하됩니다. 단순한 단어 중복이나 의미적 유사성 지표는 응답 공간이 작고 어휘적으로 중복될 때 가장 잘 작동하며, 이는 기계 번역이나 요약과 같은 생성 작업에는 해당되지만 대화에는 확실히 해당되지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Why automatic metrics like BLEU are unsuitable for evaluating chatbots.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>However, research continues in ways to do more sophisticated automatic evaluations that go beyond word similarity. One novel paradigm is adversarial evaluation (Bowman et al. 2016, Kannan and Vinyals 2016, Li et al. 2017), inspired by</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 단어 유사성을 넘어선 더 정교한 자동 평가를 수행하는 방법에 대한 연구는 계속되고 있습니다. 한 가지 새로운 패러다임은...에서 영감을 받은 적대적 평가(adversarial evaluation)입니다(Bowman 등 2016, Kannan 및 Vinyals 2016, Li 등 2017).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to adversarial evaluation for chatbots.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>adversarial evaluation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>적대적 평가</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-28">
+<header class="page-header">
+<h2>Page 28</h2>
+<div class="page-subtitle">작업 기반 대화 평가 및 슬롯 오류율</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>the Turing test. The idea is to train a "Turing-like" evaluator classifier to distinguish between human-generated responses and machine-generated responses. The more successful a response generation system is at fooling this evaluator, the better the system.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>튜링 테스트. 아이디어는 인간이 생성한 응답과 기계가 생성한 응답을 구별하도록 "튜링과 유사한" 평가자 분류기를 훈련시키는 것입니다. 응답 생성 시스템이 이 평가자를 더 성공적으로 속일수록 더 좋은 시스템입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Core concept of adversarial evaluation based on the Turing test.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.5.2 Evaluating Task-Based Dialogue</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.5.2 작업 기반 대화 평가</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Evaluation methods for task-oriented systems.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For task-based dialogue, if the task is unambiguous, we can simply measure absolute task success (did the system book the right plane flight, or put the right event on the calendar).
+To get a more fine-grained idea of user happiness, we can compute a user satisfaction rating, having users interact with a dialogue system to perform a task and then having them complete a questionnaire. For example, Fig. 24.20 shows sample multiple-choice questions (Walker et al., 2001); responses are mapped into the range of 1 to 5, and then averaged over all questions to get a total user satisfaction rating.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>작업 기반 대화의 경우, 작업이 명확하다면 단순히 절대적인 작업 성공 여부(시스템이 올바른 항공편을 예약했는지, 또는 캘린더에 올바른 일정을 입력했는지)를 측정할 수 있습니다.
+사용자의 행복도에 대해 더 세밀한 아이디어를 얻기 위해 사용자가 작업을 수행하기 위해 대화 시스템과 상호 작용한 다음 설문지를 작성하게 하여 사용자 만족도 등급을 계산할 수 있습니다. 예를 들어, 그림 24.20은 샘플 객관식 질문을 보여줍니다(Walker 등, 2001). 응답은 1에서 5까지의 범위로 매핑된 다음 모든 질문에 대해 평균을 내어 총 사용자 만족도 등급을 얻습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Measuring task success and user satisfaction in task-based systems.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | |
+|---|---|
+| TTS Performance | Was the system easy to understand ? |
+| ASR Performance | Did the system understand what you said? |
+| Task Ease | Was it easy to find the message/flight/train you wanted? |
+| Interaction Pace | Was the pace of interaction with the system appropriate? |
+| User Expertise | Did you know what you could say at each point? |
+| System Response | How often was the system sluggish and slow to reply to you? |
+| Expected Behavior | Did the system work the way you expected it to? |
+| Future Use | Do you think you'd use the system in the future? |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| | |
+|---|---|
+| TTS 성능 | 시스템을 이해하기 쉬웠나요? |
+| ASR 성능 | 시스템이 당신이 말한 것을 이해했나요? |
+| 작업 용이성 | 원하는 메시지/항공편/기차를 찾기 쉬웠나요? |
+| 상호 작용 속도 | 시스템과의 상호 작용 속도가 적절했나요? |
+| 사용자 전문성 | 각 시점에서 무엇을 말할 수 있는지 알았나요? |
+| 시스템 응답 | 시스템이 당신에게 응답하는 데 얼마나 자주 느리고 더뎌나요? |
+| 기대 행동 | 시스템이 당신이 기대한 대로 작동했나요? |
+| 향후 이용 | 향후에도 이 시스템을 이용할 이상이 있나요? |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Criteria for user satisfaction surveys in dialogue systems.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.20 User satisfaction survey, adapted from Walker et al. (2001).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.20 사용자 만족도 설문조사, Walker 등(2001)에서 각색.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example survey questions for measuring user satisfaction.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It is often economically infeasible to run complete user satisfaction studies after every change in a system. For this reason, it is useful to have performance evaluation heuristics that correlate well with human satisfaction. A number of such factors and heuristics have been studied, often grouped into two kinds of criteria: how well the system allows users to accomplish their goals (maximizing task success) with the fewest problems (minimizing costs):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시스템을 변경할 때마다 전체 사용자 만족도 연구를 수행하는 것은 종종 경제적으로 불가능합니다. 이러한 이유로 인간의 만족도와 잘 상관되는 성능 평가 휴리스틱을 갖는 것이 유용합니다. 이러한 요인과 휴리스틱이 다수 연구되었으며, 종종 두 가지 종류의 기준으로 그룹화됩니다. 시스템이 사용자로 하여금 최소한의 문제(비용 최소화)로 목표를 얼마나 잘 달성(작업 성공 최대화)하게 하는가입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Using heuristics to estimate user satisfaction without full studies.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Task completion success: Task success can be measured by evaluating the correctness of the total solution. For a frame-based architecture, this might be slot error rate, the percentage of slots that were filled with the correct values:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>작업 완료 성공: 작업 성공은 전체 솔루션의 정확성을 평가하여 측정할 수 있습니다. 프레임 기반 아키텍처의 경우, 이는 올바른 값으로 채워진 슬롯의 비율인 슬롯 오류율일 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Measuring task completion success via slot error rate.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Slot Error Rate for a Sentence = (# of inserted/deleted/subsituded slots) / (# of total reference slots for sentence) (24.9)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문장에 대한 슬롯 오류율 = (삽입/삭제/대체된 슬롯 수) / (문장에 대한 총 참조 슬롯 수) (24.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Formula for calculating slot error rate.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For example consider a system given this sentence:
+(24.10) Make an appointment with Chris at 10:30 in Gates 104
+which extracted the following candidate slot structure:
+Slot Filler
+PERSON Chris
+TIME 11:30 a.m.
+ROOM Gates 104
+Here the slot error rate is 1/3, since the TIME is wrong. Instead of error rate, slot precision, recall, and F-score can also be used. Slot error rate is also sometimes called concept error rate.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 다음과 같은 문장이 주어진 시스템을 생각해 보십시오.
+(24.10) 10:30에 Gates 104에서 Chris와 약속을 잡아줘
+이 문장에서 다음과 같은 후보 슬롯 구조를 추출했습니다.
+슬롯 필러
+PERSON Chris
+TIME 오전 11:30
+ROOM Gates 104
+여기서 TIME이 틀렸기 때문에 슬롯 오류율은 1/3입니다. 오류율 대신 슬롯 정밀도(precision), 재현율(recall), F-score를 사용할 수도 있습니다. 슬롯 오류율은 때때로 개념 오류율(concept error rate)이라고도 불립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example calculation of slot error rate.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Interestingly, sometimes the user's perception of whether they completed the task is a better predictor of user satisfaction than the actual task completion success. (Walker et al., 2001).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>흥미롭게도 때때로 작업을 완료했는지에 대한 사용자의 인식이 실제 작업 완료 성공 여부보다 사용자 만족도를 더 잘 예측하기도 합니다(Walker 등, 2001).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Subjective vs. objective task completion as a predictor of satisfaction.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

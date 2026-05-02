@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">벡터 공간 시각화</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3 • WORDS AND VECTORS 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3 • 단어와 벡터 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | As You Like It | Twelfth Night | Julius Caesar | Henry V |
+|---|---|---|---|---|
+| battle | 1 | 0 | 7 | 13 |
+| good | 114 | 80 | 62 | 89 |
+| fool | 36 | 58 | 1 | 4 |
+| wit | 20 | 15 | 2 | 3 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 뜻대로 하세요 | 십이야 | 줄리어스 시저 | 헨리 5세 |
+|---|---|---|---|---|
+| battle | 1 | 0 | 7 | 13 |
+| good | 114 | 80 | 62 | 89 |
+| fool | 36 | 58 | 1 | 4 |
+| wit | 20 | 15 | 2 | 3 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세익스피어 희곡에서의 단어 빈도를 나타내는 단어-문서 행렬입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.2 The term-document matrix for four words in four Shakespeare plays. Each cell contains the number of times the (row) word occurs in the (column) document.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.2 네 편의 셰익스피어 희곡에 나타나는 네 단어의 단어-문서 행렬. 각 셀은 (행의) 단어가 (열의) 문서 내에서 나타나는 횟수를 포함합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어-문서 행렬에 대한 기본 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>represented as a count vector, a column in Fig. 6.3.
+To review some basic linear algebra, a vector is, at heart, just a list or array of numbers. So As You Like It is represented as the list [1,114,36,20] (the first column vector in Fig. 6.3) and Julius Caesar is represented as the list [7,62,1,2] (the third column vector). A vector space is a collection of vectors, characterized by their dimension. In the example in Fig. 6.3, the document vectors are of dimension 4, just so they fit on the page; in real term-document matrices, the vectors representing each document would have dimensionality |V|, the vocabulary size.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.3의 열과 같이 빈도 벡터(count vector)로 표현됩니다.
+기초 선형 대수를 복습해 보자면, 벡터는 본질적으로 숫자들의 목록 혹은 배열일 뿐입니다. 따라서 '뜻대로 하세요(As You Like It)'는 목록 [1, 114, 36, 20](그림 6.3의 첫 번째 열 벡터)으로 표현되고, '줄리어스 시저(Julius Caesar)'는 목록 [7, 62, 1, 2](세 번째 열 벡터)로 표현됩니다. 벡터 공간(vector space)은 벡터들의 집합이며, 그 차원(dimension)으로 특징지어집니다. 그림 6.3의 예에서 문서 벡터들은 페이지에 맞게 4차원이지만, 실제 단어-문서 행렬에서 각 문서를 나타내는 벡터들은 어휘 목록의 크기인 |V| 차원을 갖게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 대수의 기초 개념인 벡터, 벡터 공간, 차원을 단어-문서 행렬에 대입하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+vector
+vector space
+dimension</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>벡터(vector)
+벡터 공간(vector space)
+차원(dimension)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 대수의 핵심 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The ordering of the numbers in a vector space indicates different meaningful dimensions on which documents vary. Thus the first dimension for both these vectors corresponds to the number of times the word battle occurs, and we can compare each dimension, noting for example that the vectors for As You Like It and Twelfth Night have similar values (1 and 0, respectively) for the first dimension.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>벡터 공간 내에서 숫자의 순서는 문서들이 서로 다른 의미 있는 차원들을 나타냅니다. 따라서 이 두 벡터의 첫 번째 차원은 'battle'이라는 단어가 나타나는 횟수에 해당하며, 우리는 각 차원을 비교할 수 있습니다. 예를 들어 '뜻대로 하세요'와 '십이야'의 벡터는 첫 번째 차원에 대해 유사한 값(각각 1과 0)을 갖는다는 점을 알 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터의 각 요소(차원)가 물리적으로 어떤 의미를 갖는지 설명하며, 이를 통해 벡터 간 비교가 가능함을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | As You Like It | Twelfth Night | Julius Caesar | Henry V |
+|---|---|---|---|---|
+| battle | (1) | (0) | (7) | (13) |
+| good | (114) | (80) | (62) | (89) |
+| fool | (36) | (58) | (1) | (4) |
+| wit | (20) | (15) | (2) | (3) |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 뜻대로 하세요 | 십이야 | 줄리어스 시저 | 헨리 5세 |
+|---|---|---|---|---|
+| battle | (1) | (0) | (7) | (13) |
+| good | (114) | (80) | (62) | (89) |
+| fool | (36) | (58) | (1) | (4) |
+| wit | (20) | (15) | (2) | (3) |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>(참고: 원본 이미지 Figure 6.3에서는 각 열에 빨간색 상자가 그려져 있어 열 벡터임을 강조하고 있습니다.)</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.3 The term-document matrix for four words in four Shakespeare plays. The red boxes show that each document is represented as a column vector of length four.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.3 네 편의 셰익스피어 희곡에 나타나는 네 단어의 단어-문서 행렬. 빨간색 상자는 각 문서가 길이가 4인 열 벡터로 표현됨을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서를 벡터로 취급하는 방식을 시각적으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can think of the vector for a document as a point in |V|-dimensional space; thus the documents in Fig. 6.3 are points in 4-dimensional space. Since 4-dimensional spaces are hard to visualize, Fig. 6.4 shows a visualization in two dimensions; we've arbitrarily chosen the dimensions corresponding to the words battle and fool.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 문서 벡터를 |V|차원 공간상의 한 점으로 생각할 수 있습니다. 따라서 그림 6.3의 문서들은 4차원 공간상의 점들입니다. 4차원 공간은 시각화하기 어렵기 때문에, 그림 6.4는 2차원 시각화를 보여줍니다. 우리는 'battle'과 'fool'이라는 단어에 해당하는 차원을 임의로 선택했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고차원 벡터를 2차원 평면에 투영하여 시각적으로 이해하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>(Figure 6.4 Plot with y-axis: battle, x-axis: fool. Points: Henry V [4,13], Julius Caesar [1,7], As You Like It [36,1], Twelfth Night [58,0])</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(그림 6.4 y축: battle, x축: fool인 산점도. 점들: 헨리 5세 [4,13], 줄리어스 시저 [1,7], 뜻대로 하세요 [36,1], 십이야 [58,0])</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 빈도를 좌표로 사용하여 희곡들을 시각화한 그림입니다. 'battle'이 많이 나오는 희극과 'fool'이 많이 나오는 비극이 서로 다른 군집을 형성함을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.4 A spatial visualization of the document vectors for the four Shakespeare play documents, showing just two of the dimensions, corresponding to the words battle and fool. The comedies have high values for the fool dimension and low values for the battle dimension.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.4 네 편의 셰익스피어 희곡 문서 벡터를 'battle'과 'fool'에 해당하는 두 차원만으로 시각화한 결과. 코미디(희극)들은 'fool' 차원에서 높은 값을 갖고 'battle' 차원에서는 낮은 값을 갖습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시각화된 데이터가 장르적 특성을 어떻게 반영하는지 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">단어 벡터, 정보 검색</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>similar will tend to have similar words, and if two documents have similar words their column vectors will tend to be similar. The vectors for the comedies As You Like It [1,114,36,20] and Twelfth Night [0,80,58,15] look a lot more like each other (more fools and wit than battles) than they look like Julius Caesar [7,62,1,2] or Henry V [13,89,4,3]. This is clear with the raw numbers; in the first dimension (battle) the comedies have low numbers and the others have high numbers, and we can see it visually in Fig. 6.4; we'll see very shortly how to quantify this intuition more formally.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 유사한 문서들은 유사한 단어들을 갖는 경향이 있으며, 두 문서가 유사한 단어들을 포함하고 있다면 그 열 벡터들 또한 유사한 경향을 보일 것입니다. 희극인 '뜻대로 하세요'[1, 114, 36, 20]와 '십이야'[0, 80, 58, 15]의 벡터들은 '줄리어스 시저'[7, 62, 1, 2]나 '헨리 5세'[13, 89, 4, 3]보다 서로 훨씬 더 닮아 보입니다 (전투보다는 광대와 재치가 더 많음). 이는 원수치만으로도 분명합니다. 첫 번째 차원(battle)에서 희극들은 낮은 숫자를 갖고 다른 문서들은 높은 숫자를 갖는 것을 그림 6.4에서 시각적으로 확인할 수 있습니다. 이러한 직관을 어떻게 더 형식적으로 정량화할지는 곧 살펴보겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터의 유사성이 실제 문서의 내용적 유사성을 반영한다는 점을 재차 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A real term-document matrix, of course, wouldn't just have 4 rows and columns, let alone 2. More generally, the term-document matrix has |V| rows (one for each word type in the vocabulary) and D columns (one for each document in the collection); as we'll see, vocabulary sizes are generally in the tens of thousands, and the number of documents can be enormous (think about all the pages on the web).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>물론 실제 단어-문서 행렬은 단 4개의 행과 열만 갖지는 않을 것입니다. 더 일반적으로, 단어-문서 행렬은 |V|(어휘 목록의 각 단어 유형당 하나)개의 행과 D(컬렉션 내의 각 문서당 하나)개의 열을 갖습니다. 우리가 보게 되겠지만, 어휘 목록의 크기는 일반적으로 수만 개에 달하며, 문서의 수는 엄청날 수 있습니다(웹상의 모든 페이지를 생각해 보십시오).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 환경에서의 대규모 데이터를 다룰 때의 규모감을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Information retrieval (IR) is the task of finding the document d from the D documents in some collection that best matches a query q. For IR we'll therefore represent a query by a vector, also of length |V|, and we'll need a way to compare two vectors to find how similar they are. (Doing IR will also require efficient ways to store and manipulate these vectors by making use of the convenient fact that these vectors are sparse, i.e., mostly zeros).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정보 검색(information retrieval, IR)은 어떤 컬렉션 내의 D개 문서 중에서 쿼리 q와 가장 잘 일치하는 문서 d를 찾는 작업입니다. 따라서 IR을 위해 우리는 쿼리를 마찬가지로 길이가 |V|인 벡터로 표현하며, 두 벡터를 비교하여 얼마나 유사한지 찾을 방법이 필요할 것입니다. (IR을 수행하려면 이러한 벡터들이 희소(sparse)하다는, 즉 대부분이 0이라는 편리한 사실을 이용하여 이 벡터들을 효율적으로 저장하고 조작하는 방법도 필요합니다.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정보 검색 시스템에서 쿼리와 문서를 모두 벡터로 처리하여 비교하는 원리를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>information retrieval</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정보 검색(information retrieval)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쿼리에 맞는 관련 정보를 찾아내는 기술 분야입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Later in the chapter we'll introduce some of the components of this vector comparison process: the tf-idf term weighting, and the cosine similarity metric.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장의 뒷부분에서 이러한 벡터 비교 과정의 일부 구성 요소인 tf-idf 가중치 부여(term weighting)와 코사인 유사도(cosine similarity) 측정법을 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞으로 다룰 핵심 용어인 tf-idf와 코사인 유사도를 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3.2 Words as vectors: document dimensions</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3.2 벡터로서의 단어: 문서 차원</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 행 벡터로 취급하여 문서의 분포로 단어 의미를 표현하는 관점입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We've seen that documents can be represented as vectors in a vector space. But vector semantics can also be used to represent the meaning of words. We do this by associating each word with a word vector— a row vector rather than a column vector, hence with different dimensions, as shown in Fig. 6.5. The four dimensions of the vector for fool, [36,58,1,4], correspond to the four Shakespeare plays. Word counts in the same four dimensions are used to form the vectors for the other 3 words: wit, [20,15,2,3]; battle, [1,0,7,13]; and good [114,80,62,89].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 문서가 벡터 공간의 벡터로 표현될 수 있음을 보았습니다. 하지만 벡터 의미론은 단어의 의미를 표현하는 데에도 사용될 수 있습니다. 우리는 각 단어를 그림 6.5에 나타난 것처럼 열 벡터가 아닌 행 벡터(row vector)에 대응시킴으로써 이를 수행하며, 이에 따라 차원도 달라집니다. 'fool' 벡터의 네 차원 [36, 58, 1, 4]은 네 편의 셰익스피어 희곡에 해당합니다. 동일한 네 차원의 단어 빈도가 나머지 세 단어 'wit'[20, 15, 2, 3], 'battle'[1, 0, 7, 13], 'good'[114, 80, 62, 89]의 벡터를 형성하는 데 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬의 행을 선택하여 단어의 의미를 '분포'로 정의하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>row vector</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>행 벡터(row vector)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>행렬에서 가로 방향의 한 행을 나타내는 벡터입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | As You Like It | Twelfth Night | Julius Caesar | Henry V |
+|---|---|---|---|---|
+| battle | (1 0 7 13) | | | |
+| good | (114 80 62 89) | | | |
+| fool | (36 58 1 4) | | | |
+| wit | (20 15 2 3) | | | |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | 뜻대로 하세요 | 십이야 | 줄리어스 시저 | 헨리 5세 |
+|---|---|---|---|---|
+| battle | (1 0 7 13) | | | |
+| good | (114 80 62 89) | | | |
+| fool | (36 58 1 4) | | | |
+| wit | (20 15 2 3) | | | |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>(참고: 원본 이미지 Figure 6.5에서는 각 행에 빨간색 상자가 그려져 있어 행 벡터임을 강조하고 있습니다.)</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.5 The term-document matrix for four words in four Shakespeare plays. The red boxes show that each word is represented as a row vector of length four.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.5 네 편의 셰익스피어 희곡에 나타나는 네 단어의 단어-문서 행렬. 빨간색 상자는 각 단어가 길이가 4인 행 벡터로 표현됨을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 벡터로 취급하는 방식을 시각적으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For documents, we saw that similar documents had similar vectors, because similar documents tend to have similar words. This same principle applies to words: similar words have similar vectors because they tend to occur in similar documents. The term-document matrix thus lets us represent the meaning of a word by the documents it tends to occur in.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문서의 경우, 유사한 문서들은 유사한 단어들을 갖는 경향이 있기 때문에 유사한 벡터를 갖는다는 것을 보았습니다. 단어에 대해서도 동일한 원리가 적용됩니다. 유사한 단어들은 유사한 문서에서 나타나는 경향이 있기 때문에 유사한 벡터를 갖습니다. 따라서 단어-문서 행렬을 통해 우리는 단어가 주로 나타나는 문서를 기반으로 단어의 의미를 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 벡터 유사성의 이론적 근거를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.3.3 Words as vectors: word dimensions</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.3.3 벡터로서의 단어: 단어 차원</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서가 아닌 주변 단어들의 빈도로 단어를 표현하는 관점으로 넘어갑니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An alternative to using the term-document matrix to represent words as vectors of document counts, is to use the term-term matrix, also called the word-word matrix or the term-context matrix, in which the columns are labeled by words rather than documents. This matrix is thus of dimensionality |V| x |V| and each cell records</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어를 문서 빈도 벡터로 표현하기 위해 단어-문서 행렬을 사용하는 것의 대안은, 열이 문서가 아닌 단어로 표시되는 단어-단어 행렬(word-word matrix) 또는 단어-문맥 행렬(term-context matrix)을 사용하는 것입니다. 이 행렬의 차원은 |V| x |V|이며 각 셀은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어-단어 행렬의 정의를 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>word-word matrix</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어-단어 행렬(word-word matrix)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 간의 공기 빈도를 기록한 행렬입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

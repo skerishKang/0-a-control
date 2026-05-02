@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Sequence Labeling for Parts of Speech and Named Entities</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">08 Sequence Labeling for Parts of Speech</div>
+<h1>Sequence Labeling for Parts of Speech and Named Entities</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>8. Sequence Labeling for Parts of Speech and Named Entities.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">개체명 인식 및 BIO 태깅</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.3 • NAMED ENTITIES AND NAMED ENTITY TAGGING 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.3 • 개체명과 개체명 태깅 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>8.3 섹션의 제목과 페이지 번론입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>need to decide what's an entity and what isn't, and where the boundaries are. Indeed, most words in a text will not be named entities. Another difficulty is caused by type ambiguity. The mention JFK can refer to a person, the airport in New York, or any number of schools, bridges, and streets around the United States. Some examples of this kind of cross-type confusion are given in Figure 8.6.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 무엇이 개체이고 무엇이 아닌지, 그리고 경계가 어디인지 결정해야 합니다. 실제로 텍스트의 대부분의 단어는 개체명이 아닙니다. 또 다른 어려움은 유형의 중의성(type ambiguity)으로 인해 발생합니다. 예를 들어 'JFK'라는 언급은 사람을 가리킬 수도 있고, 뉴욕에 있는 공항을 가리킬 수도 있으며, 미국 전역의 수많은 학교, 다리, 거리를 가리킬 수도 있습니다. 이러한 종류의 교차 유형 혼동의 몇 가지 예가 그림 8.6에 나와 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 작업의 두 가지 주요 난제인 경계 인식(segmentation)과 유형 판별(classification)의 중의성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[PER Washington] was born into slavery on the farm of James Burroughs.
+[ORG Washington] went up 2 games to 1 in the four-game series.
+Blair arrived in [LOC Washington] for what may well be his last state visit.
+In June, [GPE Washington] passed a primary seatbelt law.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[PER Washington](워싱턴)은 제임스 버로스의 농장에서 노예로 태어났다.
+[ORG Washington](워싱턴 팀)은 4경기 시리즈에서 2승 1패로 앞서 나갔다.
+Blair는 그의 마지막 국빈 방문이 될지도 모르는 일정을 위해 [LOC Washington](워싱턴 DC)에 도착했다.
+6월에 [GPE Washington](워싱턴 주)은 기본 안전벨트 법안을 통과시켰다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'Washington'이라는 동일한 단어가 문맥에 따라 인명(PER), 기관(ORG), 장소(LOC), 지정학적 실체(GPE)로 나뉘는 사례를 보여 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.6 Examples of type ambiguities in the use of the name Washington.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.6 'Washington'이라는 이름 사용에서 나타나는 유형 중의성의 예시들.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.6에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The standard approach to sequence labeling for a span-recognition problem like NER is BIO tagging (Ramshaw and Marcus, 1995). This is a method that allows us to treat NER like a word-by-word sequence labeling task, via tags that capture both the boundary and the named entity type. Consider the following sentence:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NER과 같은 구간 인식(span-recognition) 문제에 대한 시퀀스 레이블링의 표준적인 접근법은 BIO 태깅(Ramshaw and Marcus, 1995)입니다. 이는 경계와 개체명 유형을 모두 포착하는 태그를 통해, NER을 단어별 시퀀스 레이블링 작업처럼 다룰 수 있게 해 주는 방법입니다. 다음 문장을 살펴보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구간 단위의 문제를 단어 단위의 시퀀스 레이블링 문제로 변환해 주는 BIO 태깅 기법을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[PER Jane Villanueva] of [ORG United] , a unit of [ORG United Airlines Holding] , said the fare applies to the [LOC Chicago] route.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[ORG United Airlines Holding]의 자회사인 [ORG United]의 [PER Jane Villanueva]는 해당 요금이 [LOC Chicago] 노선에 적용된다고 말했다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BIO 태깅 예시를 위해 개체명이 주석 처리된 원문 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BIO</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>BIO</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Begin, Inside, Outside의 약자로 구성된 구간 태깅 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.7 shows the same excerpt represented with BIO tagging, as well as variants called IO tagging and BIOES tagging. In BIO tagging we label any token that begins a span of interest with the label B, tokens that occur inside a span are tagged with an I, and any tokens outside of any span of interest are labeled O. While there is only one O tag, we'll have distinct B and I tags for each named entity class. The number of tags is thus 2n + 1 tags, where n is the number of entity types. BIO tagging can represent exactly the same information as the bracketed notation, but has the advantage that we can represent the task in the same simple sequence modeling way as part-of-speech tagging: assigning a single label y_i to each input word x_i.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.7은 동일한 발췌문을 BIO 태깅과 그 변형인 IO 태깅 및 BIOES 태깅으로 표현한 것을 보여 줍니다. BIO 태깅에서는 관심 있는 구간이 시작되는 토큰에 B 레이블을, 구간 내부에 있는 토큰에는 I 태그를 담당하며, 구간 외부의 모든 토큰에는 O 레이블을 붙입니다. O 태그는 하나뿐이지만, 각 개체명 클래스마다 별도의 B와 I 태그를 갖게 됩니다. 따라서 태그의 총 개수는 $2n + 1$개가 되며 (여기서 $n$은 개체 유형의 수), BIO 태깅은 대괄호 표기법과 정확히 동일한 정보를 표현할 수 있으면서도, 각 입력 단어 $x_i$에 단일 레이블 $y_i$를 할당하는 품사 태깅과 동일한 단순 시퀀스 모델링 방식으로 작업을 표현할 수 있다는 장점이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>B, I, O 태그의 의미와 이를 통해 얻을 수 있는 기술적 이점을 설명합니다. 특히 전체 태그 수($2n+1$)를 계산하는 방식이 중요합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Words | IO Label | BIO Label | BIOES Label |
+| :--- | :--- | :--- | :--- |
+| Jane | I-PER | B-PER | B-PER |
+| Villanueva | I-PER | I-PER | E-PER |
+| of | O | O | O |
+| United | I-ORG | B-ORG | S-ORG |
+| Airlines | I-ORG | B-ORG | B-ORG |
+| Holding | I-ORG | I-ORG | E-ORG |
+| discussed | O | O | O |
+| the | O | O | O |
+| Chicago | I-LOC | B-LOC | S-LOC |
+| route | O | O | O |
+| . | O | O | O |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 단어 | IO 레이블 | BIO 레이블 | BIOES 레이블 |
+| :--- | :--- | :--- | :--- |
+| Jane | I-PER | B-PER | B-PER |
+| Villanueva | I-PER | I-PER | E-PER |
+| of | O | O | O |
+| United | I-ORG | B-ORG | S-ORG |
+| Airlines | I-ORG | B-ORG | B-ORG |
+| Holding | I-ORG | I-ORG | E-ORG |
+| discussed | O | O | O |
+| the | O | O | O |
+| Chicago | I-LOC | B-LOC | S-LOC |
+| route | O | O | O |
+| . | O | O | O |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세 가지 태깅 스키마(IO, BIO, BIOES)를 동일한 텍스트에 적용해 비교한 표입니다. BIOES는 시작(B), 내부(I), 끝(E), 단일(S)을 구분하여 가장 상세한 정보를 제공합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.7 NER as a sequence model, showing IO, BIO, and BIOES taggings.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.7 시퀀스 모델로서의 NER: IO, BIO, BIOES 태깅 방식의 예시.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.7에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We've also shown two variant tagging schemes: IO tagging, which loses some information by eliminating the B tag, and BIOES tagging, which adds an end tag E for the end of a span, and a span tag S for a span consisting of only one word. A sequence labeler (HMM, CRF, RNN, Transformer, etc.) is trained to label each token in a text with tags that indicate the presence (or absence) of particular kinds of named entities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 또한 두 가지 변형 태깅 스키마를 보여 드렸습니다. B 태그를 없애 일부 정보를 손실하는 IO 태깅과, 구간의 끝을 나타내는 E 태그 및 단일 단어로 구성된 구간을 위한 S 태그를 추가한 BIOES 태깅이 그것입니다. 시퀀스 레이블러(HMM, CRF, RNN, Transformer 등)는 텍스트의 각 토큰에 대해 특정 종류의 개체명의 존재(또는 부재)를 나타내는 태그를 붙이도록 학습됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 태깅 스키마의 특징과 시퀀스 레이블러의 일반적인 역할을 요약합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">HMM 품사 태깅 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 8 • SEQUENCE LABELING FOR PARTS OF SPEECH AND NAMED ENTITIES</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제8장 • 품사 태깅과 개체명 인식을 위한 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.4 HMM Part-of-Speech Tagging</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.4 HMM 품사 태깅</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉 마르코프 모델(HMM)을 이용한 품사 태깅 기법을 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we introduce our first sequence labeling algorithm, the Hidden Markov Model, and show how to apply it to part-of-speech tagging. Recall that a sequence labeler is a model whose job is to assign a label to each unit in a sequence, thus mapping a sequence of observations to a sequence of labels of the same length. The HMM is a classic model that introduces many of the key concepts of sequence modeling that we will see again in more modern models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 우리의 첫 번째 시퀀스 레이블링 알고리즘인 은닉 마르코프 모델(HMM)을 소개하고, 이를 품사 태깅에 어떻게 적용하는지 보여 드리겠습니다. 시퀀스 레이블러는 시퀀스의 각 단위에 레이블을 할당하여 관측치(observations)의 시퀀스를 동일한 길이의 레이블 시퀀스로 매핑하는 작업을 수행하는 모델임을 상기해 보십시오. HMM은 나중에 현대적인 모델들에서도 다시 보게 될 시퀀스 모델링의 많은 핵심 개념들을 도입한 고전적인 모델입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 정의와 역할, 그리고 시퀀스 레이블링 분야에서의 역사적 중요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An HMM is a probabilistic sequence model: given a sequence of units (words, letters, morphemes, sentences, whatever), it computes a probability distribution over possible sequences of labels and chooses the best label sequence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM은 확률적 시퀀스 모델입니다. 즉, 단위(단어, 글자, 형태소, 문장 등 무엇이든)의 시퀀스가 주어지면 가능한 레이블 시퀀스들에 대한 확률 분포를 계산하여 최적의 레이블 시퀀스를 선택합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM이 확률에 기반해 최적의 답을 찾아내는 생성 모델임을 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.4.1 Markov Chains</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.4.1 마르코프 체인</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 기반이 되는 마르코프 체인 개념을 설명하는 하위 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Markov chain</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 체인(Markov chain)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상태들의 시퀀스에서 다음 상태가 오직 현재 상태에만 의존하는 확률 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The HMM is based on augmenting the Markov chain. A Markov chain is a model that tells us something about the probabilities of sequences of random variables, states, each of which can take on values from some set. These sets can be words, or tags, or symbols representing anything, for example the weather. A Markov chain makes a very strong assumption that if we want to predict the future in the sequence, all that matters is the current state. All the states before the current state have no impact on the future except via the current state. It's as if to predict tomorrow's weather you could examine today's weather but you weren't allowed to look at yesterday's weather.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM은 마르코프 체인을 확장한 것에 기반합니다. 마르코프 체인은 어떤 집합에서 값을 가질 수 있는 상태(states)인 확률 변수 시퀀스의 확률에 대해 알려 주는 모델입니다. 이 상태들은 단어, 태그, 혹은 날씨 같은 무엇이든 나타내는 기호가 될 수 있습니다. 마르코프 체인은 시퀀스에서 미래를 예측할 때 오직 현재 상태만이 중요하다는 매우 강력한 가정을 합니다. 현재 상태 이전의 모든 상태들은 현재 상태를 통하는 경로를 제외하고는 미래에 아무런 영향을 주지 않습니다. 이는 마치 내일의 날씨를 예보하기 위해 오늘의 날씨는 볼 수 있지만 어제의 날씨는 볼 수 없는 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인의 핵심 아이디어인 '미래는 오직 현재에만 의존한다'는 속성을 날씨 예보 비유와 함께 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(a) weather states: HOT_1, COLD_2, WARM_3 with transition probabilities
+(b) word states: uniformly, are, charming with transition probabilities</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(a) 날씨 상태: 전이 확률이 표시된 HOT_1, COLD_2, WARM_3
+(b) 단어 상태: 전이 확률이 표시된 uniformly, are, charming</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>날씨(a)와 단어(b)의 상태 및 상태 간 이동 확률(전이 확률)을 나타낸 상태 전이도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.8 A Markov chain for weather (a) and one for words (b), showing states and transitions. A start distribution π is required; setting π = [0.1, 0.7, 0.2] for (a) would mean a probability 0.7 of starting in state 2 (cold), probability 0.1 of starting in state 1 (hot), etc.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.8 날씨(a)와 단어(b)에 대한 마르코프 체인: 상태와 전이 과정을 보여 줌. 시작 분포 $\pi$가 필요하며, (a)에 대해 $\pi = [0.1, 0.7, 0.2]$로 설정하는 것은 상태 2(매우 추움)에서 시작할 확률이 0.7, 상태 1(더움)에서 시작할 확률이 0.1임을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.8에 대한 캡션입니다. 상태 전이뿐만 아니라 시퀀스가 시작되는 시점의 확률분포($\pi$)의 중요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Markov assumption</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 가정(Markov assumption)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현재 상태가 주어졌을 때 미래 상태는 과거와 독립이라는 가정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More formally, consider a sequence of state variables q_1, q_2, . . . , q_i. A Markov model embodies the Markov assumption on the probabilities of this sequence: that when predicting the future, the past doesn't matter, only the present.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>좀 더 형식적으로 상태 변수의 시퀀스 $q_1, q_2, \dots, q_i$를 고려해 봅시다. 마르코프 모델은 이 시퀀스의 확률에 대해 '미래를 예측할 때 과거는 중요하지 않고 현재만이 중요하다'는 마르코프 가정을 구현합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인의 수학적 기초가 되는 마르코프 가정을 정형화하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Markov Assumption: P(q_i = a | q_1...q_{i−1}) = P(q_i = a | q_{i−1}) (8.3)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>마르코프 가정: $P(q_i = a \mid q_1 \dots q_{i-1}) = P(q_i = a \mid q_{i-1})$ (8.3)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 가정을 수식으로 나타낸 것입니다. $i$번째 상태의 확률은 그 이전의 모든($1$부터 $i-1$) 상태가 주어졌을 때도 결국 바로 전 단계($i-1$)의 상태에만 의존함을 보여 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.8a shows a Markov chain for assigning a probability to a sequence of weather events, for which the vocabulary consists of HOT, COLD, and WARM. The states are represented as nodes in the graph, and the transitions, with their probabilities, as edges. The transitions are probabilities: the values of arcs leaving a given state must sum to 1. Figure 8.8b shows a Markov chain for assigning a probability to a sequence of words w_1...w_t. This Markov chain should be familiar; in fact, it represents a bigram language model, with each edge expressing the probability p(w_i|w_j)! Given the two models in Fig. 8.8, we can assign a probability to any sequence from our vocabulary.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.8a는 HOT, COLD, WARM으로 구성된 날씨 이벤트 시퀀스에 확률을 할당하는 마르코프 체인을 보여 줍니다. 상태들은 그래프의 노드로 표현되고, 그 확률이 적힌 전이는 엣지(변)로 표현됩니다. 전이는 확률값이므로, 특정 상태에서 나가는 화살표들의 값의 합은 반드시 1이 되어야 합니다. 그림 8.8b는 단어 시퀀스 $w_1 \dots w_t$에 확률을 할당하는 마르코프 체인입니다. 이 마르코프 체인은 익숙할 것입니다. 사실 이것은 각 엣지가 확률 $p(w_i \mid w_j)$를 나타내는 바이그램(bigram) 언어 모델을 의미합니다! 그림 8.8의 두 모델이 주어지면, 우리 어휘 집합에서 나온 어떠한 시퀀스에 대해서도 확률을 할당할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인을 그래프 구조로 해석하는 방법과 바이그램 언어 모델의 유연한 연결성을 설명합니다. 모든 전이 확률의 합이 1이어야 한다는 확률의 기본 원칙을 상기시킵니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

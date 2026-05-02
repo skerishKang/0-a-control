@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25-26 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a>
+<a class="chip" href="#page-26">Page 26</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25-26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+<div class="page-subtitle">서지학적 및 역사적 노트</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BIBLIOGRAPHICAL AND HISTORICAL NOTES 25</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>서지학적 및 역사적 노트 25</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>서지학적 및 역사적 노트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 연구의 기원부터 현대 딥러닝에 이르기까지의 학문적 흐름을 정리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The origins of neural networks lie in the 1940s McCulloch-Pitts neuron (McCulloch and Pitts, 1943), a simplified model of the human neuron as a kind of computing element that could be described in terms of propositional logic. By the late 1950s and early 1960s, a number of labs (including Frank Rosenblatt at Cornell and Bernard Widrow at Stanford) developed research into neural networks; this phase saw the development of the perceptron (Rosenblatt, 1958), and the transformation of the threshold into a bias, a notation we still use (Widrow and Hoff, 1960).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망의 기원은 1940년대 매컬럭-피츠(McCulloch-Pitts) 뉴런(McCulloch와 Pitts, 1943)으로 거슬러 올라갑니다. 이는 인간의 뉴런을 명제 논리로 설명할 수 있는 일종의 계산 요소로 단순화한 모델입니다. 1950년대 후반과 1960년대 초반에 코넬대의 프랭크 로젠블랫(Frank Rosenblatt)과 스탠퍼드대의 버나드 위드로(Bernard Widrow)를 포함한 여러 연구실에서 신경망 연구를 발전시켰습니다. 이 시기에 퍼셉트론(perceptron)(Rosenblatt, 1958)이 개발되었고, 임계값(threshold)이 오늘날까지 사용하는 표기법인 바이어스(bias)로 전환되었습니다(Widrow와 Hoff, 1960).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망의 초기 모델과 퍼셉트론의 등장을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The field of neural networks declined after it was shown that a single perceptron unit was unable to model functions as simple as XOR (Minsky and Papert, 1969). While some small amount of work continued during the next two decades, a major revival for the field didn't come until the 1980s, when practical tools for building deeper networks like error backpropagation became widespread (Rumelhart et al., 1986). During the 1980s a wide variety of neural network and related architectures were developed, particularly for applications in psychology and cognitive science (Rumelhart and McClelland 1986b, McClelland and Elman 1986, Rumelhart and McClelland 1986a, Elman 1990), for which the term connectionist or parallel distributed processing was often used (Feldman and Ballard 1982, Smolensky 1988). Many of the principles and techniques developed in this period are foundational to modern work, including the ideas of distributed representations (Hinton, 1986), recurrent networks (Elman, 1990), and the use of tensors for compositionality (Smolensky, 1990).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단일 퍼셉트론 유닛이 XOR와 같이 단순한 함수조차 모델링할 수 없다는 연구 결과(Minsky와 Papert, 1969) 이후 신경망 분야는 쇠퇴했습니다. 이후 20년 동안 적은 양의 연구가 이어지긴 했으나, 1980년대에 이르러 오차 역전파(error backpropagation)와 같이 더 깊은 네트워크를 구축하기 위한 실질적인 도구들이 널리 퍼지기 전까지는 주요한 부활이 일어나지 않았습니다(Rumelhart 등, 1986). 1980년대 동안 심리학과 인지 과학 분야를 중심으로 매우 다양한 신경망 및 관련 구조들이 개발되었으며(Rumelhart와 McClelland 1986b, McClelland와 Elman 1986, Rumelhart와 McClelland 1986a, Elman 1990), 이 시기에는 '연결주의(connectionist)' 또는 '병렬 분산 처리(parallel distributed processing)'라는 용어가 자주 사용되었습니다(Feldman과 Ballard 1982, Smolensky 1988). 이 시기에 개발된 많은 원리와 기술들은 분산 표현(distributed representations)(Hinton, 1986), 순환 신경망(recurrent networks)(Elman, 1990), 구성을 위한 텐서 활용(Smolensky, 1990) 등을 포함하여 현대 연구의 토대가 되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망의 침체기(AI 겨울)와 80년대 역전파를 통한 화려한 부활, 그리고 연결주의 접근법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>connectionist</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연결주의자(connectionist)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>복잡한 지능이나 인지 기능이 수많은 단순한 유닛들의 상호 연결을 통해 발현된다고 보는 학문적 견해입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By the 1990s larger neural networks began to be applied to many practical language processing tasks as well, like handwriting recognition (LeCun et al. 1989) and speech recognition (Morgan and Bourlard 1990). By the early 2000s, improvements in computer hardware and advances in optimization and training techniques made it possible to train even larger and deeper networks, leading to the modern term deep learning (Hinton et al. 2006, Bengio et al. 2007). We cover more related history in Chapter 9 and Chapter 26.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1990년대에는 더 큰 신경망이 필기 인식(LeCun 등, 1989)이나 음성 인식(Morgan과 Bourlard, 1990)과 같은 많은 실제 언어 처리 작업에도 적용되기 시작했습니다. 2000년대 초반에는 컴퓨터 하드웨어의 향상과 최적화 및 학습 기술의 발전 덕분에 더 크고 깊은 네트워크를 학습시키는 것이 가능해졌으며, 이는 현대적인 용어인 '딥러닝(deep learning)'으로 이어졌습니다(Hinton 등, 2006, Bengio 등, 2007). 우리는 9장과 26장에서 이와 관련된 더 많은 역사를 다룰 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>90년대 실용적 적용 사례와 2000년대 딥러닝 혁명으로의 이행을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are a number of excellent books on the subject. Goldberg (2017) has superb coverage of neural networks for natural language processing. For neural networks in general see Goodfellow et al. (2016) and Nielsen (2015).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 주제에 관한 훌륭한 책들이 많이 있습니다. Goldberg(2017)는 자연어 처리를 위한 신경망을 탁월하게 다릅니다. 일반적인 신경망에 대해서는 Goodfellow 등(2016)과 Nielsen(2015)을 참고하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre> 분야의 입문 및 심화 학습을 위한 필독서들을 추천합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">참고 문헌</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26 Chapter 7 • Neural Networks and Neural Language Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Abadi, M., A. Agarwal, P. Barham, E. Brevdo, Z. Chen, C. Citro, G. S. Corrado, A. Davis, J. Dean, M. Devin, S. Ghemawat, I. Goodfellow, A. Harp, G. Irving, M. Isard, Y. Jia, R. Jozefowicz, L. Kaiser, M. Kudlur, J. Levenberg, D. Mané, R. Monga, S. Moore, D. Murray, C. Olah, M. Schuster, J. Shlens, B. Steiner, I. Sutskever, K. Talwar, P. Tucker, V. Vanhoucke, V. Vasudevan, F. Viégas, O. Vinyals, P. Warden, M. Wattenberg, M. Wicke, Y. Yu, and X. Zheng. 2015. TensorFlow: Large-scale machine learning on heterogeneous systems. Software available from tensorflow.org.
+Bengio, Y., R. Ducharme, P. Vincent, and C. Jauvin. 2003. A neural probabilistic language model. Journal of machine learning research, 3(Feb):1137–1155.
+Bengio, Y., P. Lamblin, D. Popovici, and H. Larochelle. 2007. Greedy layer-wise training of deep networks. NeurIPS.
+Elman, J. L. 1990. Finding structure in time. Cognitive science, 14(2):179–211.
+Feldman, J. A. and D. H. Ballard. 1982. Connectionist models and their properties. Cognitive Science, 6:205–254.
+Goldberg, Y. 2017. Neural Network Methods for Natural Language Processing, volume 10 of Synthesis Lectures on Human Language Technologies. Morgan & Claypool.
+Goodfellow, I., Y. Bengio, and A. Courville. 2016. Deep Learning. MIT Press.
+Hinton, G. E. 1986. Learning distributed representations of concepts. COGSCI.
+Hinton, G. E., S. Osindero, and Y.-W. Teh. 2006. A fast learning algorithm for deep belief nets. Neural computation, 18(7):1527–1554.
+Hinton, G. E., N. Srivastava, A. Krizhevsky, I. Sutskever, and R. R. Salakhutdinov. 2012. Improving neural networks by preventing co-adaptation of feature detectors. arXiv preprint arXiv:1207.0580.
+Kingma, D. and J. Ba. 2015. Adam: A method for stochastic optimization. ICLR 2015.
+LeCun, Y., B. Boser, J. S. Denker, D. Henderson, R. E. Howard, W. Hubbard, and L. D. Jackel. 1989. Backpropagation applied to handwritten zip code recognition. Neural computation, 1(4):541–551.
+McClelland, J. L. and J. L. Elman. 1986. The TRACE model of speech perception. Cognitive Psychology, 18:1–8.
+McCulloch, W. S. and W. Pitts. 1943. A logical calculus of ideas immanent in nervous activity. Bulletin of Mathematical Biophysics, 5:115–133.
+Minsky, M. and S. Papert. 1969. Perceptrons. MIT Press.
+Morgan, N. and H. Bourlard. 1990. Continuous speech recognition using multilayer perceptrons with hidden markov models. ICASSP.
+Nielsen, M. A. 2015. Neural networks and Deep learning. Determination Press USA.
+Paszke, A., S. Gross, S. Chintala, G. Chanan, E. Yang, Z. DeVito, Z. Lin, A. Desmaison, L. Antiga, and A. Lerer. 2017. Automatic differentiation in pytorch. NIPS-W.
+Rosenblatt, F. 1958. The perceptron: A probabilistic model for information storage and organization in the brain. Psychological review, 65(6):386–408.
+Rumelhart, D. E., G. E. Hinton, and R. J. Williams. 1986. Learning internal representations by error propagation. In D. E. Rumelhart and J. L. McClelland, editors, Parallel Distributed Processing, volume 2, pages 318–362. MIT Press.
+Rumelhart, D. E. and J. L. McClelland. 1986a. On learning the past tense of English verbs. In D. E. Rumelhart and J. L. McClelland, editors, Parallel Distributed Processing, volume 2, pages 216–271. MIT Press.
+Rumelhart, D. E. and J. L. McClelland, editors. 1986b. Parallel Distributed Processing. MIT Press.
+Russell, S. and P. Norvig. 2002. Artificial Intelligence: A Modern Approach, 2nd edition. Prentice Hall.
+Smolensky, P. 1988. On the proper treatment of connectionism. Behavioral and brain sciences, 11(1):1–23.
+Smolensky, P. 1990. Tensor product variable binding and the representation of symbolic structures in connectionist systems. Artificial intelligence, 46(1-2):159–216.
+Srivastava, N., G. E. Hinton, A. Krizhevsky, I. Sutskever, and R. R. Salakhutdinov. 2014. Dropout: a simple way to prevent neural networks from overfitting. JMLR, 15(1):1929–1958.
+Widrow, B. and M. E. Hoff. 1960. Adaptive switching circuits. IRE WESCON Convention Record, volume 4.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[참고 문헌 리스트 (Abadi 등 2015년 자료부터 Widrow와 Hoff의 1960년 자료까지의 연구 목록들)]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>7장에서 인용된 주요 논문 및 도서들의 원문 정보를 제공합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Discourse Coherence</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">22 Discourse Coherence</div>
+<h1>Discourse Coherence</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>22. Discourse Coherence</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">참고 문헌 및 연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>19 CHAPTER 22 • DISCOURSE COHERENCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>19 제22장 • 담화 응집성</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mann, W. C. and Thompson, S. A. (1988). Rhetorical structure theory: Toward a functional theory of text organization. Text, 8, 243-281.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Mann, William C. and Thompson, Sandra A. (1988). 「수사적 구조 이론: 텍스트 조직화의 기능적 이론을 향하여」(Rhetorical structure theory: Toward a functional theory of text organization). 『Text』, 8, 243-281.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RST를 구체화한 기본 논문입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>22장의 핵심 내용을 복습하고 적용하기 위한 과제 섹션입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+    22.1 Identify the coherence relations in the following discourse segments using Hobbs' classification: "The window broke. Someone threw a rock."
+</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+    22.1 홉스의 분류를 사용하여 다음 담화 세그먼트의 응집 관계를 식별하시오: "창문이 깨졌다. 누군가가 돌을 던졌다."
+</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 문장 사이의 인과 관계(Explanation/Result)를 판별해보는 연습 문제입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 22 • DISCOURSE COHERENCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제22장 • 담화 응집성</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>
+    22.2 In RST, identify the nucleus and the satellite for the relation Evidence in the discourse: "Buy this toothpaste. It contains fluoride."
+</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+    22.2 RST에서 다음 담화의 증거(Evidence) 관계를 위한 핵(nucleus)과 위성(satellite)을 식별하시오: "이 치약을 사세요. 불소가 들어 있습니다."
+</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주장(핵)과 그 주장을 뒷받침하는 근거(위성)의 불균형적 역할을 구분해보는 과제입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>
+    22.3 Using Centering Theory, track the transitions (Continue, Retain, Shift) for the following sequence:
+    S1: John went to the store.
+    S2: He bought milk.
+    S3: Bill was also there.
+</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+    22.3 센터링 이론을 사용하여 다음 시퀀스의 전이(유지, 보유, 전이)를 추적하시오:
+    S1: John은 가게에 갔다.
+    S2: 그는 우유를 샀다.
+    S3: Bill도 그곳에 있었다.
+</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Cb와 Cf의 전이 양상을 분석하여 초점의 흐름을 파악하는 실습 과제입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

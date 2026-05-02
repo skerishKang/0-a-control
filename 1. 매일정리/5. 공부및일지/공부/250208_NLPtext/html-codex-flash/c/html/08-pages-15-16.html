@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>C. Statistical Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Draft</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">The Collins Parser</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>terminal like NN(bin, NN) can only expand to the word bin. But for the internal rules, we need to estimate probabilities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NN(bin, NN)과 같은 단말 노드는 오직 'bin'이라는 단어로만 확장될 수 있습니다. 그러나 내부 규칙의 경우, 확률을 추정해야 할 필요가 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 규칙은 결정론적(확률 1)인 반면, 구조를 결정하는 내부 규칙은 확률적 모델링이 필요함을 강조.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Suppose we were to treat a probabilistic lexicalized CFG like a really big CFG that just happened to have lots of very complex non-terminals and estimate the probabilities for each rule from maximum likelihood estimates. Thus, according to Eq. C.17, the MLE estimate for the probability for the rule P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P)) would be</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 어휘화 CFG를 아주 복잡한 비단말 기호들을 많이 가진 매우 큰 CFG처럼 취급하고, 최대 우도 추정치(MLE)로부터 각 규칙의 확률을 추정한다고 가정해 봅시다. 따라서 식 C.17에 따르면, 규칙 P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P))에 대한 MLE 추정치는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 정보를 포함한 규칙에 대해 단순 MLE를 적용할 때의 수식 제시 준비.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Count(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P)) / Count(VP(dumped,VBD)) (C.22)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Count(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P)) / Count(VP(dumped,VBD)) (C.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘화된 규칙의 발생 빈도를 기반으로 한 확률 계산식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But there's no way we can get good estimates of counts like those in (C.22) because they are so specific: we're unlikely to see many (or even any) instances of a sentence with a verb phrase headed by dumped that has one NP argument headed by sacks and a PP argument headed by into. In other words, counts of fully lexicalized PCFG rules like this will be far too sparse, and most rule probabilities will come out 0.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러나 (C.22)와 같은 빈도에 대해 좋은 추정치를 얻을 방법은 없습니다. 왜냐하면 그것들이 너무나 구체적이기 때문입니다. 'dumped'가 핵심어인 동사구이면서 'sacks'가 핵심어인 하나의 NP 인자와 'into'가 핵심어인 PP 인자를 갖는 문장의 사례를 많이(혹은 단 하나라도) 볼 가능성은 매우 낮습니다. 즉, 이와 같이 완전히 어휘화된 PCFG 규칙의 빈도는 너무나 희소(sparse)할 것이며, 대부분의 규칙 확률은 0이 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터 희소성(Data Sparsity) 문제로 인해 단순 MLE 방식이 어휘화된 문법에 적용되기 어려움을 지적.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The idea of lexicalized parsing is to make some further independence assumptions to break down each rule so that we would estimate the probability</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘화 파싱의 아이디어는 추가적인 독립성 가정을 도입하여 각 규칙을 분해함으로써 다음과 같은 확률을 추정하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>희소성 문제를 해결하기 위해 복잡한 확률을 더 작은 단위로 분해하는 접근법 제시.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P))</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P))</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분해 대상이 되는 전체 규칙 확률.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.6.1 The Collins Parser</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.6.1 Collins 파서</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>독립성 가정을 활용한 대표적인 어휘화 파서인 Collins 파서에 대한 상세 설명.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Statistical parsers differ in exactly which independence assumptions they make. Let's look at the assumptions in a simplified version of the Collins parser. The first intuition of the Collins parser is to think of the right-hand side of every (internal) CFG rule as consisting of a head non-terminal, together with the non-terminals to the left of the head and the non-terminals to the right of the head. In the abstract, we think about these rules as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>통계적 파서들은 정확히 어떤 독립성 가정을 하는지에 따라 달라집니다. Collins 파서의 단순화된 버전에서 사용된 가정들을 살펴봅시다. Collins 파서의 첫 번째 직관은 모든 (내부) CFG 규칙의 우변이 헤드 비단말 기호와, 그 헤드의 왼쪽에 있는 비단말 기호들, 그리고 헤드의 오른쪽에 있는 비단말 기호들로 구성되어 있다고 생각하는 것입니다. 추상적으로, 우리는 이 규칙들을 다음과 같이 생각합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 우변을 헤드(H), 왼쪽 의존어(L), 오른쪽 의존어(R)로 구분하는 구조적 관점.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>LHS → Ln Ln-1 ... L1 H R1 ... Rn-1 Rn (C.23)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LHS → Ln Ln-1 ... L1 H R1 ... Rn-1 Rn (C.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙의 일반화된 추상적 형태.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Since this is a lexicalized grammar, each of the symbols like L1 or R3 or H or LHS is actually a complex symbol representing the category and its head and head tag, like VP(dumped,VP) or NP(sacks,NNS).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이것은 어휘화된 문법이므로, L1이나 R3, H 또는 LHS와 같은 각 기호는 사실 VP(dumped, VP) 또는 NP(sacks, NNS)와 같이 카테고리와 그 핵심어 및 헤드 태그를 나타내는 복합 기호입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추상적 기호들이 실제로는 어휘 정보를 포함하고 있음을 명시.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now, instead of computing a single MLE probability for this rule, we are going to break down this rule via a neat generative story, a slight simplification of what is called Collins Model 1. This new generative story is that given the left-hand side, we first generate the head of the rule and then generate the dependents of the head, one by one, from the inside out. Each of these steps will have its own probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 이 규칙에 대해 단일 MLE 확률을 계산하는 대신, 'Collins 모델 1'이라고 불리는 것을 약간 단순화한 깔끔한 생성 방식(generative story)을 통해 이 규칙을 분해해 보겠습니다. 이 새로운 생성 방식은 좌변이 주어졌을 때, 먼저 규칙의 헤드를 생성하고 그 다음 헤드의 의존어들을 안쪽에서 바깥쪽으로 하나씩 생성하는 것입니다. 이러한 각 단계는 자신만의 확률을 갖게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 모델(Generative Model) 관점에서 규칙 생성을 단계별 확률의 곱으로 분해하는 방식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We also add a special STOP non-terminal at the left and right edges of the rule; this non-terminal allows the model to know when to stop generating dependents on a given side. We generate dependents on the left side of the head until we've generated STOP on the left side of the head, at which point we move to the right side of the head and start generating dependents there until we generate STOP. So it's as if we are generating a rule augmented as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또한 규칙의 왼쪽과 오른쪽 끝에 특수한 'STOP' 비단말 기호를 추가합니다. 이 비단말 기호는 모델이 특정 방향으로 의존어 생성을 언제 멈출지 알 수 있게 해줍니다. 헤드의 왼쪽에서 STOP이 생성될 때까지 의존어들을 생성하고, 그 시점에서 헤드의 오른쪽으로 이동하여 STOP이 생성될 때까지 의존어들을 생성합니다. 따라서 마치 다음과 같이 확장된 규칙을 생성하는 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 프로세스의 종료 조건을 명시하기 위한 STOP 기호의 역할 설명.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(VP(dumped,VBD) → STOP VBD(dumped, VBD) NP(sacks,NNS) PP(into,P) STOP) (C.24)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(VP(dumped,VBD) → STOP VBD(dumped, VBD) NP(sacks,NNS) PP(into,P) STOP) (C.24)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>STOP 기호가 포함된 확장된 어휘화 규칙의 형태.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">Generative Story</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's see the generative story for this augmented rule. We make use of three kinds of probabilities: PH for generating heads, PL for generating dependents on the left, and PR for generating dependents on the right.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 확장된 규칙에 대한 생성 과정을 살펴봅시다. 우리는 세 가지 종류의 확률을 사용합니다. 헤드 생성을 위한 PH, 왼쪽 의존어 생성을 위한 PL, 그리고 오른쪽 의존어 생성을 위한 PR입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 모델에서 사용되는 세 가지 핵심 확률 컴포넌트 정의.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. Generate the head VBD(dumped,VBD) with probability PH(H | LHS) = PH(VBD(dumped,VBD) | VP(dumped,VBD)) ... 5) Generate the right dependent STOP with probability PR(STOP | VP(dumped,VBD), VBD(dumped,VBD))</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 확률 PH(H | LHS)로 헤드 VBD(dumped,VBD) 생성 ... 5) 확률 PR(STOP | VP(dumped,VBD), VBD(dumped,VBD))로 오른쪽 STOP 기호 생성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트리의 성장을 단계별(헤드 -> 왼쪽 의존어 -> 오른쪽 의존어)로 보여주는 시각적 예시와 확률 식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In summary, the probability of this rule</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약하자면, 이 규칙의 확률</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 설명한 단계별 확률의 최종 결합 형태 제시.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P)) (C.25)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(VP(dumped,VBD) → VBD(dumped, VBD) NP(sacks,NNS) PP(into,P)) (C.25)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산하고자 하는 목표 규칙 확률.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>is estimated (simplifying the notation a bit from the steps above):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>은 (위의 단계들로부터 표기법을 약간 단순화하여) 다음과 같이 추정됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수식 전개 과정에 대한 안내.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>PH(VBD | VP, dumped) × PL(STOP | VP, VBD, dumped) × PR(NP(sacks,NNS) | VP, VBD, dumped) × PR(PP(into,P) | VP, VBD, dumped) × PR(STOP | VP, VBD, dumped) (C.26)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PH(VBD | VP, dumped) × PL(STOP | VP, VBD, dumped) × PR(NP(sacks,NNS) | VP, VBD, dumped) × PR(PP(into,P) | VP, VBD, dumped) × PR(STOP | VP, VBD, dumped) (C.26)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 확률을 각 구성 요소 생성 확률의 곱으로 나타낸 최종 식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Each of these probabilities can be estimated from much smaller amounts of data than the full probability in (C.25). For example, the maximum likelihood estimate for the component probability PR(NP(sacks,NNS) | VP, VBD, dumped) is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 각 확률은 (C.25)의 전체 확률보다 훨씬 적은 양의 데이터로부터 추정될 수 있습니다. 예를 들어, 구성 요소 확률 PR(NP(sacks,NNS) | VP, VBD, dumped)에 대한 최대 우도 추정치는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분해된 개별 확률들이 데이터 희소성 문제에서 자유로운 이유와 예시.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Count(VP(dumped,VBD) with NNS(sacks) as a daughter somewhere on the right) / Count(VP(dumped,VBD)) (C.27)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Count(오른쪽 어딘가에 NNS(sacks)를 딸 노드로 갖는 VP(dumped,VBD)) / Count(VP(dumped,VBD)) (C.27)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개별 의존어 생성 확률을 구하는 빈도 기반 식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These counts are much less subject to sparsity problems than are complex counts like those in (C.25).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 빈도들은 (C.25)와 같은 복잡한 빈도들보다 희소성 문제의 영향을 훨씬 덜 받습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분해를 통한 모델링의 이점(데이터 희소성 극복) 재강조.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

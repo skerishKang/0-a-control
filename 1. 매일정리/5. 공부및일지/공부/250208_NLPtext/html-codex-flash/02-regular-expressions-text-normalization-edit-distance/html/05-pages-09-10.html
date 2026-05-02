@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages 9-10 | Regular Expressions, Text Normalization, Edit Distance</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1f1b16;
+      --muted: #6f675d;
+      --line: #ddd2c2;
+      --accent: #8c5a2b;
+      --accent-soft: #f1e2cf;
+      --note-bg: #faf4ea;
+      --source-bg: #f5f3ef;
+      --translation-bg: #fff8ea;
+      --shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%),
+        linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 241, 232, 0.88);
+      border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .quick-nav,
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fcf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .meta-card dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .meta-card dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .page {
+      margin-bottom: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff8eb, #f5ead8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blocks {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fffdfa;
+    }
+
+    .block-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .block-title {
+      font-weight: 800;
+    }
+
+    .block-type {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .block-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .source,
+    .translation,
+    .note-panel {
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .source {
+      background: var(--source-bg);
+    }
+
+    .translation {
+      background: var(--translation-bg);
+    }
+
+    .note-panel {
+      background: var(--note-bg);
+    }
+
+    .source pre,
+    .translation pre,
+    .note-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: inherit;
+    }
+
+    .mono pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-toggle {
+      align-self: start;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-panel[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero,
+      .page-header,
+      .blocks,
+      .block-head,
+      .block-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="doc-meta">
+        <div class="eyebrow">02 PDF / HTML Sample</div>
+        <h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+      </div>
+      <div class="quick-nav">
+        <a class="chip" href="#page-9">Page 9</a>
+        <a class="chip" href="#page-10">Page 10</a>
+      </div>
+      <div class="actions">
+        <button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+        <button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Study Edition</div>
+      <h2>Pages 9-10 Annotated Page</h2>
+      <p>치환, 캡처 그룹, 역참조, 비캡처 그룹, 룩어헤드 어설션을 다룹니다.</p>
+      <div class="hero-grid">
+        <dl class="meta-card">
+          <dt>Source</dt>
+          <dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Workflow</dt>
+          <dd>html-codex-flash</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Status</dt>
+          <dd>Accepted</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="page" id="page-9">
+      <header class="page-header">
+        <h2>Page 9</h2>
+        <div class="page-subtitle">치환과 캡처 그룹</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>s/colour/color/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>s/colour/color/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>영국식 철자인 'colour'를 미국식 철자인 'color'로 바꾸는 가장 기본적인 치환 예시입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>It is often useful to be able to refer to a particular subpart of the string matching the first pattern. For example, suppose we wanted to put angle brackets around all integers in a text, for example, changing the 35 boxes to the <35> boxes. We'd like a way to refer to the integer we've found so that we can easily add the brackets. To do this, we put parentheses ( and ) around the first pattern and use the number operator \1 in the second pattern to refer back. Here's how it looks:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>첫 번째 패턴과 일치하는 문자열의 특정 일부분을 참조할 수 있다면 매우 유용할 때가 많습니다. 예를 들어, 텍스트에 포함된 모든 정수에 꺾쇠괄호를 씌우고 싶다고 가정해 봅시다. 즉, '35 boxes'를 '<35> boxes'로 바꾸는 것입니다. 우리가 찾은 정수를 참조해서 괄호를 쉽게 씌울 방법이 필요합니다. 이를 위해 첫 번째 패턴 주위에 소괄호 ( 와 )를 두르고, 두 번째 패턴에서 숫자 연산자 \1을 사용하여 이를 다시 참조합니다. 다음과 같은 모습입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>매칭된 문자열의 일부를 기억해 두었다가 나중에 다시 사용하는 '역참조(backreference)'의 기본 개념을 설명합니다. 소괄호는 기억할 범위를 지정하고, `\1`은 그 기억된 내용을 불러오는 통로 역할을 합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>s/([0-9]+)/<\1>/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>s/([0-9]+)/<\1>/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>숫자들을 찾아서(`([0-9]+)`) 그 찾은 내용물(`\1`)의 앞뒤에 `<`와 `>`를 붙여 치환하는 정규 표현식입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The parenthesis and number operators can also specify that a certain string or expression must occur twice in the text. For example, suppose we are looking for the pattern "the Xer they were, the Xer they will be", where we want the two X's to be the same string. We do this by surrounding the first X with the parenthesis operator, and replacing the second X with the number operator \1, as follows:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>소괄호와 숫자 연산자는 특정 문자열이나 표현식이 텍스트 내에서 두 번 나타나야 함을 지정할 때도 쓰일 수 있습니다. 예를 들어, "the Xer they were, the Xer they will be"라는 패턴을 찾고 있는데, 두 개의 X가 반드시 동일한 문자열이어야 한다고 가정해 봅시다. 우리는 첫 번째 X를 소괄호 연산자로 감싸고, 두 번째 X를 숫자 연산자 \1로 교체함으로써 이를 구현할 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>역참조를 활용해 '반복되는 동일한 패턴'을 찾는 방법을 설명합니다. 단순히 형태가 같은 것이 아니라, 실제로 매칭된 '값' 자체가 동일해야 하는 제약 조건을 걸 때 사용합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/the (.*)er they were, the \1er they will be/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/the (.*)er they were, the \1er they will be/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 괄호에서 매칭된 내용(`(.*)`)이 뒤의 `\1` 자리에서도 똑같이 나타나야 함을 의미합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Here the \1 will be replaced by whatever string matched the first item in parentheses. So this will match the bigger they were, the bigger they will be but not the bigger they were, the faster they will be.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>여기서 \1은 소괄호 안의 첫 번째 항목과 일치했던 문자열로 대체됩니다. 따라서 이 패턴은 "the bigger they were, the bigger they will be"와는 일치하지만, "the bigger they were, the faster they will be"와는 일치하지 않습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>역참조가 어떻게 '동일성'을 보장하는지 구체적인 예시를 통해 보여줍니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>capture group
+register</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>캡처 그룹
+레지스터</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>소괄호로 묶인 패턴과 그 패턴이 매칭된 결과를 저장하는 임시 저장 공간을 일컫는 용어들입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>This use of parentheses to store a pattern in memory is called a capture group. Every time a capture group is used (i.e., parentheses surround a pattern), the resulting match is stored in a numbered register. If you match two different sets of parentheses, \2 means whatever matched the second capture group. Thus</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>패턴을 메모리에 저장하기 위해 소괄호를 사용하는 것을 캡처 그룹(capture group)이라고 부릅니다. 캡처 그룹이 사용될 때마다(즉, 패턴을 소괄호로 감쌀 때마다), 그 결과로 얻은 매칭 값은 번호가 매겨진 레지스터(register)에 저장됩니다. 만약 두 쌍의 소괄호를 사용해 매칭한다면, \2는 두 번째 캡처 그룹과 일치한 내용물을 의미하게 됩니다. 따라서</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>캡처 그룹과 번호가 매겨진 레지스터의 관계를 설명합니다. 괄호가 열리는 순서대로 `\1`, `\2`, `\3` 등의 번호가 부여됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/the (.*)er they (.*), the \1er we \2/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/the (.*)er they (.*), the \1er we \2/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>두 개의 서로 다른 캡처 그룹을 각각 `\1`과 `\2`로 역참조하는 복합 패턴의 예시입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>will match the faster they ran, the faster we ran but not the faster they ran, the faster we ate. Similarly, the third capture group is stored in \3, the fourth is in \4, and so on.
+Parentheses thus have a double function in regular expressions; they are used to group terms for specifying the order in which operators should apply, and they are used to capture something in a register. Occasionally we might want to use parentheses for grouping, but don't want to capture the resulting pattern in a register. In that case we use a non-capturing group, which is specified by putting the commands ?: after the open paren, in the form (?: pattern ).</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 패턴은 "the faster they ran, the faster we ran"과는 일치하지만 "the faster they ran, the faster we ate"와는 일치하지 않을 것입니다. 마찬가지로 세 번째 캡처 그룹은 \3에, 네 번째는 \4에 저장되는 식입니다.
+이처럼 정규 표현식에서 소괄호는 이중적인 기능을 가집니다. 연산자가 적용되는 순서를 지정하기 위해 항들을 묶는(grouping) 용도로 쓰이기도 하고, 레지스터에 무언가를 캡처(capture)하는 용도로도 쓰입니다. 때때로 그룹화는 하고 싶지만 그 결과를 레지스터에 캡처하고 싶지는 않을 때가 있습니다. 그런 경우에는 여는 괄호 뒤에 ?: 명령어를 붙여 (?: pattern ) 형식으로 쓰는 비캡처 그룹(non-capturing group)을 사용합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>소괄호의 두 가지 역할(그룹화 및 캡처)을 구분하고, 메모리 낭비를 줄이거나 번호를 꼬이지 않게 하기 위한 '비캡처 그룹'(`(?:)`)의 사용법을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>non-capturing group</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>비캡처 그룹</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>매칭 결과 저장(캡처) 기능 없이 오직 그룹화 기능만 수행하는 소괄호 형태입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 12</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/(?:some|a few) (people|cats) like some \1/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/(?:some|a few) (people|cats) like some \1/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 괄호는 비캡처 그룹이므로 `\1`은 두 번째 괄호인 `(people|cats)`를 참조하게 됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 13</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>will match some cats like some cats but not some cats like some a few.
+Substitutions and capture groups are very useful in implementing simple chatbots like ELIZA (Weizenbaum, 1966). Recall that ELIZA simulates a Rogerian psychologist by carrying on conversations like the following:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 패턴은 "some cats like some cats"와는 일치하지만 "some cats like some a few"와는 일치하지 않을 것입니다.
+치환과 캡처 그룹은 엘리자(ELIZA, Weizenbaum, 1966)와 같은 간단한 챗봇을 구현할 때 매우 유용합니다. 엘리자는 다음과 같은 대화를 이어감으로써 로저스(Rogerian) 심리 치료사를 흉내 낸다는 점을 기억해 보십시오.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>캡처 그룹과 치환 기법이 실제 응용 사례인 초기 인공지능 챗봇 '엘리자'에서 어떻게 활용되는지 소개하며 흥미를 유발합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 14</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: User1: | Men are all alike.
+row 2: ELIZA1: | IN WHAT WAY
+row 3: User2: | They're always bugging us about something or other.
+row 4: ELIZA2: | CAN YOU THINK OF A SPECIFIC EXAMPLE
+row 5: User3: | Well, my boyfriend made me come here.
+row 6: ELIZA3: | YOUR BOYFRIEND MADE YOU COME HERE
+row 7: User4: | He says I'm depressed much of the time.
+row 8: ELIZA4: | I AM SORRY TO HEAR YOU ARE DEPRESSED</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 사용자1: | 남자들은 다 똑같아요.
+행 2: 엘리자1: | 어떤 면에서요?
+행 3: 사용자2: | 그들은 항상 이런저런 일로 우리를 괴롭혀요.
+행 4: 엘리자2: | 구체적인 예를 하나 들어줄 수 있나요?
+행 5: 사용자3: | 음, 제 남자친구가 여기 오게 했어요.
+행 6: 엘리자3: | 당신의 남자친구가 당신을 여기 오게 했군요.
+행 7: 사용자4: | 그는 제가 거의 항상 우울해 보인대요.
+행 8: 엘리자4: | 당신이 우울하다니 안타까운 일이네요.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>엘리자의 대화 예시입니다. 사용자의 입력을 적절히 변형하여(치환) 다시 질문하는 방식을 통해 대화를 이어가는 것을 볼 수 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 15</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>ELIZA works by having a series or cascade of regular expression substitutions each of which matches and changes some part of the input lines. Input lines are</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>엘리자는 입력된 줄의 일부를 매칭하고 변경하는 일련의 정규 표현식 치환(substitutions) 과정을 거쳐 작동합니다. 입력된 줄들은 [다음 페이지에서 계속]</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>엘리자의 작동 원리가 정규 표현식 기반의 단계적인 치환 알고리즘임을 설명합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-10">
+      <header class="page-header">
+        <h2>Page 10</h2>
+        <div class="page-subtitle">ELIZA繼續 및 룩어헤드</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>10 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>10 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 장 제목과 페이지 번호(10) 정보입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>first uppercased. The first substitutions then change all instances of MY to YOUR, and I'M to YOU ARE, and so on. The next set of substitutions matches and replaces other patterns in the input. Here are some examples:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>먼저 대문자로 변환됩니다. 그 후 첫 번째 치환 과정에서 모든 'MY'는 'YOUR'로, 'I'M'은 'YOU ARE' 등으로 바뀝니다. 그다음 치환 세트는 입력값의 다른 패턴들을 매칭하고 교체합니다. 몇 가지 예시는 다음과 같습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>엘리자가 대화를 생성하기 위해 거치는 전처리(대문자화)와 1인칭-2인칭 전환 과정을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>s/.* I'm (depressed|sad) .*/I AM SORRY TO HEAR YOU ARE \1/
+s/.* I AM (depressed|sad) .*/WHY DO YOU THINK YOU ARE \1/
+s/.* all .*/IN WHAT WAY/
+s/.* always .*/CAN YOU THINK OF A SPECIFIC EXAMPLE/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>s/.* I'm (depressed|sad) .*/당신이 \1하다니 안타까운 일이네요/
+s/.* I AM (depressed|sad) .*/왜 당신이 \1하다고 생각하시나요?/
+s/.* all .*/어떤 면에서요?/
+s/.* always .*/구체적인 예를 하나 들어줄 수 있나요?/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>엘리자의 핵심 로직인 치환 규칙들입니다. `\1`을 사용해 사용자의 기분(depressed/sad)을 그대로 가져와 답변에 반영하는 것을 볼 수 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Since multiple substitutions can apply to a given input, substitutions are assigned a rank and applied in order. Creating patterns is the topic of Exercise 2.3, and we return to the details of the ELIZA architecture in Chapter 24.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>하나의 입력에 여러 치환 규칙이 적용될 수 있으므로, 각 치환에는 순위(rank)가 매겨지며 순서대로 적용됩니다. 패턴을 설계하는 것은 연습 문제 2.3의 주제이며, 엘리자 아키텍처에 대한 자세한 내용은 24장에서 다시 다릅니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>챗봇 시스템에서 규칙 간의 충돌을 방지하고 우선순위를 부여하는 '순위(rank)' 개념을 언급합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">section_title</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.1.7 Lookahead Assertions</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.1.7 룩어헤드 어설션 (Lookahead Assertions)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>현재 위치 뒤에 특정 패턴이 오는지 여부를 확인하지만, 실제로 그 문자를 '소비'하지는 않는 특수한 조건 확인 기법인 룩어헤드(전방 탐색)를 배웁니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Finally, there will be times when we need to predict the future: look ahead in the text to see if some pattern matches, but not advance the match cursor, so that we can then deal with the pattern if it occurs.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 미래를 예측해야 할 때가 있을 것입니다. 즉, 텍스트의 앞부분을 미리 살펴서 특정 패턴이 일치하는지 확인하되, 매칭 커서(cursor)를 이동시키지는 않음으로써 패턴이 발생했을 때 이를 추가로 처리할 수 있게 하는 것입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>룩어헤드의 정의를 '미래 예측'에 비유하여 설명합니다. 가장 큰 특징은 확인만 할 뿐 커서가 이동하지 않는다는 점입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>lookahead
+zero-width</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>룩어헤드 (전방 탐색)
+제로 너비 (zero-width)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>룩어헤드와 그 성질(문자를 차지하지 않음)을 나타내는 주요 키워드입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>These lookahead assertions make use of the (? syntax that we saw in the previous section for non-capture groups. The operator (?= pattern) is true if pattern occurs, but is zero-width, i.e. the match pointer doesn't advance. The operator (?! pattern) only returns true if a pattern does not match, but again is zero-width and doesn't advance the cursor. Negative lookahead is commonly used when we are parsing some complex pattern but want to rule out a special case. For example suppose we want to match, at the beginning of a line, any single word that doesn't start with "Volcano". We can use negative lookahead to do this:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이러한 룩어헤드 어설션은 앞 절에서 비캡처 그룹을 설명할 때 보았던 `(?` 구문을 활용합니다. `(?= pattern)` 연산자는 pattern이 나타나면 참이 되지만 제로 너비이므로, 즉 매치 포인터가 앞으로 이동하지 않습니다. `(?! pattern)` 연산자는 pattern이 일치하지 않을 때만 참을 반환하며, 이 경우에도 제로 너비이므로 커서를 전진시키지 않습니다. 부정 룩어헤드는 복잡한 패턴을 해석하면서 특정한 예외 경우를 배제하고 싶을 때 흔히 사용됩니다. 예를 들어, 줄의 시작에서 "Volcano"로 시작하지 않는 임의의 한 단어와 일치시키고 싶다고 가정해 봅시다. 이를 위해 다음과 같이 할 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>룩어헤드는 조건을 검사하지만 문자열을 소비하지 않는다는 점이 핵심입니다. 특히 부정 룩어헤드는 "이 패턴만은 제외하고 싶다"고 조건을 걸 때 매우 유용합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+    function setPanelState(toggle, expanded) {
+      const panel = toggle.nextElementSibling;
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+      panel.hidden = !expanded;
+    }
+
+    toggles.forEach((toggle) => {
+      setPanelState(toggle, false);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setPanelState(toggle, !expanded);
+      });
+    });
+
+    document.querySelector("[data-expand-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, true));
+    });
+
+    document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, false));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 24: Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero h1 { margin: 0 0 8px; font-size: clamp(28px, 5vw, 42px); line-height: 1.15; font-weight: 800; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.file-card { display: block; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; text-decoration: none; color: var(--ink); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.file-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.file-card h3 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+.file-card p { margin: 0; color: var(--muted); font-size: 14px; }
+.status-badge { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="shell">
+<section class="hero">
+<div class="eyebrow">Chapter 24</div>
+<h1>Chatbots and Dialogue Systems</h1>
+<p>Speech and Language Processing (Jurafsky & Martin)</p>
+<div class="status-badge">Complete • 20 pages</div>
+</section>
+
+<div class="file-grid">
+<a href="01-pages-01-02.html" class="file-card">
+<h3>Pages 1-2</h3>
+<p>Introduction, Conversational Agents</p>
+</a>
+<a href="02-pages-03-04.html" class="file-card">
+<h3>Pages 3-4</h3>
+<p>Speech Acts, Dialogue Acts</p>
+</a>
+<a href="03-pages-05-06.html" class="file-card">
+<h3>Pages 5-6</h3>
+<p>Grounding, Turn-Taking</p>
+</a>
+<a href="04-pages-07-08.html" class="file-card">
+<h3>Pages 7-8</h3>
+<p>Dialogue Structure, Intentions</p>
+</a>
+<a href="05-pages-09-10.html" class="file-card">
+<h3>Pages 9-10</h3>
+<p>Rule-Based Chatbots, ELIZA</p>
+</a>
+<a href="06-pages-11-12.html" class="file-card">
+<h3>Pages 11-12</h3>
+<p>Corpus-Based Chatbots</p>
+</a>
+<a href="07-pages-13-14.html" class="file-card">
+<h3>Pages 13-14</h3>
+<p>Seq2Seq Chatbots, Attention</p>
+</a>
+<a href="08-pages-15-16.html" class="file-card">
+<h3>Pages 15-16</h3>
+<p>Task-Based Dialogue, Frames</p>
+</a>
+<a href="09-pages-17-18.html" class="file-card">
+<h3>Pages 17-18</h3>
+<p>GUS Architecture</p>
+</a>
+<a href="10-pages-19-20.html" class="file-card">
+<h3>Pages 19-20</h3>
+<p>Dialogue State Tracking</p>
+</a>
+<a href="11-pages-21-22.html" class="file-card">
+<h3>Pages 21-22</h3>
+<p>Policy, NLG</p>
+</a>
+<a href="12-pages-23-24.html" class="file-card">
+<h3>Pages 23-24</h3>
+<p>End-to-End Models</p>
+</a>
+<a href="13-pages-25-26.html" class="file-card">
+<h3>Pages 25-26</h3>
+<p>Evaluation Methods</p>
+</a>
+<a href="14-pages-27-28.html" class="file-card">
+<h3>Pages 27-28</h3>
+<p>User Satisfaction, Metrics</p>
+</a>
+<a href="15-pages-29-30.html" class="file-card">
+<h3>Pages 29-30</h3>
+<p>HCI, Wizard-of-Oz, Design</p>
+</a>
+<a href="16-pages-31-32.html" class="file-card">
+<h3>Pages 31-32</h3>
+<p>Ethics, Bias, Summary</p>
+</a>
+<a href="17-pages-33-34.html" class="file-card">
+<h3>Pages 33-34</h3>
+<p>Historical Notes, Exercises</p>
+</a>
+<a href="18-pages-35-36.html" class="file-card">
+<h3>Pages 35-36</h3>
+<p>References A-L</p>
+</a>
+<a href="19-pages-37-38.html" class="file-card">
+<h3>Pages 37-38</h3>
+<p>References L-W</p>
+</a>
+<a href="20-pages-39.html" class="file-card">
+<h3>Pages 39</h3>
+<p>References Y-Z</p>
+</a>
+</div>
+</div>
+</body>
+</html>

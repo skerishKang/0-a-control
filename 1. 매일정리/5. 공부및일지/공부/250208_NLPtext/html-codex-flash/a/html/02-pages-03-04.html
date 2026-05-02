@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-3">Page 3</a><a class="chip" href="#page-4">Page 4</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-3">
+<header class="page-header"><h2>Page 3</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.2 • THE HIDDEN MARKOV MODEL 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.2 • 은닉 마르코프 모델 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>First, as with a first-order Markov chain, the probability of a particular state depends only on the previous state:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>첫째, 1차 마르코프 체인과 마찬가지로 특정 상태의 확률은 오직 이전 상태에만 의존합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 첫 번째 가정인 마르코프 가정을 다시 강조합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Markov Assumption: P(qi|q1...qi−1) = P(qi|qi−1) (A.4)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 가정: P(qi|q1...qi−1) = P(qi|qi−1) (A.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>i번째 상태 q가 나타날 확률은 그 이전의 모든 상태 시퀀스가 아닌, 바로 직전 상태 i-1에 의해서만 결정된다는 수학적 표현입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Second, the probability of an output observation oi depends only on the state that produced the observation qi and not on any other states or any other observations:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>둘째, 출력 관찰 oi의 확률은 그 관찰을 생성한 상태 qi에만 의존하며, 다른 어떤 상태나 다른 어떤 관찰에도 의존하지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 두 번째 가정인 관찰 독립성(Output Independence) 가정을 설명합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Output Independence: P(oi|q1...qi..., qT, o1..., oi..., oT) = P(oi|qi) (A.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>관찰 독립성: P(oi|q1...qi..., qT, o1..., oi..., oT) = P(oi|qi) (A.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 시점 i의 관찰 oi는 오직 그 시점의 상태 qi에 의해서만 결정된다는 것을 보여줍니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To exemplify these models, we’ll use a task invented by Jason Eisner (2002). Imagine that you are a climatologist in the year 2799 studying the history of global warming. You cannot find any records of the weather in Baltimore, Maryland, for the summer of 2020, but you do find Jason Eisner’s diary, which lists how many ice creams Jason ate every day that summer. Our goal is to use these observations to estimate the temperature every day. We’ll simplify this weather task by assuming there are only two kinds of days: cold (C) and hot (H). So the Eisner task is as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 모델들을 예시하기 위해 Jason Eisner(2002)가 고안한 과업을 사용하겠습니다. 여러분이 2799년에 지구 온난화의 역사를 연구하는 기후학자라고 상상해 보십시오. 2020년 여름 메릴랜드주 볼티모어의 날씨 기록은 찾을 수 없지만, 그해 여름 Jason Eisner가 매일 아이스크림을 몇 개나 먹었는지 기록된 일기를 발견했습니다. 우리의 목표는 이 관찰값들을 이용해 매일의 기온을 추정하는 것입니다. 우리는 이 날씨 과업을 추움(C)과 더움(H)의 두 가지 날만 있다고 가정하여 단순화하겠습니다. 따라서 Eisner 과업은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM을 설명하기 위한 유명한 예시인 '아이스크림 예제'를 소개합니다. 관찰값(아이스크림 개수)을 통해 은닉 상태(날씨)를 추론하는 전형적인 HMM 상황을 설정합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given a sequence of observations O (each an integer representing the number of ice creams eaten on a given day) find the ‘hidden’ sequence Q of weather states (H or C) which caused Jason to eat the ice cream.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>관찰 시퀀스 O(각각은 특정 날에 먹은 아이스크림 개수를 나타내는 정수)가 주어졌을 때, Jason이 아이스크림을 먹게 만든 날씨 상태(H 또는 C)의 '은닉' 시퀀스 Q를 찾으십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>풀어야 할 구체적인 문제를 정의합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.2 shows a sample HMM for the ice cream task. The two hidden states (H and C) correspond to hot and cold weather, and the observations (drawn from the alphabet O = {1, 2, 3}) correspond to the number of ice creams eaten by Jason on a given day.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.2는 아이스크림 과업에 대한 샘플 HMM을 보여줍니다. 두 은닉 상태(H와 C)는 더운 날씨와 추운 날씨에 해당하며, 관찰값(알파벳 O = {1, 2, 3}에서 추출됨)은 Jason이 특정 날에 먹은 아이스크림 개수에 해당합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델의 상태와 관찰값 집합을 정의합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.2 A hidden Markov model for relating numbers of ice creams eaten by Jason (the observations) to the weather (H or C, the hidden variables).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.2 Jason이 먹은 아이스크림 개수(관찰값)와 날씨(H 또는 C, 은닉 변수)를 연결하는 은닉 마르코프 모델.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 A.2의 캡션입니다. 상태 간 전이 확률(A)과 상태별 방출 확률(B)이 시각화되어 있습니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An influential tutorial by Rabiner (1989), based on tutorials by Jack Ferguson in the 1960s, introduced the idea that hidden Markov models should be characterized by three fundamental problems:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1960년대 Jack Ferguson의 튜토리얼을 바탕으로 한 Rabiner(1989)의 영향력 있는 튜토리얼은 은닉 마르코프 모델이 세 가지 근본적인 문제로 특징지어져야 한다는 아이디어를 도입했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM 연구에서 매우 중요한 Rabiner의 논문을 언급하며, HMM을 이해하기 위해 해결해야 할 세 가지 핵심 문제를 제시합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Problem 1 (Likelihood): Given an HMM λ = (A, B) and an observation sequence O, determine the likelihood P(O|λ).
+  Problem 2 (Decoding): Given an observation sequence O and an HMM λ = (A, B), discover the best hidden state sequence Q.
+  Problem 3 (Learning): Given an observation sequence O and the set of states in the HMM, learn the HMM parameters A and B.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문제 1 (우도): HMM λ = (A, B)와 관찰 시퀀스 O가 주어졌을 때, 우도 P(O|λ)를 결정함.
+  문제 2 (디코딩): 관찰 시퀀스 O와 HMM λ = (A, B)가 주어졌을 때, 최적의 은닉 상태 시퀀스 Q를 찾아냄.
+  문제 3 (학습): 관찰 시퀀스 O와 HMM의 상태 집합이 주어졌을 때, HMM 파라미터 A와 B를 학습함.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 3대 문제를 정의합니다. 1. 확률 계산(평가), 2. 최적 상태 추론(디코딩), 3. 파라미터 추정(학습)입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We already saw an example of Problem 2 in Chapter 8. In the next two sections we introduce the Forward and Forward-Backward algorithms to solve Problems 1 and 3 and give more information on Problem 2</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이미 8장에서 문제 2의 예시를 보았습니다. 다음 두 섹션에서는 문제 1과 3을 해결하기 위한 Forward 및 Forward-Backward 알고리즘을 소개하고 문제 2에 대해 더 많은 정보를 제공하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞으로 다룰 내용의 전개 방향을 안내합니다.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-4">
+<header class="page-header"><h2>Page 4</h2>
+<div class="page-subtitle">A.3 Likelihood Computation: The Forward Algorithm</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 APPENDIX A • HIDDEN MARKOV MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 부록 A • 은닉 마르코프 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.3 Likelihood Computation: The Forward Algorithm</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.3 우도 계산: Forward 알고리즘</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 첫 번째 문제인 우도 계산(Likelihood Computation)을 해결하는 Forward 알고리즘에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Our first problem is to compute the likelihood of a particular observation sequence. For example, given the ice-cream eating HMM in Fig. A.2, what is the probability of the sequence 3 1 3? More formally:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리의 첫 번째 문제는 특정 관찰 시퀀스의 우도를 계산하는 것입니다. 예를 들어 그림 A.2의 아이스크림 섭취 HMM이 주어졌을 때, 시퀀스 3 1 3이 나타날 확률은 얼마일까요? 좀 더 형식적으로 표현하면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>우도 계산 문제의 구체적인 예를 제시합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Computing Likelihood: Given an HMM λ = (A, B) and an observation sequence O, determine the likelihood P(O|λ).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우도 계산: HMM λ = (A, B)와 관찰 시퀀스 O가 주어졌을 때, 우도 P(O|λ)를 결정하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문제 1의 정의를 재진술합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For a Markov chain, where the surface observations are the same as the hidden events, we could compute the probability of 3 1 3 just by following the states labeled 3 1 3 and multiplying the probabilities along the arcs. For a hidden Markov model, things are not so simple. We want to determine the probability of an ice-cream observation sequence like 3 1 3, but we don’t know what the hidden state sequence is!</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표면의 관찰값이 은닉 이벤트와 동일한 마르코프 체인의 경우, 3 1 3이라고 표시된 상태들을 따라가며 아크를 따라 확률을 곱하는 것만으로 3 1 3의 확률을 계산할 수 있습니다. 하지만 은닉 마르코프 모델의 경우 상황은 그렇게 단순하지 않습니다. 우리는 3 1 3과 같은 아이스크림 관찰 시퀀스의 확률을 결정하고 싶지만, 은닉 상태 시퀀스가 무엇인지 모릅니다!</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인과 HMM에서 확률 계산의 난이도 차이를 설명합니다. HMM은 '상태'가 숨겨져 있기 때문에 어떤 상태 경로를 거쳤는지 알 수 없다는 것이 핵심 난관입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s start with a slightly simpler situation. Suppose we already knew the weather and wanted to predict how much ice cream Jason would eat. This is a useful part of many HMM tasks. For a given hidden state sequence (e.g., hot hot cold), we can easily compute the output likelihood of 3 1 3.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>약간 더 단순한 상황부터 시작해 봅시다. 우리가 이미 날씨를 알고 있고 Jason이 아이스크림을 얼마나 먹을지 예측하고 싶다고 가정해 봅시다. 이는 많은 HMM 작업에서 유용한 부분입니다. 주어진 은닉 상태 시퀀스(예: hot hot cold)에 대해 3 1 3의 출력 우도를 쉽게 계산할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상태 시퀀스가 고정되어 있다고 가정할 때의 확률 계산법을 먼저 살펴봅니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s see how. First, recall that for hidden Markov models, each hidden state produces only a single observation. Thus, the sequence of hidden states and the sequence of observations have the same length.1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어떻게 하는지 봅시다. 먼저, 은닉 마르코프 모델에서 각 은닉 상태는 단 하나의 관찰값만을 생성한다는 점을 상기하십시오. 따라서 은닉 상태 시퀀스와 관찰 시퀀스의 길이는 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상태와 관찰값이 1:1로 대응된다는 기본 전제를 확인합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given this one-to-one mapping and the Markov assumptions expressed in Eq. A.4, for a particular hidden state sequence Q = q0, q1, q2, ..., qT and an observation sequence O = o1, o2, ..., oT, the likelihood of the observation sequence is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 일대일 매핑과 식 A.4에 표현된 마르코프 가정이 주어지면, 특정 은닉 상태 시퀀스 Q = q0, q1, q2, ..., qT와 관찰 시퀀스 O = o1, o2, ..., oT에 대해 관찰 시퀀스의 우도는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 상태 경로가 주어졌을 때 관찰 시퀀스가 나타날 확률을 구하는 공식을 소개합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(O|Q) = Π Ti=1 P(oi|qi) (A.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(O|Q) = Π Ti=1 P(oi|qi) (A.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관찰 독립성 가정을 사용하여 전체 관찰 확률을 각 시점의 방출 확률(P(oi|qi))의 곱으로 나타낸 식입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The computation of the forward probability for our ice-cream observation 3 1 3 from one possible hidden state sequence hot hot cold is shown in Eq. A.7. Figure A.3 shows a graphic representation of this computation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하나의 가능한 은닉 상태 시퀀스인 hot hot cold로부터 우리의 아이스크림 관찰값 3 1 3에 대한 전방 확률을 계산하는 과정이 식 A.7에 나와 있습니다. 그림 A.3은 이 계산의 그래픽 표현을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구체적인 계산 예시와 시각 자료를 연결합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(3 1 3|hot hot cold) = P(3|hot) × P(1|hot) × P(3|cold) (A.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(3 1 3|hot hot cold) = P(3|hot) × P(1|hot) × P(3|cold) (A.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 A.6을 실제 예제에 적용한 결과입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.3 The computation of the observation likelihood for the ice-cream events 3 1 3 given the hidden state sequence hot hot cold.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.3 은닉 상태 시퀀스 hot hot cold가 주어졌을 때 아이스크림 이벤트 3 1 3에 대한 관찰 우도 계산.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 A.3에 대한 캡션입니다. 각 상태에서 해당 관찰값이 나올 방출 확률을 곱하는 과정을 시각적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But of course, we don’t actually know what the hidden state (weather) sequence was. We’ll need to compute the probability of ice-cream events 3 1 3 instead by</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 물론 우리는 은닉 상태(날씨) 시퀀스가 실제로 무엇이었는지 알지 못합니다. 우리는 대신 다음과 같은 방법으로 아이스크림 이벤트 3 1 3의 확률을 계산해야 할 것입니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 문제 상황(상태를 모르는 상태에서 관찰 시퀀스의 확률 구하기)으로 논의를 확장합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1 In a variant of HMMs called segmental HMMs (in speech recognition) or semi-HMMs (in text processing) this one-to-one mapping between the length of the hidden state sequence and the length of the observation sequence does not hold.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 음성 인식의 segmental HMM이나 텍스트 처리의 semi-HMM이라고 불리는 HMM의 변형에서는 은닉 상태 시퀀스의 길이와 관찰 시퀀스의 길이 사이의 이러한 일대일 매핑이 성립하지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 상태가 여러 관찰을 생성하거나 그 반대의 경우인 특수한 HMM 변형에 대한 주석입니다.</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Regenerated from MD</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">하이브리드 시스템 및 GUS 프레임 기반 대화</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>negative response. Bot responses are generated by a series of response generators. Some response generators use fine-tuned neural language models: a GPT-2 (Radford et al., 2019) language model fine-tuned on the EmpatheticDialogues dataset, and a separately fine-tuned GPT-2 language model that learns in fine-tuning to paraphrase content from Wikipedia in response to questions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부정적인 응답입니다. 봇의 응답은 일련의 응답 생성기에 의해 생성됩니다. 일부 응답 생성기는 미세 조정된 신경망 언어 모델을 사용합니다: EmpatheticDialogues 데이터셋에서 미세 조정된 GPT-2(Radford 등, 2019) 언어 모델과 질문에 대한 응답으로 위키피디아의 내용을 바꾸어 표현(paraphrase)하도록 미세 조정된 별도의 GPT-2 언어 모델이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화의 성격에 따라 서로 다르게 파인튜닝된 생성 모델들이 사용될 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Other response generators are closer to rule-based; the movie or music generators produce scripted conversation about a movie or a musician, such as asking the user's opinion about a movie or an actor, giving a fun fact, and so on. These generators use regexes and sentiment classifiers to classify user responses and handwritten templates to generate bot utterances.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다른 응답 생성기들은 규칙 기반에 더 가깝습니다. 영화나 음악 생성기는 영화나 음악가에 대한 대본화된 대화를 생성하며, 예를 들어 영화나 배우에 대한 사용자의 의견을 묻거나 재미있는 사실을 제공하는 등의 작업을 수행합니다. 이러한 생성기들은 정규식과 감정 분류기를 사용하여 사용자 응답을 분류하고, 손으로 작성된 템플릿을 사용하여 봇의 발언을 생성합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 도메인(영화, 음악 등)에서는 규칙과 템플릿 기반의 생성 방식이 더 효과적일 수 있음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Each response generator can specify a priority, and a ranker is used to pass control between response generators. Fig. 24.8 shows part of a conversation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 응답 생성기는 우선순위를 지정할 수 있으며, 응답 생성기 간의 제어권을 전달하기 위해 랭커(ranker)가 사용됩니다. 그림 24.8은 대화의 일부를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 생성기 중에서 가장 적절한 응답을 선택하기 위한 우선순위 및 랭킹 시스템을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.8 Part of a conversation with Chirpy Cardinal (Paranjape et al., 2020).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.8 Chirpy Cardinal과의 대화 일부(Paranjape 등, 2020).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하이브리드 시스템인 Chirpy Cardinal의 실제 대화 흐름과 내부 처리 과정을 표 형태로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.3 GUS: Simple Frame-based Dialogue Systems</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.3 GUS: 간단한 프레임 기반 대화 시스템</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>태스크 기반 대화 시스템의 고전이자 기초인 프레임 기반 시스템에 대한 소개입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We turn now to task-based dialogue, in which a dialogue system has the goal of helping a user solve some task like making an airplane reservation or buying a product. In this section we introduce the very simple GUS architecture for task-based dialogue. Although it is quite old, (it was first introduced in 1977 in the influential GUS system for travel planning (Bobrow et al., 1977)) the GUS architecture has been astonishingly long-lived and underlies most if not all modern commercial digital assistants. Figure 24.9 shows a conversation with the original GUS system.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 대화 시스템이 항공 예약이나 상품 구매와 같은 사용자의 과업 해결을 돕는 것을 목표로 하는 태스크 기반 대화(task-based dialogue)로 넘어갑니다. 이 섹션에서는 태스크 기반 대화를 위한 매우 간단한 GUS 아키텍처를 소개합니다. 비록 매우 오래되었지만(1977년 여행 계획을 위한 영향력 있는 GUS 시스템에서 처음 소개됨, Bobrow 등 1977), GUS 아키텍처는 놀라울 정도로 오래 지속되었으며 현대의 거의 모든 상업용 디지털 비서의 기초가 됩니다. 그림 24.9는 원래 GUS 시스템과의 대화를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>태스크 기반 대화 시스템의 개념과 역사적인 GUS 시스템의 중요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>GUS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>GUS</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Genial Understander System의 약자로, 초기 태스크 기반 대화 시스템의 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue state</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 상태</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화의 현재 진행 상황과 수집된 정보를 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>frame</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>프레임</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 태스크를 완료하기 위해 필요한 정보들의 집합입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>slot</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>슬롯</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임 내에서 채워져야 할 개별 정보 항목(예: 도착지, 날짜)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>All modern task-based dialogue systems, whether the simple GUS architecture we describe here, or the more sophisticated dialogue state architectures we turn to in the following section, are based around frames. A frame is a kind of knowledge structure representing the kinds of intentions the system can extract from user sentences, and consists of a collection of slots, each of which can take a set of possible values. Together this set of frames is sometimes called a domain ontology.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 설명하는 단순한 GUS 아키텍처든, 다음 섹션에서 살펴볼 더 정교한 대화 상태 아키텍처든, 모든 현대적인 태스크 기반 대화 시스템은 프레임을 기반으로 합니다. 프레임은 시스템이 사용자 문장에서 추출할 수 있는 의도의 종류를 나타내는 일종의 지식 구조이며, 각각 가능한 값 세트를 가질 수 있는 슬롯들의 모음으로 구성됩니다. 이러한 프레임 세트를 도메인 온톨로지(domain ontology)라고 부르기도 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임, 슬롯, 도메인 온톨로지의 정의와 관계를 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">프레임 구조 및 제어 구조</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.9 The travel domain: A transcript of an actual dialogue with the GUS system of Bobrow et al. (1977). P.S.A. and Air California were airlines of that period.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.9 여행 도메인: Bobrow 등(1977)의 GUS 시스템과의 실제 대화 기록. P.S.A.와 Air California는 당시의 항공사들이었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1970년대의 초기 프레임 기반 시스템이 어떻게 사용자와 대화하며 정보를 수집하는지 보여주는 실제 사례입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The set of slots in a task-based dialogue frame specifies what the system needs to know, and the filler of each slot is constrained to values of a particular semantic type. In the travel domain, for example, a slot might be of type city (hence take on values like San Francisco, or Hong Kong) or of type date, airline, or time.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>태스크 기반 대화 프레임의 슬롯 세트는 시스템이 알아야 할 사항을 지정하며, 각 슬롯의 채우기(filler)는 특정 의미 유형(semantic type)의 값으로 제한됩니다. 예를 들어 여행 도메인에서 슬롯은 도시 유형(따라서 샌프란시스코나 홍ikk과 같은 값을 가짐)이거나 날짜, 항공사 또는 시간 유형일 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>슬롯이 특정 데이터 타입(유형)을 가지며 그에 맞는 값으로 채워져야 함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 24.10 A frame in a frame-based dialogue system, showing the type of each slot and a question used to fill the slot.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 24.10 프레임 기반 대화 시스템의 프레임으로, 각 슬롯의 유형과 슬롯을 채우는 데 사용되는 질문을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임 구조 내부의 슬롯명, 타입, 그리고 정보를 얻기 위한 질문 템플릿의 매핑을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Types in GUS, as in modern frame-based dialogue agents, have hierarchical structure; for example the date type in GUS is itself a frame with slots with types like integer or members of sets of weekday names:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 프레임 기반 대화 에이전트와 마찬가지로 GUS의 유형은 계층적 구조를 가집니다. 예를 들어 GUS의 날짜(date) 유형 그 자체는 정수 또는 요일 이름 집합의 멤버와 같은 유형의 슬롯을 가진 프레임입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>슬롯 타입 자체가 또 다른 프레임이 될 수 있는 계층적 구조를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.3.1 Control structure for frame-based dialogue</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.3.1 프레임 기반 대화의 제어 구조</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시스템이 어떤 질문을 던지고 어떤 순서로 정보를 수집할지 결정하는 메커니즘에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The control architecture for frame-based dialogue systems, used in various forms in modern systems like Apple's Siri, Amazon's Alexa, and the Google Assistant, is designed around the frame. The system's goal is to fill the slots in the frame with the fillers the user intends, and then perform the relevant action for the user (answering a question, or booking a flight).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Apple의 Siri, Amazon의 Alexa, Google 어시스턴트와 같은 현대 시스템에서 다양한 형태로 사용되는 프레임 기반 대화 시스템의 제어 아키텍처는 프레임을 중심으로 설계되었습니다. 시스템의 목표는 사용자가 의도한 값으로 프레임의 슬롯을 채운 다음, 사용자에게 관련 작업(질문에 답하거나 항공편 예약)을 수행하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>프레임 기반 시스템의 핵심 목적(슬롯 채우기 및 작업 수행)을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

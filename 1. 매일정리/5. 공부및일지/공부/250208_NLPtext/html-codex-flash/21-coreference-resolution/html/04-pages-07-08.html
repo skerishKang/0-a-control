@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-7">Page 7</a><a class="chip" href="#page-8">Page 8</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-7">
+<header class="page-header"><h2>Page 7</h2><div class="page-subtitle">개체-언급 모델</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.4 Entity-Mention Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.4 개체-언급 모델(Entity-Mention Models)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 언급 쌍이 아닌, 이미 형성된 개체 클러스터와 새로운 언급 사이의 관계를 판단하는 모델을 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>entity-mention model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체-언급 모델(entity-mention model)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>到目前为止形成的개체(entity)의 정보와 새로운 언급(mention) 간의 유사성을 판단하는 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Entity-mention models represent coreference by predicting whether a new mention should be added to an existing entity cluster. This allows for features that capture entity-level information (e.g., gender, semantic category).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체-언급 모델은 새로운 언급이 기존의 개체 클러스터에 추가되어야 하는지를 예측함으로써 상호 참조를 표현합니다. 이는 개체 수준의 정보(예: 성별, 의미 범주)를 포착하는 자질들을 사용할 수 있게 해줍니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급-쌍 모델의 한계를 극복하기 위해 '개체'라는 묶음 단위를 판단의 주체로 삼는 모델입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By considering the entire cluster, these models can enforce consistency across all mentions of an entity. For example, all mentions in a cluster must be of the same gender.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전체 클러스터를 고려함으로써, 이러한 모델은 개체의 모든 언급들 사이의 일관성을 강제할 수 있습니다. 예를 들어, 한 클러스터 내의 모든 언급은 같은 성별이어야 합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클러스터 기반의 장점인 '속성 일관성 유지'에 대해 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-8">
+<header class="page-header"><h2>Page 8</h2><div class="page-subtitle">신경망 기반 상호 참조 해소</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.5 Neural Coreference Resolution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.5 신경망 기반 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수작업 자질 공학을 탈피하고, 딥러닝 인코더(BiLSTM, Transformer)를 통해 언급의 표현을 배우는 현대적 상호 참조 해소 방식을 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern coreference systems rely on neural architectures to learn rich representations of mentions and their potential coreference relationships. These systems typically use an end-to-end approach.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 상호 참조 시스템은 언급과 그들 사이의 잠재적인 상호 참조 관계에 대한 풍부한 표현을 학습하기 위해 신경망 아키텍처에 의존합니다. 이러한 시스템들은 대개 엔드투엔드(end-to-end) 방식을 사용합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급 탐지와 클러스터링을 한꺼번에 수행하는 최근의 경향성을 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>end-to-end coreference</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>엔드투엔드 상호 참조(end-to-end coreference)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>별도의 파이프라인 없이 하나의 신경망 모델이 모든 상호 참조 과정을 처리하는 구조입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lee et al. (2017) introduced a popular end-to-end neural coreference model that uses BiLSTMs to extract mention features and an attention mechanism to assign scores to potential antecedents.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lee 등(2017)은 BiLSTM을 사용하여 언급 자질을 추출하고, 어텐션 메커니즘을 사용하여 잠재적인 선행사들에게 점수를 할당하는 인기 있는 엔드투엔드 신경망 상호 참조 모델을 제안했습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Lee(2017)의 랜드마크 모델 구조(BiLSTM + Attention)를 요약합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

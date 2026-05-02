@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Speech and Language Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">CKY 예시, 규칙 확률 학습</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.2 • PROBABILISTIC CKY PARSING OF PCFGS 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.2 • PCFG의 확률적 CKY 구문 분석 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Like the basic CKY algorithm in Fig. ??, the probabilistic CKY algorithm requires a grammar in Chomsky normal form. Converting a probabilistic grammar to CNF requires that we also modify the probabilities so that the probability of each parse remains the same under the new CNF grammar. Exercise C.2 asks you to modify the algorithm for conversion to CNF in Chapter 13 so that it correctly handles rule probabilities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 ??의 기본 CKY 알고리즘과 마찬가지로, 확률적 CKY 알고리즘은 촘스키 정규형(CNF) 문법을 필요로 합니다. 확률 문법을 CNF로 변환하려면 각 구문 분석의 확률이 새로운 CNF 문법에서도 동일하게 유지되도록 확률 값도 수정해야 합니다. 연습 문제 C.2에서는 규칙 확률을 올바르게 처리할 수 있도록 13장의 CNF 변환 알고리즘을 수정해 볼 것을 권합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY를 위해 문법을 CNF로 변환할 때 확률값의 정합성을 유지하는 것이 중요함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In practice, a generalized CKY algorithm that handles unit productions directly is typically used. Recall that Exercise 13.3 asked you to make this change in CKY; Exercise C.3 asks you to extend this change to probabilistic CKY.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제로는 단위 생성 규칙(unit productions)을 직접 처리하는 일반화된 CKY 알고리즘이 주로 사용됩니다. 연습 문제 13.3에서 CKY에 이러한 변경을 적용해 보았던 것을 상기십시오. 연습 문제 C.3에서는 이를 확률적 CKY로 확장해 볼 것을 요구합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CNF 변환 없이 단위 규칙을 직접 처리하는 실무적인 접근법을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's see an example of the probabilistic CKY chart, using the following mini-grammar, which is already in CNF:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이미 CNF 형태인 다음의 소규모 문법을 사용하여 확률적 CKY 차트의 예시를 살펴보겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실습을 위한 예시 문법을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>  S → NP VP [.80]   Det → the [.40]
+  NP → Det N [.30]   Det → a [.40]
+  VP → V NP [.20]    N → meal [.01]
+  V → includes [.05] N → flight [.02]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>  S → NP VP [.80]   Det → the [.40]
+  NP → Det N [.30]   Det → a [.40]
+  VP → V NP [.20]    N → meal [.01]
+  V → includes [.05] N → flight [.02]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY 예시에 사용될 CNF 규칙들과 각 확률값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given this grammar, Fig. C.4 shows the first steps in the probabilistic CKY parse of the sentence "The flight includes a meal".</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 문법이 주어졌을 때, 그림 C.4는 "The flight includes a meal" 문장에 대한 확률적 CKY 구문 분석의 첫 단계들을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예시 문장에 대한 알고리즘 작동 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure C.4: The beginning of the probabilistic CKY matrix]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 C.4: 확률적 CKY 행렬의 시작 부분]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장의 각 단어와 구간에 대해 비단말 기호와 확률이 채워지는 과정을 보여주는 행렬 도표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.4 The beginning of the probabilistic CKY matrix. Filling out the rest of the chart is left as Exercise C.4 for the reader.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.4 확률적 CKY 행렬의 시작 부분. 차트의 나머지 부분을 채우는 것은 독자를 위한 연습 문제 C.4로 남겨둡니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>도표의 의미와 연습 문제 안내입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">규칙 확률 학습, PCFG 문제점</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 APPENDIX C • STATISTICAL CONSTITUENCY PARSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 부록 C • 통계적 구성 성분 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.3 Ways to Learn PCFG Rule Probabilities</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.3 PCFG 규칙 확률을 학습하는 방법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 규칙 확률을 데이터로부터 추정하는 방법을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Where do PCFG rule probabilities come from? There are two ways to learn probabilities for the rules of a grammar. The simplest way is to use a treebank, a corpus of already parsed sentences. Recall that we introduced in Chapter 12 the idea of treebanks and the commonly used Penn Treebank, a collection of parse trees in English, Chinese, and other languages that is distributed by the Linguistic Data Consortium. Given a treebank, we can compute the probability of each expansion of a non-terminal by counting the number of times that expansion occurs and then normalizing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG 규칙 확률은 어디에서 올까요? 문법 규칙의 확률을 학습하는 방법에는 두 가지가 있습니다. 가장 간단한 방법은 이미 구문 분석이 완료된 문장들의 말뭉치인 트리뱅크(treebank)를 사용하는 것입니다. 12장에서 트리뱅크의 개념과 Linguistic Data Consortium에서 배포하는 영어, 중국어 및 기타 언어의 구문 분석 트리 모음인 펜 트리뱅크(Penn Treebank)를 소개했던 것을 상기십시오. 트리뱅크가 주어지면, 비단말 기호의 각 확장이 발생하는 횟수를 세고 정규화함으로써 각 확장 확률을 계산할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트리뱅크를 이용한 지도 학습(supervised learning) 방식의 확률 추정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(α → β | α) = Count(α → β) / \sum_{γ} Count(α → γ) = Count(α → β) / Count(α) (C.17)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(α → β | α) = Count(α → β) / \sum_{γ} Count(α → γ) = Count(α → β) / Count(α) (C.17)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최대 우도 추정(MLE)을 이용해 특정 규칙의 확률을 구하는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we don't have a treebank but we do have a (non-probabilistic) parser, we can generate the counts we need for computing PCFG rule probabilities by first parsing a corpus of sentences with the parser. If sentences were unambiguous, it would be as simple as this: parse the corpus, increment a counter for every rule in the parse, and then normalize to get probabilities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>트리뱅크는 없지만 (비확률적) 구문 분석기가 있다면, 먼저 해당 분석기로 문장 말뭉치를 분석하여 PCFG 규칙 확률 계산에 필요한 빈도수를 생성할 수 있습니다. 문장이 모호하지 않다면 과정은 간단합니다. 말뭉치를 분석하고, 분석 결과에 나온 모든 규칙에 대해 카운터를 증가시킨 다음, 정규화하여 확률을 얻으면 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비확률적 분석기를 이용해 초기 확률을 얻는 아이디어를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But wait! Since most sentences are ambiguous, that is, have multiple parses, we don't know which parse to count the rules in. Instead, we need to keep a separate count for each parse of a sentence and weight each of these partial counts by the probability of the parse it appears in. But to get these parse probabilities to weight the rules, we need to already have a probabilistic parser.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 잠깐만요! 대부분의 문장은 모호하며, 즉 여러 개의 분석 결과를 가지므로, 어떤 분석 결과에 있는 규칙을 세어야 할지 알 수 없습니다. 대신, 문장의 각 분석 결과에 대해 별도의 빈도수를 유지하고, 각 부분 빈도수에 해당 분석 결과가 나타나는 확률로 가중치를 부여해야 합니다. 하지만 규칙에 가중치를 부여할 이러한 분석 확률을 얻으려면, 이미 확률적 구문 분석기가 있어야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모호성으로 인해 발생하는 순환 논리 문제(닭이 먼저냐 달걀이 먼저냐)를 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>inside-outside</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>내부-외부(inside-outside)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG 확률 학습을 위한 알고리즘 이름입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition for solving this chicken-and-egg problem is to incrementally improve our estimates by beginning with a parser with equal rule probabilities, then parse the sentence, compute a probability for each parse, use these probabilities to weight the counts, re-estimate the rule probabilities, and so on, until our probabilities converge. The standard algorithm for computing this solution is called the inside-outside algorithm; it was proposed by Baker (1979) as a generalization of the forward-backward algorithm for HMMs. Like forward-backward, inside-outside is a special case of the Expectation Maximization (EM) algorithm, and hence has two steps: the expectation step, and the maximization step. See Lari and Young (1990) or Manning and Schütze (1999) for more on the algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 닭과 달걀 문제를 해결하기 위한 직관은 동일한 규칙 확률을 가진 분석기로 시작하여 점진적으로 추정치를 개선하는 것입니다. 문장을 분석하고, 각 분석 결과의 확률을 계산하고, 이 확률을 사용해 빈도수에 가중치를 부여하고, 규칙 확률을 재추정하는 과정을 확률이 수렴할 때까지 반복하는 것입니다. 이 해결책을 계산하기 위한 표준 알고리즘은 내부-외부(inside-outside) 알고리즘이라 불리며, HMM의 전방-후방(forward-backward) 알고리즘의 일반화로서 Baker(1979)가 제안했습니다. 전방-후방 알고리즘과 마찬가지로 내부-외부 알고리즘은 기댓값 최대화(EM) 알고리즘의 특수한 사례이며, 따라서 기댓값 단계와 최대화 단계라는 두 단계로 구성됩니다. 알고리즘에 대한 자세한 내용은 Lari와 Young(1990) 또는 Manning과 Schütze(1999)를 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비지도 학습 상황에서 EM 알고리즘을 기반으로 확률을 추정하는 내부-외부 알고리즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.4 Problems with PCFGs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.4 PCFG의 문제점</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기본 PCFG가 가진 한계점들을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While probabilistic context-free grammars are a natural extension to context-free grammars, they have two main problems as probability estimators:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 문맥 자유 문법은 문맥 자유 문법의 자연스러운 확장이지만, 확률 추정 도구로서 두 가지 주요 문제점을 가지고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 두 가지 핵심 결함을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Poor independence assumptions: CFG rules impose an independence assumption on probabilities that leads to poor modeling of structural dependencies across the parse tree.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>취약한 독립성 가정: CFG 규칙들은 확률에 대해 독립성 가정을 부여하는데, 이는 구문 분석 트리 전반의 구조적 의존 관계를 모델링하는 능력을 저하시킵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙들이 서로 독립적으로 적용된다는 가정이 실제 언어의 구조적 연관성을 충분히 반영하지 못함을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lack of lexical conditioning: CFG rules don't model syntactic facts about specific words, leading to problems with subcategorization ambiguities, preposition attachment, and coordinate structure ambiguities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘 조건화의 부재: CFG 규칙은 특정 단어에 관한 구문론적 사실을 모델링하지 않으므로, 하위 범주화 모호성, 전치사 부착 및 배위 구조 모호성 문제를 일으킵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 개별적인 특성(어휘 정보)을 확률 계산에 활용하지 못하는 한계를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because of these problems, probabilistic constituent parsing models use some augmented version of PCFGs, or modify the Treebank-based grammar in some way.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 문제들 때문에, 확률적 구성 성분 구문 분석 모델들은 PCFG의 확장된 버전을 사용하거나 트리뱅크 기반 문법을 어떤 방식으로든 수정하여 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기본 PCFG의 한계를 극복하기 위한 후속 연구들의 필요성을 강조합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

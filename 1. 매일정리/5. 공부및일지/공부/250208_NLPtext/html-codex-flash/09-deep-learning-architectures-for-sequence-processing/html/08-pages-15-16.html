@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">LSTM 구조 및 게이트</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.6 • THE LSTM 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.6 • LSTM (장단기 메모리) 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.6 섹션의 시작과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second difficulty with training RNNs arises from the need to backpropagate the error signal back through time. Recall from Section 9.2.2 that the hidden layer at time t contributes to the loss at the next time step since it takes part in that calculation. As a result, during the backward pass of training, the hidden layers are subject to repeated multiplications, as determined by the length of the sequence. A frequent result of this process is that the gradients are eventually driven to zero, a situation called the vanishing gradients problem.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>RNN 학습의 두 번째 어려움은 오차 신호를 시간을 거슬러 역전파해야 하는 필요성에서 발생합니다. 9.2.2절에서 다루었듯이, 시간 t의 은닉층은 다음 시간 단계의 계산에 참여하기 때문에 그 단계의 손실에 기여합니다. 결과적으로 학습의 역방향 패스 과정에서 은닉층들은 시퀀스의 길이에 비례하여 반복적인 행렬 곱셈을 겪게 됩니다. 이 과정의 흔한 결과는 그래디언트가 결국 0으로 수렴하게 되는 것이며, 이러한 상황을 '기울기 소실(vanishing gradients)' 문제라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN의 고질적인 문제인 기울기 소실(Vanishing Gradient)의 원인(반복적인 곱셈)과 그 여파를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>vanishing gradients</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기울기 소실(vanishing gradients)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>역전파 과정에서 그래디언트가 너무 작아져 초기 층의 가중치가 제대로 학습되지 않는 현상입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To address these issues, more complex network architectures have been designed to explicitly manage the task of maintaining relevant context over time, by enabling the network to learn to forget information that is no longer needed and to remember information required for decisions still to come.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 문제들을 해결하기 위해, 더 이상 필요하지 않은 정보는 잊고 앞으로의 결정을 위해 필요한 정보는 기억하도록 네트워크가 학습하게 함으로써, 시간이 지나도 관련 문맥을 유지하는 작업을 명시적으로 관리하도록 설계된 더 복잡한 네트워크 아키텍처들이 등장했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기울기 소실을 해결하기 위해 '명시적인 문맥 관리(기억과 망각)' 기능을 도입하게 된 배경을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Long short-term memory</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>장단기 메모리(Long short-term memory)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1997년 제안된 LSTM의 정식 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The most commonly used such extension to RNNs is the Long short-term memory (LSTM) network (Hochreiter and Schmidhuber, 1997). LSTMs divide the context management problem into two sub-problems: removing information no longer needed from the context, and adding information likely to be needed for later decision making. The key to solving both problems is to learn how to manage this context rather than hard-coding a strategy into the architecture. LSTMs accomplish this by first adding an explicit context layer to the architecture (in addition to the usual recurrent hidden layer), and through the use of specialized neural units that make use of gates to control the flow of information into and out of the units that comprise the network layers. These gates are implemented through the use of additional weights that operate sequentially on the input, and previous hidden layer, and previous context layers.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>RNN의 가장 흔한 확장형은 장단기 메모리(LSTM) 네트워크(Hochreiter and Schmidhuber, 1997)입니다. LSTM은 문맥 관리 문제를 두 개의 하위 문제로 나눕니다. 즉, 문맥에서 더 이상 필요하지 않은 정보를 제거하는 것과 나중의 의사결정에 필요할 것 같은 정보를 추가하는 것입니다. 두 문제 해결의 핵심은 아키텍처에 전략을 하드코딩하는 대신 이 문맥을 관리하는 방법을 '학습'하는 것입니다. LSTM은 먼저 (일반적인 순환 은닉층 외에도) 명시적인 '문맥 층(context layer)'을 아키텍처에 추가하고, 네트워크 층을 구성하는 유닛의 입출력 정보 흐름을 제어하기 위해 '게이트(gates)'를 사용하는 특수 신경 유닛을 통해 이를 달성합니다. 이러한 게이트들은 입력, 이전 은닉층, 그리고 이전 문맥 층에 순차적으로 작용하는 추가 가중치들을 사용하여 구현됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LSTM의 핵심 메커니즘인 '게이트'와 '문맥 층(셀 상태)'의 도입 목적과 이를 학습을 통해 관리한다는 철학을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The gates in an LSTM share a common design pattern; each consists of a feedforward layer, followed by a sigmoid activation function, followed by a pointwise multiplication with the layer being gated. The choice of the sigmoid as the activation function arises from its tendency to push its outputs to either 0 or 1. Combining this with a pointwise multiplication has an effect similar to that of a binary mask. Values in the layer being gated that align with values near 1 in the mask are passed through nearly unchanged; values corresponding to lower values are essentially erased.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LSTM의 게이트들은 공통된 디자인 패턴을 공유합니다. 각 게이트는 피드포워드 층, 그 뒤를 잇는 sigmoid 활성화 함수, 그리고 게이트가 적용되는 층과의 요소별 곱셈(pointwise multiplication)으로 구성됩니다. 활성화 함수로 sigmoid를 선택한 이유는 출력을 0 또는 1로 밀어내는 경향 때문입니다. 이를 요소별 곱셈과 결합하면 이진 마스크(binary mask)와 유사한 효과를 냅니다. 마스크의 1에 가까운 값과 정렬된 층의 값들은 거의 변하지 않고 통과하는 반면, 낮은 값들에 대응하는 값들은 본질적으로 지워집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>게이트의 수학적 구조(Sigmoid + Hadamard product)와 그것이 정보의 통과/차단을 제어하는 물리적 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>forget gate</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>망각 게이트(forget gate)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 상태의 정보 중 무엇을 버릴지 결정하는 게이트입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first gate we'll consider is the forget gate. The purpose of this gate is to delete information from the context that is no longer needed. The forget gate computes a weighted sum of the previous state's hidden layer and the current input and passes that through a sigmoid. This mask is then multiplied element-wise with the context vector to remove the information from context that is no longer required. Elementwise multiplication of two vectors (represented by the operator ⊙, and sometimes called the Hadamard product) is the vector of the same dimension as the two input vectors, where each element i is the product of element i in the two input vectors:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>먼저 살펴볼 게이트는 망각 게이트(forget gate)입니다. 이 게이트의 목적은 문맥에서 더 이상 필요하지 않은 정보를 삭제하는 것입니다. 망각 게이트는 이전 상태의 은닉층과 현재 입력의 가중합을 계산하고 이를 sigmoid에 통과시킵니다. 이 마스크는 문맥 벡터와 요소별로 곱해져 더 이상 필요하지 않은 정보를 문맥에서 제거합니다. 두 벡터의 요소별 곱셈(⊙ 연산자로 표시되며 가끔 아다마르 곱(Hadamard product)이라고도 함)은 두 입력 벡터와 동일한 차원의 벡터이며, 각 원소 i는 두 입력 벡터의 i번째 원소들의 곱입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>망각 게이트의 역할과 아다마르 곱의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>f_t = σ(U_f h_{t−1} + W_f x_t)
+k_t = c_{t−1} ⊙ f_t</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$f_t = \sigma(U_f h_{t-1} + W_f x_t)$
+$k_t = c_{t-1} \odot f_t$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>망각 게이트 공식(9.19, 9.20)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The next task is compute the actual information we need to extract from the previous hidden state and current inputs — the same basic computation we've been using for all our recurrent networks.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 작업은 이전 은닉 상태와 현재 입력으로부터 추출해야 할 실제 정보를 계산하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>새로운 후보 정보를 생성하는 과정을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>g_t = tanh(U_g h_{t-1} + W_g x_t)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$g_t = \tanh(U_g h_{t-1} + W_g x_t)$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>새로운 후보 정보 생성 공식(9.21)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>add gate</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>추가 게이트(add gate) / 입력 게이트(input gate)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>새로운 정보 중 무엇을 셀 상태에 추가할지 결정하는 게이트입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Next, we generate the mask for the add gate to select the information to add to the current context.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음으로, 현재 문맥에 추가할 정보를 선택하기 위해 추가 게이트(add gate)용 마스크를 생성합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 게이트의 역할을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>i_t = σ(U_i h_{t−1} + W_i x_t)
+j_t = g_t ⊙ i_t</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$i_t = \sigma(U_i h_{t-1} + W_i x_t)$
+$j_t = g_t \odot i_t$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 게이트 공식(9.22, 9.23)입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">LSTM 출력 및 트랜스포머 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>c_{t-1}, h_{t-1}, x_t -> LSTM Unit -> c_t, h_t
+Gates: f (forget), i (input/add), o (output), g (candidate)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>c_{t-1}, h_{t-1}, x_t -> LSTM 유닛 -> c_t, h_t
+게이트: f (망각), i (입력/추가), o (출력), g (후보)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LSTM 유닛 내부의 복잡한 연산 과정을 보여주는 계산 그래프입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.13 A single LSTM unit displayed as a computation graph. The inputs to each unit consists of the current input, x, the previous hidden state, h_{t−1}, and the previous context, c_{t−1}. The outputs are a new hidden state, h_t and an updated context, c_t.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.13 연산 그래프로 표시된 단일 LSTM 유닛. 각 유닛으로의 입력은 현재 입력 x, 이전 은닉 상태 h_{t-1}, 그리고 이전 문맥 c_{t-1}로 구성됩니다. 출력은 새로운 은닉 상태 h_t와 업데이트된 문맥 c_t입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.13에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Next, we add this to the modified context vector to get our new context vector.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음으로, 우리는 이것을 수정된 문맥 벡터에 더하여 새로운 문맥 벡터를 얻습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>망각된 과거 정보와 새로 추가될 정보를 결합하여 새로운 셀 상태를 만드는 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>c_t = j_t + k_t</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$c_t = j_t + k_t$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>새로운 셀 상태 결정 공식(9.24)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>output gate</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>출력 게이트(output gate)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>업데이트된 셀 상태 중 어떤 부분을 은닉 상태(출력)로 내보낼지 결정하는 게이트입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The final gate we'll use is the output gate which is used to decide what information is required for the current hidden state (as opposed to what information needs to be preserved for future decisions).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre> 우리가 사용할 마지막 게이트는 출력 게이트(output gate)로, (미래의 결정을 위해 보존되어야 할 정보와는 반대로) 현재의 은닉 상태를 위해 어떤 정보가 필요한지 결정하는 데 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>출력 게이트의 역할과 목적을 명확히 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>o_t = σ(U_o h_{t−1} + W_o x_t)
+h_t = o_t ⊙ tanh(c_t)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$o_t = \sigma(U_o h_{t-1} + W_o x_t)$
+$h_t = o_t \odot \tanh(c_t)$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>출력 게이트 및 최종 은닉 상태 결정 공식(9.25, 9.26)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 9.13 illustrates the complete computation for a single LSTM unit. Given the appropriate weights for the various gates, an LSTM accepts as input the context layer, and hidden layer from the previous time step, along with the current input vector. It then generates updated context and hidden vectors as output. The hidden layer, h_t, can be used as input to subsequent layers in a stacked RNN, or to generate an output for the final layer of a network.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.13은 단일 LSTM 유닛에 대한 전체 계산 과정을 보여줍니다. 다양한 게이트를 위한 적절한 가중치들이 주어졌을 때, LSTM은 이전 시간 단계의 문맥 층과 은닉층, 그리고 현재의 입력 벡터를 입력으로 받아들입니다. 그런 다음 출력으로서 업데이트된 문맥 및 은닉 벡터를 생성합니다. 은닉층 h_t는 스택형 RNN의 후속 층에 대한 입력으로 사용되거나, 네트워크의 최종 층을 위한 출력을 생성하는 데 사용될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LSTM 유닛의 전체적인 입출력 매커니즘과 그 활용 방안을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.6.1 Gated Units, Layers and Networks</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.6.1 게이트형 유닛, 레이어 및 네트워크</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 유닛 구조를 넘어 레이어와 네트워크 수준에서 게이트형 구조(LSTM 등)가 갖는 특성을 논의하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The neural units used in LSTMs are obviously much more complex than those used in basic feedforward networks. Fortunately, this complexity is encapsulated within the basic processing units, allowing us to maintain modularity and to easily experiment with different architectures. To see this, consider Fig. 9.14 which illustrates the inputs and outputs associated with each kind of unit.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LSTM에 사용되는 신경 유닛들은 기본적인 피드포워드 신경망에 사용되는 것들보다 훨씬 복잡한 것이 분명합니다. 다행히 이러한 복잡성은 기본 처리 유닛 내에 캡슐화되어 있어, 우리가 모듈성(modularity)을 유지하고 서로 다른 아키텍처로 쉽게 실험할 수 있게 해줍니다. 이를 확인하기 위해 각 유닛과 관련된 입출력을 보여주는 그림 9.14를 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LSTM의 복잡함에도 불구하고 모듈식 설계 덕분에 다른 모델과 쉽게 교체하거나 결합할 수 있음을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>At the far left, (a) is the basic feedforward unit where a single set of weights and a single activation function determine its output, and when arranged in a layer there are no connections among the units in the layer. Next, (b) represents the unit in a simple recurrent network. Now there are two inputs and an additional set of weights to go with it. However, there is still a single activation function and output.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 왼쪽의 (a)는 단일 가중치 세트와 단일 활성화 함수가 그 출력을 결정하는 가장 기본적인 피드포워드 유닛이며, 층으로 배치되었을 때 층 내 유닛들 사이의 연결은 없습니다. 다음으로 (b)는 단순 순환 신경망의 유닛을 나타냅니다. 이제 두 개의 입력과 그에 수반되는 추가 가중치 세트가 있습니다. 하지만 여전히 활성화 함수와 출력은 하나뿐입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>피드포워드 유닛과 단순 RNN(엘먼 네트워크) 유닛의 구조를 비교하며 단계별로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The increased complexity of the LSTM units is encapsulated within the unit itself. The only additional external complexity for the LSTM over the basic recurrent unit (b) is the presence of the additional context vector as an input and output.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>LSTM 유닛의 증가된 복잡성은 유닛 자체 내에 캡슐화되어 있습니다. 기본 순환 유닛 (b)에 비해 LSTM이 가지는 추가적인 외부 복잡성은 입력과 출력으로서의 추가 문맥 벡터(context vector)의 존재뿐입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LSTM의 내부 구조는 복잡하지만 입출력 인터페이스는 문맥 벡터 하나만 추가된 상태임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This modularity is key to the power and widespread applicability of LSTM units. LSTM units (or other varieties, like GRUs) can be substituted into any of the network</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 모듈성은 LSTM 유닛의 강력함과 광범위한 적용 가능성의 핵심입니다. LSTM 유닛(혹은 GRU와 같은 다른 변종들)은 어떠한 네트워크에서도...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유닛 교체(Substitution)의 용이함이 가져오는 설계상의 이점을 강조하며 내용을 잇습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

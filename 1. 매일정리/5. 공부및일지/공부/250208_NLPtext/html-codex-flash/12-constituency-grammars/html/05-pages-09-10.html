@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Constituency Grammars</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">12 Constituency Grammars</div>
+<h1>Constituency Grammars</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-9">Page 9</a>
+<a class="chip" href="#page-10">Page 10</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-9">
+<header class="page-header">
+<h2>Page 9</h2>
+<div class="page-subtitle">구조적 모호성</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.7 Structural Ambiguity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.7 구조적 모호성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하나의 문장이 두 개 이상의 다른 구문 구조로 분석될 수 있는 구조적 모호성을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>structural ambiguity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구조적 모호성(structural ambiguity)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문법 규칙에 따라 문장이 여러 가지 방식으로 해석될 수 있는 성질입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A sentence is structurally ambiguous if it can be assigned more than one parse tree by a grammar. A classic example is the sentence "I saw the man with a telescope":</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문법에 의해 한 문장에 대해 두 개 이상의 구문 분석 트리가 할당될 수 있다면 그 문장은 구조적으로 모호합니다. 고전적인 예시는 "I saw the man with a telescope"라는 문장입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구조적 모호성의 정의와 유명한 전치사구 부착 모호성 사례를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    [Figure 12.4 Two parse trees for "I saw the man with a telescope"]
+    Tree A (PP attaches to NP):
+    S
+    ├── NP: I
+    └── VP
+        ├── V: saw
+        └── NP
+            ├── NP: the man
+            └── PP: with a telescope
+    Interpretation A: The man had a telescope.
+
+    Tree B (PP attaches to VP):
+    S
+    ├── NP: I
+    └── VP
+        ├── V: saw
+        ├── NP: the man
+        └── PP: with a telescope
+    Interpretation B: I used a telescope to see the man.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    [그림 12.4 "I saw the man with a telescope"에 대한 두 가지 구문 분석 트리]
+    트리 A (PP가 NP에 부착됨):
+    S
+    ├── NP: I
+    └── VP
+        ├── V: saw
+        └── NP
+            ├── NP: the man
+            └── PP: with a telescope
+    해석 A: 그 남자가 망원경을 가지고 있었다.
+
+    트리 B (PP가 VP에 부착됨):
+    S
+    ├── NP: I
+    └── VP
+        ├── V: saw
+        ├── NP: the man
+        └── PP: with a telescope
+    해석 B: 나는 망원경을 사용하여 그 남자를 보았다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구(PP)가 선행 명사구와 동사 중 어디에 부착되느냐에 따라 의미가 달라지는 과정을 시각적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This is called prepositional phrase attachment ambiguity. In interpretation A, the telescope belongs to the man. In interpretation B, the telescope is the instrument used by the speaker to see the man.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 '전치사구 부착 모호성(prepositional phrase attachment ambiguity)'이라고 부릅니다. 해석 A에서는 망원경이 그 남자의 소유이며, 해석 B에서는 망원경이 화자가 그 남자를 보기 위해 사용한 도구입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구 부착 모호성의 명칭과 각 해석의 차이를 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-10">
+<header class="page-header">
+<h2>Page 10</h2>
+<div class="page-subtitle">요약</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.8 Summary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.8 요약</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>12장의 내용을 정리하는 요약 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter, we've introduced the fundamental idea of constituency—that groups of words act as single units. We've seen how context-free grammars (CFGs) can be used to formalize these structures.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서 우리는 단어들의 집합이 하나의 단위로 행동한다는 구문 구조의 근본적인 아이디어를 소개했습니다. 또한 문맥 자유 문법(CFG)을 사용하여 이러한 구조들을 어떻게 형식화할 수 있는지 살펴보았습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구문 구조와 CFG라는 핵심 내용을 되짚어 봅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Key concepts covered include:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다루어진 주요 개념들은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주요 개념들을 나열합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    - Constituents: groups of words that function as single units.
+    - Context-free grammars: a formal system consisting of a set of rules (productions), non-terminals, and terminals.
+    - Non-terminals: symbols representing categories of constituents (like NP, VP).
+    - Terminals: the actual words in the language.
+    - Derivations: the sequence of rules used to generate a sentence.
+    - Parse trees: graphical representations of derivations.
+    - Treebanks: corpora annotated with parse trees.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 성분(Constituents): 하나의 단위로 기능하는 단어 그룹들.
+    - 문맥 자유 문법(CFG): 일련의 규칙(생성), 비단말, 단말로 구성된 형식 시스템.
+    - 비단말(Non-terminals): 성분 범주를 나타내는 기호(NP, VP 등).
+    - 단말(Terminals): 언어의 실제 단어들.
+    - 유도(Derivations): 문장을 생성하는 데 사용된 순차적 규칙 적용 과정.
+    - 구문 분석 트리(Parse trees): 유도 과정을 시각화한 것.
+    - 트리뱅크(Treebanks): 구문 분석 트리가 주석으로 달린 코퍼스.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>12장에서 다룬 핵심 용어들을 정의와 함께 정리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We also saw that grammars can be ambiguous, assigning more than one structure to a sentence. In the next chapter, we will introduce algorithms for parsing—automatically finding the structure of a sentence given a grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 또한 문법이 모호할 수 있으며 한 문장에 대해 둘 이상의 구조를 할당할 수 있음을 보았습니다. 다음 장에서는 문법이 주어졌을 때 문장의 구조를 자동으로 찾아내는 알고리즘인 '구문 분석(parsing)'에 대해 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>12장의 주요 쟁점을 마무리하며 다음 장(구문 분석 알고리즘)으로의 연결을 제시합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

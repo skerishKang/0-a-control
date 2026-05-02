@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">PPMI 계산, 응용</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.6 • POINTWISE MUTUAL INFORMATION (PMI) 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.6 • 점별 상호 정보량(PMI) 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>context c_j. This can be turned into a PPMI matrix where ppmi_{ij} gives the PPMI value of word w_i with context c_j as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 문맥 c_j. 이것은 다음과 같이 단어 w_i와 문맥 c_j 사이의 PPMI 값을 나타내는 ppmi_{ij} 행렬로 변환될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공기 빈도 행렬을 PPMI 행렬로 변환하는 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>p_{ij} = \frac{f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}}, \quad p_{i*} = \frac{\sum_{j=1}^C f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}}, \quad p_{*j} = \frac{\sum_{i=1}^W f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}} (6.19)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>p_{ij} = \frac{f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}}, \quad p_{i*} = \frac{\sum_{j=1}^C f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}}, \quad p_{*j} = \frac{\sum_{i=1}^W f_{ij}}{\sum_{i=1}^W \sum_{j=1}^C f_{ij}} (6.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.19). 전체 말뭉치 내에서의 결합 확률(p_ij)과 주변 확률(p_i*, p_*j)을 빈도수 합계를 통해 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\text{PPMI}_{ij} = \max\left(\log_2 \frac{p_{ij}}{p_{i*}p_{*j}}, 0\right) (6.20)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\text{PPMI}_{ij} = \max\left(\log_2 \frac{p_{ij}}{p_{i*}p_{*j}}, 0\right) (6.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.20). 확률값을 이용해 정의된 PPMI 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's see some PPMI calculations. We'll use Fig. 6.10, which repeats Fig. 6.6 plus all the count marginals, and let's pretend for ease of calculation that these are the only words/contexts that matter.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>몇 가지 PPMI 계산을 해보겠습니다. 그림 6.6에 마지널(marginals, 주변 합계)을 추가한 그림 6.10을 사용하며, 계산의 편의를 위해 여기에 있는 단어와 문맥들만 존재한다고 가정하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제 계산을 위한 데이터 셋과 가정 사항을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | computer | data | result | pie | sugar | count(w) |
+|---|---|---|---|---|---|---|
+| cherry | 2 | 8 | 9 | 442 | 25 | 486 |
+| strawberry | 0 | 0 | 1 | 60 | 19 | 80 |
+| digital | 1670 | 1683 | 85 | 5 | 4 | 3447 |
+| information | 3325 | 3982 | 378 | 5 | 13 | 7703 |
+| | | | | | | |
+| count(context) | 4997 | 5673 | 473 | 512 | 61 | 11716 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | computer | data | result | pie | sugar | count(w) |
+|---|---|---|---|---|---|---|
+| cherry | 2 | 8 | 9 | 442 | 25 | 486 |
+| strawberry | 0 | 0 | 1 | 60 | 19 | 80 |
+| digital | 1670 | 1683 | 85 | 5 | 4 | 3447 |
+| information | 3325 | 3982 | 378 | 5 | 13 | 7703 |
+| | | | | | | |
+| count(context) | 4997 | 5673 | 473 | 512 | 61 | 11716 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.10. 위키피디아 코퍼스의 5개 문맥에서 나타난 4개 단어의 공기 빈도와 각 행/열의 합계(마지널)를 보여주는 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.10 Co-occurrence counts for four words in 5 contexts in the Wikipedia corpus, together with the marginals, pretending for the purpose of this calculation that no other words/contexts matter.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.10 위키피디아 코퍼스의 5개 문맥에서 공기(co-occurrence)하는 4개 단어의 빈도수와 마지널(주변 합계). 이 계산을 목적으로 다른 단어/문맥은 중요하지 않다고 가정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.10에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus for example we could compute PPMI(w=information, c=data), assuming we pretended that Fig. 6.6 encompassed all the relevant word contexts/dimensions, as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 그림 6.6이 관련된 모든 단어 문맥/차원을 포함한다고 가정할 때, PPMI(w=information, c=data)를 다음과 같이 계산할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구체적인 계산 예시를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(\text{w=information, c=data}) = \frac{3982}{11716} = .3399 \\
+P(\text{w=information}) = \frac{7703}{11716} = .6575 \\
+P(\text{c=data}) = \frac{5673}{11716} = .4842 \\
+\text{ppmi}(\text{information}, \text{data}) = \log_2(.3399 / (.6575 * .4842)) = .0944</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(\text{w=information, c=data}) = \frac{3982}{11716} = .3399 \\
+P(\text{w=information}) = \frac{7703}{11716} = .6575 \\
+P(\text{c=data}) = \frac{5673}{11716} = .4842 \\
+\text{ppmi}(\text{information}, \text{data}) = \log_2(.3399 / (.6575 * .4842)) = .0944</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PPMI 계산 과정을 단계별로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 6.11 shows the joint probabilities computed from the counts in Fig. 6.10, and Fig. 6.12 shows the PPMI values. Not surprisingly, cherry and strawberry are highly associated with both pie and sugar, and data is mildly associated with information.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.11은 그림 6.10의 빈도수로부터 계산된 결합 확률을 보여주며, 그림 6.12는 PPMI 값을 보여줍니다. 당연히 cherry와 strawberry는 pie 및 sugar와 높은 연관성을 보이고, data는 information과 어느 정도 연관성을 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률 행렬과 PPMI 행렬의 결과가 직관과 일치함을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | computer | data | result | pie | sugar | p(w) |
+|---|---|---|---|---|---|---|
+| cherry | 0.0002 | 0.0007 | 0.0008 | 0.0377 | 0.0021 | 0.0415 |
+| strawberry | 0.0000 | 0.0000 | 0.0001 | 0.0051 | 0.0016 | 0.0068 |
+| digital | 0.1425 | 0.1436 | 0.0073 | 0.0004 | 0.0003 | 0.2942 |
+| information | 0.2838 | 0.3399 | 0.0323 | 0.0004 | 0.0011 | 0.6575 |
+| | | | | | | |
+| p(context) | 0.4265 | 0.4842 | 0.0404 | 0.0437 | 0.0052 | |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | computer | data | result | pie | sugar | p(w) |
+|---|---|---|---|---|---|---|
+| cherry | 0.0002 | 0.0007 | 0.0008 | 0.0377 | 0.0021 | 0.0415 |
+| strawberry | 0.0000 | 0.0000 | 0.0001 | 0.0051 | 0.0016 | 0.0068 |
+| digital | 0.1425 | 0.1436 | 0.0073 | 0.0004 | 0.0003 | 0.2942 |
+| information | 0.2838 | 0.3399 | 0.0323 | 0.0004 | 0.0011 | 0.6575 |
+| | | | | | | |
+| p(context) | 0.4265 | 0.4842 | 0.0404 | 0.0437 | 0.0052 | |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.11. 그림 6.6의 빈도수를 결합 확률로 대체하고 외곽에 마지널(주변 확률)을 표시한 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.11 Replacing the counts in Fig. 6.6 with joint probabilities, showing the marginals around the outside.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.11 그림 6.6의 빈도수를 결합 확률로 대체하고, 외곽에 마지널(주변 확률)을 표시한 결과.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.11 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>PMI has the problem of being biased toward infrequent events; very rare words tend to have very high PMI values. One way to reduce this bias toward low frequency</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PMI는 빈도가 낮은 사건에 편향되는 문제가 있습니다. 즉, 매우 희귀한 단어들일수록 매우 높은 PMI 값을 갖는 경향이 있습니다. 이러한 저빈도 사건에 대한 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PMI의 주요 한계점인 희귀 단어에 대한 과대평가 문제를 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">PPMI 응용, 요약</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| | computer | data | result | pie | sugar |
+|---|---|---|---|---|
+| cherry | 0 | 0 | 0 | 4.38 | 3.30 |
+| strawberry | 0 | 0 | 0 | 4.10 | 5.51 |
+| digital | 0.18 | 0.01 | 0 | 0 | 0 |
+| information | 0.02 | 0.09 | 0.28 | 0 | 0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| | computer | data | result | pie | sugar |
+|---|---|---|---|---|
+| cherry | 0 | 0 | 0 | 4.38 | 3.30 |
+| strawberry | 0 | 0 | 0 | 4.10 | 5.51 |
+| digital | 0.18 | 0.01 | 0 | 0 | 0 |
+| information | 0.02 | 0.09 | 0.28 | 0 | 0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.12. 단어와 문맥 사이의 연관성을 보여주는 PPMI 행렬입니다. 그림 6.11의 확률값들로부터 계산되었습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.12 The PPMI matrix showing the association between words and context words, computed from the counts in Fig. 6.11. Note that most of the 0 PPMI values are ones that had a negative PMI; for example PMI(cherry,computer) = -6.7, meaning that cherry and computer co-occur on Wikipedia less often than we would expect by chance, and with PPMI we replace negative values by zero.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.12 그림 6.11의 빈도수로부터 계산된 단어와 문맥 단어 사이의 연관성을 나타내는 PPMI 행렬. 대부분의 0이 된 PPMI 값들은 원래 음의 PMI 값을 가졌던 것들임에 주목하십시오. 예를 들어 PMI(cherry, computer) = -6.7인데, 이는 위키피디아에서 cherry와 computer가 우연히 기대하는 것보다 덜 빈번하게 공기함을 의미하며, PPMI에서는 이러한 음수 값을 0으로 대체합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.12 캡션입니다. 음수 PMI가 어떻게 0으로 처리되는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>events is to slightly change the computation for P(c), using a different function P_\alpha(c) that raises the probability of the context word to the power of \alpha:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 편향을 줄이는 한 가지 방법은 문맥 단어의 확률을 \alpha 거듭제곱하는 다른 함수 P_\alpha(c)를 사용하여 P(c)의 계산식을 약간 수정하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>저빈도 편향을 해결하기 위한 수치적 보정 방식을 제안합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\text{PPMI}_\alpha(w, c) = \max\left(\log_2 \frac{P(w, c)}{P(w)P_\alpha(c)}, 0\right) (6.21)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\text{PPMI}_\alpha(w, c) = \max\left(\log_2 \frac{P(w, c)}{P(w)P_\alpha(c)}, 0\right) (6.21)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.21). 가중치를 적용한 PPMI 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_\alpha(c) = \frac{\text{count}(c)^\alpha}{\sum_c \text{count}(c)^\alpha} (6.22)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P_\alpha(c) = \frac{\text{count}(c)^\alpha}{\sum_c \text{count}(c)^\alpha} (6.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.22). 문맥 단어 확률에 \alpha 가중치를 적용하는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Levy et al. (2015) found that a setting of \alpha = 0.75 improved performance of embeddings on a wide range of tasks (drawing on a similar weighting used for skip-grams described below in Eq. 6.32). This works because raising the count to \alpha = 0.75 increases the probability assigned to rare contexts, and hence lowers their PMI (P_\alpha(c) > P(c) when c is rare).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Levy 등(2015)은 \alpha = 0.75로 설정했을 때 광범위한 작업에서 임베딩 성능이 향상됨을 발견했습니다(이는 아래 식 6.32에서 설명할 skip-gram에 사용되는 유사한 가중치 방식을 차용한 것입니다). 빈도수에 \alpha = 0.75 거듭제곱을 하면 희귀한 문맥에 할당되는 확률이 증가하고, 그에 따라 해당 문맥의 PMI 값이 낮아지기 때문입니다(c가 희귀할 때 P_\alpha(c) > P(c)가 됩니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>\alpha = 0.75 설정의 실무적 효과와 그 수학적 원리(희귀 문맥의 PMI 하향 조정)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another possible solution is Laplace smoothing: Before computing PMI, a small constant k (values of 0.1-3 are common) is added to each of the counts, shrinking (discounting) all the non-zero values. The larger the k, the more the non-zero counts are discounted.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또 다른 가능한 해결책은 라플라스 스무딩(Laplace smoothing)입니다. PMI를 계산하기 전에 각 빈도수에 작은 상수 k(대개 0.1~3 사이 값 사용)를 더하며, 이는 모든 0이 아닌 값들을 축소(discounting)시킵니다. k값이 클수록 0이 아닌 빈도수들은 더 많이 축소됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>저빈도 편향 해결을 위한 또 다른 방법으로 라플라스 스무딩을 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.7 Applications of the tf-idf or PPMI vector models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.7 tf-idf 또는 PPMI 벡터 모델의 응용</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지금까지 다룬 벡터 모델들이 실제로 어떻게 사용되는지 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In summary, the vector semantics model we've described so far represents a target word as a vector with dimensions corresponding either to the documents in a large collection (the term-document matrix) or to the counts of words in some neighboring window (the term-term matrix). The values in each dimension are counts, weighted by tf-idf (for term-document matrices) or PPMI (for term-term matrices), and the vectors are sparse (since most values are zero).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약하자면, 지금까지 설명한 벡터 의미론 모델은 타겟 단어를 대규모 컬렉션의 문서에 대응하는 벡터(단어-문서 행렬) 또는 주변 윈도우 내의 단어 빈도에 대응하는 벡터(단어-단어 행렬)로 표현합니다. 각 차원의 값은 빈도수이며, 단어-문서 행렬의 경우 tf-idf로, 단어-단어 행렬의 경우 PPMI로 가중치를 부여합니다. 또한 대부분의 값이 0이므로 벡터는 희소(sparse)한 특성을 갖습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지금까지 배운 벡터 의미론의 핵심 내용을 요약 정리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The model computes the similarity between two words x and y by taking the cosine of their tf-idf or PPMI vectors; high cosine, high similarity. This entire model is sometimes referred to as the tf-idf model or the PPMI model, after the weighting function.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모델은 두 단어 x와 y 사이의 유사도를 해당 tf-idf 또는 PPMI 벡터의 코사인 값을 구해 계산하며, 코사인 값이 높을수록 유사도가 높음을 의미합니다. 이 전체 모델은 가중치 함수에 따라 때때로 tf-idf 모델 또는 PPMI 모델이라고 불리기도 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 간 유사도 측정 방식과 모델의 명칭에 대해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The tf-idf model of meaning is often used for document functions like deciding if two documents are similar. We represent a document by taking the vectors of all the words in the document, and computing the centroid of all those vectors. The centroid is the multidimensional version of the mean; the centroid of a set of vectors is a single vector that has the minimum sum of squared distances to each of the vectors in the set. Given k word vectors w_1, w_2, . . . , w_k, the centroid document vector d is:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 의미의 tf-idf 모델은 두 문서가 유사한지 결정하는 것과 같은 문서 관련 기능에 자주 사용됩니다. 문서 내의 모든 단어 벡터를 취하고 그 벡터들의 센트로이드(centroid, 중심점)를 계산하여 문서를 표현합니다. 센트로이드는 평균의 다차원 버전입니다. 즉, 벡터 집합의 센트로이드는 집합 내 각 벡터까지의 거리 제곱 합을 최소화하는 단일 벡터입니다. k개의 단어 벡터 w_1, w_2, ..., w_k가 주어졌을 때, 센트로이드 문서 벡터 d는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서를 표현하기 위해 개별 단어 벡터들의 평균인 '센트로이드'를 사용하는 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>centroid</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>센트로이드(centroid, 중심점)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 집합의 중심을 나타내는 대표 벡터입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>document vector</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문서 벡터(document vector)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 벡터들을 결합하여 문서를 기하학적 공간에 표현한 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>d = \frac{w_1 + w_2 + \dots + w_k}{k} (6.23)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>d = \frac{w_1 + w_2 + \dots + w_k}{k} (6.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.23). 문서 내 단어 벡터들의 산술 평균으로 문서 벡터를 구하는 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

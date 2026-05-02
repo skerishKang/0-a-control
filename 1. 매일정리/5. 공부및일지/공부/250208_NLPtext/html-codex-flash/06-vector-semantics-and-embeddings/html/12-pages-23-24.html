@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 23-24 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-23">Page 23</a>
+<a class="chip" href="#page-24">Page 24</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 23-24 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-23">
+<header class="page-header">
+<h2>Page 23</h2>
+<div class="page-subtitle">임베딩 시각화와 의미론적 속성</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.9 • VISUALIZING EMBEDDINGS 23</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.9 • 임베딩 시각화 23</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>with n = 3 the word where would be represented by the sequence <where> plus the character n-grams:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] n = 3일 때, 단어 'where'는 <where>라는 시퀀스와 더불어 다음과 같은 문자 n-그램들로 표현됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>FastText에서 단어를 하위 단위인 문자 n-그램들로 쪼개는 구체적인 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre><wh, whe, her, ere, re></pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre><wh, whe, her, ere, re></pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>FastText에서 n=3일 때 'where' 단어의 하위 단어 유닛들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Then a skipgram embedding is learned for each constituent n-gram, and the word where is represented by the sum of all of the embeddings of its constituent n-grams. Unknown words can then be presented only by the sum of the constituent n-grams. A fasttext open-source library, including pretrained embeddings for 157 languages, is available at https://fasttext.cc.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그 후 각 구성 n-그램에 대해 스킵-그램 임베딩을 학습하며, 'where'라는 단어는 해당 구성 n-그램들의 모든 임베딩 합으로 표현됩니다. 미등록 단어(unknown words)의 경우에도 구성 n-그램들의 합만으로 표현이 가능해집니다. 157개 언어에 대한 사전 학습된 임베딩을 포함하는 FastText 오픈소스 라이브러리는 https://fasttext.cc 에서 확인할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>FastText가 n-그램 벡터의 합을 통해 단어(특히 미등록 단어)를 표현하는 방식과 라이브러리 정보를 안내합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another very widely used static embedding model is GloVe (Pennington et al., 2014), short for Global Vectors, because the model is based on capturing global corpus statistics. GloVe is based on ratios of probabilities from the word-word co-occurrence matrix, combining the intuitions of count-based models like PPMI while also capturing the linear structures used by methods like word2vec.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또 다른 널리 사용되는 정적 임베딩 모델은 GloVe(Pennington et al., 2014)입니다. 이 모델은 말뭉치의 전역적 통계(global corpus statistics)를 포착하는 데 기반을 두고 있기 때문에 'Global Vectors'의 줄임말인 GloVe라는 이름을 가집니다. GloVe는 단어-단어 공기 행렬의 확률 비율에 기초하며, PPMI와 같은 빈도 기반 모델의 직관과 word2vec 같은 방식에서 사용되는 선형적 구조 포착 능력을 결합한 모델입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>GloVe 모델의 정의와 특징(전역 통계 활용, 빈도 기반과 예측 기반의 결합)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It turns out that dense embeddings like word2vec actually have an elegant mathematical relationships with sparse embeddings like PPMI, in which word2vec can be seen as implicitly optimizing a shifted version of a PPMI matrix (Levy and Goldberg, 2014c).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>word2vec과 같은 밀집 임베딩은 실제로는 PPMI와 같은 희소 임베딩과 우아한 수학적 관계를 맺고 있음이 밝혀졌습니다. 즉, word2vec은 PPMI 행렬의 변형된 버전을 암묵적으로 최적화하는 것으로 볼 수 있습니다(Levy and Goldberg, 2014c).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Word2vec과 PPMI 사이의 수학적 연관성에 대한 심화 내용을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.9 Visualizing Embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.9 임베딩 시각화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고차원 벡터 공간인 임베딩을 인간이 이해할 수 있도록 시각화하는 기법들을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"I see well in many dimensions as long as the dimensions are around two." The late economist Martin Shubik</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"차원 수가 2개 정도라면, 나는 많은 차원 속에서도 아주 잘 볼 수 있다." 고(故) 경제학자 마틴 슈빅(Martin Shubik)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시각화를 위해 차원 축소가 필요한 이유를 위트 있게 표현한 인용문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Visualizing embeddings is an important goal in helping understand, apply, and improve these models of word meaning. But how can we visualize a (for example) 100-dimensional vector?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>임베딩 시각화는 단어 의미 모델을 이해하고 적용하며 개선하는 데 도움을 주는 중요한 목표입니다. 하지만 예를 들어 100차원이나 되는 벡터를 어떻게 시각화할 수 있을까요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임베딩 시각화의 중요성과 고차원 데이터 시각화라는 과제를 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Unnamed hierarchical clustering plot showing anatomical terms (wrist, ankle, shoulder, etc.) and animals (dog, cat, puppy, kitten, etc.) and places (China, Russia, Africa, Asia, etc.)]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[신체 부위(wrist, ankle, shoulder 등), 동물(dog, cat, puppy, kitten 등), 장소(China, Russia, Africa, Asia 등)를 보여주는 이름 없는 계층적 군집화 도표]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 벡터들 사이의 유사도를 기반으로 계층적으로 분류한 군집화 예시 도표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simplest way to visualize the meaning of a word w embedded in a space is to list the most similar words to w by sorting the vectors for all words in the vocabulary by their cosine with the vector for w. For example the 7 closest words to frog using the GloVe embeddings are: frogs, toad, litoria, leptodactylidae, rana, lizard, and eleutherodactylus (Pennington et al., 2014).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>공간에 임베딩된 단어 w의 의미를 시각화하는 가장 간단한 방법은, 어휘 목록의 모든 단어 벡터를 w와의 코사인 유사도에 따라 정렬하여 가장 유사한 단어들을 나열해 보는 것입니다. 예를 들어 GloVe 임베딩을 사용하여 'frog'와 가장 가까운 7개 단어를 찾으면 frogs, toad, litoria, leptodactylidae, rana, lizard, eleutherodactylus가 나옵니다(Pennington et al., 2014).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유사도 기반 근접 단어 리스트업이라는 가장 기초적인 시각화(의미 확인) 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Yet another visualization method is to use a clustering algorithm to show a hierarchical representation of which words are similar to others in the embedding space. The uncaptioned figure on the left uses hierarchical clustering of some embedding vectors for nouns as a visualization method (Rohde et al., 2006).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또 다른 시각화 방법은 군집화 알고리즘을 사용하여 임베딩 공간에서 어떤 단어들이 서로 유사한지에 대한 계층적 표현을 보여주는 것입니다. 왼쪽의 캡션 없는 그림은 명사들에 대한 일부 임베딩 벡터들의 계층적 군집화(hierarchical clustering)를 시각화 방법으로 사용한 예입니다(Rohde et al., 2006).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계층적 군집화를 이용한 시각화 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Probably the most common visualization method, however, is to project the 100 dimensions of a word down into 2 dimensions. Fig. 6.1 showed one such visualization, as does Fig. 6.16, using a projection method called t-SNE (van der Maaten and Hinton, 2008).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 아마도 가장 흔한 시각화 방법은 단어의 100차원 데이터를 2차원으로 투영(project)하는 것일 것입니다. 그림 6.1이 그러한 시각화의 한 예였으며, 그림 6.16 또한 t-SNE(van der Maaten and Hinton, 2008)라는 투영 기법을 사용한 결과를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>t-SNE와 같은 차원 축소 기법을 통한 2차원 평면 시각화가 가장 일반적임을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-24">
+<header class="page-header">
+<h2>Page 24</h2>
+<div class="page-subtitle">임베딩의 의미론적 속성과 유추</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.10 Semantic properties of embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.10 임베딩의 의미론적 속성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임베딩 벡터가 담고 있는 다양한 의미론적 정보와 특성들을 정리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we briefly summarize some of the semantic properties of embeddings that have been studied.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 지금까지 연구된 임베딩의 의미론적 속성 중 몇 가지를 간략하게 요약하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>섹션 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Different types of similarity or association: One parameter of vector semantic models that is relevant to both sparse tf-idf vectors and dense word2vec vectors is the size of the context window used to collect counts. This is generally between 1 and 10 words on each side of the target word (for a total context of 2-20 words).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>서로 다른 유형의 유사성 또는 연관성: 희소 tf-idf 벡터와 밀집 word2vec 벡터 모두에 관련되는 벡터 의미론 모델의 한 파라미터는 빈도수를 수집하는 데 사용되는 문맥 윈도우의 크기입니다. 이는 일반적으로 타겟 단어의 양옆으로 각각 1개에서 10개 단어 사이(총 2~20개 단어의 문맥)로 설정됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 윈도우 크기가 벡터의 성격에 미치는 영향에 대해 설명하기 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The choice depends on the goals of the representation. Shorter context windows tend to lead to representations that are a bit more syntactic, since the information is coming from immediately nearby words. When the vectors are computed from short context windows, the most similar words to a target word w tend to be semantically similar words with the same parts of speech. When vectors are computed from long context windows, the highest cosine words to a target word w tend to be words that are topically related but not similar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>윈도우 크기의 선택은 표현의 목적에 따라 달라집니다. 짧은 문맥 윈도우는 바로 인접한 단어들로부터 정보를 얻기 때문에 약간 더 구문론적(syntactic)인 표현을 만드는 경향이 있습니다. 짧은 문맥 윈도우로 벡터를 계산할 때, 타겟 단어 w와 가장 유사한 단어들은 품사가 같으면서 의미적으로도 유사한 단어인 경우가 많습니다. 반면 긴 문맥 윈도우로 벡터를 계산할 때, 타겟 단어 w와 코사인 유사도가 가장 높은 단어들은 의미적으로 유사하기보다는 주제적으로 연관된(topically related) 단어인 경향이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>윈도우 크기에 따른 벡터 표현의 특징 차이(구문론적/유사성 vs 주제적 연관성)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For example Levy and Goldberg (2014a) showed that using skip-gram with a window of ±2, the most similar words to the word Hogwarts (from the Harry Potter series) were names of other fictional schools: Sunnydale (from Buffy the Vampire Slayer) or Evernight (from a vampire series). With a window of ±5, the most similar words to Hogwarts were other words topically related to the Harry Potter series: Dumbledore, Malfoy, and half-blood.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 Levy와 Goldberg(2014a)는 ±2 윈도우의 스킵-그램을 사용했을 때 'Hogwarts'(해리 포터 시리즈의 학교)와 가장 유사한 단어들이 Sunnydale(버피와 뱀파이어의 학교)이나 Evernight(또 다른 뱀파이어 시리즈) 같은 다른 가공의 학교 이름들이라는 것을 보여주었습니다. 반면 ±5 윈도우의 경우 Hogwarts와 가장 유사한 단어들은 Dumbledore, Malfoy, half-blood 같이 해리 포터 시리즈와 주제적으로 연관된 다른 단어들이었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Hogwarts 예시를 통해 윈도우 크기에 따른 결과 변화를 구체적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>first-order co-occurrence
+second-order co-occurrence</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1차 공기(first-order co-occurrence)
+2차 공기(second-order co-occurrence)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 간의 연관성 종류를 구분하는 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It's also often useful to distinguish two kinds of similarity or association between words (Schütze and Pedersen, 1993). Two words have first-order co-occurrence (sometimes called syntagmatic association) if they are typically nearby each other. Thus wrote is a first-order associate of book or poem. Two words have second-order co-occurrence (sometimes called paradigmatic association) if they have similar neighbors. Thus wrote is a second-order associate of words like said or remarked.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 사이의 유사성 또는 연관성을 두 가지 종류로 구분하는 것도 유용할 때가 많습니다(Schütze and Pedersen, 1993). 두 단어가 전형적으로 서로 근처에 나타난다면 '1차 공기(first-order co-occurrence)'(때로는 관계적 연합, syntagmatic association이라 함) 관계에 있다고 합니다. 따라서 'wrote'는 'book'이나 'poem'의 1차 연상어입니다. 반면 두 단어가 서로 유사한 이웃들을 가진다면 '2차 공기(second-order co-occurrence)'(때로는 패러다임적 연합, paradigmatic association이라 함) 관계에 있다고 합니다. 따라서 'wrote'는 'said'나 'remarked' 같은 단어들의 2차 연상어입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1차 공기(직접 인접)와 2차 공기(유사한 문맥 공유)의 개념 차이를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Analogy/Relational Similarity:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유추(Analogy)/관계적 유사성:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임베딩 벡터 공간에서의 선형적 관계를 이용한 유추 능력을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>parallelogram model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>평행사변형 모델(parallelogram model)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 연산을 통해 유추 문제를 해결하는 기하학적 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another semantic property of embeddings is their ability to capture relational meanings. In an important early vector space model of cognition, Rumelhart and Abrahamson (1973) proposed the parallelogram model for solving simple analogy problems of the form a is to b as a* is to what?. In such problems, a system given a problem like apple:tree::grape:?, i.e., apple is to tree as grape is to ____, and must fill in the word vine. In the parallelogram model, illustrated in Fig. 6.15, the vector from the word apple to the word tree (= tree − apple) is added to the vector for grape (grape); the nearest word to that point is returned.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>임베딩의 또 다른 의미론적 속성은 관계적 의미(relational meanings)를 포착하는 능력입니다. 인지 모델에 대한 초기 벡터 공간 모델 연구에서 Rumelhart와 Abrahamson(1973)은 'a와 b의 관계는 a*와 무엇의 관계와 같은가?' 형태의 간단한 유추 문제를 해결하기 위한 평행사변형 모델(parallelogram model)을 제안했습니다. 이러한 문제에서 시스템은 apple:tree::grape:?, 즉 '사과와 나무의 관계는 포도와 ____의 관계와 같다'는 문제를 받고 'vine'(덩굴)이라는 단어를 채워 넣어야 합니다. 그림 6.15에서 묘사된 평행사변형 모델에서는, 단어 apple에서 단어 tree로 가는 벡터($tree - apple$)를 단어 grape의 벡터에 더합니다. 그리고 그 결과 점과 가장 가까운 단어를 반환합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 연산을 이용해 유추 문제를 푸는 평행사변형 모델의 원리와 예시를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 6.15 showing vectors for apple, tree, grape, and vine forming a parallelogram]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 6.15 apple, tree, grape, vine 벡터들이 평행사변형을 이루는 모습]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>평행사변형 모델의 기하학적 구조를 보여주는 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.15 The parallelogram model for analogy problems (Rumelhart and Abrahamson, 1973): the location of vine can be found by subtracting apple from tree and adding grape.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.15 유추 문제를 위한 평행사변형 모델(Rumelhart and Abrahamson, 1973): tree에서 apple을 빼고 grape를 더함으로써 vine의 위치를 찾을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.15의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In early work with sparse embeddings, scholars showed that sparse vector mod-</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>희소 임베딩을 이용한 초기 연구에서, 학자들은 희소 벡터 모델이 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>희소 임베딩에서의 관계 포착 능력에 대한 설명의 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-13">Page 13</a><a class="chip" href="#page-14">Page 14</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-13">
+<header class="page-header"><h2>Page 13</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s begin by seeing how to estimate a_hat_ij by a variant of simple maximum likelihood estimation: a_hat_ij = (expected number of transitions from state i to state j) / (expected number of transitions from state i).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>간단한 최대 우도 추정의 변형을 통해 a_hat_ij를 어떻게 추정하는지 살펴보겠습니다: a_hat_ij = (상태 i에서 상태 j로의 기대 전이 횟수) / (상태 i에서의 기대 전이 횟수).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of the re-estimated transition probability.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>a_hat_ij = expected number of transitions from state i to state j / expected number of transitions from state i (A.16)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>a_hat_ij = (상태 i에서 상태 j로의 기대 전이 횟수) / (상태 i에서의 기대 전이 횟수) (A.16)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mathematical formula for a_hat_ij.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do we compute the numerator? Here’s the intuition. Assume we had some estimate of the probability that a given transition i -> j was taken at a particular point in time t in the observation sequence. If we knew this probability for each particular time t, we could sum over all times t to estimate the total count for the transition i -> j.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분자는 어떻게 계산할까요? 직관적인 설명은 다음과 같습니다. 관측 시퀀스의 특정 시점 t에서 주어진 전이 i -> j가 발생했을 확률에 대한 추정치가 있다고 가정해 봅시다. 각 시점 t에 대해 이 확률을 알고 있다면, 모든 시점 t에 대해 합산하여 전이 i -> j의 총 횟수를 추정할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Intuition for using expected counts over time steps.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More formally, let’s define the probability xi_t as the probability of being in state i at time t and state j at time t+ 1, given the observation sequence and of course the model:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>좀 더 공식적으로, 관측 시퀀스와 모델이 주어졌을 때 시간 t에서 상태 i에 있고 시간 t+1에서 상태 j에 있을 확률을 xi_t로 정의해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of xi_t (transition probability at time t).</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>xi_t(i, j) = P(qt = i, qt+1 = j | O, λ) (A.17)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>xi_t(i, j) = P(qt = i, qt+1 = j | O, λ) (A.17)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mathematical definition of xi_t.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To compute xi_t, we first compute a probability which is similar to xi_t, but differs in including the probability of the observation; note the different conditioning of O from Eq. A.17: not-quite-xi_t(i, j) = P(qt = i, qt+1 = j, O | λ).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>xi_t를 계산하기 위해, 먼저 xi_t와 유사하지만 관측 확률을 포함한다는 점에서 다른 확률을 계산합니다. 식 A.17과 O에 대한 조건부 설정이 다름에 유의하십시오: not-quite-xi_t(i, j) = P(qt = i, qt+1 = j, O | λ).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Intermediate step for calculating xi_t using joint probability.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>not-quite-xi_t(i, j) = P(qt = i, qt+1 = j, O | λ) (A.18)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>not-quite-xi_t(i, j) = P(qt = i, qt+1 = j, O | λ) (A.18)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Joint probability including observations.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.12 Computation of the joint probability of being in state i at time t and state j at time t + 1. The figure shows the various probabilities that need to be combined to produce P(qt = i;qt+1 = j;O|λ): the α and β probabilities, the transition probability aij and the observation probability bj(ot+1).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.12 시간 t에서 상태 i에 있고 시간 t + 1에서 상태 j에 있을 결합 확률의 계산. 이 그림은 P(qt = i;qt+1 = j;O|λ)를 산출하기 위해 결합되어야 하는 다양한 확률들인 α 및 β 확률, 전이 확률 aij, 관측 확률 bj(ot+1)을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Visual breakdown of components for xi_t computation.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-14">
+<header class="page-header"><h2>Page 14</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>not-quite-xi_t(i, j) = αt(i) aij bj(ot+1) βt+1(j) (A.19)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>not-quite-xi_t(i, j) = αt(i) aij bj(ot+1) βt+1(j) (A.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Formula for joint probability using alpha, a, b, and beta.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To compute xi_t from not-quite-xi_t, we follow the laws of probability and divide by P(O|λ). The probability of the observation given the model is simply the forward probability of the whole utterance (or alternatively, the backward probability of the whole utterance):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>not-quite-xi_t로부터 xi_t를 계산하기 위해, 확률 법칙을 따라 P(O|λ)로 나눕니다. 모델이 주어졌을 때 관측 확률은 단순히 전체 발화의 전방 확률(또는 대안적으로 전체 발화의 후방 확률)입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Normalizing the joint probability to get the conditional probability.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(O|λ) = Σ_{j=1}^{N} αt(j) βt(j) (A.21)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(O|λ) = Σ_{j=1}^{N} αt(j) βt(j) (A.21)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Calculating total observation likelihood at any time t.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>xi_t(i, j) = (αt(i) aij bj(ot+1) βt+1(j)) / (Σ_{k=1}^{N} αt(k) βt(k)) (A.22)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>xi_t(i, j) = (αt(i) aij bj(ot+1) βt+1(j)) / (Σ_{k=1}^{N} αt(k) βt(k)) (A.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Complete formula for xi_t.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>a_hat_ij = (Σ_{t=1}^{T-1} xi_t(i, j)) / (Σ_{t=1}^{T-1} Σ_{k=1}^{N} xi_t(i, k)) (A.23)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>a_hat_ij = (Σ_{t=1}^{T-1} xi_t(i, j)) / (Σ_{t=1}^{T-1} Σ_{k=1}^{N} xi_t(i, k)) (A.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Final re-estimation formula for transition probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We also need a formula for recomputing the observation probability. This is the probability of a given symbol vk from the observation vocabulary V, given a state j: b_hat_j(vk). We will do this by trying to compute: b_hat_j(vk) = (expected number of times in state j and observing symbol vk) / (expected number of times in state j).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또한 관측 확률을 재계산하기 위한 공식도 필요합니다. 이는 상태 j가 주어졌을 때 관측 어휘 V의 특정 기호 vk가 나타날 확률인 b_hat_j(vk)입니다. 우리는 이를 다음과 같이 계산합니다: b_hat_j(vk) = (상태 j에 있으면서 기호 vk를 관측한 기대 횟수) / (상태 j에 있었던 기대 횟수).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Objective for re-estimating emission probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>b_hat_j(vk) = (expected number of times in state j and observing symbol vk) / (expected number of times in state j) (A.24)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>b_hat_j(vk) = (상태 j에 있으면서 기호 vk를 관측한 기대 횟수) / (상태 j에 있었던 기대 횟수) (A.24)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Re-estimation formula for b_j(v_k).</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

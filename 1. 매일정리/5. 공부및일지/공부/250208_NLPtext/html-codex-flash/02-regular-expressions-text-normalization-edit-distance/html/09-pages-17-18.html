@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Regular Expressions, Text Normalization, Edit Distance</title>
+<style>
+:root {
+--bg: #f6f1e8;
+--paper: #fffdf8;
+--ink: #1f1b16;
+--muted: #6f675d;
+--line: #ddd2c2;
+--accent: #8c5a2b;
+--accent-soft: #f1e2cf;
+--note-bg: #faf4ea;
+--source-bg: #f5f3ef;
+--translation-bg: #fff8ea;
+--shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+--radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+margin: 0;
+background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+color: var(--ink);
+font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+.shell {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 24px 0 64px;
+}
+
+.topbar {
+position: sticky;
+top: 0;
+z-index: 10;
+backdrop-filter: blur(10px);
+background: rgba(246, 241, 232, 0.88);
+border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+margin-bottom: 24px;
+}
+
+.topbar-inner {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 14px 0;
+display: flex;
+gap: 16px;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+}
+
+.doc-meta {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.eyebrow {
+color: var(--muted);
+font-size: 13px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+}
+
+h1 {
+margin: 0;
+font-size: clamp(22px, 4vw, 34px);
+line-height: 1.15;
+font-weight: 800;
+}
+
+.quick-nav, .actions {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.chip, .action-btn {
+border: 1px solid var(--line);
+background: rgba(255, 253, 248, 0.92);
+color: var(--ink);
+border-radius: 999px;
+padding: 8px 14px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+text-decoration: none;
+transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover, .action-btn:hover {
+transform: translateY(-1px);
+background: #fff;
+}
+
+.hero {
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 4px);
+box-shadow: var(--shadow);
+padding: 28px;
+margin-bottom: 24px;
+}
+
+.hero p {
+margin: 10px 0 0;
+color: var(--muted);
+}
+
+.hero-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin-top: 18px;
+}
+
+.meta-card {
+padding: 14px 16px;
+border-radius: 14px;
+background: #fcf7f0;
+border: 1px solid var(--line);
+}
+
+.meta-card dt {
+font-size: 12px;
+color: var(--muted);
+margin-bottom: 6px;
+}
+
+.meta-card dd {
+margin: 0;
+font-weight: 700;
+}
+
+.page {
+margin-bottom: 28px;
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 2px);
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+
+.page-header {
+padding: 20px 24px;
+background: linear-gradient(135deg, #fff8eb, #f5ead8);
+border-bottom: 1px solid var(--line);
+}
+
+.page-header h2 {
+margin: 0;
+font-size: 28px;
+line-height: 1.15;
+}
+
+.page-subtitle {
+margin-top: 6px;
+color: var(--muted);
+font-size: 14px;
+}
+
+.blocks {
+padding: 18px;
+display: grid;
+gap: 16px;
+}
+
+.block {
+border: 1px solid var(--line);
+border-radius: var(--radius);
+overflow: hidden;
+background: #fffdfa;
+}
+
+.block-head {
+padding: 14px 16px;
+border-bottom: 1px solid var(--line);
+display: flex;
+justify-content: space-between;
+gap: 10px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.block-title {
+font-weight: 800;
+}
+
+.block-type {
+color: var(--accent);
+background: var(--accent-soft);
+border-radius: 999px;
+padding: 4px 10px;
+font-size: 13px;
+font-weight: 700;
+}
+
+.block-body {
+padding: 16px;
+display: grid;
+gap: 14px;
+}
+
+.label {
+display: inline-block;
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 0.04em;
+color: var(--muted);
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+
+.source, .translation, .note-panel {
+border-radius: 14px;
+padding: 14px 16px;
+border: 1px solid var(--line);
+}
+
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+
+.source pre, .translation pre, .note-panel pre {
+margin: 0;
+white-space: pre-wrap;
+word-break: break-word;
+font: inherit;
+}
+
+.mono pre {
+font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.note-toggle {
+align-self: start;
+border: 1px solid var(--line);
+background: #fff;
+border-radius: 999px;
+padding: 8px 12px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+}
+
+.note-panel[hidden] { display: none; }
+
+@media (max-width: 720px) {
+.shell { width: min(100% - 20px, 100%); }
+.topbar-inner { width: min(100% - 20px, 100%); }
+.hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">02 PDF / HTML Sample</div>
+<h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>중국어 토큰화, BPE(바이트 쌍 인코딩) 알고리즘을 다룹니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">중국어 토큰화와 BPE 알고리즘</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>(2.7) 姚 明 进 入 总 决 赛
+Yao Ming enter enter overall decision game</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(2.7) 姚 명 进 入 总 决 赛
+야오 명 진 출 총 결 승</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어 문장을 단어 단위가 아닌 개별 한자(글자) 단위로 나열한 예시입니다. 각 한자가 나름의 의미를 가짐을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In fact, for most Chinese NLP tasks it turns out to work better to take characters rather than words as input, since characters are at a reasonable semantic level for most applications, and since most word standards, by contrast, result in a huge vocabulary with large numbers of very rare words (Li et al., 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>사실 대부분의 중국어 NLP 작업에서는 단어보다 문자를 입력으로 사용하는 것이 더 효과적이라는 사실이 밝혀졌습니다. 문자는 대부분의 응용 프로그램에 적합한 의미 수준(semantic level)에 있으며, 반대로 대부분의 단어 기준은 매우 희귀한 단어들이 대량으로 포함된 거대한 어휘 집합을 생성하기 때문입니다(Li et al., 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어에서 '단어' 단위를 정의하기 어렵고 희귀 단어가 많아지는 문제를 해결하기 위해, 글자(character) 단위를 기본 입력으로 사용하는 것이 더 효율적일 수 있음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>However, for Japanese and Thai the character is too small a unit, and so algorithms for word segmentation are required. These can also be useful for Chinese in the rare situations where word rather than character boundaries are required. The standard segmentation algorithms for these languages use neural sequence models trained via supervised machine learning on hand-segmented training sets; we'll introduce sequence models in Chapter 8 and Chapter 9.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 일본어나 태국어의 경우 문자는 너무 작은 단위이므로 단어 분절(word segmentation) 알고리즘이 필요합니다. 이는 단어 경계가 문자 경계보다 더 중요하게 요구되는 드문 상황의 중국어에서도 유용할 수 있습니다. 이러한 언어들의 표준 분절 알고리즘은 수동으로 분절된 학습 세트에서 지도 학습(supervised machine learning)을 통해 훈련된 신경망 시퀀스 모델(neural sequence models)을 사용합니다. 시퀀스 모델에 대해서는 8장과 9장에서 소개할 예정입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일본어와 태국어처럼 문자 단위가 너무 작은 경우에는 단어 분절이 필수적이며, 이를 위해 딥러닝 기반의 시퀀스 모델이 사용됨을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>word segmentation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 분절(word segmentation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공백 없는 텍스트에서 단어 사이의 경계를 찾아내는 인위적인 분리 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2.4.3 Byte-Pair Encoding for Tokenization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2.4.3 토큰화를 위한 바이트 쌍 인코딩 (Byte-Pair Encoding, BPE)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 NLP(특히 LLM)에서 사실상 표준으로 쓰이는 하위 단어 토큰화 기법인 BPE를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There is a third option to tokenizing text. Instead of defining tokens as words (whether delimited by spaces or more complex algorithms), or as characters (as in Chinese), we can use our data to automatically tell us what the tokens should be. This is especially useful in dealing with unknown words, an important problem in language processing. As we will see in the next chapter, NLP algorithms often learn some facts about language from one corpus (a training corpus) and then use these facts to make decisions about a separate test corpus and its language. Thus if our training corpus contains, say the words low, new, newer, but not lower, then if the word lower appears in our test corpus, our system will not know what to do with it.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트를 토큰화하는 세 번째 방법이 있습니다. 토큰을 단어로 정의하거나(공백이나 복잡한 알고리즘에 의해 구분되든) 혹은 문자로 정의하는(중국어의 경우처럼) 대신, 우리 데이터를 사용하여 토큰이 무엇이어야 할지 자동으로 결정하게 할 수 있습니다. 이는 언어 처리에서 중요한 문제인 미등록 단어(unknown words)를 다루는 데 특히 유용합니다. 다음 장에서 보겠지만, NLP 알고리즘은 종종 하나의 코퍼스(학습 코퍼스)에서 언어에 대한 사실들을 배우고, 이 지식을 바탕으로 별도의 테스트 코퍼스와 그 언어에 대한 결정을 내립니다. 만약 학습 코퍼스에 'low', 'new', 'newer'라는 단어는 있지만 'lower'가 없다면, 테스트 코퍼스에 'lower'가 나타났을 때 우리 시스템은 이를 어떻게 처리해야 할지 알 수 없게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 단위(너무 큼)와 문자 단위(너무 작음)의 절충안으로서, 데이터로부터 최적의 단위를 스스로 찾아내는 방식이 왜 필요한지 OOV(Out-of-Vocabulary) 문제를 통해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To deal with this unknown word problem, modern tokenizers automatically induce sets of tokens that include tokens smaller than words, called subwords. Subwords can be arbitrary substrings, or they can be meaning-bearing units like the morphemes -est or -er. (A morpheme is the smallest meaning-bearing unit of a language; for example the word unlikeliest has the morphemes un-, likely, and -est.) In modern tokenization schemes, most tokens are words, but some tokens are frequently occurring morphemes or other subwords like -er. Every unseen word like lower can thus be represented by some sequence of known subword units, such as low and er, or even as a sequence of individual letters if necessary.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 미등록 단어 문제를 해결하기 위해, 현대의 토크나이저들은 단어보다 작은 단위인 하위 단어(subwords)를 포함하는 토큰 집합을 자동으로 유도해 냅니다. 하위 단어는 임의의 부분 문자열일 수도 있고, '-est'나 '-er'와 같은 의미를 담은 단위인 형태소(morphemes)일 수도 있습니다. (형태소는 언어에서 의미를 가진 가장 작은 단위입니다. 예를 들어 'unlikeliest'라는 단어는 'un-', 'likely', '-est'라는 형태소로 이루어져 있습니다.) 현대의 토큰화 체계에서 대부분의 토큰은 단어이지만, 일부 토큰은 빈번하게 나타나는 형태소나 '-er'와 같은 하위 단어들입니다. 따라서 'lower'와 같은 처음 보는 단어도 알고 있는 하위 단어 단위(예: 'low'와 'er')의 시퀀스로 표현할 수 있으며, 필요하다면 개별 글자의 시퀀스로도 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하위 단어의 정의와 형태소와의 관계를 설명합니다. 처음 보는 단어를 이미 알고 있는 조각(subword)들로 조립하여 처리할 수 있다는 것이 핵심입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>subwords</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하위 단어(subwords)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 더 쪼갠 단위로, 미등록 단어 문제 해결을 위한 현대 NLP의 핵심 요소입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Most tokenization schemes have two parts: a token learner, and a token segmenter. The token learner takes a raw training corpus (sometimes roughly preseparated into words, for example by whitespace) and induces a vocabulary, a set of tokens. The token segmenter takes a raw test sentence and segments it into the tokens in the vocabulary. Three algorithms are widely used: byte-pair encoding (Sennrich et al., 2016), unigram language modeling (Kudo, 2018), and WordPiece (Schuster and Nakajima, 2012); there is also a SentencePiece library that includes implementations of the first two of the three (Kudo and Richardson, 2018).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대부분의 토큰화 체계는 토큰 학습기(token learner)와 토큰 분절기(token segmenter)라는 두 부분으로 나뀝니다. 토큰 학습기는 가공되지 않은 학습 코퍼스를 가져와 어휘 집합(vocabulary)인 토큰들의 묶음을 유도해 냅니다. 토큰 분절기는 가공되지 않은 테스트 문장을 가져와 어휘 집합에 있는 토큰들로 분절합니다. 널리 쓰이는 세 가지 알고리즘은 바이트 쌍 인코딩(BPE, Sennrich et al., 2016), 유니그램 언어 모델링(unigram language modeling, Kudo, 2018), 그리고 워드피스(WordPiece, Schuster and Nakajima, 2012)입니다. 또한 이 중 처음 두 알고리즘의 구현체를 포함하는 SentencePiece 라이브러리(Kudo and Richardson, 2018)도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>토큰화 방식의 구성 요소와 주요 알고리즘들(BPE, WordPiece 등)을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we introduce the simplest of the three, the byte-pair encoding or BPE algorithm (Sennrich et al., 2016); see Fig. 2.13. The BPE token learner begins with a vocabulary that is just the set of all individual characters. It then examines the training corpus, chooses the two symbols that are most frequently adjacent (say 'A', 'B'), adds a new merged symbol 'AB' to the vocabulary, and replaces every adjacent 'A' 'B' in the corpus with the new 'AB'. It continues to count and merge, creating new longer and longer character strings, until k merges have been done creating k novel tokens; k is thus a parameter of the algorithm. The resulting vocabulary consists of the original set of characters plus k new symbols.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 세 가지 중 가장 간단한 바이트 쌍 인코딩(BPE) 알고리즘(Sennrich et al., 2016)을 소개합니다(그림 2.13 참조). BPE 토큰 학습기는 모든 개별 문자들의 집합으로 이루어진 어휘 집합에서 시작합니다. 그다음 학습 코퍼스를 조사하여 가장 빈번하게 인접한 두 기호(예: 'A', 'B')를 선택하고, 어휘 집합에 새로운 병합 기호 'AB'를 추가한 뒤, 코퍼스 내의 모든 인접한 'A' 'B'를 새로운 'AB'로 교체합니다. 이러한 계산과 병합 과정을 반복하여 점점 더 긴 문자열을 만들어 내며, k번의 병합이 완료되어 k개의 새로운 토큰이 만들어질 때까지 계속합니다. 따라서 k는 알고리즘의 파라미터가 됩니다. 최종적인 어휘 집합은 원래의 문자 집합에 k개의 새로운 기호가 추가된 형태가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BPE 알고리즘의 작동 방식을 단계별로 설명합니다. 가장 많이 붙어 다니는 문자들을 합쳐서 하나의 토큰으로 만드는 상향식(bottom-up) 방식을 취합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BPE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>BPE (Byte-Pair Encoding)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>바이트 쌍 인코딩의 약어입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">BPE 알고리즘 작동 예시</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 장 제목과 페이지 번호(18) 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The algorithm is usually run inside words (not merging across word boundaries), so the input corpus is first white-space-separated to give a set of strings, each corresponding to the characters of a word, plus a special end-of-word symbol _, and its counts. Let's see its operation on the following tiny input corpus of 18 word tokens with counts for each word (the word low appears 5 times, the word newer 6 times, and so on), which would have a starting vocabulary of 11 letters:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>알고리즘은 보통 단어 내부에서 실행되며(단어 경계를 넘어 병합하지 않음), 따라서 입력 코퍼스는 먼저 공백으로 구분되어 단어의 각 문자와 특수 단어 끝 기호 _, 그리고 그 빈도수가 포함된 문자열 집합을 생성합니다. 각 단어의 빈도수(단어 'low'는 5번, 단어 'newer'는 6번 나타나는 식)가 포함된 18개의 단어 토큰으로 이루어진 아주 작은 입력 코퍼스 예시를 통해 작동 방식을 살펴봅시다. 이 예시의 시작 어휘 집합은 11개의 글자로 구성됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BPE의 구체적인 작동 예시를 시작합니다. 단어 끝을 알리는 기호(`_`)의 사용과 단어 단위 내에서만 병합이 이루어진다는 제약 조건을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+Row 1: corpus | vocabulary
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w e r _
+Row 5: 3 w i d e r _
+Row 6: 2 n e w _</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+Row 1: 코퍼스 | 어휘 집합
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w e r _
+Row 5: 3 w i d e r _
+Row 6: 2 n e w _</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BPE 시작 단계의 데이터 상태입니다. 모든 단어가 글자 단위로 쪼개져 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The BPE algorithm first counts all pairs of adjacent symbols: the most frequent is the pair e r because it occurs in newer (frequency of 6) and wider (frequency of 3) for a total of 9 occurrences¹. We then merge these symbols, treating er as one symbol, and count again:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>BPE 알고리즘은 먼저 인접한 기호의 모든 쌍을 계산합니다. 가장 빈번한 쌍은 'e'와 'r'인데, 이는 'newer'(빈도 6)와 'wider'(빈도 3)에서 총 9번¹ 나타나기 때문입니다. 그런 다음 이 기호들을 병합하여 'er'을 하나의 기호로 취급하고 다시 빈도를 계산합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 병합 과정입니다. 가장 많이 나타나는 인접 쌍인 'e'와 'r'을 'er'로 합칩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+Row 1: corpus | vocabulary
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w er _
+Row 5: 3 w i d er _
+Row 6: 2 n e w _</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+Row 1: 코퍼스 | 어휘 집합
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w er _
+Row 5: 3 w i d er _
+Row 6: 2 n e w _</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 병합 결과입니다. 'er'이 하나의 토큰으로 어휘 집합에 추가되었습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now the most frequent pair is er _, which we merge; our system has learned that there should be a token for word-final er, represented as er_:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 가장 빈번한 쌍은 'er'과 '_'이며, 이를 병합합니다. 우리 시스템은 단어 끝에 오는 'er'을 위한 토큰인 'er_'가 있어야 함을 학습하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 번째 병합입니다. 'er' 뒤에 단어 끝 기호가 오는 패턴(`er_`)을 하나의 토큰으로 만들었습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+Row 1: corpus | vocabulary
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er, er_
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w er_
+Row 5: 3 w i d er_
+Row 6: 2 n e w _</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+Row 1: 코퍼스 | 어휘 집합
+Row 1: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er, er_
+Row 3: 2 l o w e s t _
+Row 4: 6 n e w er_
+Row 5: 3 w i d er_
+Row 6: 2 n e w _</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 번째 병합 결과입니다. 어휘 집합이 점점 풍성해지고 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Next n e (total count of 8) get merged to ne:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음으로 'n'과 'e'(총 8회)가 병합되어 'ne'가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세 번째 병합 과정입니다. 'newer'와 'new'에 공통적으로 들어가는 'ne'가 병합됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+Row 1: corpus | vocabulary
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne
+Row 3: 2 l o w e s t _
+Row 4: 6 ne w er_
+Row 5: 3 w i d er_
+Row 6: 2 ne w _</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+Row 1: 코퍼스 | 어휘 집합
+Row 2: 5 l o w _ | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne
+Row 3: 2 l o w e s t _
+Row 4: 6 ne w er_
+Row 5: 3 w i d er_
+Row 6: 2 ne w _</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세 번째 병합 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we continue, the next merges are:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>계속 진행한다면, 다음 병합들은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이어지는 병합 단계들을 표로 제시하기 전의 안내 문구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+Row 1: Merge | Current Vocabulary
+Row 2: (ne, w) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new
+Row 3: (l, o) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo
+Row 4: (lo, w) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low
+Row 5: (new, er_) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low, newer_
+Row 6: (low, _) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low, newer_, low_</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+Row 1: 병합 대상 | 현재 어휘 집합
+Row 2: (ne, w) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new
+Row 3: (l, o) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo
+Row 4: (lo, w) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low
+Row 5: (new, er_) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low, newer_
+Row 6: (low, _) | _, d, e, i, l, n, o, r, s, t, w, er, er_, ne, new, lo, low, newer_, low_</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>순차적인 병합을 통해 'new', 'low', 'newer_', 'low_'와 같은 단어 또는 단어에 근접한 토큰들이 생성되는 과정을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Once we've learned our vocabulary, the token parser is used to tokenize a test sentence. The token parser just runs on the test data the merges we have learned</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일단 어휘 집합을 학습하고 나면, 토큰 파서(token parser)를 사용하여 테스트 문장을 토큰화합니다. 토큰 파서는 우리가 학습한 병합 규칙들을 테스트 데이터에 그대로 적용합니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습된 규칙(병합 순서)을 새로운 데이터에 적용하여 토큰화하는 '분절(segmentation)' 단계에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1 Note that there can be ties; we could have instead chosen to merge r _ first, since that also has a frequency of 9.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 빈도수가 동일한 경우가 있을 수 있음에 유의하십시오. 예를 들어 'r'과 '_'의 쌍도 빈도수가 9이므로 이를 먼저 병합하도록 선택할 수도 있었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도가 같은 인접 쌍들 사이에서 선택 우선순위가 발생할 수 있음을 지적하는 기술적인 주석입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

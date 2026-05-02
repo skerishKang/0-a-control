@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>02 Pages 03 04</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.2 • ARTICULATORY PHONETICS 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.2 • 조음 음성학 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.2 depicting the vocal organs: Nasal cavity, Hard palate, Soft palate, Tongue, Epiglottis, Pharynx, Vocal cord, Larynx, Trachea]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.2 음성 기관의 구조: 비강(Nasal cavity), 경구개(Hard palate), 연구개(Soft palate), 혀(Tongue), 후두개(Epiglottis), 인두(Pharynx), 성대(Vocal cord), 후두(Larynx), 기관(Trachea)]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 주요 음성 기관들을 시각적으로 보여주는 도표입니다. 각 부위의 명칭을 익히는 것이 중요합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.2 The vocal organs, shown in side view. (Figure from OpenStax University Physics, CC BY 4.0)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.2 옆모습으로 본 음성 기관. (OpenStax University Physics 그림, CC BY 4.0)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 제시된 음성 기관 도표에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>muscle, the vocal folds (often referred to non-technically as the vocal cords), which can be moved together or apart. The space between these two folds is called the glottis. If the folds are close together (but not tightly closed), they will vibrate as air passes through them; if they are far apart, they won’t vibrate. Sounds made with the vocal folds together and vibrating are called voiced; sounds made without this vocal cord vibration are called unvoiced or voiceless. Voiced sounds include [b], [d], [g], [v], [z], and all the English vowels, among others. Unvoiced sounds include [p], [t], [k], [f], [s], and others.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>근육인 성대(vocal folds, 비전문적으로는 vocal cords라고도 함)는 서로 붙거나 떨어질 수 있습니다. 이 두 주름 사이의 공간을 성문(glottis)이라고 합니다. 성대가 서로 가까이 있으면(완전히 닫히지는 않은 상태), 공기가 통과할 때 진동합니다. 반면 멀리 떨어져 있으면 진동하지 않습니다. 성대가 모여 진동하면서 만들어지는 소리를 유성음(voiced)이라 하고, 이러한 성대 진동 없이 만들어지는 소리를 무성음(unvoiced 또는 voiceless)이라 합니다. 유성음에는 [b], [d], [g], [v], [z]와 모든 영어 모음 등이 포함됩니다. 무성음에는 [p], [t], [k], [f], [s] 등이 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유성음과 무성음의 물리적 차이인 성대의 진동 여부와 그 사이 공간인 '성문'에 대해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>glottis, voiced sound, unvoiced sound</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>성문(glottis), 유성음, 무성음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 음성학의 핵심 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The area above the trachea is called the vocal tract; it consists of the oral tract and the nasal tract. After the air leaves the trachea, it can exit the body through the mouth or the nose. Most sounds are made by air passing through the mouth. Sounds made by air passing through the nose are called nasal sounds; nasal sounds (like English [m], [n], and [ng]) use both the oral and nasal tracts as resonating cavities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기관 위쪽 영역을 성도(vocal tract)라고 하며, 이는 구강(oral tract)과 비강(nasal tract)으로 구성됩니다. 공기가 기관을 떠난 후 입이나 코를 통해 몸 밖으로 나갑니다. 대부분의 소리는 공기가 입을 통과하며 만들어집니다. 공기가 코를 통과하며 만들어지는 소리를 비음(nasal sounds)이라고 하며, 비음(영어의 [m], [n], [ng] 등)은 구강과 비강 모두를 공명강으로 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리가 통과하는 통로인 '성도'와 비음의 생성 원리에 대해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>nasal</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비음(nasal)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>코를 통해 공기가 나가는 소리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Phones are divided into two main classes: consonants and vowels. Both kinds of sounds are formed by the motion of air through the mouth, throat or nose. Consonants are made by restriction or blocking of the airflow in some way, and can be voiced or unvoiced. Vowels have less obstruction, are usually voiced, and are generally louder and longer-lasting than consonants. The technical use of these terms is much like the common usage; [p], [b], [t], [d], [k], [g], [f], [v], [s], [z], [r], [l], etc., are consonants; [aa], [ae], [ao], [ih], [aw], [ow], [uw], etc., are vowels. Semivowels (such as [y] and [w]) have some of the properties of both; they are voiced like vowels, but they are short and less syllabic like consonants.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>폰은 크게 자음(consonants)과 모음(vowels)의 두 가지 범주로 나뉩니다. 두 소리 모두 입, 목구멍, 코를 통하는 공기의 움직임에 의해 형성됩니다. 자음은 어떤 방식으로든 공기의 흐름을 제한하거나 차단하여 만들어지며, 유성음일 수도 무성음일 수도 있습니다. 모음은 방해가 적고 대개 유성음이며, 일반적으로 자음보다 소리가 크고 오래 지속됩니다. 이 용어들의 전문적인 사용법은 일반적인 용법과 매우 유사합니다. [p], [b], [t], [d], [k], [g], [f], [v], [s], [z], [r], [l] 등은 자음이고, [aa], [ae], [ao], [ih], [aw], [ow], [uw] 등은 모음입니다. 반모음([y]와 [w] 등)은 두 범주의 특성을 모두 가지고 있습니다. 모음처럼 유성음이지만, 자음처럼 짧고 음절성이 적습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자음과 모음의 물리적 정의 차이(공기 흐름의 방해 여부)와 반모음의 특징을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>consonant, vowel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음, 모음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 소리의 가장 기본적인 분류입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 25 • PHONETICS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제25장 • 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consonants: Place of Articulation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음: 조음 위치</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자음을 분류하는 첫 번째 기준인 '조음 위치'에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>place of articulation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>조음 위치(place of articulation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리가 만들어지는 입 안의 특정 지점을 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because consonants are made by restricting airflow, we can group them into classes by their point of maximum restriction, their place of articulation (Fig. 25.3).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음은 공기 흐름을 제한하여 만들어지기 때문에, 가장 많이 제한되는 지점인 조음 위치(그림 25.3)에 따라 범주별로 묶을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 위치의 정의를 자음의 생성 원리와 연결하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.3 Major English places of articulation: nasal tract, alveolar, dental, palatal, velar, bilabial, glottal]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.3 주요 영어 조음 위치: 비강(nasal tract), 치경(alveolar), 치음(dental), 경구개(palatal), 연구개(velar), 양순(bilabial), 성문(glottal)]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입 안의 주요 조음 위치들을 보여주는 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.3 Major English places of articulation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.3 주요 영어 조음 위치.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 제시된 조음 위치 도표에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Labial: Consonants whose main restriction is formed by the two lips coming together have a bilabial place of articulation. In English these include [p] as in possum, [b] as in bear, and [m] as in marmot. The English labiodental consonants [v] and [f] are made by pressing the bottom lip against the upper row of teeth and letting the air flow through the space in the upper teeth.
+  Dental: Sounds that are made by placing the tongue against the teeth are dentals. The main dentals in English are the [th] of thing and the [dh] of though, which are made by placing the tongue behind the teeth with the tip slightly between the teeth.
+  Alveolar: The alveolar ridge is the portion of the roof of the mouth just behind the upper teeth. Most speakers of American English make the phones [s], [z], [t], and [d] by placing the tip of the tongue against the alveolar ridge. The word coronal is often used to refer to both dental and alveolar.
+  Palatal: The roof of the mouth (the palate) rises sharply from the back of the alveolar ridge. The palato-alveolar sounds [sh] (shrimp), [ch] (china), [zh] (Asian), and [jh] (jar) are made with the blade of the tongue against the rising back of the alveolar ridge. The palatal sound [y] of yak is made by placing the front of the tongue up close to the palate.
+  Velar: The velum, or soft palate, is a movable muscular flap at the very back of the roof of the mouth. The sounds [k] (cuckoo), [g] (goose), and [ng] (kingfisher) are made by pressing the back of the tongue up against the velum.
+  Glottal: The glottal stop [q] is made by closing the glottis (by bringing the vocal folds together).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>순음(Labial): 두 입술이 맞닿아 주요 제한이 형성되는 자음은 양순(bilabial) 조음 위치를 가집니다. 영어에서는 possum의 [p], bear의 [b], marmot의 [m]이 이에 해당합니다. 영어의 순치(labiodental) 자음 [v]와 [f]는 아랫입술을 윗니에 대고 윗니 사이 공간으로 공기를 흘려보내어 만듭니다.
+  치음(Dental): 혀를 이에 대고 만드는 소리를 치음이라고 합니다. 영어의 주요 치음은 thing의 [th]와 though의 [dh]로, 혀끝을 윗니와 아랫니 사이에 살짝 둔 채 혀를 이 뒤쪽에 위치시켜 만듭니다.
+  치경음(Alveolar): 치경(alveolar ridge)은 윗니 바로 뒤에 있는 입천장 부분입니다. 대부분의 미국 영어 화자들은 혀끝을 치경에 대어 폰 [s], [z], [t], [d]를 만듭니다. 설단음(coronal)이라는 용어는 치음과 치경음 모두를 가리키는 데 자주 사용됩니다.
+  경구개음(Palatal): 입천장(palate)은 치경 뒤쪽에서 급격히 높아집니다. 치경경구개음 [sh] (shrimp), [ch] (china), [zh] (Asian), [jh] (jar)는 혀의 날(blade)을 치경의 높아지는 뒤쪽에 대어 만듭니다. yak의 경구개음 [y]는 혀의 앞부분을 경구개 가까이 올려서 만듭니다.
+  연구개음(Velar): 연구개(velum)는 입천장 맨 뒤쪽에 있는 움직일 수 있는 근육판입니다. [k] (cuckoo), [g] (goose), [ng] (kingfisher) 소리는 혀의 뒷부분을 연구개에 대어 만듭니다.
+  성문음(Glottal): 성문 파열음 [q]는 성대를 모아 성문(glottis)을 닫음으로써 만들어집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 조음 위치별 특징과 해당 음성들의 구체적인 예시를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>labial, dental, alveolar, palatal, palate, velar, glottal</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>순음, 치음, 치경음, 경구개음, 구개, 연구개음, 성문음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주요 조음 위치들을 나타내는 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consonants: Manner of Articulation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음: 조음 방법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자음을 분류하는 두 번째 기준인 '조음 방법'에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consonants are also distinguished by how the restriction in airflow is made, for example, by a complete stoppage of air or by a partial blockage. This feature is called the manner of articulation of a consonant. The combination of place and manner of articulation is usually sufficient to uniquely identify a consonant. Following are the major manners of articulation for English consonants:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음은 또한 공기 흐름의 제한이 어떻게 이루어지는지(예: 공기의 완전한 정지 또는 부분적인 차단)에 따라 구분됩니다. 이 특징을 자음의 조음 방법(manner of articulation)이라고 합니다. 조음 위치와 조음 방법의 조합은 보통 자음을 고유하게 식별하는 데 충분합니다. 다음은 영어 자음의 주요 조음 방법들입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 방법의 정의와, 조음 위치와의 결합을 통해 자음이 고유하게 정의됨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>manner of articulation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>조음 방법(manner of articulation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공기의 흐름을 조절하는 구체적인 방식을 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A stop is a consonant in which airflow is completely blocked for a short time. This blockage is followed by an explosive sound as the air is released. The period of blockage is called the closure, and the explosion is called the release. English</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파열음(stop)은 짧은 시간 동안 공기 흐름이 완전히 차단되는 자음입니다. 이 차단 뒤에는 공기가 방출되면서 폭발적인 소리가 뒤따릅니다. 차단된 기간을 폐쇄(closure)라고 하고, 폭발을 방출(release)이라고 합니다. 영어의... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 방법 중 하나인 파열음의 생성 메커니즘(폐쇄와 방출)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>stop</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>파열음(stop)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공기를 완전히 막았다가 터뜨리는 소리입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

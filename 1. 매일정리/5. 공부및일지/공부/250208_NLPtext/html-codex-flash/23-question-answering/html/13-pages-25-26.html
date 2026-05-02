@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25 26 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a><a class="chip" href="#page-26">Page 26</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25 26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+<div class="page-subtitle">23.7 팩토이드 답변의 평가</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.7 Evaluation of Factoid Answers</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.7 팩토이드 답변의 평가</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Metrics and datasets for evaluating factoid question answering.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Factoid question answering is commonly evaluated using mean reciprocal rank, or MRR (Voorhees, 1999). MRR is designed for systems that return a short ranked list of answers or passages for each test set question, which we can compare against the (human-labeled) correct answer. First, each test set question is scored with the reciprocal of the rank of the first correct answer. For example if the system returned five answers to a question but the first three are wrong (so the highest-ranked correct answer is ranked fourth), the reciprocal rank for that question is 1/4. The score for questions that return no correct answer is 0. The MRR of a system is the average of the scores for each question in the test set. In some versions of MRR, questions with a score of zero are ignored in this calculation. More formally, for a system returning ranked answers to each question in a test set Q, (or in the alternate version, let Q be the subset of test set questions that have non-zero scores). MRR is then defined as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>팩토이드 질문 답변은 일반적으로 평균 역순위(mean reciprocal rank, MRR)를 사용하여 평가됩니다(Voorhees, 1999). MRR은 각 테스트 세트 질문에 대해 짧은 순위 답변이나 구절 목록을 반환하는 시스템을 위해 설계되었으며, 이를 (사람이 레이블링한) 정답과 비교할 수 있습니다. 먼저, 각 테스트 세트 질문은 첫 번째 정답의 순위의 역수(reciprocal)로 점수가 매겨집니다. 예를 들어 시스템이 질문에 대해 5개의 답변을 반환했지만 처음 3개가 틀렸다면(즉, 가장 높은 순위의 정답이 4위인 경우), 해당 질문에 대한 역순위는 1/4입니다. 정답을 반환하지 못한 질문의 점수는 0입니다. 시스템의 MRR은 테스트 세트의 각 질문에 대한 점수의 평균입니다. MRR의 일부 버전에서는 점수가 0인 질문은 계산에서 제외되기도 합니다. 보다 공식적으로, 테스트 세트 Q의 각 질문에 대해 순위가 매겨진 답변을 반환하는 시스템에 대해(또는 다른 버전에서는 Q를 점수가 0이 아닌 테스트 세트 질문의 부분 집합으로 정의함) MRR은 다음과 같이 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition and calculation of Mean Reciprocal Rank (MRR), a common metric for ranked lists.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>MRR = 1/|Q| * Σ_{i=1}^{|Q|} 1/rank_i (23.34)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MRR = 1/|Q| * Σ_{i=1}^{|Q|} 1/rank_i (23.34)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The mathematical formula for Mean Reciprocal Rank.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Reading comprehension systems on datasets like SQuAD are evaluated (first ignoring punctuation and articles like a, an, the) via two metrics (Rajpurkar et al., 2016):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>SQuAD와 같은 데이터셋을 사용하는 독해(Reading comprehension) 시스템은 (먼저 문장 부호와 a, an, the와 같은 관사를 무시한 후) 두 가지 지표를 통해 평가됩니다(Rajpurkar et al., 2016).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Evaluation protocols specifically for span-extraction tasks like SQuAD.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>- Exact match: The % of predicted answers that match the gold answer exactly.
+- Exact match: The % of predicted answers that match the gold answer exactly.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>- 완전 일치(Exact match): 정답과 정확히 일치하는 예측 답변의 비율입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of Exact Match (EM) metric.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>- F1 score: The average word/token overlap between predicted and gold answers. Treat the prediction and gold as a bag of tokens, and compute F1 for each question, then return the average F1 over all questions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>- F1 점수: 예측 답변과 정답 사이의 평균 단어/토큰 중첩도입니다. 예측과 정답을 토큰들의 가방(bag of tokens)으로 취급하여 각 질문에 대한 F1을 계산한 후, 모든 질문에 대한 평균 F1을 반환합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of F1 score as a measure of partial overlap.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A number of test sets are available for question answering. Early systems used the TREC QA dataset: https://trec.nist.gov/data/qa/t8_qadata.html. More recent competitions uses the datasets described in Section 23.2.1. Other recent datasets include the AI2 Reasoning Challenge (ARC) (Clark et al., 2018) of multiple choice questions designed to be hard to answer from simple lexical methods, like this question:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>질문 답변을 위해 여러 테스트 세트를 사용할 수 있습니다. 초기 시스템은 TREC QA 데이터셋(https://trec.nist.gov/data/qa/t8_qadata.html)을 사용했습니다. 최근의 대회들은 섹션 23.2.1에서 설명한 데이터셋들을 사용합니다. 다른 최근 데이터셋으로는 간단한 어휘적 방법으로는 답하기 어렵게 설계된 객관식 질문들로 구성된 AI2 추론 챌린지(ARC)(Clark et al., 2018)가 있습니다. 예를 들어 다음과 같은 질문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Overview of QA datasets, highlighting the transition from simple overlap to complex reasoning (ARC).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Which property of a mineral can be determined just by looking at it? (A) luster [correct] (B) mass (C) weight (D) hardness</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>광물의 어떤 성질을 단지 보는 것만으로 결정할 수 있습니까? (A) 광택 [정답] (B) 질량 (C) 무게 (D) 경도</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example question from ARC showing that lexical association (mineral -> hardness) can lead to wrong answers.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In which the correct answer luster is unlikely to co-occur frequently with phrases like looking at it, while the word mineral is highly associated with the incorrect answer hardness.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 질문에서 정답인 '광택'은 '보는 것'과 같은 구절과 자주 공기(co-occur)할 가능성이 낮은 반면, '광물'이라는 단어는 오답인 '경도'와 높은 관련이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Analysis of why the ARC question is difficult for simple models.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">서지 정보 및 역사적 노트</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>서지 정보 및 역사적 노트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Historical background of Question Answering research.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Question answering was one of the earliest NLP tasks, and early versions of the text-based and knowledge-based paradigms were developed by the very early 1960s. The text-based algorithms generally relied on simple parsing of the question and of the sentences in the document, and then looking for matches. This approach was used very early on (Phillips, 1960) but perhaps the most complete early system, and one that strikingly prefigures modern relation-based systems, was the Protosynthex system of Simmons et al. (1964). Given a question, Protosynthex first formed a query from the content words in the question, and then retrieved candidate answer sentences in the document, ranked by their frequency-weighted term overlap with the question. The query and each retrieved sentence were then parsed with dependency parsers, and the sentence whose structure best matches the question structure selected. Thus the question What do worms eat? would match worms eat grass: both have the subject worms as a dependent of eat, in the version of dependency grammar used at the time, while birds eat worms has birds as the subject:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>질문 답변은 가장 초기 NLP 작업 중 하나였으며, 텍스트 기반 및 지식 기반 패러다임의 초기 버전은 1960년대 초반에 이미 개발되었습니다. 텍스트 기반 알고리즘은 일반적으로 질문과 문서 내 문장의 간단한 파싱에 의존한 뒤 일치하는 부분을 찾았습니다. 이 접근 방식은 매우 일찍 사용되었지만(Phillips, 1960), 아마도 가장 완전한 초기 시스템이자 현대의 관계 기반 시스템을 놀랍게 예견한 시스템은 Simmons 등(1964)의 Protosynthex 시스템일 것입니다. 질문이 주어지면, Protosynthex는 먼저 질문의 내용어들로부터 쿼리를 구성한 다음, 질문과의 빈도 가중 용어 중첩도에 따라 순위가 매겨진 후보 답변 문장들을 문서에서 검색했습니다. 그런 다음 쿼리와 각 검색된 문장은 의존 파서(dependency parsers)로 파싱되었고, 질문 구조와 가장 잘 일치하는 구조를 가진 문장이 선택되었습니다. 예를 들어 "벌레는 무엇을 먹나요?(What do worms eat?)"라는 질문은 "벌레는 풀을 먹는다(worms eat grass)"와 일치하게 됩니다. 당시 사용된 의존 문법 버전에서 두 문장 모두 주어인 'worms'가 'eat'의 의존어인 반면, "새는 벌레를 먹는다(birds eat worms)"는 'birds'가 주어입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Protosynthex (1964) used dependency parsing to match question structures with sentence structures.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What do worms eat
+Worms eat grass
+Birds eat worms</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>벌레는 무엇을 먹는가
+벌레는 풀을 먹는다
+새는 벌레를 먹는다</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example used to illustrate structural matching in Protosynthex.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The alternative knowledge-based paradigm was implemented in the BASEBALL system (Green et al., 1961). This system answered questions about baseball games like "Where did the Red Sox play on July 7?" by querying a structured database of game information. The database was stored as a kind of attribute-value matrix with values for attributes of each game: Month = July Place = Boston Day = 7 Game Serial No. = 96 (Team = Red Sox, Score = 5) (Team = Yankees, Score = 3)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대안적인 지식 기반 패러다임은 BASEBALL 시스템(Green et al., 1961)에서 구현되었습니다. 이 시스템은 경기 정보의 구조화된 데이터베이스를 쿼리함으로써 "7월 7일에 레드삭스는 어디에서 경기를 했나요?"와 같은 야구 경기 관련 질문에 답했습니다. 데이터베이스는 각 경기의 속성-값 행렬(attribute-value matrix) 형태로 저장되었습니다: 월 = 7월, 장소 = 보스턴, 일 = 7일, 경기 일련번호 = 96, (팀 = 레드삭스, 점수 = 5), (팀 = 양키스, 점수 = 3).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The BASEBALL system (1961) is a pioneer of knowledge-based QA using structured databases.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Each question was constituency-parsed using the algorithm of Zellig Harris's TDAP project at the University of Pennsylvania, essentially a cascade of finite-state transducers (see the historical discussion in Joshi and Hopely 1999 and Karttunen 1999). Then in a content analysis phase each word or phrase was associated with a program that computed parts of its meaning. Thus the phrase 'Where' had code to assign the semantics Place = ?, with the result that the question "Where did the Red Sox play on July 7" was assigned the meaning Place = ? Team = Red Sox Month = July Day = 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 질문은 펜실베이니아 대학교 Zellig Harris의 TDAP 프로젝트 알고리즘(본질적으로 유한 상태 트랜스듀서의 캐스케이드)을 사용하여 성분 파싱되었습니다. 그런 다음 내용 분석 단계에서 각 단어나 구절은 의미의 일부를 계산하는 프로그램과 연관되었습니다. 예를 들어 'Where'라는 구절은 'Place = ?'라는 의미를 할당하는 코드를 가지고 있었고, 그 결과 "7월 7일에 레드삭스는 어디에서 경기를 했나요"라는 질문에는 'Place = ?, Team = Red Sox, Month = July, Day = 7'이라는 의미가 할당되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Semantic analysis in BASEBALL involved mapping words to procedural semantics (programs).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The question is then matched against the database to return the answer. Simmons (1965) summarizes other early QA systems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그런 다음 질문은 데이터베이스와 매칭되어 답변을 반환합니다. Simmons(1965)는 다른 초기 QA 시스템들을 요약하고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Matching semantic representations against structured data.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another important progenitor of the knowledge-based paradigm for question- answering is work that used predicate calculus as the meaning representation language. The LUNAR system (Woods et al. 1972, Woods 1978) was designed to be</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>질문 답변을 위한 지식 기반 패러다임의 또 다른 중요한 조상은 술어 논리(predicate calculus)를 의미 표현 언어로 사용한 연구입니다. LUNAR 시스템(Woods et al. 1972, Woods 1978)은 다음과 같이 설계되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Transition to logic-based systems like LUNAR.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

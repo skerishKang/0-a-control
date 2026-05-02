@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 27-28 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-27">Page 27</a><a class="chip" href="#page-28">Page 28</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 27-28 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-27">
+<header class="page-header"><h2>Page 27</h2><div class="page-subtitle">위노그라드 스키마 문제</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.7 Winograd Schema problems</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.7 위노그라드 스키마 문제</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세상 지식(world knowledge)을 활용한 상호참조 해결의 중요성을 다루는 절입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One of the most important problems in coreference hasn't been discussed so far: how to use world knowledge to resolve coreference. To see that world knowledge is needed, consider the following examples:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>상호참조에서 가장 중요한 문제 중 하나는 지금까지 논의되지 않았습니다: 상호참조 해결을 위해 세상 지식을 어떻게 사용할 것인가 하는 점입니다. 세상 지식이 필요하다는 것을 알아보기 위해, 다음 예시들을 고려해 보십시오:</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호참조 해결에 세상에 대한 배경 지식이 필수적임을 도입하는 문장입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. The city councilmen refused the demonstrators a permit because they feared violence.
+2. The city councilmen refused the demonstrators a permit because they advocated violence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 시의원들은 시위대에게 허가증 발급을 거부했는데, 왜냐하면 그들이 폭력을 두려워했기 때문이다.
+2. 시의원들은 시위대에게 허가증 발급을 거부했는데, 왜냐하면 그들이 폭력을 주창했기 때문이다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위노그라드의 고전적인 예문으로, 한 단어의 차이가 대명사의 지시 대상을 완전히 바꿀 수 있음을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Notice that the only difference between the two sentences is the single word feared versus advocated. Yet in the first sentence the pronoun they refers to the city councilmen, while in the second sentence they refers to the demonstrators.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 문장의 유일한 차이점은 '두려워했다(feared)' 대 '주창했다(advocated)'라는 단 한 단어뿐임을 주목하십시오. 그럼에도 불구하고 첫 번째 문장에서 대명사 '그들(they)'은 시의원들을 가리키는 반면, 두 번째 문장에서 '그들(they)'은 시위대를 가리킵니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do humans resolve this reference correctly? Presumably using our knowledge of the world: city councilmen are the sorts of people who have the power to refuse permits, and demonstrations are sometimes associated with violence. This kind of common sense knowledge is exactly the sort of thing that current deep learning models struggle to acquire.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인간은 어떻게 이 참조를 올바르게 해결할까요? 아마도 세상에 대한 우리의 지식을 사용할 것입니다: 시의원들은 허가를 거부할 권한을 가진 종류의 사람들이고, 시위는 때때로 폭력과 연관됩니다. 이러한 종류의 상식적 지식은 현재의 딥러닝 모델이 획득하기 위해 고군분투하는 바로 그런 종류의 것입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 6</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because this particular kind of coreference resolution seems to rely on the sorts of reasoning that humans are good at but machines are not, sentences like this have been proposed as an evaluation mechanism for AI. A Winograd Schema is a pair Winograd Schema of sentences that differ in only one or two words, and that contain an ambiguity that is resolved in opposite ways in the two sentences and requires the use of world knowledge and reasoning for its resolution. The schemas were originally proposed by Levesque et al. (2012), naming them after Terry Winograd, who invented the classic councilmen/demonstrators example above (Winograd, 1972). Levesque et al. (2012) suggested using the schemas as an alternative to the Turing test: having a system try to answer the question Who does 'they' refer to? in many examples. If a system can answer correctly, presumably it exhibits intelligence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 특정 종류의 상호참조 해결은 인간이 잘하지만 기계는 잘하지 못하는 종류의 추론에 의존하는 것처럼 보이기 때문에, 이와 같은 문장들이 AI를 위한 평가 메커니즘으로 제안되었습니다. 위노그라드 스키마는 한두 단어만 다르고, 두 문장에서 반대되는 방식으로 해결되는 모호성을 포함하며, 그 해결을 위해 세상 지식과 추론의 사용을 요구하는 한 쌍의 문장입니다. 이 스키마는 Levesque et al. (2012)에 의해 처음 제안되었으며, 위의 고전적인 시의원/시위대 예제를 고안한 Terry Winograd의 이름을 따서 명명되었습니다 (Winograd, 1972). Levesque et al. (2012)는 이 스키마를 튜링 테스트의 대안으로 사용할 것을 제안했습니다: 시스템이 많은 예제에서 "'그들'이 가리키는 것은 누구인가?"라는 질문에 대답하도록 시도하게 하는 것입니다. 만약 시스템이 올바르게 대답할 수 있다면, 짐작건대 그것은 지능을 나타냅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-28">
+<header class="page-header"><h2>Page 28</h2><div class="page-subtitle">상호참조에서의 성별 편향</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.8 Gender Bias in Coreference</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.8 상호참조에서의 성별 편향</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>머신러닝 상호참조 시스템에 내재된 성별 편향 문제에 대해 논의하는 섹션입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Machine learning models in general tend to mirror the statistics of their training data. Because human writing frequently encodes social biases, modern deep learning NLP systems trained on that writing tend to model these biases (Section ?). Coreference systems are no exception, and they have been shown to have a specific type of gender bias (Zhao et al., 2018; Rudinger et al., 2018). For example, systems often mistakenly prefer to link pronouns with nouns that match stereotypical gender assignments. Consider the example in Fig. 21.14.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일반적으로 머신러닝 모델은 훈련 데이터의 통계를 반영하는 경향이 있습니다. 인간의 글쓰기는 종종 사회적 편향을 암호화하기 때문에, 해당 글쓰기에 대해 훈련된 현대의 딥러닝 NLP 시스템은 이러한 편향을 모델링하는 경향이 있습니다(?절 참조). 상호참조 시스템도 예외는 아니며, 특정 유형의 성별 편향을 가지고 있음이 밝혀졌습니다 (Zhao et al., 2018; Rudinger et al., 2018). 예를 들어, 시스템은 종종 대명사를 고정관념적인 성별 할당과 일치하는 명사에 연결하는 것을 잘못 선호합니다. 그림 21.14의 예를 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this figure from Zhao et al. (2018), a standard deep learning system fails to link she with physician but succeeds in linking he with physician. Deep learning systems make this error because there happen to be more sentences in the training data of the form the physician ... he ... than sentences of the form the physician ... she .... As a result, the deep learning systems just learn that physician correlates more with he, and it uses this fact as a heuristic to resolve coreference, a heuristic that hurts its performance on non-stereotypical cases. This particular problem was drawn from the WinoBias dataset (Zhao et al., WinoBias 2018), which draws on the intuition of the Winograd schemas to create a diagnostic dataset for coreference bias.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Zhao et al. (2018)의 이 그림에서, 표준 딥러닝 시스템은 '그녀(she)'를 '의사(physician)'와 연결하는 데는 실패하지만 '그(he)'를 '의사'와 연결하는 데는 성공합니다. 딥러닝 시스템은 훈련 데이터에 '의사 ... 그녀(she) ...' 형태의 문장보다 '의사 ... 그(he) ...' 형태의 문장이 우연히 더 많기 때문에 이러한 오류를 범합니다. 그 결과, 딥러닝 시스템은 단지 '의사'가 '그(he)'와 더 상관관계가 높다는 것을 학습하고, 이 사실을 상호참조 해결을 위한 휴리스틱으로 사용하는데, 이 휴리스틱은 비전형적인 사례에서의 성능을 저하시킵니다. 이 특정한 문제는 상호참조 편향에 대한 진단 데이터 세트를 만들기 위해 위노그라드 스키마의 직감을 활용한 WinoBias 데이터 세트 (Zhao et al., 2018)에서 발췌되었습니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. The physician hired the secretary because he was overwhelmed with clients.
+2. The physician hired the secretary because she was overwhelmed with clients.
+3. The physician hired the secretary because she was highly recommended.
+4. The physician hired the secretary because he was highly recommended.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 의사는 고객들로 압도되었기 때문에(그가 바빴기 때문에) 비서를 고용했다.
+2. 의사는 고객들로 압도되었기 때문에(그녀가 바빴기 때문에) 비서를 고용했다.
+3. 의사는 비서가 매우 추천받았기 때문에(그녀가 추천받았기 때문에) 그녀를 고용했다.
+4. 의사는 비서가 매우 추천받았기 때문에(그가 추천받았기 때문에) 그를 고용했다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">figure_caption</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 21.14: Bias in a standard deep learning coreference system (Zhao et al., 2018). The deep learning system succeeds in linking he to physician, and she to secretary, but fails at the non-stereotypical links.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 21.14: 표준 딥러닝 상호참조 시스템에서의 편향 (Zhao et al., 2018). 딥러닝 시스템은 '그(he)'를 '의사'에, '그녀(she)'를 '비서'에 연결하는 데는 성공하지만, 비전형적인 링크에서는 실패합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Constituency Grammars</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">12 Constituency Grammars</div>
+<h1>Constituency Grammars</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>12. Constituency Grammars.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">구문 구조 문법의 기초</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 12 Constituency Grammars</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제12장 구문 구조 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>12장의 대제목입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"The words of the language, the sentences of the language, the texts of the language... we are looking for a grammar that will generate all and only the sentences of the language." Noam Chomsky, 1957</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"언어의 단어들, 언어의 문장들, 언어의 텍스트들... 우리는 언어의 모든 문장만을 생성하고 그 외의 것은 생성하지 않는 문법을 찾고 있습니다." 노암 촘스키(Noam Chomsky), 1957년</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 언어학의 기초가 된 촘스키의 인용구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The study of grammar is a very old one; the Sanskrit scholar Pāṇini was already writing a generative grammar of his language 2500 years ago. But the goal of modern computational grammar is to enable us to answer a number of important questions. How can we tell if a string of words is a sentence in a language? What is the structure of a sentence? How can we use this structure to help us find the meaning of the sentence?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문법에 대한 연구는 매우 오래된 것입니다. 산스크리트어 학자 파니니(Pāṇini)는 이미 2500년 전에 자신의 언어에 대한 생성 문법을 쓰고 있었습니다. 그러나 현대 계산 문법의 목표는 우리가 몇 가지 중요한 질문에 답할 수 있도록 하는 데 있습니다. 어떻게 하면 일련의 단어들이 특정 언어의 문장인지 알 수 있을까? 문장의 구조는 무엇인가? 이 구조를 문장의 의미를 찾는 데 어떻게 활용할 수 있을까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 문법의 역사적 배경과 현대적 목적을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>constituency</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구문 구조(constituency)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장을 구성하는 단어들의 덩어리 구조를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.1 Constituents</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.1 성분</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 성분(Constituents)에 대한 첫 번째 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The fundamental idea of constituency is that groups of words can behave as single units, or constituents. A constituent is a group of words that function as a single unit with respect to some grammatical process.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구문 구조(constituency)의 근본적인 아이디어는 일련의 단어들이 하나의 단위인 '성분(constituents)'으로 행동할 수 있다는 것입니다. 성분이란 어떤 문법적 과정에 있어 하나의 단위로서 기능을 수행하는 단어들의 집합을 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>성분의 정의와 기본 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consider the following sentences:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 문장들을 고려해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예시 문장을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    (12.1) [NP Harry the Horse] yesterday ate a peach.
+    (12.2) [NP Harry the Horse] yesterday breathed a sigh of relief.
+    (12.3) [NP Harry the Horse] yesterday thought that the world was about to end.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    (12.1) [NP 말해리(Harry the Horse)]는 어제 복숭아를 먹었다.
+    (12.2) [NP 말해리(Harry the Horse)]는 어제 안도의 한숨을 쉬었다.
+    (12.3) [NP 말해리(Harry the Horse)]는 어제 세상이 곧 끝날이라고 생각했다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>명사구(NP)가 문장에서 주어로 기능하는 예시들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In each of these sentences, the three-word phrase Harry the Horse acts as a unit; it is the subject of each of the sentences. This phrase is a constituent. We can often tell that a group of words is a constituent by finding that they can appear in the same contexts as other strings of words that we already know are constituents.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 문장들 각각에서 '말해리(Harry the Horse)'라는 세 단어 구는 하나의 단위로 작용하며, 각 문장의 주어입니다. 이 구는 하나의 성분입니다. 우리는 종종 어떤 단어 집합이 우리가 이미 성분이라고 알고 있는 다른 단어열과 동일한 문맥에서 나타날 수 있는지를 확인함으로써 그것이 성분임을 알 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>성분을 식별하는 방법 중 하나인 분포적 유사성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For example, the one-word phrase Harry is a constituent, as is the three-word phrase Harry the Horse, since they both can occur as the subject of the verb ate in (12.1).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어, (12.1)에서 한 단어 구인 'Harry'와 세 단어 구인 'Harry the Horse'는 모두 동사 'ate'의 주어로 나타날 수 있으므로 성분입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 단어와 구가 모두 성분이 될 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>noun phrase</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명사구(noun phrase)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>명사를 중심으로 하는 성분인 NP의 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>NP</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NP</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>명사구의 약어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We call this particular kind of constituent, centered around a noun, a noun phrase (NP). Noun phrases are among the most important kinds of constituents in English. Not only can they appear in the subject position, but they can also appear in other positions like the object of a verb or a preposition.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 명사를 중심으로 하는 이러한 특정 종류의 성분을 명사구(NP)라고 부릅니다. 명사구는 영어에서 가장 중요한 성분 종류 중 하나입니다. 명사구는 주어 자리에 나타날 수 있을 뿐만 아니라, 동사나 전치사의 목적어와 같은 다른 자리에도 나타날 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>명사구의 정의와 문장 내에서의 다양한 역할을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">문맥 자유 문법</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 12 • CONSTITUENCY GRAMMARS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제12장 • 구문 구조 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>context-free grammar</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문맥 자유 문법(context-free grammar)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구문 구조를 정의하는 가장 널리 사용되는 수학적 형식주의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CFG</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CFG</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 자유 문법의 약어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12.2 Context-Free Grammars</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12.2 문맥 자유 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥 자유 문법(CFG)을 본격적으로 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The most widely used formal system for modeling the constituency structure of human languages is the context-free grammar (CFG), also called phrase-structure grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인간 언어의 구문 구조를 모델링하는 데 가장 널리 사용되는 형식 시스템은 문맥 자유 문법(CFG)이며, 구 구조 문법(phrase-structure grammar)이라고도 불립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CFG의 보편성과 동의어를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A context-free grammar consists of a set of rules, each of which expresses how a constituent can be broken down into smaller units. For example, a common rule for English noun phrases says that an NP can be composed of a determiner (like the or a) followed by a noun (like flight or dog):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문맥 자유 문법은 일련의 규칙들로 구성되며, 각 규칙은 성분이 어떻게 더 작은 단위들로 나누어질 수 있는지를 표현합니다. 예를 들어, 영어 명사구에 대한 일반적인 규칙은 NP가 한정사('the'나 'a' 등)와 그 뒤에 오는 명사('flight'나 'dog' 등)로 구성될 수 있다고 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CFG 규칙의 기본 개념을 명사구 예시를 통해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    NP → Det N</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    NP → Det N</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NP가 Det와 N으로 구성됨을 나타내는 CFG 규칙 형식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This rule can be read as "an NP can consist of a Det followed by an N". The symbol to the left of the arrow is called the left-hand side (LHS) and the sequence of symbols to the right is the right-hand side (RHS).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 규칙은 "NP는 Det 뒤에 N이 오는 것으로 구성될 수 있다"고 읽을 수 있습니다. 화살표 왼쪽의 기호를 왼쪽면(LHS)이라 부르고, 오른쪽의 기호 배열을 오른쪽면(RHS)이라고 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙의 읽는 법과 LHS/RHS 용어를 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>non-terminal</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비단말(non-terminal)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다른 기호들로 더 쪼개질 수 있는 기호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>terminal</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단말(terminal)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>더 이상 쪼개질 수 없는 실제 단어들을 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Symbols like NP, Det, and N that can be further broken down are called non-terminals. Symbols that correspond to words of the language and cannot be broken down further (like the, a, flight, or dog) are called terminals. The entire set of terminals is called the lexicon of the grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>더 세분화될 수 있는 NP, Det, N과 같은 기호들을 비단말(non-terminals)이라고 부릅니다. 해당 언어의 단어에 대응하며 더 이상 쪼개질 수 없는 기호('the', 'a', 'flight', 'dog' 등)들을 단말(terminals)이라고 부릅니다. 단말 전체의 집합을 그 문법의 어휘집(lexicon)이라고 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비단말과 단말 기호의 구분 및 어휘집의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Naive Bayes and Sentiment Classification</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">04 Naive Bayes and Sentiment</div>
+<h1>Naive Bayes and Sentiment Classification</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>4. Naive Bayes and Sentiment Classification.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">나이브 베이즈 분류기의 직관과 bag-of-words</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4.1 • NAIVE BAYES CLASSIFIERS 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4.1 • 나이브 베이즈 분류기 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>how the features interact.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 특징(features)들이 어떻게 상호작용하는지에 관한 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 페이지에서 이어진 문장의 마무리 부분입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>bag-of-words</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 가방(bag-of-words)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트를 단어들의 순서와 관계없이 빈도수만으로 표현하는 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition of the classifier is shown in Fig. 4.1. We represent a text document as if it were a bag-of-words, that is, an unordered set of words with their position ignored, keeping only their frequency in the document. In the example in the figure, instead of representing the word order in all the phrases like "I love this movie" and "I would recommend it", we simply note that the word I occurred 5 times in the entire excerpt, the word it 6 times, the words love, recommend, and movie once, and so on.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 분류기의 직관적인 개념이 그림 4.1에 나타나 있습니다. 우리는 텍스트 문서를 마치 '단어 가방(bag-of-words)'인 것처럼 표현합니다. 즉, 단어의 위치는 무시하고 오직 문서 내에서의 빈도수만 유지하는 순서 없는 단어 집합으로 취급하는 것입니다. 그림의 예시에서처럼 "I love this movie"나 "I would recommend it" 같은 모든 구절의 단어 순서를 표현하는 대신, 전체 발췌문에서 'I'라는 단어가 5번, 'it'이 6번, 'love', 'recommend', 'movie라는 단어들이 각각 한 번씩 등장했다는 사실들만을 기록합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈 모델의 가장 핵심적인 전제인 '단어 가방(BoW)' 가정의 직관적 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>I love this movie! It's sweet, but with satirical humor. The dialogue is great and the adventure scenes are fun... It manages to be whimsical and romantic while laughing at the conventions of the fairy tale genre. I would recommend it to just about anyone. I've seen it several times, and I'm always happy to see it again whenever I have a friend who hasn't seen it yet!
+(Illustration: Arrow pointing to a bag filled with words from the text)
+it: 6, I: 5, the: 4, to: 3, and: 3, seen: 2, yet: 1, would: 1, whimsical: 1, times: 1, sweet: 1, satirical: 1, adventure: 1, genre: 1, fairy: 1, humor: 1, have: 1, great: 1, ...</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 영화 정말 좋아요! 달콤하면서도 풍자적인 유머가 있네요. 대사도 훌륭하고 모험 장면들도 재미있어요... 동화 장르의 관습을 비웃으면서도 기발하고 로맨틱한 분위기를 자아내죠. 누구에게나 추천하고 싶은 영화예요. 여러 번 봤는데, 아직 못 본 친구가 있을 때마다 같이 다시 보게 되어 항상 기뻐요!
+(그림: 텍스트에서 추출된 단어들로 가득 찬 가방을 가리키는 화살표)
+it: 6, I: 5, the: 4, to: 3, and: 3, seen: 2, yet: 1, would: 1, whimsical: 1, times: 1, sweet: 1, satirical: 1, adventure: 1, genre: 1, fairy: 1, humor: 1, have: 1, great: 1, ...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.1에 포함된 텍스트 원문과 그로부터 생성된 단어 빈도수 리스트입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 4.1 Intuition of the multinomial naive Bayes classifier applied to a movie review. The position of the words is ignored (the bag of words assumption) and we make use of the frequency of each word.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 4.1 영화 리뷰에 적용된 다항 나이브 베이즈 분류기의 직관적 원리. 단어의 위치는 무시되며(단어 가방 가정), 각 단어의 빈도수를 활용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 4.1의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Naive Bayes is a probabilistic classifier, meaning that for a document d, out of all classes c ∈ C the classifier returns the class cˆ which has the maximum posterior probability given the document. In Eq. 4.1 we use the hat notation ^ to mean "our estimate of the correct class".</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈는 확률적 분류기(probabilistic classifier)입니다. 즉, 문서 $d$에 대해 가능한 모든 클래스 $c \in C$ 중에서 해당 문서가 주어졌을 때 최대 사후 확률(maximum posterior probability)을 갖는 클래스 $\hat{c}$를 반환한다는 의미입니다. 식 4.1에서 햇(hat) 기호 $\hat{}$는 "우리가 추정한 정답 클래스"를 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈를 수학적으로 정의하기 위한 첫 단계로 사후 확률 최대화 개념을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>cˆ = argmax_{c∈C} P(c|d) (4.1)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{c} = \underset{c \in C}{\text{argmax}} P(c|d) (4.1)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.1). 주어진 문서 $d$에 대해 가장 확률이 높은 클래스 $c$를 찾는 목적 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bayesian inference</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>베이즈 추론(Bayesian inference)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 정리를 이용하여 새로운 증거를 바탕으로 가설의 확률을 갱신하는 추론 방식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This idea of Bayesian inference has been known since the work of Bayes (1763), and was first applied to text classification by Mosteller and Wallace (1964). The intuition of Bayesian classification is to use Bayes' rule to transform Eq. 4.1 into other probabilities that have some useful properties. Bayes' rule is presented in Eq. 4.2; it gives us a way to break down any conditional probability P(x|y) into three other probabilities:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 베이즈 추론(Bayesian inference) 아이디어는 Bayes(1763)의 연구 이후로 알려져 왔으며, Mosteller와 Wallace(1964)에 의해 텍스트 분류에 처음 적용되었습니다. 베이즈 분류의 직관은 베이즈 규칙(Bayes' rule)을 사용하여 식 4.1을 유용한 성질을 가진 다른 확률들로 변환하는 것입니다. 베이즈 규칙은 식 4.2에 제시되어 있습니다. 이 규칙은 임의의 조건부 확률 $P(x|y)$를 세 가지 다른 확률로 분해하는 방법을 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>직접 구하기 어려운 사후 확률 $P(c|d)$를 계산 가능한 다른 확률들로 바꾸기 위해 베이즈 정리를 도입하는 배경을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(x|y) = P(y|x)P(x) / P(y) (4.2)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(x|y) = \frac{P(y|x)P(x)}{P(y)} (4.2)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.2). 가장 기본적인 베이즈 정리 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can then substitute Eq. 4.2 into Eq. 4.1 to get Eq. 4.3:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 식 4.2를 식 4.1에 대입하면 식 4.3을 얻을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>목적 함수를 베이즈 정리를 이용해 변환하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>cˆ = argmax_{c∈C} P(c|d) = argmax_{c∈C} P(d|c)P(c) / P(d) (4.3)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{c} = \underset{c \in C}{\text{argmax}} P(c|d) = \underset{c \in C}{\text{argmax}} \frac{P(d|c)P(c)}{P(d)} (4.3)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.3). 베이즈 정리가 적용된 분류 목적 함수입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">생성 모델과 나이브 베이즈 가정</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 4 • NAIVE BAYES AND SENTIMENT CLASSIFICATION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제4장 • 나이브 베이즈와 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can conveniently simplify Eq. 4.3 by dropping the denominator P(d). This is possible because we will be computing P(d|c)P(c) / P(d) for each possible class. But P(d) doesn't change for each class; we are always asking about the most likely class for the same document d, which must have the same probability P(d). Thus, we can choose the class that maximizes this simpler formula:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 분모인 $P(d)$를 제거함으로써 식 4.3을 편리하게 단순화할 수 있습니다. 이것이 가능한 이유는 우리가 가능한 각 클래스에 대해 $P(d|c)P(c) / P(d)$를 계산할 것이기 때문입니다. 그런데 $P(d)$는 클래스에 따라 변하지 않습니다. 우리는 항상 '동일한 문서 $d$'에 대해 가장 가능성 높은 클래스를 묻고 있으므로, $P(d)$는 항상 같은 값을 가집니다. 따라서 우리는 이 단순화된 공식을 최대화하는 클래스를 선택하면 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 클래스에 대해 동일한 분모 $P(d)$는 비교 결과에 영향을 주지 않으므로 계산에서 제외할 수 있음을 수학적으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>cˆ = argmax_{c∈C} P(c|d) = argmax_{c∈C} P(d|c)P(c) (4.4)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{c} = \underset{c \in C}{\text{argmax}} P(c|d) = \underset{c \in C}{\text{argmax}} P(d|c)P(c) (4.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.4). 분모가 제거된 나이브 베이즈의 핵심 최적화 목적 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We call Naive Bayes a generative model because we can read Eq. 4.4 as stating a kind of implicit assumption about how a document is generated: first a class is sampled from P(c), and then the words are generated by sampling from P(d|c). (In fact you could imagine generating artificial documents, or at least their word counts, by following this process). We'll say more about this intuition of generative models in Chapter 5.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 나이브 베이즈를 생성 모델(generative model)이라고 부릅니다. 왜냐하면 식 4.4를 문서가 어떻게 생성되는지에 대한 일종의 암시적 가설로 해석할 수 있기 때문입니다. 즉, 먼저 $P(c)$에서 클래스를 샘플링하고, 그 다음 $P(d|c)$에서 샘플링하여 단어들을 생성한다는 가설입니다. (실제로 이 과정을 따라하면 인공적인 문서나 적어도 그 단어 빈도수를 생성해내는 모습을 상상해볼 수 있습니다.) 생성 모델에 관한 이러한 직관에 대해서는 제5장에서 더 자세히 다루겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>나이브 베이즈가 왜 '생성(generative)' 모델로 분류되는지 그 확률론적 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To return to classification: we compute the most probable class cˆ given some document d by choosing the class which has the highest product of two probabilities: the prior probability of the class P(c) and the likelihood of the document P(d|c):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다시 분류 문제로 돌아가서, 어떤 문서 $d$가 주어졌을 때 가장 확률이 높은 클래스 $\hat{c}$를 계산하려면 다음 두 확률의 곱이 가장 큰 클래스를 선택하면 됩니다. 바로 클래스의 사전 확률(prior probability) $P(c)$와 문서의 가능도(likelihood) $P(d|c)$입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 4.4의 구성 요소인 사전 확률과 가능도의 명칭을 명확히 규정합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>prior probability
+likelihood</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>사전 확률
+가능도(우도)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 추론의 핵심 구성 요소들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>cˆ = argmax_{c∈C} P(d|c)_likelihood P(c)_prior (4.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{c} = \underset{c \in C}{\text{argmax}} \overbrace{P(d|c)}^{\text{likelihood}} \overbrace{P(c)}^{\text{prior}} (4.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.5). 사전 확률과 가능도의 곱으로 표현된 분류 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Without loss of generalization, we can represent a document d as a set of features f1, f2, . . . , fn:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일반성을 잃지 않고, 문서 $d$를 특징들의 집합 $f_1, f_2, . . . , f_n$으로 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서를 분석 가능한 특징 벡터로 추상화하는 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>cˆ = argmax_{c∈C} P(f1, f2, . . . , fn|c)_likelihood P(c)_prior (4.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\hat{c} = \underset{c \in C}{\text{argmax}} \overbrace{P(f_1, f_2, . . . , f_n|c)}^{\text{likelihood}} \overbrace{P(c)}^{\text{prior}} (4.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.6). 특징들의 결합 확률을 이용한 분류 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unfortunately, Eq. 4.6 is still too hard to compute directly: without some simplifying assumptions, estimating the probability of every possible combination of features (for example, every possible set of words and positions) would require huge numbers of parameters and impossibly large training sets. Naive Bayes classifiers therefore make two simplifying assumptions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>안타깝게도 식 4.6을 직접 계산하는 것은 여전히 매우 어렵습니다. 몇 가지 단순화된 가정이 없다면, 특징들의 가능한 모든 조합(예를 들어 모든 가능한 단어 범주와 위치의 조합)에 대한 확률을 추정하는 데 기하급수적으로 많은 파라미터와 불가능할 정도로 거대한 학습 세트가 필요하기 때문입니다. 따라서 나이브 베이즈 분류기는 두 가지 단순화 가정을 세웁니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>결합 확률의 차원 문제를 해결하기 위해 나이브 베이즈가 도입하는 가정의 필요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first is the bag of words assumption discussed intuitively above: we assume position doesn't matter, and that the word "love" has the same effect on classification whether it occurs as the 1st, 20th, or last word in the document. Thus we assume that the features f1, f2, . . . , fn only encode word identity and not position.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>첫 번째는 앞서 직관적으로 다루었던 '단어 가방(bag of words)' 가정입니다. 우리는 단어의 위치가 중요하지 않다고 가정하며, "love"라는 단어가 문서의 첫 번째로 오든, 20번째로 오든, 혹은 마지막에 오든 분류에 미치는 영향은 동일하다고 간주합니다. 즉, 특징 $f_1, f_2, . . . , f_n$은 오직 단어의 정체성(어떤 단어인가)만을 인코딩하며 위치 정보는 포함하지 않는다고 가정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 가정인 BoW가 위치 정보를 배제함을 다시 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>naive Bayes assumption</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈 가정(naive Bayes assumption)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특징들 간의 상호작용을 무시하고 조건부 독립이라고 가정하는 강력한 전제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The second is commonly called the naive Bayes assumption: this is the conditional independence assumption that the probabilities P(fi|c) are independent given the class c and hence can be 'naively' multiplied as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 번째는 흔히 '나이브 베이즈 가정(naive Bayes assumption)'이라 불립니다. 이는 클래스 $c$가 주어졌을 때 각 특징의 확률 $P(f_i|c)$가 서로 독립이라는 조건부 독립(conditional independence) 가정입니다. 따라서 다음과 같이 '단순하게(naively)' 곱셈으로 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 번째 가정이자 모델 이름의 유래가 된 조건부 독립 가정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(f1, f2, . . . , fn|c) = P(f1|c) · P(f2|c) · . . . · P(fn|c) (4.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(f_1, f_2, . . . , f_n|c) = P(f_1|c) \cdot P(f_2|c) \cdot . . . \cdot P(f_n|c) (4.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.7). 조건부 독립 가정을 통해 복잡한 결합 확률을 개별 확률의 곱으로 분해한 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>c_NB = argmax_{c∈C} P(c) Product_{f∈F} P(f|c) (4.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>c_{NB} = \underset{c \in C}{\text{argmax}} P(c) \prod_{f \in F} P(f|c) (4.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.8). 나이브 베이즈 분류기의 최종적인 판별 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To apply the naive Bayes classifier to text, we need to consider word positions, by simply walking an index through every word position in the document:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나이브 베이즈 분류기를 실제 텍스트에 적용하기 위해서는, 문서 내의 모든 단어 위치를 인덱스로 훑어가며 고려해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문서 내의 모든 단어를 순차적으로 처리하는 과정을 수학적 기호로 나타내기 위한 예고 문구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>positions ← all word positions in test document
+c_NB = argmax_{c∈C} P(c) Product_{i∈positions} P(wi|c) (4.9)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>positions \leftarrow \text{테스트 문서의 모든 단어 위치}
+c_{NB} = \underset{c \in C}{\text{argmax}} P(c) \prod_{i \in positions} P(w_i|c) (4.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (4.9). 테스트 문서의 각 위치에 있는 단어들에 대해 개별 확률을 곱하여 최종 클래스를 결정하는 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

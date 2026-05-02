@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-1">Page 1</a><a class="chip" href="#page-2">Page 2</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-1">
+<header class="page-header"><h2>Page 1</h2>
+<div class="page-subtitle">CHAPTER A Hidden Markov Models</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. 모든 권리 보유. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 및 버전 정보입니다. 부록 A(Hidden Markov Models)의 시작 부분임을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER A Hidden Markov Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>부록 A 은닉 마르코프 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부록 A의 제목입니다. 은닉 마르코프 모델(HMM)은 자연어 처리에서 오랫동안 핵심적인 역할을 해온 확률 모델입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Chapter 8 introduced the Hidden Markov Model and applied it to part of speech tagging. Part of speech tagging is a fully-supervised learning task, because we have a corpus of words labeled with the correct part-of-speech tag. But many applications don’t have labeled data. So in this chapter, we introduce the full set of algorithms for HMMs, including the key unsupervised learning algorithm for HMM, the Forward-Backward algorithm. We’ll repeat some of the text from Chapter 8 for readers who want the whole story laid out in a single chapter.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8장에서는 은닉 마르코프 모델을 소개하고 이를 품사 태깅에 적용했습니다. 품사 태깅은 올바른 품사 태그가 붙은 단어 말뭉치가 있기 때문에 완전 지도 학습 작업입니다. 하지만 많은 응용 분야에는 레이블이 지정된 데이터가 없습니다. 따라서 이 장에서는 HMM의 핵심 비지도 학습 알고리즘인 Forward-Backward 알고리즘을 포함하여 HMM을 위한 전체 알고리즘 세트를 소개합니다. 전체 내용을 한 장에 담기 위해 8장의 일부 내용을 반복할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장의 목적을 설명합니다. 특히 레이블이 없는 데이터에서도 학습할 수 있는 비지도 학습 알고리즘(Forward-Backward)을 다룬다는 점이 중요합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.1 Markov Chains</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.1 마르코프 체인</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 기초가 되는 마르코프 체인에 대해 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Markov chain</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 체인</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상태들 간의 전이 확률을 정의하는 확률 모델입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The HMM is based on augmenting the Markov chain. A Markov chain is a model that tells us something about the probabilities of sequences of random variables, states, each of which can take on values from some set. These sets can be words, or tags, or symbols representing anything, like the weather. A Markov chain makes a very strong assumption that if we want to predict the future in the sequence, all that matters is the current state. The states before the current state have no impact on the future except via the current state. It’s as if to predict tomorrow’s weather you could examine today’s weather but you weren’t allowed to look at yesterday’s weather.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM은 마르코프 체인을 확장한 것을 기반으로 합니다. 마르코프 체인은 어떤 집합에서 값을 취할 수 있는 랜덤 변수들, 즉 상태(state)들의 시퀀스에 대한 확률을 알려주는 모델입니다. 이 집합은 단어, 태그, 또는 날씨와 같은 무엇이든 나타내는 기호일 수 있습니다. 마르코프 체인은 시퀀스에서 미래를 예측할 때 현재 상태만이 중요하다는 매우 강력한 가정을 합니다. 현재 상태 이전의 상태들은 현재 상태를 통하지 않고서는 미래에 영향을 주지 않습니다. 이는 마치 내일의 날씨를 예측하기 위해 오늘의 날씨는 조사할 수 있지만 어제의 날씨는 볼 수 없는 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인의 핵심 아이디어인 '마르코프 가정'을 설명합니다. 과거의 이력이 현재 상태에 모두 녹아들어 있다고 가정하여 모델을 단순화합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.1 A Markov chain for weather (a) and one for words (b), showing states and transitions. A start distribution π is required; setting π = [0.1, 0.7, 0.2] for (a) would mean a probability 0.7 of starting in state 2 (cold), probability 0.1 of starting in state 1 (hot), etc.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.1 날씨(a)와 단어(b)에 대한 마르코프 체인. 상태와 전이를 보여줍니다. 시작 분포 π가 필요합니다. (a)에서 π = [0.1, 0.7, 0.2]로 설정하면 상태 2(추움)에서 시작할 확률이 0.7, 상태 1(더움)에서 시작할 확률이 0.1임을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 A.1에 대한 설명입니다. 상태 간 전이와 더불어 시스템이 어떤 상태에서 시작할지에 대한 초기 확률(π)의 개념을 소개합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Markov assumption</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 가정</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미래 상태가 오직 현재 상태에만 의존한다는 가정입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More formally, consider a sequence of state variables q1, q2, ..., qi. A Markov model embodies the Markov assumption on the probabilities of this sequence: that when predicting the future, the past doesn’t matter, only the present.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>좀 더 형식적으로, 상태 변수 q1, q2, ..., qi의 시퀀스를 고려해 봅시다. 마르코프 모델은 이 시퀀스의 확률에 대해 마르코프 가정을 구체화합니다. 즉, 미래를 예측할 때 과거는 중요하지 않고 현재만이 중요하다는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 가정을 수학적으로 정의하기 위한 준비 단계입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Markov Assumption: P(qi = a|q1...qi−1) = P(qi = a|qi−1) (A.1)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 가정: P(qi = a|q1...qi−1) = P(qi = a|qi−1) (A.1)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 가정을 수식으로 표현한 것입니다. 시점 i에서의 상태 확률은 이전 모든 상태(q1...qi-1)가 주어졌을 때와 직전 상태(qi-1)만 주어졌을 때가 같다는 것을 보여줍니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.1a shows a Markov chain for assigning a probability to a sequence of weather events, for which the vocabulary consists of HOT, COLD, and WARM. The states are represented as nodes in the graph, and the transitions, with their probabilities, as edges. The transitions are probabilities: the values of arcs leaving a given</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.1a는 HOT, COLD, WARM으로 구성된 날씨 이벤트 시퀀스에 확률을 할당하는 마르코프 체인을 보여줍니다. 상태는 그래프의 노드로 표시되고, 전이와 그 확률은 에지로 표시됩니다. 전이는 확률입니다. 주어진 상태에서 나가는 아크(arc)의 값은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 A.1a의 구성 요소를 설명합니다. 노드는 상태를, 에지는 상태 간 전이 확률을 나타냅니다.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-2">
+<header class="page-header"><h2>Page 2</h2>
+<div class="page-subtitle">A.2 The Hidden Markov Model</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 APPENDIX A • HIDDEN MARKOV MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 부록 A • 은닉 마르코프 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>state must sum to 1. Figure A.1b shows a Markov chain for assigning a probability to a sequence of words w1...wn. This Markov chain should be familiar; in fact, it represents a bigram language model, with each edge expressing the probability p(wi|wj)! Given the two models in Fig. A.1, we can assign a probability to any sequence from our vocabulary.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 상태에서 나가는 확률의 합은 반드시 1이어야 합니다. 그림 A.1b는 단어 시퀀스 w1...wn에 확률을 할당하는 마르코프 체인을 보여줍니다. 이 마르코프 체인은 익숙할 것입니다. 사실 이것은 각 에지가 확률 p(wi|wj)를 나타내는 바이그램 언어 모델을 의미합니다. 그림 A.1의 두 모델이 주어지면 우리 어휘 사전의 어떤 시퀀스에도 확률을 할당할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률의 기본 성질(합이 1)과 마르코프 체인이 바이그램 언어 모델과 동일한 구조를 가짐을 설명합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Formally, a Markov chain is specified by the following components:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>형식적으로, 마르코프 체인은 다음 구성 요소들로 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인의 구성 요소를 정의합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Q = q1q2 . . . qN a set of N states
+  A = a11a12 . . . an1 . . . ann a transition probability matrix A, each aij representing the probability of moving from state i to state j, s.t. Σnj=1 aij = 1 ∀i
+  π = π1, π2, . . . , πN an initial probability distribution over states. πi is the probability that the Markov chain will start in state i. Some states j may have πj = 0, meaning that they cannot be initial states. Also, Σni=1 πi = 1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Q = q1q2 . . . qN N개의 상태 집합
+  A = a11a12 . . . an1 . . . ann 전이 확률 행렬 A. 각 aij는 상태 i에서 상태 j로 이동할 확률을 나타내며, 모든 i에 대해 Σnj=1 aij = 1을 만족함.
+  π = π1, π2, . . . , πN 상태들에 대한 초기 확률 분포. πi는 마르코프 체인이 상태 i에서 시작할 확률임. 일부 상태 j는 πj = 0일 수 있으며, 이는 해당 상태가 시작 상태가 될 수 없음을 의미함. 또한 Σni=1 πi = 1을 만족함.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인을 구성하는 세 가지 핵심 요소인 상태 집합(Q), 전이 확률 행렬(A), 초기 확률 분포(π)를 정의합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Before you go on, use the sample probabilities in Fig. A.1a (with π = [.1, .7, .2]) to compute the probability of each of the following sequences:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>계속하기 전에, 그림 A.1a의 샘플 확률(π = [.1, .7, .2] 사용)을 이용해 다음 각 시퀀스의 확률을 계산해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습자가 직접 확률을 계산해 보도록 유도하는 연습 문제입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>(A.2) hot hot hot hot
+  (A.3) cold hot cold hot</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(A.2) hot hot hot hot
+  (A.3) cold hot cold hot</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 대상인 시퀀스 예시입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What does the difference in these probabilities tell you about a real-world weather fact encoded in Fig. A.1a?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 확률들의 차이가 그림 A.1a에 인코딩된 실제 세계의 날씨 정보에 대해 무엇을 말해줍니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 결과를 해석하고 모델이 실제 현상을 어떻게 반영하는지 생각해보게 하는 질문입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.2 The Hidden Markov Model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.2 은닉 마르코프 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관찰되지 않는 상태를 포함하는 HMM에 대해 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>hidden</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>은닉(hidden)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>직접 관찰할 수 없는 상태를 의미합니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hidden Markov model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>은닉 마르코프 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관찰 가능한 결과와 관찰 불가능한 상태를 연결하는 확률 모델입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A Markov chain is useful when we need to compute a probability for a sequence of observable events. In many cases, however, the events we are interested in are hidden: we don’t observe them directly. For example we don’t normally observe part-of-speech tags in a text. Rather, we see words, and must infer the tags from the word sequence. We call the tags hidden because they are not observed.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마르코프 체인은 관찰 가능한 이벤트 시퀀스에 대한 확률을 계산해야 할 때 유용합니다. 하지만 많은 경우 우리가 관심 있는 이벤트는 은닉되어 있습니다. 즉, 직접 관찰할 수 없습니다. 예를 들어 우리는 보통 텍스트에서 품사 태그를 관찰하지 못합니다. 대신 우리는 단어를 보고 단어 시퀀스로부터 태그를 추론해야 합니다. 태그는 관찰되지 않기 때문에 은닉되었다고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마르코프 체인과 HMM의 차이점을 설명합니다. HMM은 실제 관찰되는 값(단어)과 그 뒤에 숨겨진 정보(태그)를 함께 다룹니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A hidden Markov model (HMM) allows us to talk about both observed events (like words that we see in the input) and hidden events (like part-of-speech tags) that we think of as causal factors in our probabilistic model. An HMM is specified by the following components:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>은닉 마르코프 모델(HMM)을 사용하면 입력에서 보는 단어와 같은 관찰된 이벤트와, 확률 모델에서 인과 요인으로 생각되는 품사 태그와 같은 은닉된 이벤트를 모두 다룰 수 있습니다. HMM은 다음 구성 요소들로 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 개념을 정의하고 구성 요소 소개로 이어집니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Q = q1q2 . . . qN a set of N states
+  A = a11 . . . aij . . . aNN a transition probability matrix A, each aij representing the probability of moving from state i to state j, s.t. ΣNj=1 aij = 1 ∀i
+  O = o1o2 . . . oT a sequence of T observations, each one drawn from a vocabulary V = v1, v2, . . . , vV
+  B = bi(ot) a sequence of observation likelihoods, also called emission probabilities, each expressing the probability of an observation ot being generated from a state i
+  π = π1, π2, . . . , πN an initial probability distribution over states. πi is the probability that the Markov chain will start in state i. Some states j may have πj = 0, meaning that they cannot be initial states. Also, Σni=1 πi = 1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Q = q1q2 . . . qN N개의 상태 집합
+  A = a11 . . . aij . . . aNN 전이 확률 행렬 A. 각 aij는 상태 i에서 상태 j로 이동할 확률을 나타내며, 모든 i에 대해 ΣNj=1 aij = 1을 만족함.
+  O = o1o2 . . . oT T개의 관찰 시퀀스. 각 관찰은 어휘 사전 V = v1, v2, . . . , vV에서 추출됨.
+  B = bi(ot) 관찰 우도(observation likelihoods) 시퀀스. 방출 확률(emission probabilities)이라고도 하며, 각 확률은 상태 i에서 관찰 ot가 생성될 확률을 나타냄.
+  π = π1, π2, . . . , πN 상태들에 대한 초기 확률 분포. πi는 마르코프 체인이 상태 i에서 시작할 확률임. 일부 상태 j는 πj = 0일 수 있으며, 이는 해당 상태가 시작 상태가 될 수 없음을 의미함. 또한 Σni=1 πi = 1을 만족함.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 구성 요소를 정의합니다. 마르코프 체인에 관찰 시퀀스(O)와 방출 확률(B)이 추가된 것이 특징입니다.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A first-order hidden Markov model instantiates two simplifying assumptions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1차 은닉 마르코프 모델은 두 가지 단순화 가정을 구체화합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM을 계산 가능하게 만드는 두 가지 주요 가정에 대한 소개입니다.</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

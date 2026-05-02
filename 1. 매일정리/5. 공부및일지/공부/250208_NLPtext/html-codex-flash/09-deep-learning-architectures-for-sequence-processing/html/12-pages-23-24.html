@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 23-24 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-23">Page 23</a>
+<a class="chip" href="#page-24">Page 24</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 23-24 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-23">
+<header class="page-header">
+<h2>Page 23</h2>
+<div class="page-subtitle">멀티헤드 어텐션 및 위치 임베딩</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.7 • SELF-ATTENTION NETWORKS: TRANSFORMERS 23</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.7 • 자기 주의 집중 네트워크: 트랜스포머 23</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.7 섹션의 연속된 내용과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>can hold between verbs and their arguments in a sentence. It would be difficult for a single transformer block to learn to capture all of the different kinds of parallel relations among its inputs. Transformers address this issue with multihead self-attention layers. These are sets of self-attention layers, called heads, that reside in parallel layers at the same depth in a model, each with its own set of parameters. Given these distinct sets of parameters, each head can learn different aspects of the relationships that exist among inputs at the same level of abstraction.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...문장에서 동사와 그 인자들 사이에 형성될 수 있습니다. 단일 트랜스포머 블록이 입력들 사이의 이러한 모든 종류의 병렬적인 관계를 포착하도록 배우기는 어려울 것입니다. 트랜스포머는 멀티헤드 자기 주의 집중(multihead self-attention) 층을 통해 이 문제를 해결합니다. 이는 모델 내의 동일한 깊이에 병렬적으로 존재하는 '헤드(heads)'라고 불리는 여러 개의 자기 주의 집중 층들의 집합이며, 각 헤드는 자신만의 파라미터 세트를 가집니다. 이러한 서로 다른 파라미터 세트 덕분에, 각 헤드는 동일한 추상화 수준에서 입력들 사이에 존재하는 관계의 서로 다른 측면들을 학습할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 간의 다양한 관계(문법적, 의미적 등)를 동시에 포착하기 위해 여러 개의 어텐션을 병렬로 사용하는 멀티헤드 어텐션의 개념과 필요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>multihead self-attention layers</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>멀티헤드 자기 주의 집중 층(multihead self-attention layers)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 개의 어텐션을 병렬로 수행하여 데이터의 다양한 특징을 추출하는 구조입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To implement this notion, each head, i, in a self-attention layer is provided with its own set of key, query and value matrices: W_i^K, W_i^Q and W_i^V. These are used to project the inputs into separate key, value, and query embeddings separately for each head, with the rest of the self-attention computation remaining unchanged. In multi-head attention, instead of using the model dimension d that's used for the input and output from the model, the key and query embeddings have dimensionality d_k, and the value embeddings are dimensionality d_v. Thus for each head i, we have weight layers W_i^Q ∈ R^{d×d_k}, W_i^K ∈ R^{d×d_k}, and W_i^V ∈ R^{d×d_v}, and these get multiplied by the inputs packed into X to produce Q ∈ R^{N×d_k}, K ∈ R^{N×d_k}, and V ∈ R^{N×d_v}. The output of each of the h heads is of shape N × d_v, and so the output of the multi-head layer with h heads consists of h vectors of shape N × d_v. To make use of these vectors in further processing, they are combined and then reduced down to the original input dimension d. This is accomplished by concatenating the outputs from each head and then using yet another linear projection, W^O ∈ R^{hd_v×d}, to reduce it to the original output dimension for each token, or a total N × d output.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 개념을 구현하기 위해, 자기 주의 집중 층의 각 헤드 $i$에는 자신만의 키, 쿼리, 값 행렬 세트인 $W_i^K, W_i^Q, W_i^V$가 제공됩니다. 이들은 각 헤드에 대해 개별적으로 입력을 키, 값, 쿼리 임베딩으로 투영하는 데 사용되며, 나머지 자기 주의 집중 계산 과정은 동일하게 유지됩니다. 멀티헤드 주의 집중에서는 모델의 입출력에 사용되는 차원 $d$ 대신, 키와 쿼리 임베딩은 $d_k$ 차원을 갖고 값 임베딩은 $d_v$ 차원을 갖습니다. 따라서 각 헤드 $i$에 대해 우리는 가중치 층 $W_i^Q \in \mathbb{R}^{d \times d_k}, W_i^K \in \mathbb{R}^{d \times d_k}, W_i^V \in \mathbb{R}^{d \times d_v}$를 가지며, 이들은 $X$에 묶인 입력들과 곱해져 $Q \in \mathbb{R}^{N \times d_k}, K \in \mathbb{R}^{N \times d_k}, V \in \mathbb{R}^{N \times d_v}$를 생성합니다. $h$개 헤드 각각의 출력은 $N \times d_v$ 형태이며, 따라서 $h$개 헤드를 가진 멀티헤드 층의 출력은 $N \times d_v$ 형태의 벡터 $h$개로 구성됩니다. 후속 처리에서 이러한 벡터들을 활용하기 위해, 이들을 결합된 후 원래의 입력 차원 $d$로 다시 축소됩니다. 이는 각 헤드의 출력들을 결합(concatenate)한 뒤 또 다른 선형 투영 행렬 $W^O \in \mathbb{R}^{hd_v \times d}$를 사용하여 각 토큰에 대해 원래의 출력 차원으로 축소함으로써 수행되며, 총 $N \times d$의 출력을 만들어냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>멀티헤드 어텐션의 상세 구현 수식과 차원 변화 과정을 설명합니다. 각 헤드에서 축소된 차원으로 계산한 뒤 나중에 다시 합쳐($W^O$) 원래 차원을 맞추는 것이 핵심입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>MultiHeadAttn(X) = (head_1 ⊕ head_2 ... ⊕ head_h) W^O
+Q = XW_i^Q; K = XW_i^K; V = XW_i^V
+head_i = SelfAttention(Q, K, V)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$\text{MultiHeadAttn}(X) = (\text{head}_1 \oplus \text{head}_2 \dots \oplus \text{head}_h) W^O$
+$Q = XW_i^Q; \quad K = XW_i^K; \quad V = XW_i^V$
+$\text{head}_i = \text{SelfAttention}(Q, K, V)$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>멀티헤드 어텐션 공식(9.43 ~ 9.45)입니다. 개별 헤드의 계산과 이들의 결합 및 최종 투영 과정을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 9.19 illustrates this approach with 4 self-attention heads. This multihead layer replaces the single self-attention layer in the transformer block shown earlier in Fig. 9.18, the rest of the transformer block with its feedforward layer, residual connections, and layer norms remains the same.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.19는 4개의 자기 주의 집중 헤드를 사용하는 이 접근 방식을 보여줍니다. 이 멀티헤드 층은 앞서 그림 9.18에서 보았던 트랜스포머 블록 내의 단일 자기 주의 집중 층을 대체하며, 피드포워드 층, 잔차 연결, 층 정규화를 포함한 트랜스포머 블록의 나머지 부분들은 동일하게 유지됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머 블록 구조에서 어텐션 파트가 어떻게 멀티헤드로 확장되는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.7.3 Modeling word order: positional embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.7.3 단어 순서 모델링: 위치 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머가 순환 구조 없이 단어의 위치 정보를 파악할 수 있게 해주는 위치 임베딩(Positional Embedding)을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How does a transformer model the position of each token in the input sequence? With RNNs, information about the order of the inputs was built into the structure of the model. Unfortunately, the same isn't true for transformers; the models as we've described them so far don't have any notion of the relative, or absolute, positions of the tokens in the input. This can be seen from the fact that if you scramble the order of the inputs in the attention computation in Fig. 9.16 you get exactly the same answer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>트랜스포머는 입력 시퀀스 내 각 토큰의 위치를 어떻게 모델링할까요? RNN의 경우 입력 순서에 대한 정보가 모델의 구조 자체에 내장되어 있었습니다. 불행히도 트랜스포머는 그렇지 않습니다. 지금까지 설명한 모델들은 입력 토큰들의 상대적 또는 절대적 위치에 대한 어떠한 관념도 갖고 있지 않습니다. 이는 그림 9.16의 주의 집중 계산에서 입력들의 순서를 뒤섞더라도 정확히 동일한 답을 얻게 된다는 사실에서 알 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머의 구조적 한계(순서 불변성, permutation invariance)를 지적하며 위치 정보 전달의 필요성을 역설합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>positional embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위치 임베딩(positional embeddings)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 토큰의 위치 정보를 나타내기 위해 단어 임베딩에 더해주는 특수한 벡터입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One simple solution is to modify the input embeddings by combining them with positional embeddings specific to each position in an input sequence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 가지 간단한 해결책은 입력 시퀀스의 각 위치에 고유한 위치 임베딩(positional embeddings)을 결합하여 입력 임베딩을 수정하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위치 정보를 주입하는 가장 보편적인 방법을 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Where do we get these positional embeddings? The simplest method is to start with randomly initialized embeddings corresponding to each possible input position up to some maximum length. For example, just as we have an embedding for the word fish, we'll have an embedding for the position 3. As with word embeddings, these positional embeddings are learned along with other parameters during training. To produce an input embedding that captures positional information, we just add the</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 위치 임베딩은 어디서 얻을까요? 가장 간단한 방법은 어떤 최대 길이까지 가능한 각 입력 위치에 대응하는 무작위로 초기화된 임베딩에서 시작하는 것입니다. 예를 들어, 우리가 단어 'fish'에 대한 임베딩을 갖고 있는 것처럼 위치 3에 대한 임베딩을 갖는 식입니다. 단어 임베딩과 마찬가지로, 이러한 위치 임베딩은 학습 중에 다른 파라미터들과 함께 학습됩니다. 위치 정보를 포착하는 입력 임베딩을 만들기 위해, 단어 임베딩에... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위치 임베딩을 학습 가능한 파라미터로 취급하는 '학습 기반 위치 임베딩' 방식을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-24">
+<header class="page-header">
+<h2>Page 24</h2>
+<div class="page-subtitle">위치 임베딩 마무리</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Multihead Attention Layer:
+N tokens input X
+-> Parallel Heads (Head 1, 2, 3, 4) each with W_i^Q, W_i^K, W_i^V
+-> Concatenate Outputs
+-> Project down to d using W^O
+-> Output y_n</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>멀티헤드 주의 집중 층:
+N개 토큰 입력 X
+-> 병렬 헤드 (헤드 1, 2, 3, 4) 각각 W_i^Q, W_i^K, W_i^V 장착
+-> 출력값 결합(Concatenate)
+-> W^O를 사용하여 차원 d로 축소 투영
+-> 출력 y_n</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>멀티헤드 어텐션의 전체 흐름도입니다. 각 헤드가 서로 다른 특징을 추출하고, 이를 모아 원래의 차원으로 되돌리는 과정을 시각화하고 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.19 Multihead self-attention: Each of the multihead self-attention layers is provided with its own set of key, query and value weight matrices. The outputs from each of the layers are concatenated and then projected down to d, thus producing an output of the same size as the input so layers can be stacked.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.19 멀티헤드 자기 주의 집중: 각 멀티헤드 자기 주의 집중 층에는 자신만의 키, 쿼리, 값 가중치 행렬 세트가 제공됩니다. 각 층으로부터의 출력은 결합된 뒤 $d$ 차원으로 축소 투영되어, 층을 쌓을 수 있도록 입력과 동일한 크기의 출력을 생성합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.19에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>word embedding for each input to its corresponding positional embedding. This new embedding serves as the input for further processing. Fig. 9.20 shows the idea.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...각 입력의 위치에 대응하는 위치 임베딩을 더해줍니다. 이 새로운 임베딩은 후속 처리를 위한 입력 역할을 합니다. 그림 9.20이 이 아이디어를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 임베딩에 위치 임베딩을 더하여 복합 임베딩을 만드는 과정을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Transformer Blocks
+Composite Embeddings (word + position)
+Word Embeddings (Janet, will, back, the, bill)
+Position Embeddings (1, 2, 3, 4, 5)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>트랜스포머 블록들
+복합 임베딩 (단어 + 위치)
+단어 임베딩 (Janet, will, back, the, bill)
+위치 임베딩 (1, 2, 3, 4, 5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위치 정보 주입 과정을 보여주는 도식입니다. 각 단어 임베딩 벡터에 해당 시점의 순서를 나타내는 위치 임베딩 벡터를 요소별로 더한(+) 결과가 트랜스포머 블록의 입력이 됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.20 A simple way to model position: simply adding an embedding representation of the absolute position to the input word embedding.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.20 위치를 모델링하는 간단한 방법: 입력 단어 임베딩에 절대 위치의 임베딩 표현을 단순히 더하는 방식.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.20에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A potential problem with the simple absolute position embedding approach is that there will be plenty of training examples for the initial positions in our inputs and correspondingly fewer at the outer length limits. These latter embeddings may be poorly trained and may not generalize well during testing. An alternative approach to positional embeddings is to choose a static function that maps integer inputs to realvalued vectors in a way that captures the inherent relationships among the positions. That is, it captures the fact that position 4 in an input is more closely related to</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단순한 절대 위치 임베딩 방식의 잠재적인 문제는, 입력의 앞부분 위치에 대해서는 학습 예제가 풍부하지만 최대 길이 제한에 가까운 뒷부분 위치에 대해서는 상대적으로 예제가 적다는 점입니다. 이로 인해 뒷부분의 임베딩들이 제대로 학습되지 않아 테스트 중에 일반화 성능이 떨어질 수 있습니다. 위치 임베딩의 대안적인 접근 방식은 정수 입력을 실수 벡터로 매핑하는 정적 함수(static function)를 선택하되, 위치들 사이의 고유한 관계를 포착할 수 있는 방식을 사용하는 것입니다. 즉, 입력의 4번 위치가... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 기반 위치 임베딩의 한계(데이터 불균형 및 길이 제한 문제)를 지적하며, 함수 기반의 정적 위치 임베딩(예: Sinusoidal)의 필요성을 시사합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

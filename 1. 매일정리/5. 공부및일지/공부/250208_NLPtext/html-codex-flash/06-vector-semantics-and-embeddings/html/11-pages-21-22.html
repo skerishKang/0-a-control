@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 21-22 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 21-22 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">손실 함수와 그래디언트</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.8 • WORD2VEC 21</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.8 • WORD2VEC 21</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>and P(b) = .01:
+P_\alpha(a) = \frac{.99^{.75}}{.99^{.75} + .01^{.75}} = .97
+P_\alpha(b) = \frac{.01^{.75}}{.99^{.75} + .01^{.75}} = .03 (6.33)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그리고 P(b) = .01일 때:
+P_\alpha(a) = \frac{.99^{.75}}{.99^{.75} + .01^{.75}} = .97
+P_\alpha(b) = \frac{.01^{.75}}{.99^{.75} + .01^{.75}} = .03 (6.33)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.33). 수치 예시를 통해 $\alpha=0.75$ 가중치가 저빈도 단어(b)의 선택 확률을 1%에서 3%로 높여주는 효과를 계산으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given the set of positive and negative training instances, and an initial set of embeddings, the goal of the learning algorithm is to adjust those embeddings to</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>긍정 및 부정 훈련 사례 세트와 초기 임베딩 세트가 주어지면, 학습 알고리즘의 목표는 다음과 같이 임베딩을 조정하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 알고리즘의 두 가지 핵심 목적을 제시하기 전 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>• Maximize the similarity of the target word, context word pairs (w, c_{pos}) drawn from the positive examples
+• Minimize the similarity of the (w, c_{neg}) pairs from the negative examples.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>• 긍정적 예시에서 추출된 타겟 단어와 문맥 단어 쌍 $(w, c_{pos})$의 유사도를 최대화한다.
+• 부정적 예시에서 추출된 $(w, c_{neg})$ 쌍의 유사도를 최소화한다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습의 방향성(긍정 쌍은 가깝게, 부정 쌍은 멀게)을 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we consider one word/context pair (w, c_{pos}) with its k noise words c_{neg_1} \dots c_{neg_k}, we can express these two goals as the following loss function L to be minimized (hence the −); here the first term expresses that we want the classifier to assign the real context word c_{pos} a high probability of being a neighbor, and the second term expresses that we want to assign each of the noise words c_{neg_i} a high probability of being a non-neighbor, all multiplied because we assume independence:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하나의 단어/문맥 쌍 $(w, c_{pos})$와 그에 딸린 k개의 노이즈 단어 $c_{neg_1} \dots c_{neg_k}$를 고려할 때, 이 두 가지 목표를 최소화해야 할 다음과 같은 손실 함수 L로 표현할 수 있습니다(따라서 음의 부호 $-$가 붙습니다). 여기서 첫 번째 항은 분류기가 진짜 문맥 단어 $c_{pos}$에 대해 '이웃일 확률'을 높게 할당하기를 원함을 나타내고, 두 번째 항은 각 노이즈 단어 $c_{neg_i}$에 대해 '이웃이 아닐 확률'을 높게 할당하기를 원함을 나타냅니다. 독립성을 가정하기 때문에 이들은 모두 곱해집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>손실 함수(Loss Function)의 구성 원리와 각 항이 의미하는 바를 확률론적으로 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE} = -\log \left[ P(+|w, c_{pos}) \prod_{i=1}^k P(-|w, c_{neg_i}) \right] \
+= -\left[ \log P(+|w, c_{pos}) + \sum_{i=1}^k \log P(-|w, c_{neg_i}) \right] \
+= -\left[ \log P(+|w, c_{pos}) + \sum_{i=1}^k \log (1 - P(+|w, c_{neg_i})) \right] \
+= -\left[ \log \sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) + \sum_{i=1}^k \log \sigma(-\mathbf{c}_{neg_i} \cdot \mathbf{w}) \right] (6.34)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE} = -\log \left[ P(+|w, c_{pos}) \prod_{i=1}^k P(-|w, c_{neg_i}) \right] \
+= -\left[ \log P(+|w, c_{pos}) + \sum_{i=1}^k \log P(-|w, c_{neg_i}) \right] \
+= -\left[ \log P(+|w, c_{pos}) + \sum_{i=1}^k \log (1 - P(+|w, c_{neg_i})) \right] \
+= -\left[ \log \sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) + \sum_{i=1}^k \log \sigma(-\mathbf{c}_{neg_i} \cdot \mathbf{w}) \right] (6.34)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.34). 네거티브 샘플링을 이용한 교차 엔트로피(CE) 손실 함수의 유치 과정과 최종 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>That is, we want to maximize the dot product of the word with the actual context words, and minimize the dot products of the word with the k negative sampled non-neighbor words.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>즉, 우리는 타겟 단어와 실제 문맥 단어 사이의 내적값은 최대화하고, k개의 네거티브 샘플링된 이웃이 아닌 단어들과의 내적값은 최소화하고자 하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>손실 함수 최소화의 기하학적 의미(내적 조절)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We minimize this loss function using stochastic gradient descent. Fig. 6.14 shows the intuition of one step of learning.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 확률적 경사 하강법(Stochastic Gradient Descent, SGD)을 사용하여 이 손실 함수를 최소화합니다. 그림 6.14는 학습의 한 단계를 직관적으로 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최적화 알고리즘으로 SGD를 사용함을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To get the gradient, we need to take the derivative of Eq. 6.34 with respect to the different embeddings. It turns out the derivatives are the following (we leave the proof as an exercise at the end of the chapter):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그래디언트(기울기)를 구하기 위해서는 각각의 임베딩에 대해 식 6.34를 미분해야 합니다. 미분 결과는 다음과 같습니다(증명은 장 끝의 연습 문제로 남겨둡니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파라미터 업데이트를 위한 미분식 도출을 안내합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{\partial L_{CE}}{\partial c_{pos}} = [\sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) - 1]\mathbf{w} (6.35) \
+\frac{\partial L_{CE}}{\partial c_{neg}} = [\sigma(\mathbf{c}_{neg} \cdot \mathbf{w})]\mathbf{w} (6.36) \
+\frac{\partial L_{CE}}{\partial w} = [\sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) - 1]\mathbf{c}_{pos} + \sum_{i=1}^k [\sigma(\mathbf{c}_{neg_i} \cdot \mathbf{w})]\mathbf{c}_{neg_i} (6.37)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{\partial L_{CE}}{\partial c_{pos}} = [\sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) - 1]\mathbf{w} (6.35) \
+\frac{\partial L_{CE}}{\partial c_{neg}} = [\sigma(\mathbf{c}_{neg} \cdot \mathbf{w})]\mathbf{w} (6.36) \
+\frac{\partial L_{CE}}{\partial w} = [\sigma(\mathbf{c}_{pos} \cdot \mathbf{w}) - 1]\mathbf{c}_{pos} + \sum_{i=1}^k [\sigma(\mathbf{c}_{neg_i} \cdot \mathbf{w})]\mathbf{c}_{neg_i} (6.37)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.35)~(6.37). 각 벡터(c_pos, c_neg, w)에 대한 손실 함수의 편미분값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The update equations going from time step t to t + 1 in stochastic gradient descent</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 경사 하강법에서 타임 스텝 t에서 t+1로 진행되는 업데이트 식은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미분값을 이용한 실제 가중치 업데이트 식으로 넘어가는 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<h2>Page 22</h2>
+<div class="page-subtitle">임베딩 업데이트와 다른 기법들</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 6.14 showing intuition of SGD: move apricot and jam closer, while moving apricot and matrix/Tolstoy further apart]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 6.14 SGD의 직관적 모습: apricot과 jam은 더 가깝게 이동시키고, apricot과 matrix/Tolstoy는 더 멀어지게 이동시킴]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>경사 하강법을 통해 벡터 간의 거리가 어떻게 조정되는지 시각적으로 보여주는 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 6.14 Intuition of one step of gradient descent. The skip-gram model tries to shift embeddings so the target embeddings (here for apricot) are closer to (have a higher dot product with) context embeddings for nearby words (here jam) and further from (lower dot product with) context embeddings for noise words that don't occur nearby (here Tolstoy and matrix).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 6.14 경사 하강법 단계의 한 과정에 대한 직관. 스킵-그램 모델은 타겟 임베딩(여기서는 apricot)이 주변 단어의 문맥 임베딩(여기서는 jam)과는 더 가까워지고(더 높은 내적값을 가짐), 주변에 나타나지 않는 노이즈 단어의 문맥 임베딩(여기서는 Tolstoy와 matrix)과는 더 멀어지도록(더 낮은 내적값을 가짐) 임베딩을 이동시키려 시도합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 6.14의 상세 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>are thus:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre> 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>업데이트 공식 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\mathbf{c}_{pos}^{t+1} = \mathbf{c}_{pos}^t - \eta[\sigma(\mathbf{c}_{pos}^t \cdot \mathbf{w}^t) - 1]\mathbf{w}^t (6.38) \
+\mathbf{c}_{neg}^{t+1} = \mathbf{c}_{neg}^t - \eta[\sigma(\mathbf{c}_{neg}^t \cdot \mathbf{w}^t)]\mathbf{w}^t (6.39) \
+\mathbf{w}^{t+1} = \mathbf{w}^t - \eta \left[ [\sigma(\mathbf{c}_{pos}^t \cdot \mathbf{w}^t) - 1]\mathbf{c}_{pos} + \sum_{i=1}^k [\sigma(\mathbf{c}_{neg_i}^t \cdot \mathbf{w}^t)]\mathbf{c}_{neg_i} \right] (6.40)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\mathbf{c}_{pos}^{t+1} = \mathbf{c}_{pos}^t - \eta[\sigma(\mathbf{c}_{pos}^t \cdot \mathbf{w}^t) - 1]\mathbf{w}^t (6.38) \
+\mathbf{c}_{neg}^{t+1} = \mathbf{c}_{neg}^t - \eta[\sigma(\mathbf{c}_{neg}^t \cdot \mathbf{w}^t)]\mathbf{w}^t (6.39) \
+\mathbf{w}^{t+1} = \mathbf{w}^t - \eta \left[ [\sigma(\mathbf{c}_{pos}^t \cdot \mathbf{w}^t) - 1]\mathbf{c}_{pos} + \sum_{i=1}^k [\sigma(\mathbf{c}_{neg_i}^t \cdot \mathbf{w}^t)]\mathbf{c}_{neg_i} \right] (6.40)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (6.38)~(6.40). 학습률 $\eta$를 적용하여 각 벡터들을 업데이트하는 최종 공식들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to maximize the objective in Eq. 6.34 by making the updates in (Eq. 6.39)-(Eq. 6.40).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀에서와 마찬가지로, 학습 알고리즘은 무작위로 초기화된 행렬 W와 C에서 시작합니다. 그 후 훈련 코퍼스를 훑어보며 경사 하강법을 사용하여 식 6.39~6.40의 업데이트 과정을 거침으로써, 식 6.34의 목적 함수를 최대화하도록 W와 C를 조정해 나갑니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체적인 학습 흐름(초기화 -> 업데이트 반복)을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall that the skip-gram model learns two separate embeddings for each word i: the target embedding w_i and the context embedding c_i, stored in two matrices, the target matrix W and the context matrix C. It's common to just add them together, representing word i with the vector w_i + c_i. Alternatively we can throw away the C matrix and just represent each word i by the vector w_i.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스킵-그램 모델은 각 단어 i마다 두 개의 개별적인 임베딩을 학습한다는 점을 상기하십시오. 즉, 두 개의 행렬인 타겟 행렬 W와 문맥 행렬 C에 각각 저장되는 타겟 임베딩 $w_i$와 문맥 임베딩 $c_i$입니다. 일반적으로 단어 i를 $w_i+c_i$로 합쳐서 표현하는 것이 흔합니다. 또는 C 행렬을 버리고 각 단어 i를 단순히 타겟 벡터 $w_i$로만 표현할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습된 두 가지 벡터(입력/출력)를 최종적으로 어떻게 활용하는지(합산 또는 타겟만 사용)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>target embedding
+context embedding</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>타겟 임베딩(target embedding)
+문맥 임베딩(context embedding)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 하나가 가지는 두 가지 역할에 따른 임베딩 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As with the simple count-based methods like tf-idf, the context window size L affects the performance of skip-gram embeddings, and experiments often tune the parameter L on a devset.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>tf-idf와 같은 단순 빈도 기반 방식에서와 마찬가지로, 문백 윈도우 크기 L은 스킵-그램 임베딩의 성능에 영향을 주며, 실험을 통해 개발 세트(devset)에서 파라미터 L을 튜닝하는 경우가 많습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>윈도우 크기가 성능에 미치는 영향과 튜닝의 필요성을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.8.3 Other kinds of static embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.8.3 다른 종류의 정적 임베딩들</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Word2vec 이외에 정체 임베딩을 구성하는 다른 기법들(FastText 등)을 소개하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>fasttext</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>패스트텍스트(fasttext)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 하위 단어 유닛으로 쪼개어 학습하는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are many kinds of static embeddings. An extension of word2vec, fasttext (Bojanowski et al., 2017), addresses a problem with word2vec as we have presented it so far: it has no good way to deal with unknown words — words that appear in a test corpus but were unseen in the training corpus. A related problem is word sparsity, such as in languages with rich morphology, where some of the many forms for each noun and verb may only occur rarely. Fasttext deals with these problems by using subword models, representing each word as itself plus a bag of constituent n-grams, with special boundary symbols < and > added to each word. For example,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정적 임베딩에는 여러 종류가 있습니다. Word2vec의 확장 버전인 패스트텍스트(FastText, Bojanowski et al., 2017)는 지금까지 설명한 word2vec의 문제점, 즉 '미등록 단어(unknown words)' 문제(테스트 코퍼스에는 등장하지만 훈련 코퍼스에서는 본 적 없는 단어들)를 해결하려 합니다. 이와 관련된 또 다른 문제는 풍부한 형태론(morphology)을 가진 언어들에서 명사와 동사의 다양한 형태 변화 중 일부가 드물게만 나타나는 단어 희소성 문제입니다. FastText는 하위 단어 모델(subword models)을 사용하여 각 단어를 단어 자체뿐만 아니라 이를 구성하는 n-그램들의 집합으로 표현함으로써 이 문제들을 해결합니다. 이때 각 단어에는 <와 >라는 특별한 경계 기호가 추가됩니다. 예를 들어,</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>FastText의 등장 배경(미등록 단어 문제, 형태론적 복잡성 해결)과 하위 단어 유닛(subword unit) 기반의 작동 방식을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

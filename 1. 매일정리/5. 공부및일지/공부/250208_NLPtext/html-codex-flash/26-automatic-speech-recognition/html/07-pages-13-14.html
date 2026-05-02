@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">26.4.3 CTC와 인코더-디코더의 결합</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4. • CTC 13</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4. • CTC 13</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.4.3 Combining CTC and Encoder-Decoder</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.4.3 CTC와 인코더-디코더의 결합</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CTC와 인코더-디코더 아키텍처의 장점을 결합한 하이브리드 모델을 다룹니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It’s also possible to combine the two architectures/loss functions we’ve described, the cross-entropy loss from the encoder-decoder architecture, and the CTC loss. Fig. 26.11 shows a sketch. For training, we can can simply weight the two losses with a lambda tuned on a dev set:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리가 설명한 두 가지 아키텍처/손실 함수, 즉 인코더-디코더 아키텍처의 크로스 엔트로피 손실과 CTC 손실을 결합하는 것도 가능합니다. 그림 26.11은 그 개요를 보여줍니다. 학습을 위해 개발 세트(dev set)에서 튜닝된 lambda를 사용하여 두 손실의 가중치를 단순히 조절할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 모델의 손실 함수를 가중 합산하여 학습하는 방식에 대해 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L = -lambda log P_encdec(Y|X) - (1-lambda) log P_CTC(Y|X) (26.19)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>L = -lambda log P_encdec(Y|X) - (1-lambda) log P_CTC(Y|X) (26.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 손실과 CTC 손실을 결합한 전체 손실 함수 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For inference, we can combine the two with the language model (or the length penalty), again with learned weights:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>추론을 위해, 학습된 가중치를 사용하여 이 두 모델을 언어 모델(또는 길이 페널티)과 결합할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추론 시에도 여러 모델의 점수를 통합하여 최종 결과를 도출함을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Y_hat = argmax_Y [lambda log P_encdec(Y|X) + (1-lambda) log P_CTC(Y|X) + gamma log P_LM(Y)] (26.20)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>Y_hat = argmax_Y [lambda log P_encdec(Y|X) + (1-lambda) log P_CTC(Y|X) + gamma log P_LM(Y)] (26.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추론 시 각 모델의 로그 확률을 가중 합산하여 최적의 시퀀스 Y를 찾는 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.11 ... CTC Loss and Encoder-Decoder Loss combined.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.11 ... CTC 손실과 인코더-디코더 손실이 결합된 형태.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 아키텍처가 공통의 인코더를 공유하며 서로 다른 손실 함수를 적용하는 구조를 보여주는 다이어그램입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.4.4 Streaming Models: RNN-T for improving CTC</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.4.4 스트리밍 모델: CTC 개선을 위한 RNN-T</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실시간 음성 인식을 가능하게 하는 스트리밍 모델과 그 대표격인 RNN-T를 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because of the strong independence assumption in CTC (assuming that the output at time t is independent of the output at time t-1), recognizers based on CTC don’t achieve as high an accuracy as the attention-based encoder-decoder recognizers. CTC recognizers have the advantage, however, that they can be used for streaming. Streaming means recognizing words on-line rather than waiting until the end of the sentence to recognize them. Streaming is crucial for many applications, from commands to dictation, where we want to start recognition while the user is still talking. Algorithms that use attention need to compute the hidden state sequence over the entire input first in order to provide the attention distribution context, before the decoder can start decoding. By contrast, a CTC algorithm can input letters from left to right immediately.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CTC의 강력한 독립성 가정(시간 t의 출력이 t-1의 출력과 독립적이라는 가정) 때문에, CTC 기반의 인식기는 어텐션 기반 인코더-디코더 인식기만큼 높은 정확도를 달성하지 못합니다. 그러나 CTC 인식기는 스트리밍(streaming)에 사용될 수 있다는 장점이 있습니다. 스트리밍이란 문장이 끝날 때까지 기다리지 않고 온라인으로 즉시 단어를 인식하는 것을 의미합니다. 스트리밍은 사용자가 아직 말하고 있는 동안 인식을 시작해야 하는 명령어나 받아쓰기와 같은 많은 응용 프로그램에 매우 중요합니다. 어텐션을 사용하는 알고리즘은 디코더가 디코딩을 시작하기 전, 어텐션 분포 컨텍스트를 제공하기 위해 먼저 전체 입력에 대한 은닉 상태 시퀀스를 계산해야 합니다. 반면, CTC 알고리즘은 즉시 왼쪽에서 오른쪽으로 문자를 입력받을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CTC가 정확도는 낮을 수 있으나 실시간성(스트리밍) 측면에서 가지는 결정적인 장점과 어텐션 모델과의 차이점을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 26 • AUTOMATIC SPEECH RECOGNITION AND TEXT-TO-SPEECH</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제26장 • 자동 음성 인식 및 텍스트 음성 변환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we want to do streaming, we need a way to improve CTC recognition to remove the conditional independent assumption, enabling it to know about output history. The RNN-Transducer (RNN-T), shown in Fig. 26.12, is just such a model (Graves 2012, Graves et al. 2013). The RNN-T has two main components: a CTC acoustic model, and a separate language model component called the predictor that conditions on the output token history. At each time step t, the CTC encoder outputs a hidden state ht given the input x1, ..., xt. The language model predictor takes as input the previous output token (not counting blanks), outputting a hidden state hu. The two are passed through another network whose output is then passed through a softmax to predict the next character.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스트리밍을 원한다면, 조건부 독립 가정을 제거하여 출력 이력을 알 수 있도록 CTC 인식을 개선할 방법이 필요합니다. 그림 26.12에 표시된 RNN-트랜스듀서(RNN-Transducer, RNN-T)가 바로 그러한 모델입니다(Graves 2012, Graves et al. 2013). RNN-T는 두 가지 주요 구성 요소로 이루어져 있습니다. 바로 CTC 음향 모델과 출력 토큰 이력에 조건을 두는 '예측기(predictor)'라고 불리는 별도의 언어 모델 구성 요소입니다. 각 타임스텝 t에서 CTC 인코더는 입력 x1, ..., xt가 주어졌을 때 은닉 상태 ht를 출력합니다. 언어 모델 예측기는 (빈 토큰을 제외한) 이전 출력 토큰을 입력으로 받아 은닉 상태 hu를 출력합니다. 이 둘은 또 다른 네트워크를 통과하고, 그 출력이 소프트맥스를 거쳐 다음 문자를 예측하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CTC의 독립성 가정을 극복하기 위해 별도의 예측기(언어 모델)를 결합한 RNN-T의 구조와 작동 원리를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_RNN-T(Y|X) = sum_{A \in B^{-1}(Y)} P(A|X) = sum_{A \in B^{-1}(Y)} prod_{t=1}^T p(at|ht, y_{<ut})</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_RNN-T(Y|X) = sum_{A \in B^{-1}(Y)} P(A|X) = sum_{A \in B^{-1}(Y)} prod_{t=1}^T p(at|ht, y_{<ut})</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN-T에서 출력 시퀀스의 확률을 구하는 식으로, 이전 출력들(y_<ut)에 대한 조건부가 추가된 것이 특징입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.12 ... integrating the output of a CTC acoustic encoder and a separate ‘predictor’ language model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.12 ... CTC 음향 인코더의 출력과 별도의 '예측기' 언어 모델을 통합하는 모습.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음향 정보와 언어 정보를 결합하여 최종 예측을 수행하는 RNN-T의 구조도에 대한 설명입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

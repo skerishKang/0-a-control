@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Logistic Regression</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">05 Logistic Regression</div>
+<h1>Logistic Regression</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>5. Logistic Regression.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">시그모이드 함수와 확률 계산</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.1 • CLASSIFICATION: THE SIGMOID 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.1 • 분류: 시그모이드 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 섹션 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sentiment" versus "negative sentiment", the features represent counts of words in a document, P(y = 1|x) is the probability that the document has positive sentiment, and P(y = 0|x) is the probability that the document has negative sentiment.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] '긍정 감성' 대 '부정 감성'의 경우, 특징들은 문서 내 단어의 빈도를 나타내며, $P(y=1|x)$는 문서가 긍정 감성을 가질 확률이고 $P(y=0|x)$는 문서가 부정 감성을 가질 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>감성 분석을 예로 들어 이진 분류에서의 확률 표기를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Logistic regression solves this task by learning, from a training set, a vector of weights and a bias term. Each weight w_i is a real number, and is associated with one of the input features x_i. The weight w_i represents how important that input feature is to the classification decision, and can be positive (providing evidence that the instance being classified belongs in the positive class) or negative (providing evidence that the instance being classified belongs in the negative class). Thus we might expect in a sentiment task the word awesome to have a high positive weight, and abysmal to have a very negative weight. The bias term, also called the intercept, is another real number that's added to the weighted inputs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로지스틱 회귀는 학습 세트로부터 가중치 벡터와 편향 항(bias term)을 학습함으로써 이 작업을 해결합니다. 각 가중치 $w_i$는 실수이며, 입력 특징 $x_i$ 중 하나와 결합됩니다. 가중치 $w_i$는 해당 입력 특징이 분류 결정에 얼마나 중요한지를 나타내며, 양수(분류 대상이 긍정 클래스에 속한다는 증거 제공) 또는 음수(분류 대상이 부정 클래스에 속한다는 증거 제공)가 될 수 있습니다. 따라서 우리는 감성 분석 작업에서 'awesome' 같은 단어는 높은 양수 가중치를 갖고, 'abysmal' 같은 단어는 매우 낮은 음수 가중치를 가질 것으로 기대할 수 있습니다. 절편(intercept)이라고도 불리는 편향 항은 가중치가 적용된 입력값들에 더해지는 또 다른 실수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가중치가 특징의 중요도와 방향성을 결정한다는 로지스틱 회귀의 핵심 원리를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>bias term
+intercept</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>편향 항(bias term)
+절편(intercept)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 결합에서 특징값들과 상관없이 더해지는 상수항을 가리킵니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To make a decision on a test instance— after we've learned the weights in training— the classifier first multiplies each x_i by its weight w_i, sums up the weighted features, and adds the bias term b. The resulting single number z expresses the weighted sum of the evidence for the class.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>학습을 통해 가중치를 익힌 후 테스트 인스턴스에 대해 결정을 내릴 때, 분류기는 먼저 각 $x_i$에 가중치 $w_i$를 곱하고, 가중치가 적용된 특징들을 모두 합한 뒤 편향 항 $b$를 더합니다. 그 결과로 나온 단일 숫자 $z$는 클래스에 대한 증거의 가중합(weighted sum)을 표현합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 데이터와 가중치의 선형 결합을 통해 결정 점수인 $z$를 도출하는 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>z = ( \sum_{i=1}^{n} w_i x_i ) + b (5.2)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>z = \left( \sum_{i=1}^{n} w_i x_i \right) + b (5.2)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.2). 전형적인 선형 회귀의 형태이며, 로지스틱 회귀의 입력값이 됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dot product</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>내적(dot product)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 벡터의 대응하는 성분끼리 곱해 합하는 연산입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the rest of the book we'll represent such sums using the dot product notation from linear algebra. The dot product of two vectors a and b, written as a · b is the sum of the products of the corresponding elements of each vector. Thus the following is an equivalent formation to Eq. 5.2:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>책의 나머지 부분에서는 이러한 합을 선형 대수학의 내적(dot product) 표기법을 사용하여 표현하겠습니다. 두 벡터 $a$와 $b$의 내적은 $a \cdot b$로 쓰며, 각 벡터의 대응하는 원소들의 곱의 합입니다. 따라서 다음은 식 (5.2)와 동일한 형식입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수식을 간결하게 표현하기 위한 내적 표기법의 도입을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>z = w · x + b (5.3)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>z = w \cdot x + b (5.3)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.3). 가중합을 벡터 내적의 형태로 간결하게 표현한 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But note that nothing in Eq. 5.3 forces z to be a legal probability, that is, to lie between 0 and 1. In fact, since weights are real-valued, the output might even be negative; z ranges from −∞ to ∞.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 식 (5.3)의 그 어떤 것도 $z$가 유효한 확률값, 즉 0과 1 사이에 있도록 강제하지 않는다는 점에 유의하십시오. 사실 가중치가 실수값이므로 출력값은 음수일 수도 있으며, $z$의 범위는 $-\infty$에서 $\infty$까지입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 결합의 결과인 $z$가 왜 직접적으로 확률로 사용될 수 없는지, 그 범위의 한계를 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 5.1 The sigmoid function σ(z) = 1 / (1 + e^{−z}) takes a real value and maps it to the range [0, 1]. It is nearly linear around 0 but outlier values get squashed toward 0 or 1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 5.1 시그모이드 함수 $\sigma(z) = 1 / (1 + e^{-z})$는 실수값을 받아 $[0, 1]$ 범위로 대응시킵니다. 0 근처에서는 거의 선형적이지만, 극단적인 값(outlier values)은 0이나 1로 압착(squash)됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시그모이드 함수의 시각적 특성과 역할(압착)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sigmoid
+logistic function</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시그모이드(sigmoid)
+로지스틱 함수(logistic function)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로지스틱 회귀의 핵심인 S자형 함수를 일컫는 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To create a probability, we'll pass z through the sigmoid function, σ(z). The sigmoid function (named because it looks like an s) is also called the logistic function, and gives logistic regression its name. The sigmoid has the following equation, shown graphically in Fig. 5.1:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률을 생성하기 위해 우리는 $z$를 시그모이드 함수 $\sigma(z)$에 통과시킬 것입니다. 시그모이드 함수(S자 모양처럼 생겨서 붙여진 이름)는 로지스틱 함수라고도 불리며, 로지스틱 회귀라는 이름의 기원이기도 합니다. 시그모이드는 다음과 같은 형식을 가지며 그림 5.1에 시각화되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시그모이드 함수가 실수 점수를 확률로 변환하는 장치임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>\sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 + \exp(-z)} (5.4)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 + \exp(-z)} (5.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.4). 시그모이드 함수의 정의식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(For the rest of the book, we'll use the notation exp(x) to mean e^x.) The sigmoid has a number of advantages; it takes a real-valued number and maps it into the range</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(책의 나머지 부분에서는 $e^x$를 나타내기 위해 $\exp(x)$라는 표기를 사용하겠습니다.) 시그모이드는 여러 가지 장점이 있습니다. 이는 실수값을 받아 다음 범위로 대응시킵니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>표기법에 대한 약속과 함께 시그모이드의 효용성을 강조하기 시작합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">시그모이드의 특성 및 결정 경계</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 5 • LOGISTIC REGRESSION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제5장 • 로지스틱 회귀</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[0, 1], which is just what we want for a probability. Because it is nearly linear around 0 but flattens toward the ends, it tends to squash outlier values toward 0 or 1. And it's differentiable, which as we'll see in Section 5.8 will be handy for learning.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] $[0, 1]$ 범위로 대응시키는데, 이는 우리가 확률값에 대해 원하는 바로 그것입니다. 0 주변에서는 거의 선형적이지만 양 끝으로 갈수록 평평해지기 때문에, 극단적인 값들을 0이나 1로 압착하는 경향이 있습니다. 또한 미분이 가능(differentiable)한데, 이는 5.8절에서 보게 되듯 학습에 매우 유용할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시그모이드의 세 가지 주요 특징(확률 범위 제공, 극단값 압착, 미분 가능성)을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We're almost there. If we apply the sigmoid to the sum of the weighted features, we get a number between 0 and 1. To make it a probability, we just need to make sure that the two cases, p(y = 1) and p(y = 0), sum to 1. We can do this as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>거의 다 왔습니다. 가중치가 적용된 특징들의 합에 시그모이드를 적용하면 0과 1 사이의 숫자를 얻습니다. 이를 확률로 만들기 위해서는 단지 두 경우, 즉 $p(y=1)$와 $p(y=0)$의 합이 1이 되도록 확실히 하면 됩니다. 다음과 같이 할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 분류에서 두 클래스의 확률 합이 1이 되어야 한다는 확률의 기본 원칙을 적용합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>P(y = 1) = \sigma(w \cdot x + b)
+= \frac{1}{1 + \exp(-(w \cdot x + b))}
+P(y = 0) = 1 - \sigma(w \cdot x + b)
+= 1 - \frac{1}{1 + \exp(-(w \cdot x + b))}
+= \frac{\exp(-(w \cdot x + b))}{1 + \exp(-(w \cdot x + b))} (5.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(y = 1) = \sigma(w \cdot x + b)
+= \frac{1}{1 + \exp(-(w \cdot x + b))}
+P(y = 0) = 1 - \sigma(w \cdot x + b)
+= 1 - \frac{1}{1 + \exp(-(w \cdot x + b))}
+= \frac{\exp(-(w \cdot x + b))}{1 + \exp(-(w \cdot x + b))} (5.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.5). 각 클래스에 대한 확률 도출 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>1 − \sigma(x) = \sigma(−x) (5.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 - \sigma(x) = \sigma(-x) (5.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (5.6). 시그모이드 함수의 중요한 대칭적 대수 특성을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>so we could also have expressed P(y = 0) as σ(−(w · x + b)). Now we have an algorithm that given an instance x computes the probability P(y = 1|x). How do we make a decision? For a test instance x, we say yes if the probability P(y = 1|x) is more than .5, and no otherwise. We call .5 the decision boundary:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 $P(y=0)$를 $\sigma(-(w \cdot x + b))$로 표현할 수도 있었을 것입니다. 이제 인스턴스 $x$가 주어졌을 때 확률 $P(y=1|x)$를 계산하는 알고리즘을 갖게 되었습니다. 그렇다면 결정은 어떻게 내릴까요? 테스트 인스턴스 $x$에 대해, 확률 $P(y=1|x)$가 0.5보다 크면 '예'(긍정)라고 하고, 그렇지 않으면 '아니오'라고 합니다. 우리는 0.5를 결정 경계(decision boundary)라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산된 확률을 바탕으로 최종 클래스를 선택하는 기준인 임계값(0.5)과 결정 경계의 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>decision boundary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>결정 경계(decision boundary)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>서로 다른 클래스로 분류되는 영역을 가르는 기준이 되는 경계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>decision(x) = { 1 if P(y = 1|x) > 0.5
+{ 0 otherwise</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>decision(x) = \begin{cases} 1 & \text{if } P(y = 1|x) > 0.5 \\ 0 & \text{otherwise} \end{cases}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최종 결정을 내리는 함수적 표현입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>5.1.1 Example: sentiment classification</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>5.1.1 예제: 감성 분류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이론을 실제 데이터에 적용해 보는 구체적인 예제 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's have an example. Suppose we are doing binary sentiment classification on movie review text, and we would like to know whether to assign the sentiment class + or − to a review document doc. We'll represent each input observation by the 6 features x1 . . . x6 of the input shown in the following table; Fig. 5.2 shows the features in a sample mini test document.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예제를 들어 봅시다. 영화 리뷰 텍스트에 대해 이진 감성 분류를 수행하고 있으며, 리뷰 문서 `doc`에 감성 클래스 + 또는 -를 할당하고 싶다고 가정해 봅시다. 우리는 각 입력 관측치를 다음 표에 제시된 6개의 특징 $x_1 \dots x_6$으로 표현할 것입니다. 그림 5.2는 샘플 미니 테스트 문서에 있는 특징들을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>감성 분석에서 사용되는 6가지 언어적 특징들을 모델의 입력값으로 설정합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Var | Definition | Value in Fig. 5.2 |
+|---|---|---|
+| x1 | count(positive lexicon words ∈ doc) | 3 |
+| x2 | count(negative lexicon words ∈ doc) | 2 |
+| x3 | { 1 if "no" ∈ doc, 0 otherwise | 1 |
+| x4 | count(1st and 2nd pronouns ∈ doc) | 3 |
+| x5 | { 1 if "!" ∈ doc, 0 otherwise | 0 |
+| x6 | log(word count of doc) | ln(66) = 4.19 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 변수 | 정의 | 그림 5.2의 값 |
+|---|---|---|
+| x1 | 문서 내 긍정 어휘 사전 단어 수 | 3 |
+| x2 | 문서 내 부정 어휘 사전 단어 수 | 2 |
+| x3 | 문서에 "no"가 포함되면 1, 아니면 0 | 1 |
+| x4 | 문서 내 1인칭 및 2인칭 대명사 수 | 3 |
+| x5 | 문서에 "!"가 포함되면 1, 아니면 0 | 0 |
+| x6 | 로그(문서의 단어 수) | ln(66) = 4.19 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트에서 추출한 특징들의 구체적인 정의와 예시 값들입니다. 빈도뿐만 아니라 불리언 값(포함 여부)과 로그 스케일링된 값도 사용됨에 주목하세요.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's assume for the moment that we've already learned a real-valued weight for each of these features, and that the 6 weights corresponding to the 6 features are [2.5, −5.0, −1.2, 0.5, 2.0, 0.7], while b = 0.1. (We'll discuss in the next section how</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>잠시 동안 우리가 이미 이 특징들 각각에 대한 실수 가중치를 학습했다고 가정해 봅시다. 6개의 특징에 대응하는 6개의 가중치는 $[2.5, -5.0, -1.2, 0.5, 2.0, 0.7]$이고, $b=0.1$이라고 합시다. (어떻게 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습이 완료된 가중치 값들을 예시로 들어 계산 과정을 보여주기 위한 준비 단계입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

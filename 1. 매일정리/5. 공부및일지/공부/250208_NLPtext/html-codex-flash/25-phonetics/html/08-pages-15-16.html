@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>08 Pages 15 16</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.4 • ACOUSTIC PHONETICS AND SIGNALS 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.4 • 음향 음성학 및 신호 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.14 A more detailed view of the first word “she” extracted from the wavefile in Fig. 25.13. Labels: she, sh, iy, Time (s), 0, 0.257]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.14 그림 25.13의 웨이브 파일에서 추출한 첫 번째 단어 "she"의 더 상세한 보기. 레이블: she, sh, iy, 시간(s), 0, 0.257]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>"she" 단어의 파형을 확대하여 마찰음 [sh]와 모음 [iy]의 차이를 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.14 A more detailed view of the first word “she” extracted from the wavefile in Fig. 25.13. Notice the difference between the random noise of the fricative [sh] and the regular voicing of the vowel [iy].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.14 그림 25.13의 웨이브 파일에서 추출한 첫 번째 단어 "she"의 더 상세한 보기. 마찰음 [sh]의 무작위 소음과 모음 [iy]의 규칙적인 유성음 사이의 차이에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마찰음의 불규칙한 파형과 모음의 주기적인 파형을 대조하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.4.5 Spectra and the Frequency Domain</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.4.5 스펙트럼과 주파수 영역</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시간 영역의 파형을 주파수 영역으로 변환하여 분석하는 방법을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While some broad phonetic features (such as energy, pitch, and the presence of voicing, stop closures, or fricatives) can be interpreted directly from the waveform, most computational applications such as speech recognition (as well as human auditory processing) are based on a different representation of the sound in terms of its component frequencies. The insight of Fourier analysis is that every complex wave can be represented as a sum of many sine waves of different frequencies. Consider the waveform in Fig. 25.15. This waveform was created (in Praat) by summing two sine waveforms, one of frequency 10 Hz and one of frequency 100 Hz.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>에너지, 음고, 유성음의 존재, 파열음의 폐쇄 또는 마찰음과 같은 일부 광범위한 음성적 특징은 파형에서 직접 해석될 수 있지만, 음성 인식(및 인간의 청각 처리)과 같은 대부분의 계산 응용 분야는 소리를 구성 주파수로 나타내는 다른 표현 방식에 기반합니다. 푸리에 분석(Fourier analysis)의 통찰은 모든 복합파가 서로 다른 주파수를 가진 많은 사인파의 합으로 표현될 수 있다는 것입니다. 그림 25.15의 파형을 생각해 보십시오. 이 파형은 10 Hz 주파수의 사인파 하나와 100 Hz 주파수의 사인파 하나를 합하여 (Praat에서) 만들어졌습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>복합파를 개별 사인파들의 합으로 분해하는 푸리에 분석의 기본 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.15 A waveform that is the sum of two sine waveforms, one of frequency 10 Hz and one of frequency 100 Hz, both of amplitude 1. X-axis: Time (s) 0 to 0.5. Y-axis: -1 to 1]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.15 주파수 10 Hz와 100 Hz인 두 사인파(둘 다 진폭 1)의 합인 파형. X축: 시간(s) 0에서 0.5. Y축: -1에서 1]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 개의 서로 다른 주파수가 섞인 합성 파형의 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.15 A waveform that is the sum of two sine waveforms, one of frequency 10 Hz (note five repetitions in the half-second window) and one of frequency 100 Hz, both of amplitude 1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.15 주파수 10 Hz(0.5초 창에서 5번 반복됨에 주목)와 100 Hz인 두 사인파(둘 다 진폭 1)의 합인 파형.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>합성 파형 그래프에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>spectrum</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스펙트럼(spectrum)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신호를 주파수 성분별로 분해하여 나타낸 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can represent these two component frequencies with a spectrum. The spectrum of a signal is a representation of each of its frequency components and their amplitudes. Figure 25.16 shows the spectrum of Fig. 25.15. Frequency in Hz is on the x-axis and amplitude on the y-axis. Note the two spikes in the figure, at 10 Hz and one at 100 Hz. Thus, the spectrum is an alternative representation of the original waveform, and we use the spectrum as a tool to study the component frequencies of a sound wave at a particular time point.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이 두 구성 주파수를 스펙트럼으로 표현할 수 있습니다. 신호의 스펙트럼은 각 주파수 성분과 그 진폭을 나타낸 것입니다. 그림 25.16은 그림 25.15의 스펙트럼을 보여줍니다. x축에는 Hz 단위의 주파수가, y축에는 진폭이 있습니다. 그림에서 10 Hz와 100 Hz에 있는 두 개의 스파이크에 주목하십시오. 따라서 스펙트럼은 원래 파형의 대안적인 표현이며, 우리는 스펙트럼을 특정 시점에서 음파의 구성 주파수를 연구하는 도구로 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스펙트럼의 정의와 합성 파형이 어떻게 주파수 영역에서 두 개의 선으로 나타나는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s look now at the frequency components of a speech waveform. Figure 25.17 shows part of the waveform for the vowel [ae] of the word had, cut out from the sentence shown in Fig. 25.13.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 음성 파형의 주파수 성분을 살펴보겠습니다. 그림 25.17은 그림 25.13에 표시된 문장에서 추출한 단어 "had"의 모음 [ae] 파형의 일부를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 모음 파형의 주파수 분석으로 넘어가는 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that there is a complex wave that repeats about ten times in the figure; but there is also a smaller repeated wave that repeats four times for every larger pattern (notice the four small peaks inside each repeated wave). The complex wave has a frequency of about 234 Hz (we can figure this out since it repeats roughly 10 times</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림에서 약 10번 반복되는 복합파가 있다는 점에 주목하십시오. 하지만 더 큰 패턴마다 4번씩 반복되는 더 작은 반복파도 있습니다(각 반복파 내부의 4개의 작은 정점에 주목하십시오). 이 복합파는 약 234 Hz의 주파수를 가집니다(대략 10번 반복되므로 이를 계산할 수 있습니다... [다음 페이지에서 계속])</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 모음 파형 내에 중첩된 여러 주파수 성분(기본 주파수와 상위 주파수)을 육안으로 찾아내는 과정입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 25 • PHONETICS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제25장 • 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.16 The spectrum of the waveform in Fig. 25.15. X-axis: Frequency (Hz) 1 to 200. Y-axis: Sound pressure level (dB/Hz). Spikes at 10 and 100 Hz.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.16 그림 25.15 파형의 스펙트럼. X축: 주파수(Hz) 1에서 200. Y축: 음압 레벨(dB/Hz). 10 Hz와 100 Hz에서 스파이크가 나타남.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞 페이지 합성 파형의 주파수 분석 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.16 The spectrum of the waveform in Fig. 25.15.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.16 그림 25.15 파형의 스펙트럼.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스펙트럼 그래프에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.17 The waveform of part of the vowel [ae] from the word had cut out from the waveform shown in Fig. 25.13. X-axis: Time (s) 0 to 0.04275. Y-axis: -0.05554 to 0.04968]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.17 그림 25.13 파형에서 추출한 단어 "had"의 모음 [ae] 일부의 파형. X축: 시간(s) 0에서 0.04275. Y축: -0.05554에서 0.04968]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음 [ae]의 실제 시간 영역 파형입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.17 The waveform of part of the vowel [ae] from the word had cut out from the waveform shown in Fig. 25.13.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.17 그림 25.13 파형에서 추출한 단어 "had"의 모음 [ae] 일부의 파형.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음 파형 그래프에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>in .0427 seconds, and 10 cycles/.0427 seconds = 234 Hz).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>...0.0427초 동안, 즉 10사이클/0.0427초 = 234 Hz).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞 페이지에서 이어진 주파수 계산 결과입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The smaller wave then should have a frequency of roughly four times the frequency of the larger wave, or roughly 936 Hz. Then, if you look carefully, you can see two little waves on the peak of many of the 936 Hz waves. The frequency of this tiniest wave must be roughly twice that of the 936 Hz wave, hence 1872 Hz.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그러면 더 작은 파동은 더 큰 파동 주파수의 약 4배, 즉 약 936 Hz의 주파수를 가져야 합니다. 그런 다음 주의 깊게 살펴보면, 많은 936 Hz 파동의 정점에서 두 개의 작은 파동을 볼 수 있습니다. 이 가장 작은 파동의 주파수는 936 Hz 파동의 약 두 배, 즉 1872 Hz여야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파형 내부에 중첩된 고주파 성분들을 시각적으로 추론하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.18 shows a smoothed spectrum for the waveform in Fig. 25.17, computed with a discrete Fourier transform (DFT).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.18은 이산 푸리에 변환(DFT)으로 계산된 그림 25.17 파형의 평활화된(smoothed) 스펙트럼을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 파형을 DFT를 통해 주파수 영역으로 변환한 결과를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.18 A spectrum for the vowel [ae] from the word had in the waveform of She just had a baby in Fig. 25.13. X-axis: Frequency (Hz) 0 to 4000. Y-axis: Sound pressure level (dB/Hz)]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.18 그림 25.13 "She just had a baby" 파형 중 단어 "had"의 모음 [ae]에 대한 스펙트럼. X축: 주파수(Hz) 0에서 4000. Y축: 음압 레벨(dB/Hz)]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음 [ae]의 주파수 성분 분포를 보여주는 스펙트럼 도표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.18 A spectrum for the vowel [ae] from the word had in the waveform of She just had a baby in Fig. 25.13.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.18 그림 25.13 "She just had a baby" 파형 중 단어 "had"의 모음 [ae]에 대한 스펙트럼.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스펙트럼 그래프에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The x-axis of a spectrum shows frequency, and the y-axis shows some measure of the magnitude of each frequency component (in decibels (dB), a logarithmic measure of amplitude that we saw earlier). Thus, Fig. 25.18 shows significant frequency components at around 930 Hz, 1860 Hz, and 3020 Hz, along with many other lower-magnitude frequency components. These first two components are just what we noticed in the time domain by looking at the wave in Fig. 25.17!</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스펙트럼의 x축은 주파수를 나타내고, y축은 각 주파수 성분의 크기 측정값(앞서 살펴본 진폭의 로그 측정값인 데시벨(dB))을 나타냅니다. 따라서 그림 25.18은 약 930 Hz, 1860 Hz, 3020 Hz 부근에서 두드러진 주파수 성분과 함께 다른 많은 낮은 크기의 주파수 성분들을 보여줍니다. 이 처음 두 성분은 바로 우리가 그림 25.17의 파동을 보고 시간 영역에서 관찰했던 것과 일치합니다!</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스펙트럼의 축 의미와, 시간 영역에서 육안으로 관찰했던 주파수 성분이 스펙트럼에서 어떻게 정점(peaks)으로 나타나는지 확인합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Why is a spectrum useful? It turns out that these spectral peaks that are easily visible in a spectrum are characteristic of different phones; phones have characteris-</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스펙트럼은 왜 유용할까요? 스펙트럼에서 쉽게 볼 수 있는 이러한 스펙트럼 정점들은 서로 다른 음소의 특징이라는 점이 밝혀졌습니다. 음소들은 특징적인... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스펙트럼의 정점이 음소를 구별하는 핵심 특징이 됨을 예고합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

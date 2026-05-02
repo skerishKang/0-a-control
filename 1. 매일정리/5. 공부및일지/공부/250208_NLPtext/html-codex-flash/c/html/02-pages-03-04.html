@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Speech and Language Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">문법 예시, 파스 트리 확률</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">header</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.1 • PROBABILISTIC CONTEXT-FREE GRAMMARS 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.1 • 확률적 문맥 자유 문법 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    Grammar                             Lexicon
+    S → NP VP [.80]                    Det → that [.10] | a [.30] | the [.60]
+    S → Aux NP VP [.15]                Noun → book [.10] | trip [.30]
+    S → VP [.05]                       | meal [.05] | money [.05]
+    NP → Pronoun [.35]                  | flight [.40] | dinner [.10]
+    NP → Proper-Noun [.30]             Verb → book [.30] | include [.30]
+    NP → Det Nominal [.20]             | prefer [.40]
+    NP → Nominal [.15]                 Pronoun → I [.40] | she [.05]
+    Nominal → Noun [.75]               | me [.15] | you [.40]
+    Nominal → Nominal Noun [.20]       Proper-Noun → Houston [.60] | NWA [.40]
+    Nominal → Nominal PP [.05]         Aux → does [.60] | can [.40]
+    VP → Verb [.35]                    Preposition → from [.30] | to [.30]
+    VP → Verb NP [.20]                 | on [.20] | near [.15]
+    VP → Verb NP PP [.10]              | through [.05]
+    VP → Verb PP [.15]
+    VP → Verb NP NP [.05]
+    VP → VP PP [.15]
+    PP → Preposition NP [1.0]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    문법(Grammar)                       어휘(Lexicon)
+    S → NP VP [.80]                    Det → that [.10] | a [.30] | the [.60]
+    S → Aux NP VP [.15]                Noun → book [.10] | trip [.30]
+    S → VP [.05]                       | meal [.05] | money [.05]
+    NP → Pronoun [.35]                  | flight [.40] | dinner [.10]
+    NP → Proper-Noun [.30]             Verb → book [.30] | include [.30]
+    NP → Det Nominal [.20]             | prefer [.40]
+    NP → Nominal [.15]                 Pronoun → I [.40] | she [.05]
+    Nominal → Noun [.75]               | me [.15] | you [.40]
+    Nominal → Nominal Noun [.20]       Proper-Noun → Houston [.60] | NWA [.40]
+    Nominal → Nominal PP [.05]         Aux → does [.60] | can [.40]
+    VP → Verb [.35]                    Preposition → from [.30] | to [.30]
+    VP → Verb NP [.20]                 | on [.20] | near [.15]
+    VP → Verb NP PP [.10]              | through [.05]
+    VP → Verb PP [.15]
+    VP → Verb NP NP [.05]
+    VP → VP PP [.15]
+    PP → Preposition NP [1.0]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소규모 영어 문법에 대한 확률적 확장을 보여주는 예시입니다. 각 규칙 옆의 대괄호 안의 숫자는 해당 규칙의 선택 확률을 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>on the left means "Book a flight that serves dinner". The nonsensical parse on the right, however, would have to mean something like "Book a flight on behalf of 'the dinner'" just as a structurally similar sentence like "Can you book John a flight?" means something like "Can you book a flight on behalf of John?"</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>왼쪽의 해석은 "저녁 식사가 제공되는 항공편을 예약하라"는 의미입니다. 반면, 오른쪽의 터무니없는 해석은 " '저녁 식사'를 대신하여 항공편을 예약하라"는 의미가 되는데, 이는 "John을 위해 항공편을 예약해 줄 수 있나요?"라는 문장이 "John을 대신하여 항공편을 예약해 줄 수 있나요?"와 유사한 구조를 갖는 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중의적인 문장에서 문맥에 따라 상식적인 해석과 비상식적인 해석이 나뉨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The probability of a particular parse T is defined as the product of the probabilities of all the n rules used to expand each of the n non-terminal nodes in the parse tree T, where each rule i can be expressed as LHS_i → RHS_i:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>특정 파스 트리 T의 확률은 파스 트리 T 내의 n개의 비단말 노드를 확장하는 데 사용된 n개의 모든 규칙 확률의 곱으로 정의됩니다. 여기서 각 규칙 i는 LHS_i → RHS_i로 표현될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파스 트리의 확률을 계산하는 기본 공식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(T,S) = Π_{i=1}^{n} P(RHS_i|LHS_i) (C.2)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(T,S) = Π_{i=1}^{n} P(RHS_i|LHS_i) (C.2)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파스 트리와 문장의 결합 확률(사실상 트리의 확률)을 구하는 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The resulting probability P(T,S) is both the joint probability of the parse and the sentence and also the probability of the parse P(T). How can this be true? First, by the definition of joint probability:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>결과 확률 P(T,S)는 파싱과 문장의 결합 확률이자 파싱 확률 P(T)이기도 합니다. 이것이 어떻게 가능할까요? 우선, 결합 확률의 정의에 따르면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>P(T,S)가 왜 P(T)와 같은지에 대한 논리적 근거를 제시하기 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    P(T,S) = P(T)P(S|T) (C.3)
+    But since a parse tree includes all the words of the sentence, P(S|T) is 1. Thus,
+    P(T,S) = P(T)P(S|T) = P(T) (C.4)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    P(T,S) = P(T)P(S|T) (C.3)
+    하지만 파스 트리는 문장의 모든 단어를 포함하고 있으므로, P(S|T)는 1입니다. 따라서,
+    P(T,S) = P(T)P(S|T) = P(T) (C.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파스 트리가 정해지면 문장의 단어 열은 유일하게 결정되므로 P(S|T)=1이 됨을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can compute the probability of each of the trees in Fig. C.2 by multiplying the probabilities of each of the rules used in the derivation. For example, the probability of the left tree in Fig. C.2a (call it T_left) and the right tree (Fig. C.2b or T_right) can be computed as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.2에 있는 각 트리의 확률은 유도 과정에서 사용된 각 규칙의 확률을 곱하여 계산할 수 있습니다. 예를 들어, 그림 C.2a의 왼쪽 트리(T_left라고 함)와 오른쪽 트리(그림 C.2b 또는 T_right)의 확률은 다음과 같이 계산할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 계산 예시로 넘어가는 부분입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    P(T_left) = .05 * .20 * .20 * .20 * .75 * .30 * .60 * .10 * .40 = 2.2 * 10^-6
+    P(T_right) = .05 * .10 * .20 * .15 * .75 * .75 * .30 * .60 * .10 * .40 = 6.1 * 10^-7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    P(T_left) = .05 * .20 * .20 * .20 * .75 * .30 * .60 * .10 * .40 = 2.2 * 10^-6
+    P(T_right) = .05 * .10 * .20 * .15 * .75 * .75 * .30 * .60 * .10 * .40 = 6.1 * 10^-7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 파스 트리의 확률을 실제로 계산한 결과입니다. T_left의 확률이 더 높음을 알 수 있습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">중의성 해소 공식</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">header</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 APPENDIX C • STATISTICAL CONSTITUENCY PARSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 부록 C • 통계적 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.2 Two parse trees for an ambiguous sentence. The parse on the left corresponds to the sensible meaning "Book a flight that serves dinner", while the parse on the right corresponds to the nonsensical meaning "Book a flight on behalf of 'the dinner' ".</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.2 중의적인 문장에 대한 두 가지 파스 트리. 왼쪽 파싱은 "저녁 식사가 제공되는 항공편을 예약하라"는 합리적인 의미에 해당하고, 오른쪽 파싱은 " '저녁 식사'를 대신하여 항공편을 예약하라"는 터무니없는 의미에 해당합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 C.2의 파스 트리가 나타내는 의미의 차이를 설명하는 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can see that the left tree in Fig. C.2 has a much higher probability than the tree on the right. Thus, this parse would correctly be chosen by a disambiguation algorithm that selects the parse with the highest PCFG probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.2의 왼쪽 트리가 오른쪽 트리보다 훨씬 높은 확률을 가짐을 알 수 있습니다. 따라서 가장 높은 PCFG 확률을 가진 파싱을 선택하는 중의성 해소 알고리즘에 의해 이 파싱 결과가 올바르게 선택될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률 비교를 통해 중의성을 해소하는 실제 사례를 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's formalize this intuition that picking the parse with the highest probability is the correct way to do disambiguation. Consider all the possible parse trees for a given sentence S. The string of words S is called the yield of any parse tree over S. Thus, out of all parse trees with a yield of S, the disambiguation algorithm picks the parse tree that is most probable given S:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 높은 확률을 가진 파싱을 선택하는 것이 중의성 해소를 수행하는 올바른 방법이라는 직관을 공식화해 봅시다. 주어진 문장 S에 대해 가능한 모든 파스 트리를 고려해 보십시오. 단어열 S는 S에 대한 모든 파스 트리의 산출물(yield)이라고 불립니다. 따라서 산출물이 S인 모든 파스 트리 중에서, 중의성 해소 알고리즘은 S가 주어졌을 때 가장 확률이 높은 파스 트리를 선택합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중의성 해소 과정을 수학적으로 공식화하는 단계입니다. "Yield"라는 용어가 정의됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>yield</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>산출물 (yield)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파스 트리가 생성하는 최종 단어열을 의미하는 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T|S) (C.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T|S) (C.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어진 문장 S에 대해 조건부 확률 P(T|S)를 최대화하는 트리 T를 찾는 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By definition, the probability P(T|S) can be rewritten as P(T,S)/P(S), thus leading to</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정의에 따라 확률 P(T|S)는 P(T,S)/P(S)로 바꿔 쓸 수 있으며, 이는 다음과 같이 이어집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 정리와 유사하게 조건부 확률을 결합 확률로 변환하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T,S)/P(S) (C.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T,S)/P(S) (C.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>(C.5)를 변환한 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Since we are maximizing over all parse trees for the same sentence, P(S) will be a constant for each tree, so we can eliminate it:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 동일한 문장에 대해 모든 파스 트리를 대상으로 최대화하고 있기 때문에, P(S)는 각 트리에 대해 상수이므로 이를 제거할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비교 대상이 모두 동일한 S를 가지므로 P(S)를 무시할 수 있음을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

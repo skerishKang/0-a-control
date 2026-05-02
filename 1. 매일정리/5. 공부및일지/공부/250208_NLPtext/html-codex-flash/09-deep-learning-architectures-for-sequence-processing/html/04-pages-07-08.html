@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+<div class="page-subtitle">RNN 언어 모델 학습</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.3 • RNNS AS LANGUAGE MODELS 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.3 • 언어 모델로서의 RNN 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.3 섹션의 연속된 내용과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>prediction, y_t, is a vector representing a probability distribution over the vocabulary. At each step, the model uses the word embedding matrix E to retrieve the embedding for the current word, and then combines it with the hidden layer from the previous step to compute a new hidden layer. This hidden layer is then used to generate an output layer which is passed through a softmax layer to generate a probability distribution over the entire vocabulary. That is, at time t:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예측값 y_t는 전체 어휘 사전에 대한 확률 분포를 나타내는 벡터입니다. 각 단계에서 모델은 단어 임베딩 행렬 E를 사용하여 현재 단어에 대한 임베딩을 가져오고, 이를 이전 단계의 은닉층과 결합하여 새로운 은닉층을 계산합니다. 이 은닉층은 이후 softmax 층을 통과하여 전체 어휘 사전에 대한 확률 분포를 생성하는 출력층을 만드는 데 사용됩니다. 즉, 시간 t에서 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델에서 단어 임베딩을 추출하고 은닉 상태를 거쳐 최종 확률 분포를 생성하는 흐름을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>e_t = Ex_t
+h_t = g(Uh_{t−1} + We_t)
+y_t = softmax(Vh_t)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$e_t = Ex_t$
+$h_t = g(Uh_{t-1} + We_t)$
+$y_t = \text{softmax}(Vh_t)$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델의 순방향 연산 공식(9.6, 9.7, 9.8)입니다. 입력 임베딩 추출(e_t), 은닉 상태 업데이트(h_t), 그리고 출력 확률 분포 계산(y_t) 과정을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The vector resulting from Vh can be thought of as a set of scores over the vocabulary given the evidence provided in h. Passing these scores through the softmax normalizes the scores into a probability distribution. The probability that a particular word i in the vocabulary is the next word is represented by y_t[i], the ith component of y_t:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Vh로부터 생성된 벡터는 h에 제공된 증거들을 토대로 어휘 사전 전체에 대해 매겨진 점수들의 집합으로 생각할 수 있습니다. 이 점수들을 softmax에 통과시키면 점수들이 확률 분포로 정규화됩니다. 어휘 사전의 특정 단어 i가 다음 단어일 확률은 y_t의 i번째 성분인 y_t[i]로 표현됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로짓(logits) 점수가 softmax를 통해 확률로 변환되는 과정과 특정 단어에 대한 확률 추출 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(w_{t+1} = i | w_1, ..., w_t) = y_t[i]</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$P(w_{t+1} = i \mid w_1, \dots, w_t) = y_t[i]$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥이 주어졌을 때 다음 단어 i가 나타날 조건부 확률을 y_t 벡터의 요소로 정의하는 수식(9.9)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The probability of an entire sequence is just the product of the probabilities of each item in the sequence, where we'll use y_i[w_i] to mean the probability of the true word w_i at time step i.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전체 시퀀스의 확률은 시퀀스의 각 항목에 대한 확률들의 곱일 뿐이며, 여기서 우리는 시간 단계 i에서의 실제 단어 w_i의 확률을 의미하기 위해 y_i[w_i]를 사용할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연쇄 법칙에 따라 문장 전체의 확률을 계산하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(w_{1:n}) = ∏_{i=1}^n P(w_i|w_{1:i-1})
+= ∏_{i=1}^n y_i[w_i]</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$P(w_{1:n}) = \prod_{i=1}^n P(w_i \mid w_{1:i-1})$
+$= \prod_{i=1}^n y_i[w_i]$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 전체 확률 계산 공식(9.10, 9.11)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To train an RNN as a language model, we use a corpus of text as training material, having the model predict the next word at each time step t. We train the model to minimize the error in predicting the true next word in the training sequence, using cross-entropy as the loss function. Recall that the cross-entropy loss measures the difference between a predicted probability distribution and the correct distribution.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>RNN을 언어 모델로 학습시키기 위해, 우리는 텍스트 말뭉치를 학습 자료로 사용하며 모델이 매 시간 단계 t에서 다음 단어를 예측하게 합니다. 우리는 교차 엔트로피(cross-entropy)를 손실 함수로 사용하여 학습 시퀀스에서 실제 다음 단어를 예측할 때 발생하는 오류를 최소화하도록 모델을 학습시킵니다. 교차 엔트로피 손실은 예측된 확률 분포와 정답 분포 사이의 차이를 측정한다는 점을 상기하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델의 학습 목표(손실 최소화)와 평가지표인 교차 엔트로피의 역할에 대해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE} = - ∑_{w∈V} y_t[w] log ŷ_t[w]</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$L_{CE} = - \sum_{w \in V} y_t[w] \log \hat{y}_t[w]$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 교차 엔트로피 손실 함수 공식(9.12)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the case of language modeling, the correct distribution y_t comes from knowing the next word. This is represented as a one-hot vector corresponding to the vocabulary where the entry for the actual next word is 1, and all the other entries are 0. Thus, the cross-entropy loss for language modeling is determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언어 모델링의 경우, 정답 분포 y_t는 다음 단어가 무엇인지 아는 데서 옵니다. 이는 실제 다음 단어에 해당하는 항목은 1이고 나머지 모든 항목은 0인 원-핫 벡터로 표현됩니다. 따라서 언어 모델링을 위한 교차 엔트로피 손실은 모델이 정답인 다음 단어에 부여한 확률에 의해 결정됩니다. 즉, 시간 t에서의 CE 손실은 모델이 학습 시퀀스의 다음 단어에 부여한 확률의 음의 로그 확률(negative log probability)입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델링에서 정답은 다음 단어 하나이므로, 교차 엔트로피는 결국 정답 단어에 대한 모델의 로그 확률 값이 됨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE} (ŷ_t, y_t) = -log ŷ_t[w_{t+1}]</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$L_{CE} (\hat{y}_t, y_t) = -\log \hat{y}_t[w_{t+1}]$</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원-핫 정답 벡터를 가정한 언어 모델의 간소화된 교차 엔트로피 손실 공식(9.13)입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus at each word position t of the input, the model takes as input the correct sequence of tokens w_{1:t}, and uses them to compute a probability distribution over possible next words so as to compute the model's loss for the next token w_{t+1}. Then we move to the next word, we ignore what the model predicted for the next word and instead use the correct sequence of tokens w_{1:t+1} to estimate the probability of token w_{t+2}. This idea that we always give the model the correct history sequence to</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 입력의 각 단어 위치 t에서, 모델은 정답 토큰 시퀀스 w_{1:t}를 입력으로 받아 가능한 다음 단어들에 대한 확률 분포를 계산함으로써 다음 토큰 w_{t+1}에 대한 모델의 손실을 계산합니다. 그런 다음 우리는 다음 단어로 이동할 때, 모델이 다음 단어로 무엇을 예측했는지는 무시하고 대신 정답 토큰 시퀀스 w_{1:t+1}을 사용하여 토큰 w_{t+2}의 확률을 추정합니다. 모델에게 항상 정답 히스토리 시퀀스를 제공하여...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 시 모델의 예측치가 아닌 실제 정답 시퀀스를 다음 입력으로 넣어주는 방식(Teacher Forcing의 전조)을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">가중치 타잉 및 RNN 응용</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Next word: long, and, thanks, for, all
+Loss: -log y_long, -log y_and, -log y_thanks, -log y_for, -log y_all
+RNN hidden layers connecting across time
+Input Embeddings: So, long, and, thanks, for</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>다음 단어: long, and, thanks, for, all
+손실: -log y_long, -log y_and, -log y_thanks, -log y_for, -log y_all
+RNN 은닉층들이 시간을 가로질러 연결됨
+입력 임베딩: So, long, and, thanks, for</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델의 학습 과정을 시각화한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.6 Training RNNs as language models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.6 언어 모델로서의 RNN 학습.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.6에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>teacher forcing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>티처 포싱(teacher forcing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 시 모델의 자체 예측값 대신 실제 정답을 다음 시점의 입력으로 사용하는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>predict the next word (rather than feeding the model its best case from the previous time step) is called teacher forcing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...다음 단어를 예측하도록 하는 방식(이전 시간 단계에서 모델이 가장 좋다고 판단한 결과를 먹이는 대신)을 티처 포싱(teacher forcing)이라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>티처 포싱의 명칭과 그 정의를 명확히 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The weights in the network are adjusted to minimize the average CE loss over the training sequence via gradient descent. Fig. 9.6 illustrates this training regimen.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>네트워크의 가중치들은 경사 하강법을 통해 학습 시퀀스 전체의 평균 CE 손실을 최소화하도록 조정됩니다. 그림 9.6은 이러한 학습 체계를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>경사 하강법을 이용한 가중치 업데이트와 전체적인 학습 흐름을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Careful readers may have noticed that the input embedding matrix E and the final layer matrix V, which feeds the output softmax, are quite similar. The rows of E represent the word embeddings for each word in the vocabulary learned during the training process with the goal that words that have similar meaning and function will have similar embeddings. And, since the length of these embeddings corresponds to the size of the hidden layer d_h, the shape of the embedding matrix E is |V| × d_h.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>주의 깊은 독자라면 입력 임베딩 행렬 E와 출력 softmax로 이어지는 마지막 층의 행렬 V가 상당히 유사하다는 점을 눈치챘을 것입니다. E의 행들은 학습 과정 위에서 학습된 어휘 사전의 각 단어에 대한 단어 임베딩을 나타내며, 비슷한 의미와 기능을 가진 단어들이 유사한 임베딩을 갖도록 하는 것이 목표입니다. 그리고 이러한 임베딩의 길이는 은닉층의 크기 d_h와 일치하므로, 임베딩 행렬 E의 형태는 |V| × d_h가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 임베딩 행렬 E의 구조와 그 물리적 의미(의미론적 유사성 반영)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Weight tying</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가중치 공유/타잉(Weight tying)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 임베딩 행렬과 출력층의 가중치 행렬을 동일하게 설정하여 학습 파라미터를 줄이는 기법입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The final layer matrix V provides a way to score the likelihood of each word in the vocabulary given the evidence present in the final hidden layer of the network through the calculation of Vh. This entails that it also has the dimensionality |V| × d_h. That is, the rows of V provide a second set of learned word embeddings that capture relevant aspects of word meaning and function. This leads to an obvious question – is it even necessary to have both? Weight tying is a method that dispenses with this redundancy and uses a single set of embeddings at the input and softmax layers. That is, E = V. To do this, we set the dimensionality of the final hidden layer to be the same d_h, (or add an additional projection layer to do the same thing), and simply use the same matrix for both layers. In addition to providing improved perplexity results, this approach significantly reduces the number of parameters required for the model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막 층의 행렬 V는 Vh 계산을 통해 네트워크의 마지막 은닉층에 존재하는 증거들을 바탕으로 어휘 사전의 각 단어의 우도를 점수화하는 방법을 제공합니다. 이는 V 또한 |V| × d_h의 차원을 가짐을 의미합니다. 즉, V의 행들은 단어의 의미와 기능의 관련 측면들을 포착하는 두 번째 단어 임베딩 세트를 제공하는 셈입니다. 이는 당연한 질문으로 이어집니다. 과연 두 세트가 모두 필요할까요? 가중치 타잉(Weight tying)은 이러한 중복을 없애고 입력층과 softmax 층에서 단일 임베딩 세트를 사용하는 방법입니다. 즉, E = V입니다. 이를 위해 마지막 은닉층의 차원을 d_h와 동일하게 설정(또는 동일한 작업을 수행하는 추가 프로젝션 층을 추가)하고, 단순히 두 층에 동일한 행렬을 사용합니다. 이 접근 방식은 향상된 당혹도 결과를 제공할 뿐만 아니라, 모델에 필요한 파라미터 수를 상당히 줄여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가중치 타잉(Weight Tying)의 원리(E=V)와 그 효과(파라미터 감소, 성능 향상)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.4 RNNs for other NLP tasks</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.4 다른 NLP 작업을 위한 RNN</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델링을 넘어 분류, 레이블링, 생성 등 다양한 자연어 처리 분야에 RNN을 적용하는 방법을 소개하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now that we've seen the basic RNN architecture, let's consider how to apply it to three types of NLP tasks: sequence classification tasks like sentiment analysis and topic classification, sequence labeling tasks like part-of-speech tagging, and text generation tasks. And we'll see in Chapter 10 how to use them for encoder-decoder approaches to summarization, machine translation, and question answering.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 기본적인 RNN 아키텍처를 살펴보았으니, 이를 세 가지 유형의 NLP 작업, 즉 감성 분석 및 주제 분류와 같은 시퀀스 분류 작업, 품사 태깅과 같은 시퀀스 레이블링 작업, 그리고 텍스트 생성 작업에 어떻게 적용할지 고려해 봅시다. 또한 10장에서는 요약, 기계 번역, 질의응답을 위한 인코더-디코더 접근 방식에 이들을 어떻게 사용하는지 살펴볼 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN이 적용될 수 있는 주요 작업 군(분류, 레이블링, 생성)을 나열하고 다음 장에서 다룰 고등 주제(인코더-디코더)를 예고합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

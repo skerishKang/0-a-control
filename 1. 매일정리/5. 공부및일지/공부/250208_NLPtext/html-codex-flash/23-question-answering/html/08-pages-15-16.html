@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15 16 | Question Answering</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">23 Question Answering</div>
+<h1>Question Answering</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a><a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15 16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>23. Question Answering.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">23.3.1 앵커 사전 및 웹 그래프 기반 연결</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3. • ENTITY LINKING 21</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3. • 개체 연결 21</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(Li et al., 2020). We’ll focus here mainly on the application of entity linking to questions rather than other genres.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(Li et al., 2020). 여기서는 다른 장르보다는 질문에 대한 개체 연결의 적용에 주로 초점을 맞출 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개체 연결의 주된 적용 대상을 질문 답변(QA)으로 한정함을 밝힙니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23.3.1 Linking based on Anchor Dictionaries and Web Graph</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23.3.1 앵커 사전 및 웹 그래프 기반 연결</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앵커 사전과 위키피디아의 그래프 구조를 활용한 고전적인 개체 연결 방식을 설명하는 절입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As a simple baseline we introduce the TAGME linker (Ferragina and Scaiella, 2011) for Wikipedia, which itself draws on earlier algorithms (Mihalcea and Csomai 2007, Cucerzan 2007, Milne and Witten 2008). Wikification algorithms define the set of entities as the set of Wikipedia pages, so we’ll refer to each Wikipedia page as a unique entity e. TAGME first creates a catalog of all entities (i.e. all Wikipedia pages, removing some disambiguation and other meta-pages) and indexes them in a standard IR engine like Lucene. For each page e, the algorithm computes an in-link count in(e): the total number of in-links from other Wikipedia pages that point to e. These counts can be derived from Wikipedia dumps.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>간단한 베이스라인으로 위키피디아를 위한 TAGME 링커(Ferragina and Scaiella, 2011)를 소개합니다. 이는 이전의 알고리즘들(Mihalcea and Csomai 2007, Cucerzan 2007, Milne and Witten 2008)을 기반으로 합니다. 위키피디아 연결(Wikification) 알고리즘은 개체 집합을 위키피디아 페이지 집합으로 정의하므로, 각 위키피디아 페이지를 고유한 개체 e로 지칭할 것입니다. TAGME는 먼저 모든 개체(즉, 일부 모호성 해소 및 기타 메타 페이지를 제거한 모든 위키피디아 페이지)의 카탈로그를 만들고 이를 Lucene과 같은 표준 IR 엔진에 색인합니다. 각 페이지 e에 대해, 알고리즘은 해당 페이지를 가리키는 다른 위키피디아 페이지의 총 인링크(in-link) 수인 in(e)를 계산합니다. 이 횟수는 위키피디아 덤프에서 도출할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>TAGME 알고리즘의 기본 개념과 위키피디아 인링크 수를 활용한 개체 정의 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, the algorithm requires an anchor dictionary. An anchor dictionary lists for each Wikipedia page, its anchor texts: the hyperlinked spans of text on other pages that point to it. For example, the web page for Stanford University, http://www.stanford.edu, might be pointed to from another page using anchor texts like Stanford or Stanford University:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 알고리즘은 앵커 사전을 필요로 합니다. 앵커 사전은 각 위키피디아 페이지에 대해 해당 페이지를 가리키는 다른 페이지의 하이퍼링크 텍스트 범위인 앵커 텍스트를 나열합니다. 예를 들어, 스탠포드 대학교 웹 페이지(http://www.stanford.edu)는 다른 페이지에서 Stanford 또는 Stanford University와 같은 앵커 텍스트를 사용하여 가리켜질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앵커 사전의 정의와 앵커 텍스트의 예시를 통해 개념을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>anchor texts</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>앵커 텍스트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하이퍼링크에 사용된 텍스트 문구를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre><a href="http://www.stanford.edu">Stanford University</a></pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre><a href="http://www.stanford.edu">Stanford University</a></pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HTML 앵커 태그의 예시 코드입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We compute a Wikipedia anchor dictionary by including, for each Wikipedia page e, e’s title as well as all the anchor texts from all Wikipedia pages that point to e. For each anchor string a we’ll also compute its total frequency freq(a) in Wikipedia (including non-anchor uses), the number of times a occurs as a link (which we’ll call link(a)), and its link probability linkprob(a) = link(a)/freq(a). Some cleanup of the final anchor dictionary is required, for example removing anchor strings composed only of numbers or single characters, that are very rare, or that are very unlikely to be useful entities because they have a very low linkprob.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 위키피디아 페이지 e에 대해, e의 제목과 e를 가리키는 모든 위키피디아 페이지의 모든 앵커 텍스트를 포함하여 위키피디아 앵커 사전을 계산합니다. 각 앵커 문자열 a에 대해 위키피디아에서의 총 빈도 freq(a)(앵커가 아닌 사용 포함), a가 링크로 나타나는 횟수(link(a)라 함), 그리고 링크 확률 linkprob(a) = link(a)/freq(a)도 계산합니다. 최종 앵커 사전의 일부 정리가 필요한데, 예를 들어 숫자나 단일 문자로만 구성된 앵커 문자열, 매우 드물게 나타나는 문자열, 또는 linkprob가 매우 낮아 유용한 개체가 될 가능성이 매우 낮은 문자열을 제거하는 작업입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앵커 사전 구축 방법과 링크 확률(linkprob)을 이용한 필터링 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mention Detection</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언급 감지</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 내에서 개체일 가능성이 있는 구절을 찾아내는 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given a question (or other text we are trying to link), TAGME detects mentions by querying the anchor dictionary for each token sequence up to 6 words. This large set of sequences is pruned with some simple heuristics (for example pruning substrings if they have small linkprobs). The question:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>질문(또는 연결하려는 다른 텍스트)이 주어지면, TAGME는 최대 6단어까지의 각 토큰 시퀀스에 대해 앵커 사전을 조회하여 언급을 탐지합니다. 이 대규모 시퀀스 집합은 몇 가지 간단한 휴리스틱으로 가지치기(pruning)됩니다(예를 들어, linkprob가 작은 경우 부분 문자열을 제거함). 질문 예시:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앵커 사전을 이용한 언급 감지 방식과 휴리스틱 기반의 가지치기 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>When was Ada Lovelace born?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>에이다 러브레이스는 언제 태어났나요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급 감지를 위한 예시 질문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>might give rise to the anchor Ada Lovelace and possibly Ada, but substrings spans like Lovelace might be pruned as having too low a linkprob, and but spans like born have such a low linkprob that they would not be in the anchor dictionary at all.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 질문은 앵커 Ada Lovelace와 아마도 Ada를 생성할 수 있지만, Lovelace와 같은 부분 문자열 범위는 linkprob가 너무 낮아 제거될 수 있고, born과 같은 범위는 linkprob가 너무 낮아 앵커 사전에 전혀 포함되지 않을 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 예시 질문에서 어떤 단어가 언급으로 선택되거나 제외되는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Mention Disambiguation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언급 모호성 해소</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>감지된 언급이 여러 개체를 가리킬 수 있을 때, 문맥에 맞는 올바른 개체를 선택하는 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If a mention span is unambiguous (points to only one entity/Wikipedia page), we are done with entity linking! However, many spans are ambiguous, matching anchors for multiple Wikipedia entities/pages. The TAGME algorithm uses two factors for disambiguating ambiguous spans, which have been referred to as prior probability and relatedness/coherence. The first factor is p(e|a), the probability with which the span refers to a particular entity. For each page e ∈ E(a), the probability p(e|a) that anchor a points to e, is the ratio of the number of links into e with anchor text a to the total number of occurrences of a as an anchor:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언급 범위가 모호하지 않다면(단 하나의 개체/위키피디아 페이지를 가리키는 경우), 개체 연결이 완료됩니다! 그러나 많은 범위가 모호하며, 여러 위키피디아 개체/페이지에 대한 앵커와 일치합니다. TAGME 알고리즘은 모호한 범위를 해소하기 위해 사전 확률(prior probability)과 관련성/일관성(relatedness/coherence)이라고 불리는 두 가지 요소를 사용합니다. 첫 번째 요소는 p(e|a)로, 해당 범위가 특정 개체를 참조할 확률입니다. 각 페이지 e ∈ E(a)에 대해, 앵커 a가 e를 가리킬 확률 p(e|a)는 앵커 텍스트 a를 사용하여 e로 들어오는 링크 수를 앵커로서의 a의 총 발생 횟수로 나눈 비율입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모호성 해소의 필요성과 이를 위한 두 가지 핵심 요소(사전 확률, 관련성)를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>prior(a \to e) = p(e|a) = \frac{count(a \to e)}{link(a)} \quad (23.19)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>prior(a \to e) = p(e|a) = \frac{count(a \to e)}{link(a)} \quad (23.19)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 언급 a가 개체 e를 가리킬 사전 확률을 계산하는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s see how that factor works in linking entities in the following question:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 질문에서 개체를 연결할 때 이 요소가 어떻게 작동하는지 살펴보겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이어지는 예시를 통해 사전 확률의 작동 방식을 설명할 것임을 안내합니다.</pre></section>
+</div>
+</article>
+</div></section>
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22 CHAPTER 23 • QUESTION ANSWERING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22 제23장 • 질의응답</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What Chinese Dynasty came before the Yuan?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어떤 중국 왕조가 원나라 이전에 있었나요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모호성 해소 사례를 설명하기 위한 예시 질문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The most common association for the span Yuan in the anchor dictionary is the name of the Chinese currency, i.e., the probability p(Yuan_currency| yuan) is very high. Rarer Wikipedia associations for Yuan include the common Chinese last name, a language spoken in Thailand, and the correct entity in this case, the name of the Chinese dynasty. So if we chose based only on p(e|a), we would make the wrong disambiguation and miss the correct link, Yuan_dynasty.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>앵커 사전에서 "Yuan"이라는 구절에 대해 가장 흔한 연관 관계는 중국 화폐의 이름입니다. 즉, p(Yuan_currency| yuan) 확률이 매우 높습니다. "Yuan"에 대한 더 드문 위키피디아 연관 관계로는 흔한 중국 성씨, 태국에서 사용하는 언어, 그리고 이 사례에서 정답인 중국 왕조의 이름 등이 있습니다. 따라서 만약 p(e|a)에만 기반하여 선택한다면, 우리는 잘못된 모호성 해소를 하게 되어 정답 링크인 Yuan_dynasty를 놓치게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사전 확률만으로는 문맥상 올바른 개체를 찾지 못할 수 있다는 한계를 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To help in just this sort of case, TAGME uses a second factor, the relatedness of this entity to other entities in the input question. In our example, the fact that the question also contains the span Chinese Dynasty, which has a high probability link to the page Dynasties_in_Chinese_history, ought to help match Yuan_dynasty.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>바로 이런 경우를 돕기 위해 TAGME는 두 번째 요소인, 이 개체와 입력 질문의 다른 개체들 간의 관련성(relatedness)을 사용합니다. 우리 예시에서 질문에 "Chinese Dynasty"라는 구절이 포함되어 있고, 이것이 "Dynasties_in_Chinese_history" 페이지와 연결될 확률이 높다는 사실은 "Yuan_dynasty"를 맞추는 데 도움이 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주변 문맥(다른 개체 언급)과의 관련성을 활용하여 모호성을 해소하는 아이디어를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let’s see how this works. Given a question q, for each candidate anchors span a detected in q, we assign a relatedness score to each possible entity e ∈ E(a) of a. The relatedness score of the link a → e is the weighted average relatedness between e and all other entities in q. Two entities are considered related to the extent their Wikipedia pages share many in-links. More formally, the relatedness between two entities A and B is computed as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이것이 어떻게 작동하는지 살펴봅시다. 질문 q가 주어지면, q에서 감지된 각 후보 앵커 범위 a에 대해 a의 가능한 각 개체 e ∈ E(a)에 관련성 점수를 할당합니다. 링크 a → e의 관련성 점수는 e와 q에 있는 다른 모든 개체 간의 가중 평균 관련성입니다. 두 개체는 그들의 위키피디아 페이지가 많은 인링크(in-links)를 공유하는 정도에 따라 관련이 있는 것으로 간주됩니다. 보다 공식적으로, 두 개체 A와 B 사이의 관련성은 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인링크 공유 정도를 기반으로 두 개체 간의 관련성을 정의하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>rel(A, B) = \frac{\log(\max(|in(A)|, |in(B)|)) - \log(|in(A) \cap in(B)|)}{\log(|W|) - \log(\min(|in(A)|, |in(B)|))} \quad (23.20)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>rel(A, B) = \frac{\log(\max(|in(A)|, |in(B)|)) - \log(|in(A) \cap in(B)|)}{\log(|W|) - \log(\min(|in(A)|, |in(B)|))} \quad (23.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 개체의 인링크 집합을 이용한 관련성 점수 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>where in(x) is the set of Wikipedia pages pointing to x and W is the set of all Wikipedia pages in the collection.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 in(x)는 x를 가리키는 위키피디아 페이지들의 집합이고, W는 컬렉션 내의 모든 위키피디아 페이지들의 집합입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공식에 사용된 기호들의 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The vote given by anchor b to the candidate annotation a \to X is the average, over all the possible entities of b, of their relatedness to X, weighted by their prior probability:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>앵커 b가 후보 어노테이션 a \to X에 주는 투표(vote)는, b의 가능한 모든 개체들에 대해 그들이 X와 가지는 관련성을 사전 확률로 가중치를 두어 평균한 값입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다른 앵커 b로부터 후보 개체 X가 받는 지지(투표)를 계산하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>vote(b, X) = \frac{1}{|E(b)|} \sum_{Y \in E(b)} rel(X, Y)p(Y|b) \quad (23.21)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>vote(b, X) = \frac{1}{|E(b)|} \sum_{Y \in E(b)} rel(X, Y)p(Y|b) \quad (23.21)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 앵커 b가 후보 개체 X에 대해 부여하는 투표값 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The total relatedness score for a \to X is the sum of the votes of all the other anchors detected in q:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>a \to X에 대한 총 관련성 점수는 q에서 감지된 다른 모든 앵커들의 투표 합계입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 주변 앵커들로부터 받은 투표를 합산하여 최종 관련성 점수를 구하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>relatedness(a \to X) = \sum_{b \in X_q \setminus \{a\}} vote(b, X) \quad (23.22)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>relatedness(a \to X) = \sum_{b \in X_q \setminus \{a\}} vote(b, X) \quad (23.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>후보 개체 X의 총 관련성 점수 계산 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To score a \to X, we combine relatedness and prior by choosing the entity X that has the highest relatedness(a \to X), finding other entities within a small ε of this value, and from this set, choosing the entity with the highest prior P(X|a). The result of this step is a single entity assigned to each span in q.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>a \to X의 점수를 매기기 위해, 우리는 가장 높은 relatedness(a \to X)를 가진 개체 X를 선택하고, 이 값의 작은 오차 범위 ε 내에 있는 다른 개체들을 찾은 다음, 이 집합 내에서 가장 높은 사전 확률 P(X|a)를 가진 개체를 선택함으로써 관련성과 사전 확률을 결합합니다. 이 단계의 결과는 q의 각 구간에 할당된 단일 개체가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관련성 점수와 사전 확률을 결합하여 최종적으로 하나의 개체를 결정하는 전략을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The TAGME algorithm has one further step of pruning spurious anchor/entity pairs, assigning a score averaging link probability with the coherence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>TAGME 알고리즘은 잘못된 앵커/개체 쌍을 가지치기하는 추가 단계를 거치며, 링크 확률과 일관성(coherence)을 평균하여 점수를 할당합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신뢰도가 낮은 결과를 제거하기 위한 최종 정제 단계를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>coherence(a \to X) = \frac{1}{|S| - 1} \sum_{B \in S \setminus \{X\}} rel(B, X)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>coherence(a \to X) = \frac{1}{|S| - 1} \sum_{B \in S \setminus \{X\}} rel(B, X)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개체 X가 선택된 다른 개체 집합 S와 얼마나 일관되는지 측정하는 일관성 점수 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>score(a \to X) = \frac{coherence(a \to X) + linkprob(a)}{2} \quad (23.23)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>score(a \to X) = \frac{coherence(a \to X) + linkprob(a)}{2} \quad (23.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일관성과 링크 확률을 종합한 최종 점수 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, pairs are pruned if score(a \to X) < \lambda, where the threshold \lambda is set on a held-out set.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, score(a \to X) < \lambda인 경우 해당 쌍은 제거되며, 여기서 임계값 \lambda는 별도의 검증용 데이터셋(held-out set)에서 설정됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임계값을 이용한 최종 가지치기 기준을 설명합니다.</pre></section>
+</div>
+</article>
+</div></section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 21-22 | Logical Representations of Sentence Meaning</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">15 Logical Representations of Sentence Meaning</div>
+<h1>Logical Representations of Sentence Meaning</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 21-22 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>15. Logical Representations of Sentence Meaning.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">기술 논리</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>15.5 • DESCRIPTION LOGICS 21</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>15.5 • 기술 논리 21</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Specifying that a set of subconcepts covers a category can be achieved with disjunction, as in the following:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어떤 하위 개념들의 집합이 하나의 범주를 포괄한다는 사실은 다음과 같이 논리합(disjunction)으로 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상위 개념을 여러 하위 개념의 합으로 정의하는 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Restaurant ⊑ (or ItalianRestaurant ChineseRestaurant MexicanRestaurant)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Restaurant ⊑ (or ItalianRestaurant ChineseRestaurant MexicanRestaurant)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Restaurant가 여러 음식 종류의 하위 범주들의 논리합으로 포괄될 수 있음을 나타냅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Having a hierarchy such as the one given in Fig. 15.6 tells us next to nothing about the concepts in it. We certainly don't know anything about what makes a restaurant a restaurant, much less Italian, Chinese, or expensive. What is needed are additional assertions about what it means to be a member of any of these categories. In Description Logics such statements come in the form of relations between the concepts being described and other concepts in the domain. In keeping with its origins in structured network representations, relations in Description Logics are typically binary and are often referred to as roles, or role-relations.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 15.6과 같은 계층 구조만으로는 그 안의 개념들에 대해 거의 아무것도 알 수 없습니다. 우리는 restaurant가 왜 restaurant인지, 하물며 Italian, Chinese, 또는 expensive가 되는 조건은 무엇인지도 모릅니다. 필요한 것은 이러한 범주의 구성원이 된다는 것이 무엇을 뜻하는지에 대한 추가 진술입니다. 기술 논리에서 이런 진술은 기술 대상 개념과 영역 내 다른 개념 사이의 관계 형태로 주어집니다. 구조적 네트워크 표현에서 유래했기 때문에, 기술 논리의 관계는 보통 이항 관계이며 종종 role 또는 role-relation이라고 불립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 계층보다 관계 제약이 중요하다는 점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To see how such relations work, let's consider some of the facts about restaurants discussed earlier in the chapter. We'll use the hasCuisine relation to capture information as to what kinds of food restaurants serve and the hasPriceRange relation to capture how pricey particular restaurants tend to be. We can use these relations to say something more concrete about our various classes of restaurants. Let's start with our ItalianRestaurant concept. As a first approximation, we might say something uncontroversial like Italian restaurants serve Italian cuisine. To capture these notions, let's first add some new concepts to our terminology to represent various kinds of cuisine:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 관계가 어떻게 작동하는지 보기 위해, 앞에서 논의했던 restaurant에 대한 사실들을 다시 생각해 봅시다. restaurant가 어떤 종류의 음식을 제공하는지를 표현하기 위해 hasCuisine 관계를, 특정 restaurant의 가격대가 어떠한지를 표현하기 위해 hasPriceRange 관계를 사용하겠습니다. 이 관계들을 이용하면 restaurant의 여러 부류에 대해 더 구체적인 말을 할 수 있습니다. 먼저 ItalianRestaurant 개념부터 시작해 봅시다. 첫 번째 근사로, 이탈리아 음식점은 이탈리아 요리를 제공한다고 말할 수 있습니다. 이를 포착하기 위해 우선 여러 음식 종류를 나타내는 새 개념들을 용어 체계에 추가합시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>restaurant 예시를 통해 role 제약을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>MexicanCuisine ⊑ Cuisine
+ItalianCuisine ⊑ Cuisine
+ChineseCuisine ⊑ Cuisine
+VegetarianCuisine ⊑ Cuisine
+
+ExpensiveRestaurant ⊑ Restaurant
+ModerateRestaurant ⊑ Restaurant
+CheapRestaurant ⊑ Restaurant</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MexicanCuisine ⊑ Cuisine
+ItalianCuisine ⊑ Cuisine
+ChineseCuisine ⊑ Cuisine
+VegetarianCuisine ⊑ Cuisine
+
+ExpensiveRestaurant ⊑ Restaurant
+ModerateRestaurant ⊑ Restaurant
+CheapRestaurant ⊑ Restaurant</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음식 종류와 가격대 범주를 정의하는 하위 개념들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Next, let's revise our earlier version of ItalianRestaurant to capture cuisine information.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음으로 음식 종류 정보를 반영하도록 ItalianRestaurant의 앞선 정의를 수정해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>hasCuisine 관계를 사용한 새 정의로 이어집니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>ItalianRestaurant ⊑ Restaurant ⊓ ∃hasCuisine.ItalianCuisine</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ItalianRestaurant ⊑ Restaurant ⊓ ∃hasCuisine.ItalianCuisine</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이탈리아 음식점을 이탈리아 요리를 제공하는 restaurant로 정의한 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The correct way to read this expression is that individuals in the category ItalianRestaurant are subsumed both by the category Restaurant and by an unnamed class defined by the existential clause—the set of entities that serve Italian cuisine. An equivalent statement in FOL would be</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 식을 올바르게 읽는 방법은 ItalianRestaurant 범주의 개체들이 Restaurant 범주에 속할 뿐 아니라, 존재 양화 절에 의해 정의된 이름 없는 범주, 즉 이탈리아 요리를 제공하는 개체들의 집합에도 속한다는 것입니다. 이에 대응하는 1차 논리 진술은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기술 논리식을 1차 논리적 의미로 풀어 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>∀x ItalianRestaurant(x) → Restaurant(x) ∧ (∃y Serves(x,y) ∧ ItalianCuisine(y))</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>∀x ItalianRestaurant(x) → Restaurant(x) ∧ (∃y Serves(x,y) ∧ ItalianCuisine(y))</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기술 논리 정의의 FOL 대응식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This FOL translation should make it clear what the DL assertions given above do and do not entail. In particular, they don't say that domain entities classified as Italian restaurants can't engage in other relations like being expensive or even serving Chinese cuisine. And critically, they don't say much about domain entities that we know do serve Italian cuisine. In fact, inspection of the FOL translation makes it clear that we cannot infer that any new entities belong to this category based on their characteristics. The best we can do is infer new facts about restaurants that we're explicitly told are members of this category.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 FOL 번역은 위의 DL 진술이 무엇을 함의하고 무엇을 함의하지 않는지를 분명하게 보여 줍니다. 특히, 이 진술은 ItalianRestaurant로 분류된 개체가 expensive 속성을 가진다거나 Chinese 요리를 제공한다는 다른 관계를 가질 수 없다고 말하지 않습니다. 더 중요하게는, 우리가 Italian cuisine을 제공한다는 사실을 알고 있는 개체들에 대해 많은 것을 말해 주지도 않습니다. 실제로 FOL 번역을 보면, 단지 어떤 특성을 가졌다는 이유만으로 새로운 개체가 이 범주에 속한다고 추론할 수는 없다는 점이 분명합니다. 우리가 할 수 있는 최선은, 이미 이 범주의 구성원이라고 명시적으로 주어진 restaurant들에 대해 새로운 사실을 추론하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정의의 한계와 함의 범위를 짚습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<h2>Page 22</h2>
+<div class="page-subtitle">기술 논리 (계속)</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>22 CHAPTER 15 • LOGICAL REPRESENTATIONS OF SENTENCE MEANING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>22 제15장 • 문장 의미의 논리적 표현</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Of course, inferring the category membership of individuals given certain characteristics is a common and critical reasoning task that we need to support. This brings us back to the alternative approach to creating hierarchical structures in a terminology: actually providing a definition of the categories we're creating in the form of necessary and sufficient conditions for category membership. In this case, we might explicitly provide a definition for ItalianRestaurant as being those restaurants that serve Italian cuisine, and ModerateRestaurant as being those whose price range is moderate.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>물론 어떤 특성이 주어졌을 때 개체의 범주 소속을 추론하는 것은 우리가 지원해야 하는 흔하고도 중요한 추론 과제입니다. 이는 용어 체계의 계층 구조를 만드는 또 다른 접근 방식, 즉 우리가 만들고 있는 범주에 대해 범주 소속의 필요충분조건 형태로 실제 정의를 부여하는 방식으로 돌아가게 합니다. 이 경우 ItalianRestaurant는 이탈리아 요리를 제공하는 restaurant, ModerateRestaurant는 가격대가 중간인 restaurant라고 명시적으로 정의할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>subsumption에서 정의 기반 범주화로 초점을 이동합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>ItalianRestaurant ≡ Restaurant ⊓ ∃hasCuisine.ItalianCuisine
+ModerateRestaurant ≡ Restaurant ⊓ ∃hasPriceRange.ModeratePrices</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ItalianRestaurant ≡ Restaurant ⊓ ∃hasCuisine.ItalianCuisine
+ModerateRestaurant ≡ Restaurant ⊓ ∃hasPriceRange.ModeratePrices</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>필요충분조건으로 범주를 정의한 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While our earlier statements provided necessary conditions for membership in these categories, these statements provide both necessary and sufficient conditions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>앞선 진술들이 이 범주들에 속하기 위한 필요조건만 제공했다면, 여기의 진술들은 필요조건과 충분조건을 모두 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>⊑와 ≡의 차이를 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, let's now consider the superficially similar case of vegetarian restaurants. Clearly, vegetarian restaurants are those that serve vegetarian cuisine. But they don't merely serve vegetarian fare, that's all they serve. We can accommodate this kind of constraint by adding an additional restriction in the form of a universal quantifier to our earlier definition of VegetarianRestaurants, as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로 겉보기에는 비슷해 보이는 vegetarian restaurant의 경우를 생각해 봅시다. 분명히 vegetarian restaurant는 vegetarian cuisine을 제공하는 restaurant입니다. 하지만 단지 vegetarian 음식을 제공하는 것이 아니라, 오직 그것만을 제공합니다. 이런 제약은 앞서의 VegetarianRestaurant 정의에 보편 양화 형태의 추가 제약을 더함으로써 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>existential restriction만으로는 충분하지 않고 universal restriction이 필요함을 보여 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>VegetarianRestaurant ≡ Restaurant ⊓ ∃hasCuisine.VegetarianCuisine ⊓ ∀hasCuisine.VegetarianCuisine</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>VegetarianRestaurant ≡ Restaurant ⊓ ∃hasCuisine.VegetarianCuisine ⊓ ∀hasCuisine.VegetarianCuisine</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모든 hasCuisine 관계의 값이 VegetarianCuisine이어야 한다는 제약을 추가합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Inference</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>추론</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기술 논리에서의 추론 과제를 설명하는 소절입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Paralleling the focus of Description Logics on categories, relations, and individuals is a processing focus on a restricted subset of logical inference. Rather than employing the full range of reasoning permitted by FOL, DL reasoning systems emphasize closely coupled problems of subsumption and instance checking.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기술 논리가 범주, 관계, 개체에 초점을 맞추는 것과 병행하여, 처리 측면에서도 논리적 추론의 제한된 부분집합에 초점을 둡니다. FOL이 허용하는 전체 추론 범위를 사용하는 대신, DL 추론 시스템은 subsumption과 instance checking 문제를 특히 강조합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DL 추론이 일반 FOL보다 제한적이고 계산 가능성에 초점을 둔다는 점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>subsumption / instance checking</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>subsumption / instance checking</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DL에서 가장 핵심적인 두 추론 과제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Subsumption, a form of inference, is the task of determining, based on the facts asserted in a terminology, whether a superset/subset relationship exists between two concepts. Correspondingly, instance checking asks if an individual can be a member of a particular category given the facts we know about both the individual and the terminology. The inference mechanisms underlying subsumption and instance checking go beyond simply checking for explicitly stated subsumption relations in a terminology. They must explicitly reason using the relational information asserted about the terminology to infer appropriate subsumption and membership relations.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>추론의 한 형태인 subsumption은 용어 체계에 주어진 사실을 바탕으로 두 개념 사이에 상위집합/부분집합 관계가 존재하는지를 결정하는 과제입니다. 이에 대응하여 instance checking은 개체와 용어 체계에 대해 우리가 알고 있는 사실을 바탕으로 어떤 개체가 특정 범주의 구성원이 될 수 있는지를 묻습니다. subsumption과 instance checking을 가능하게 하는 추론 메커니즘은 용어 체계에 명시된 subsumption 관계만 단순히 확인하는 데서 그치지 않습니다. 용어 체계에 주어진 관계 정보를 실제로 추론하여 적절한 subsumption 및 membership 관계를 이끌어 내야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DL 추론기의 실제 역할을 자세히 설명하는 단락입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Returning to our restaurant domain, let's add a new kind of restaurant using the following statement:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다시 restaurant 영역으로 돌아가서, 다음 진술을 사용해 새로운 종류의 restaurant를 추가해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>ilFornaio 예시로 이어집니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>IlFornaio ⊑ ModerateRestaurant ⊓ ∃hasCuisine.ItalianCuisine</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>IlFornaio ⊑ ModerateRestaurant ⊓ ∃hasCuisine.ItalianCuisine</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>ilFornaio에 대한 새 사실을 추가한 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Given this assertion, we might ask whether the IlFornaio chain of restaurants might be classified as an Italian restaurant or a vegetarian restaurant. More precisely, we can pose the following questions to our reasoning system:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 진술이 주어졌을 때, IlFornaio 레스토랑 체인이 Italian restaurant나 vegetarian restaurant로 분류될 수 있는지를 물을 수 있습니다. 더 정확히 말하면, 추론 시스템에 다음과 같은 질문을 던질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 페이지에서 계속 이어지는 질의 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

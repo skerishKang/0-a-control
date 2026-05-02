@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">임베딩 선택, 순방향 추론 아키텍처</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.5 • FEEDFORWARD NEURAL LANGUAGE MODELING 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.5 • 피드포워드 신경망 언어 모델링 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.12 Selecting the embedding vector for word V5 by multiplying the embedding matrix E with a one-hot vector with a 1 in index 5.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.12 임베딩 행렬 $\mathbf{E}$와 5번 인덱스가 1인 원-핫 벡터를 곱하여 단어 $V_5$의 임베딩 벡터를 선택하는 과정.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.12. 행렬 곱을 통한 임베딩 선택 원리를 시각화한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.12 Selecting the embedding vector for word V5 by multiplying the embedding matrix E with a one-hot vector with a 1 in index 5.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.12 임베딩 행렬 $\mathbf{E}$와 5번 인덱스가 1인 원-핫 벡터를 곱하여 단어 $V_5$의 임베딩 벡터를 선택하는 과정.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.12 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.13 Forward inference in a feedforward neural language model. At each timestep t the network computes a d-dimensional embedding for each context word (by multiplying a one-hot vector by the embedding matrix E), and concatenates the 3 resulting embeddings to get the embedding layer e. The embedding vector e is multiplied by a weight matrix W and then an activation function is applied element-wise to produce the hidden layer h, which is then multiplied by another weight matrix U. Finally, a softmax output layer predicts at each node i the probability that the next word wt will be vocabulary word Vi.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.13 피드포워드 신경망 언어 모델에서의 순방향 추론. 각 타임스텝 $t$마다 네트워크는 (원-핫 벡터에 임베딩 행렬 $\mathbf{E}$를 곱하여) 각 문맥 단어의 $d$차원 임베딩을 계산하고, 결과적으로 얻은 3개의 임베딩을 연결하여 임베딩 층 $\mathbf{e}$를 얻습니다. 임베딩 벡터 $\mathbf{e}$는 가중치 행렬 $\mathbf{W}$와 곱해진 뒤 활성화 함수가 각 요소에 적용되어 은닉층 $\mathbf{h}$를 생성하고, 이는 다시 다른 가중치 행렬 $\mathbf{U}$와 곱해집니다. 마지막으로 소프트맥스 출력층은 각 노드 $i$에서 다음 단어 $w_t$가 어휘 사전 단어 $V_i$일 확률을 예측합니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.13. 입력부터 소프트맥스 출력까지의 신경망 언어 모델 전체 아키텍처를 상세히 보여주는 구조도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.13 Forward inference in a feedforward neural language model. At each timestep t the network computes a d-dimensional embedding for each context word (by multiplying a one-hot vector by the embedding matrix E), and concatenates the 3 resulting embeddings to get the embedding layer e. The embedding vector e is multiplied by a weight matrix W and then an activation function is applied element-wise to produce the hidden layer h, which is then multiplied by another weight matrix U. Finally, a softmax output layer predicts at each node i the probability that the next word wt will be vocabulary word Vi.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.13 피드포워드 신경망 언어 모델에서의 순방향 추론. 각 타임스텝 $t$마다 네트워크는 (원-핫 벡터에 임베딩 행렬 $\mathbf{E}$를 곱하여) 각 문맥 단어의 $d$차원 임베딩을 계산하고, 결과적으로 얻은 3개의 임베딩을 연결하여 임베딩 층 $\mathbf{e}$를 얻습니다. 임베딩 벡터 $\mathbf{e}$는 가중치 행렬 $\mathbf{W}$와 곱해진 뒤 활성화 함수가 각 요소에 적용되어 은닉층 $\mathbf{h}$를 생성하고, 이는 다시 다른 가중치 행렬 $\mathbf{U}$와 곱해집니다. 마지막으로 소프트맥스 출력층은 각 노드 $i$에서 다음 단어 $w_t$가 어휘 사전 단어 $V_i$일 확률을 예측합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.13 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>multiplied by the embedding matrix E, to give the first part of the first hidden layer, the embedding layer. Since each column of the input matrix E is an embedding for a word, and the input is a one-hot column vector x_i for word V_i, the embedding layer for input w will be Ex_i = e_i, the embedding for word i. We now concatenate the three embeddings for the three context words to produce the embedding layer e.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 임베딩 행렬 $\mathbf{E}$와 곱해져서 첫 번째 은닉층의 첫 부분인 임베딩 층을 형성합니다. 입력 행렬 $\mathbf{E}$의 각 열이 단어에 대한 임베딩이고 입력이 단어 $V_i$에 대한 원-핫 열 벡터 $\mathbf{x}_i$이므로, 입력 $w$에 대한 임베딩 층은 $\mathbf{Ex}_i = \mathbf{e}_i$, 즉 단어 $i$의 임베딩이 됩니다. 이제 세 개의 문맥 단어에 대한 세 개의 임베딩을 연결하여 임베딩 층 $\mathbf{e}$를 생성합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임베딩 룩업과 연결(concatenation)을 통한 임베딩 층 구성 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>embedding layer</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>임베딩 층(embedding layer)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 벡터들이 연결되어 형성된 모델의 첫 번째 실질적인 데이터 처리 층입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2. Multiply by W: We multiply by W (and add b) and pass through the ReLU (or other) activation function to get the hidden layer h.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2. $\mathbf{W}$와 곱하기: $\mathbf{W}$를 곱하고($\mathbf{b}$를 더한 뒤) ReLU(또는 다른) 활성화 함수에 통과시켜 은닉층 $\mathbf{h}$를 얻습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉층 연산 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3. Multiply by U: h is now multiplied by U</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3. $\mathbf{U}$와 곱하기: 이제 $\mathbf{h}$에 $\mathbf{U}$를 곱합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>출력층 가중치와의 연산 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4. Apply softmax: After the softmax, each node i in the output layer estimates the probability P(w_t = i | w_{t-1}, w_{t-2}, w_{t-3})</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4. 소프트맥스 적용: 소프트맥스를 거친 후, 출력층의 각 노드 $i$는 확률 $P(w_t = i | w_{t-1}, w_{t-2}, w_{t-3})$를 추정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최종 확률 산출 단계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In summary, the equations for a neural language model with a window size of 3,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약하자면, 윈도우 크기가 3인 신경망 언어 모델의 공식은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 연산 공식 요약 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">신경망 언어 모델 공식, 학습 알고리즘</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>given one-hot input vectors for each input context word, are:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 각 입력 문맥 단어에 대한 원-핫 입력 벡터가 주어졌을 때 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 언어 모델의 최종 수식 나열입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\mathbf{e} = [\mathbf{Ex}_{t-3}; \mathbf{Ex}_{t-2}; \mathbf{Ex}_{t-1}] \\
+\mathbf{h} = \sigma(\mathbf{We} + \mathbf{b}) \\
+\mathbf{z} = \mathbf{Uh} \\
+\hat{\mathbf{y}} = \text{softmax}(\mathbf{z}) (7.22)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\mathbf{e} = [\mathbf{Ex}_{t-3}; \mathbf{Ex}_{t-2}; \mathbf{Ex}_{t-1}] \\
+\mathbf{h} = \sigma(\mathbf{We} + \mathbf{b}) \\
+\mathbf{z} = \mathbf{Uh} \\
+\hat{\mathbf{y}} = \text{softmax}(\mathbf{z}) (7.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.22). 위에서 설명한 모든 과정을 수학적으로 정리한 핵심 전달(forward pass) 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that we formed the embedding layer e by concatenating the 3 embeddings for the three context vectors; we'll often use semicolons to mean concatenation of vectors.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리가 세 개의 문맥 벡터에 대한 세 개의 임베딩을 연결하여 임베딩 층 $\mathbf{e}$를 형성했음에 주목하십시오. 우리는 벡터의 '연결(concatenation)'을 나타내기 위해 종종 세미콜론(;)을 사용할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 연결 연산의 표기법을 명확히 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the next section we'll introduce a general algorithm for training neural networks, and then return to how to specifically train the neural language model in Section 7.7.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 섹션에서는 신경망 학습을 위한 일반적인 알고리즘을 소개하고, 7.7절에서 신경망 언어 모델을 구체적으로 학습시키는 방법으로 다시 돌아오겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 학습 단계(훈련 알고리즘)로의 전환을 안내합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6 Training Neural Nets</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6 신경망 학습시키기</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>손실 함수와 최적화 알고리즘을 포함한 신경망의 학습 메커니즘을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A feedforward neural net is an instance of supervised machine learning in which we know the correct output y for each observation x. What the system produces, via Eq. 7.13, is \hat{y}, the system's estimate of the true y. The goal of the training procedure is to learn parameters W^[i] and b^[i] for each layer i that make \hat{y} for each training observation as close as possible to the true y.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>피드포워드 신경망은 각 관측치 $x$에 대해 정답 출력 $y$를 알고 있는 '지도 기계 학습(supervised machine learning)'의 한 사례입니다. 식 7.13을 통해 시스템이 생성하는 것은 실제 $y$에 대한 시스템의 추정치인 $\hat{y}$입니다. 학습 과정의 목표는 각 학습 관측치에 대한 $\hat{y}$를 실제 $y$에 최대한 가깝게 만드는 각 층 $i$의 파라미터 $\mathbf{W}^{[i]}$와 $\mathbf{b}^{[i]}$를 학습하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지도 학습의 관점에서 신경망 학습의 목표(오차 최소화)를 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In general, we do all this by drawing on the methods we introduced in Chapter 5 for logistic regression, so the reader should be comfortable with that chapter before proceeding.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일반적으로, 우리는 5장에서 소개한 로지스틱 회귀의 방법론들을 끌어와 이 모든 작업을 수행합니다. 따라서 독자들은 다음 단계로 넘어가기 전에 해당 장의 내용을 숙지하는 것이 좋습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기반 지식인 로지스틱 회귀와의 밀접한 연관성을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>First, we'll need a loss function that models the distance between the system output and the gold output, and it's common to use the loss function used for logistic regression, the cross-entropy loss.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우선, 시스템 출력과 정답(gold) 출력 사이의 거리를 모델링하는 '손실 함수(loss function)'가 필요합니다. 로지스틱 회귀에서 사용했던 '교차 엔트로피 손실(cross-entropy loss)'을 사용하는 것이 일반적입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오차를 정량화하는 손실 함수의 개념을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Second, to find the parameters that minimize this loss function, we'll use the gradient descent optimization algorithm introduced in Chapter 5.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>둘째, 이 손실 함수를 최소화하는 파라미터들을 찾기 위해 5장에서 소개한 '경사 하강법(gradient descent)' 최적화 알고리즘을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최적화 도구로 경사 하강법을 선택합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Third, gradient descent requires knowing the gradient of the loss function, the vector that contains the partial derivative of the loss function with respect to each of the parameters. In logistic regression, for each observation we could directly compute the derivative of the loss function with respect to an individual w or b. But for neural networks, with millions of parameters in many layers, it's much harder to see how to compute the partial derivative of some weight in layer 1 when the loss is attached to some much later layer. How do we partial out the loss over all those intermediate layers? The answer is the algorithm called error backpropagation or backward differentiation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>셋째, 경사 하강법은 손실 함수의 '그래디언트(gradient)', 즉 각 파라미터에 대한 손실 함수의 편미분값을 담고 있는 벡터를 알아야 합니다. 로지스틱 회귀에서는 각 관측치에 대해 개별 $w$나 $b$에 대한 손실 함수의 미분값을 직접 계산할 수 있었습니다. 하지만 수많은 층에 수백만 개의 파라미터가 있는 신경망의 경우, 손실은 훨씬 나중 층에서 발생하는데 1번 층에 있는 어떤 가중치의 편미분값을 어떻게 계산할지 파악하기가 훨씬 어렵습니다. 그 모든 중간 층에 걸쳐 손실을 어떻게 나누어 반영할까요? 그 해답은 '오차 역전파(error backpropagation)' 또는 '후향 미분(backward differentiation)'이라고 불리는 알고리즘에 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다층 구조에서 하위 층의 그래디언트를 계산하기 위한 역전파 알고리즘의 필요성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6.1 Loss function</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6.1 손실 함수</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 학습에 필수적인 교차 엔트로피 손실 함수에 대해 상세히 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>cross-entropy loss</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>교차 엔트로피 손실(cross-entropy loss)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 예측 확률 분포와 실제 정답 분포 사이의 차이를 측정합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The cross-entropy loss that is used in neural networks is the same one we saw for logistic regression. In fact, if the neural network is being used as a binary classifier, with the sigmoid at the final layer, the loss function is exactly the same as we saw with logistic regression in Eq. ??:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망에 사용되는 교차 엔트로피 손실은 로지스틱 회귀에서 보았던 것과 동일합니다. 사실, 신경망이 마지막 층에 시그모이드를 둔 이진 분류기로 사용된다면, 손실 함수는 식 ??에서 보았던 로지스틱 회귀의 손실 함수와 정확히 일치합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이진 분류 상황에서의 손실 함수 일치성을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE}(\hat{y}, y) = -\log p(y|x) = -[y \log \hat{y} + (1 - y) \log(1 - \hat{y})] (7.23)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE}(\hat{y}, y) = -\log p(y|x) = -[y \log \hat{y} + (1 - y) \log(1 - \hat{y})] (7.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.23). 이진 교차 엔트로피 손실의 수학적 정의입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

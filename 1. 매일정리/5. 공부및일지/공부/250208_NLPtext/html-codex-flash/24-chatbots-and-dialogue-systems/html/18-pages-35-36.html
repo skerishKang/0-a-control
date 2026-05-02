@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 35-36 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-35">Page 35</a>
+<a class="chip" href="#page-36">Page 36</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 35-36 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-35">
+<header class="page-header">
+<h2>Page 35</h2>
+<div class="page-subtitle">참고 문헌 (A-L)</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Allen, J. and C. R. Perrault. 1980. Analyzing intention in utterances. Artificial Intelligence, 15:143–178.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Allen, J. 및 C. R. Perrault. 1980. 발화에서의 의도 분석. Artificial Intelligence, 15:143–178.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>발화의 의도 분석에 관한 초기 중요 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Artstein, R., S. Gandhe, J. Gerten, A. Leuski, and D. Traum. 2009. Semi-formal evaluation of conversational characters. In Languages: From Formal to Natural, pages 22–35. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Artstein, R., S. Gandhe, J. Gerten, A. Leuski, 및 D. Traum. 2009. 대화형 캐릭터의 반정형 평가. Languages: From Formal to Natural, 22–35쪽. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화형 캐릭터 평가 방법에 대한 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Austin, J. L. 1962. How to Do Things with Words. Harvard University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Austin, J. L. 1962. 말로 행동하는 법(How to Do Things with Words). 하버드 대학교 출판부.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>화행 이론의 기초가 된 오스틴의 고전적 저서.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bellegarda, J. R. 2013. Natural language technology in mobile devices: Two grounding frameworks. In Mobile Speech and Advanced Natural Language Solutions, pages 185–196. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bellegarda, J. R. 2013. 모바일 기기의 자연어 기술: 두 가지 기반 프레임워크. Mobile Speech and Advanced Natural Language Solutions, 185–196쪽. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모바일 환경에서의 자연어 처리 기술 및 프레임워크.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bender, E. M. and B. Friedman. 2018. Data statements for natural language processing: Toward mitigating system bias and enabling better science. TACL, 6:587–604.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bender, E. M. 및 B. Friedman. 2018. 자연어 처리를 위한 데이터 명세서: 시스템 편향 완화와 더 나은 과학을 향하여. TACL, 6:587–604.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP 데이터셋의 편향 문제를 해결하기 위한 '데이터 명세서' 제안.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bobrow, D. G., R. M. Kaplan, M. Kay, D. A. Norman, H. Thompson, and T. Winograd. 1977. GUS, A frame driven dialog system. Artificial Intelligence, 8:155–173.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bobrow, D. G., R. M. Kaplan, M. Kay, D. A. Norman, H. Thompson, 및 T. Winograd. 1977. GUS, 프레임 기반 대화 시스템. Artificial Intelligence, 8:155–173.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>초기 프레임 기반 대화 시스템인 GUS에 대한 핵심 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Budzianowski, P., T.-H. Wen, B.-H. Tseng, I. Casanueva, S. Ultes, O. Ramadan, and M. Gašić. 2018. MultiWOZ - a large-scale multi-domain wizard-of-oz dataset for task-oriented dialogue modelling. EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Budzianowski, P., T.-H. Wen, B.-H. Tseng, I. Casanueva, S. Ultes, O. Ramadan, 및 M. Gašić. 2018. MultiWOZ - 작업 기반 대화 모델링을 위한 대규모 다중 도메인 오즈의 마법사 데이터셋. EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>작업 기반 대화 시스템 연구에 널리 쓰이는 MultiWOZ 데이터셋.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Clark, H. H. 1996. Using Language. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Clark, H. H. 1996. 언어 사용하기(Using Language). 케임브리지 대학교 출판부.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 사용의 협력적 측면을 강조한 클라크의 저서.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Cohen, P. R. and C. R. Perrault. 1979. Elements of a plan-based theory of speech acts. Cognitive Science, 3(3):177–212.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Cohen, P. R. 및 C. R. Perrault. 1979. 화행의 계획 기반 이론의 요소들. Cognitive Science, 3(3):177–212.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>BDI 모델의 기초가 되는 계획 기반 화행 이론.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fessler, L. 2017. We tested bots like Siri and Alexa to see who would stand up to sexual harassment. Quartz. Feb 22, 2017. https://qz.com/911681/.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Fessler, L. 2017. 우리는 Siri와 Alexa 같은 봇들이 성희롱에 어떻게 대처하는지 테스트했다. Quartz. 2017년 2월 22일.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>챗봇의 성희롱 대응에 대한 비판적 기사.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-36">
+<header class="page-header">
+<h2>Page 36</h2>
+<div class="page-subtitle">참고 문헌 (G-L)</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Gao, S., A. Sethi, S. Aggarwal, T. Chung, and D. Hakkani-Tür. 2019. Dialog state tracking: A neural reading comprehension approach. arXiv preprint arXiv:1908.01946.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Gao, S., A. Sethi, S. Aggarwal, T. Chung, 및 D. Hakkani-Tür. 2019. 대화 상태 추적: 신경망 독해 접근법. arXiv preprint arXiv:1908.01946.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>독해 방식을 적용한 현대적 대화 상태 추적 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Gehman, S., S. Gururangan, M. Sap, Y. Choi, and N. A. Smith. 2020. RealToxicityPrompts: Evaluating neural toxic degeneration in language models. Findings of EMNLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Gehman, S., S. Gururangan, M. Sap, Y. Choi, 및 N. A. Smith. 2020. RealToxicityPrompts: 언어 모델의 신경망 독성 퇴화 평가. Findings of EMNLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델의 독성 생성을 평가하기 위한 데이터셋 및 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Grosz, B. J. and C. L. Sidner. 1980. Plans for discourse. In Philip R. Cohen, Jerry Morgan, and Martha E. Pollack, editors, Intentions in Communication, pages 417–444. MIT Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Grosz, B. J. 및 C. L. Sidner. 1980. 담화 계획. Philip R. Cohen, Jerry Morgan, Martha E. Pollack 편집, Intentions in Communication, 417–444쪽. MIT Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>담화 구조와 의도에 관한 Grosz와 Sidner의 고전적 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Harris, R. A. 2005. Voice Interaction Design: Crafting the New Conversational Speech Systems. Morgan Kaufmann.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Harris, R. A. 2005. 음성 상호작용 설계: 새로운 대화형 음성 시스템 제작. Morgan Kaufmann.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 사용자 인터페이스(VUI) 설계 지침서.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Henderson, P., K. Sinha, N. Angelard-Gontier, N. R. Ke, G. Fried, R. Lowe, and J. Pineau. 2017. Ethical challenges in data-driven dialogue systems. AAAI/ACM AI Ethics and Society Conference.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Henderson, P., K. Sinha, N. Angelard-Gontier, N. R. Ke, G. Fried, R. Lowe, 및 J. Pineau. 2017. 데이터 기반 대화 시스템의 윤리적 과제. AAAI/ACM AI Ethics and Society Conference.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대화 시스템의 윤리적 문제(프라이버시, 편향 등)를 다룬 논문.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Levin, E., R. Pieraccini, and W. Eckert. 2000. A stochastic model of human-machine interaction for learning dialog strategies. IEEE Transactions on Speech and Audio Processing, 8:11–23.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Levin, E., R. Pieraccini, 및 W. Eckert. 2000. 대화 전략 학습을 위한 인간-기계 상호작용의 확률 모델. IEEE Transactions on Speech and Audio Processing, 8:11–23.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>강화 학습을 이용한 대화 전략 학습의 초기 연구.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Levinson, S. C. 1983. Conversational Analysis, chapter 6. Cambridge University Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Levinson, S. C. 1983. 대화 분석(Conversational Analysis), 제6장. 케임브리지 대학교 출판부.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>화용론과 대화 분석에 관한 권위 있는 텍스트.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

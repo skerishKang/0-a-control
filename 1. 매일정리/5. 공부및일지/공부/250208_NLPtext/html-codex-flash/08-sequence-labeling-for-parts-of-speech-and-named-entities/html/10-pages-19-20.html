@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Sequence Labeling for Parts of Speech and Named Entities</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">08 Sequence Labeling for Parts of Speech</div>
+<h1>Sequence Labeling for Parts of Speech and Named Entities</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>8. Sequence Labeling for Parts of Speech and Named Entities.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">NER 특징 예시 및 CRF 추론</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.5 • CONDITIONAL RANDOM FIELDS (CRFS) 19</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.5 • 조건부 무작위장 (CRF) 19</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>8.5 섹션의 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>prefix(x_i) = L
+prefix(x_i) = L'
+prefix(x_i) = L'O
+prefix(x_i) = L'Oc
+suffix(x_i) = tane
+suffix(x_i) = ane
+suffix(x_i) = ne
+suffix(x_i) = e
+word-shape(x_i) = X'Xxxxxxxx
+short-word-shape(x_i) = X'Xx</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>prefix($x_i$) = L
+prefix($x_i$) = L'
+prefix($x_i$) = L'O
+prefix($x_i$) = L'Oc
+suffix($x_i$) = tane
+suffix($x_i$) = ane
+suffix($x_i$) = ne
+suffix($x_i$) = e
+word-shape($x_i$) = X'Xxxxxxxx
+short-word-shape($x_i$) = X'Xx</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞 페이지에서 언급된 "L'Occitane"으로부터 추출된 구체적인 특징들의 값입니다. 대문자, 특수기호('), 소문자의 조합을 패턴화(word-shape)한 것을 볼 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.16 illustrates the result of adding part-of-speech tags and some shape information to our earlier example.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.16은 앞서 본 예제에 품사 태그와 일부 형태 정보를 추가한 결과를 보여 줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 작업에서 다양한 특징들이 어떻게 조합되는지 표로 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Words | POS | Short shape | Gazetteer | BIO Label |
+| :--- | :--- | :--- | :--- | :--- |
+| Jane | NNP | Xx | 0 | B-PER |
+| Villanueva | NNP | Xx | 1 | I-PER |
+| of | IN | x | 0 | O |
+| United | NNP | Xx | 0 | B-ORG |
+| Airlines | NNP | Xx | 0 | I-ORG |
+| Holding | NNP | Xx | 0 | I-ORG |
+| discussed | VBD | x | 0 | O |
+| the | DT | x | 0 | O |
+| Chicago | NNP | Xx | 1 | B-LOC |
+| route | NN | x | 0 | O |
+| . | . | | 0 | O |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 단어 | 품사(POS) | 짧은 형태 | 지명 사전 | BIO 레이블 |
+| :--- | :--- | :--- | :--- | :--- |
+| Jane | NNP | Xx | 0 | B-PER |
+| Villanueva | NNP | Xx | 1 | I-PER |
+| of | IN | x | 0 | O |
+| United | NNP | Xx | 0 | B-ORG |
+| Airlines | NNP | Xx | 0 | I-ORG |
+| Holding | NNP | Xx | 0 | I-ORG |
+| discussed | VBD | x | 0 | O |
+| the | DT | x | 0 | O |
+| Chicago | NNP | Xx | 1 | B-LOC |
+| route | NN | x | 0 | O |
+| . | . | | 0 | O |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 "Jane Villanueva of United Airlines Holding discussed the Chicago route."에 대한 NER 특징 시스템의 예시입니다. 'Villanova'나 'Chicago'가 지명 사전에 등록되어 있어(1) 판별에 도움을 줍니다. BIO 레이블을 통해 개체의 경계(Begin, Inside)와 유형(PER, ORG, LOC)이 동시에 표현됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.16 Some NER features for a sample sentence, assuming that Chicago and Villanueva are listed as locations in a gazetteer. We assume features only take on the values 0 or 1, so the first POS feature, for example, would be represented as 𝟙{POS = NNP}.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.16 샘플 문장에 대한 몇 가지 NER 특징들. 'Chicago'와 'Villanova'가 지명 사전에 장소로 등록되어 있다고 가정함. 특징들은 오직 0 또는 1의 값만 갖는다고 가정하므로, 예를 들어 첫 번째 POS 특징은 $\mathbb{1}\{\text{POS} = \text{NNP}\}$로 표현됨.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.16에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.5.3 Inference and Training for CRFs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.5.3 CRF의 추론과 학습</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF 모델을 통해 최적의 경로를 찾는 방법(추론)과 가중치를 학습시키는 방법을 다듭니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do we find the best tag sequence \hat{Y} for a given input X? We start with Eq. 8.22:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>주어진 입력 $X$에 대해 최적의 태그 시퀀스 $\hat{Y}$를 어떻게 찾을까요? 식 8.22에서 시작해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF 디코딩(추론) 문제의 수식을 유도하기 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\hat{Y} = \underset{Y \in \mathcal{Y}}{argmax} P(Y|X)
+= \underset{Y \in \mathcal{Y}}{argmax} \frac{1}{Z(X)} exp (\sum_{k=1}^K w_k F_k(X, Y)) (8.27)
+= \underset{Y \in \mathcal{Y}}{argmax} exp (\sum_{k=1}^K w_k \sum_{i=1}^n f_k(y_{i−1}, y_i, X, i)) (8.28)
+= \underset{Y \in \mathcal{Y}}{argmax} \sum_{k=1}^K w_k \sum_{i=1}^n f_k(y_{i−1}, y_i, X, i) (8.29)
+= \underset{Y \in \mathcal{Y}}{argmax} \sum_{i=1}^n \sum_{k=1}^K w_k f_k(y_{i−1}, y_i, X, i) (8.30)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$\hat{Y} = \underset{Y \in \mathcal{Y}}{\text{argmax }} P(Y \mid X)$
+$= \underset{Y \in \mathcal{Y}}{\text{argmax }} \frac{1}{Z(X)} \exp \left(\sum_{k=1}^K w_k F_k(X, Y)\right)$ (8.27)
+$= \underset{Y \in \mathcal{Y}}{\text{argmax }} \exp \left(\sum_{k=1}^K w_k \sum_{i=1}^n f_k(y_{i-1}, y_i, X, i)\right)$ (8.28)
+$= \underset{Y \in \mathcal{Y}}{\text{argmax }} \sum_{k=1}^K w_k \sum_{i=1}^n f_k(y_{i-1}, y_i, X, i)$ (8.29)
+$= \underset{Y \in \mathcal{Y}}{\text{argmax }} \sum_{i=1}^n \sum_{k=1}^K w_k f_k(y_{i-1}, y_i, X, i)$ (8.30)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$\text{argmax}$ 계산 시 정규화 상수($Z(X)$)와 지수 함수($\exp$)를 제거할 수 있음을 보여 줍니다. 결국 각 시점별 특징 점수들의 가중합을 모두 더한 값을 최대화하는 문제로 단순화됩니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can ignore the exp function and the denominator Z(X), as we do above, because exp doesn't change the argmax, and the denominator Z(X) is constant for a given observation sequence X.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위에서 했던 것처럼 $\exp$ 함수와 분모 $Z(X)$를 무시할 수 있는데, 이는 $\exp$가 $\text{argmax}$를 변화시키지 않으며, 분모 $Z(X)$는 주어진 관측 시퀀스 $X$에 대해 상수이기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수식 간소화의 이유를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How should we decode to find this optimal tag sequence \hat{y}? Just as with HMMs, we'll turn to the Viterbi algorithm, which works because, like the HMM, the linear-chain CRF depends at each timestep on only one previous output token y_{i−1} .</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 최적의 태그 시퀀스 $\hat{y}$를 찾기 위해 어떻게 디코딩해야 할까요? HMM에서와 마찬가지로 비터비 알고리즘을 사용할 것입니다. 이것이 가능한 이유는 HMM과마찬가지로 선형 체인 CRF도 각 시간 단계에서 오직 하나의 이전 출력 토큰 $y_{i-1}$에만 의존하기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF에서도 비터비 알고리즘을 그대로 적용할 수 있는 근거를 '마르코프 성질(선형 체인 구조)'에서 찾습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Concretely, this involves filling an N × T array with the appropriate values, maintaining backpointers as we proceed. As with HMM Viterbi, when the table is filled, we simply follow pointers back from the maximum value in the final column to retrieve the desired set of labels.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구체적으로 이는 적절한 값들로 $N \times T$ 배열을 채워 나가면서 역추적 포인터를 유지하는 과정입니다. HMM 비터비와 마찬가지로 표가 모두 채워지면 마지막 열의 최댓값에서부터 포인터를 역추적으로 따라가 원하는 레이블 집합을 얻습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF 기반 비터비 알고리즘의 구현 방식이 HMM과 동일한 매커니즘임을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">CRF 비터비 및 NER 평가</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 8 • SEQUENCE LABELING FOR PARTS OF SPEECH AND NAMED ENTITIES</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제8장 • 품사 태깅과 개체명 인식을 위한 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The requisite changes from HMM Viterbi have to do only with how we fill each cell. Recall from Eq. 8.19 that the recursive step of the Viterbi equation computes the Viterbi value of time t for state j as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM 비터비에서 필요한 변경 사항은 각 셀을 채우는 방식에만 관련이 있습니다. 식 8.19에서 비터비 방정식의 재귀적 단계가 상태 $j$에 대한 시간 $t$의 비터비 값을 다음과 같이 계산했음을 상기하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM과 CRF 비터비의 수식 차이점을 대조하기 위해 HMM의 수식을 먼저 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>v_t(j) = \underset{i=1}{max}^N v_{t−1}(i) a_{ij} b_j(o_t); 1 \leq j \leq N, 1 < t \le T (8.31)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$v_t(j) = \underset{i=1}{\overset{N}{\text{max }}} v_{t-1}(i) a_{ij} b_j(o_t); \quad 1 \leq j \leq N, 1 < t \le T$ (8.31)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>HMM의 비터비 재귀식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>which is the HMM implementation of</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이는 다음의 HMM 구현체입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위 수식의 확률론적 의미를 다시 기술합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>v_t(j) = \underset{i=1}{max}^N v_{t−1}(i) P(s_j | s_i) P(o_t | s_j) 1 \le j \le N, 1 < t \le T (8.32)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$v_t(j) = \underset{i=1}{\overset{N}{\text{max }}} v_{t-1}(i) P(s_j \mid s_i) P(o_t \mid s_j) \quad 1 \le j \le N, 1 < t \le T$ (8.32)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상태 전이 확률과 관측 우도를 사용한 HMM의 기본형입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The CRF requires only a slight change to this latter formula, replacing the a and b prior and likelihood probabilities with the CRF features:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CRF는 이 공식에 약간의 변화만을 필요로 하는데, $a$와 $b$ 즉 사전 확률과 우도 확률을 CRF 특징들로 대체하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF 비터비의 핵심적인 차이점이 무엇인지 짚어 줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>v_t(j) = \underset{i=1}{max}^N v_{t−1}(i) \sum_{k=1}^K w_k f_k(y_{t-1}, y_t, X, t) 1 \le j \le N, 1 < t \le T (8.33)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>$v_t(j) = \underset{i=1}{\overset{N}{\text{max }}} v_{t-1}(i) \sum_{k=1}^K w_k f_k(y_{t-1}, y_t, X, t) \quad 1 \le j \le N, 1 < t \le T$ (8.33)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF의 비터비 재귀식입니다. 확률값 대신 특징 가중합(score)을 사용합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Learning in CRFs relies on the same supervised learning algorithms we presented for logistic regression. Given a sequence of observations, feature functions, and corresponding outputs, we use stochastic gradient descent to train the weights to maximize the log-likelihood of the training corpus. The local nature of linear-chain CRFs means that a CRF version of the forward-backward algorithm (see Appendix A) can be used to efficiently compute the necessary derivatives. As with logistic regression, L1 or L2 regularization is important.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CRF에서의 학습은 로지스틱 회귀에서 제시했던 것과 동일한 지도 학습 알고리즘에 의존합니다. 일련의 관측치, 특징 함수, 그리고 그에 대응하는 출력이 주어지면, 확률적 경사 하강법(SGD)을 사용하여 학습 말뭉치의 로그 우도를 최대화하도록 가중치를 학습시킵니다. 선형 체인 CRF의 지역적 특성 덕분에, 필요한 미분값을 효율적으로 계산하기 위해 CRF 버전의 전진-후진(Forward-Backward) 알고리즘(부록 A 참조)을 사용할 수 있습니다. 로지스틱 회귀와 마찬가지로 L1 또는 L2 규제(regularization)를 적용하는 것이 중요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CRF의 학습 알고리즘(SGD), 미분 계산(Forward-Backward), 오버피팅 방지(Regularization) 등 학습의 전반적인 매커니즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.6 Evaluation of Named Entity Recognition</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.6 개체명 인식의 평가</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 시스템의 성능을 측정하는 지표와 평가 방법론을 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Part-of-speech taggers are evaluated by the standard metric of accuracy. Named entity recognizers are evaluated by recall, precision, and F_1 measure. Recall that recall is the ratio of the number of correctly labeled responses to the total that should have been labeled; precision is the ratio of the number of correctly labeled responses to the total labeled; and F-measure is the harmonic mean of the two.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사 태거는 표준 지표인 정확도(accuracy)로 평가됩니다. 개체명 인식기는 재현율(recall), 정밀도(precision), 그리고 $F_1$ 측정값으로 평가됩니다. 재현율은 레이블링되어야 할 전체 정답 중 올바르게 레이블링된 응답의 비율이며, 정밀도는 레이블링된 전체 응답 중 올바르게 레이블링된 것의 비율임을 상기하십시오. 그리고 $F$ 측정값은 이 둘의 조화 평균입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 평가에 재현율과 정밀도를 사용하는 이유를 짐작할 수 있습니다. 대부분의 단어가 개체가 아닌 'O' 태그이기 때문에 정확도는 큰 의미가 없기 때문입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To know if the difference between the F_1 scores of two NER systems is a significant difference, we use the paired bootstrap test, or the similar randomization test (Section ??).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 NER 시스템의 $F_1$ 점수 차이가 유의미한지 알기 위해, 우리는 쌍체 부트스트랩 테스트(paired bootstrap test) 또는 이와 유사한 무작위 검정(randomization test, 섹션 ?? 참조)을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>성능 차이의 통계적 유의성을 검증하는 방법을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For named entity tagging, the entity rather than the word is the unit of response. Thus in the example in Fig. 8.16, the two entities Jane Villanueva and United Airlines Holding and the non-entity discussed would each count as a single response.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명 태깅의 경우, 단어가 아니라 개체(entity)가 응답의 단위입니다. 따라서 그림 8.16의 예제에서 'Jane Villanueva'와 'United Airlines Holding'이라는 두 개체, 그리고 개체가 아닌 'discussed'는 각각 하나의 응답으로 카운트됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 평가는 단어 단위가 아닌 '개체 경계 전체'를 맞췄는지 여부가 기준이 됨을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The fact that named entity tagging has a segmentation component which is not present in tasks like text categorization or part-of-speech tagging causes some problems with evaluation. For example, a system that labeled Jane but not Jane Villanueva as a person would cause two errors, a false positive for O and a false negative for I-PER. In addition, using entities as the unit of response but words as the unit of training means that there is a mismatch between the training and test conditions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명 태깅이 텍스트 분류나 품사 태깅 같은 작업에는 없는 분할(segmentation) 구성 요소를 갖는다는 사실은 평가에 몇 가지 문제를 일으킵니다. 예를 들어 'Jane Villanueva'를 인명으로 인식하지 못하고 'Jane'만 인명으로 레이블링한 시스템은 두 가지 오류, 즉 'O'에 대한 허위 양성(false positive)과 'I-PER'에 대한 허위 음성(false negative)을 발생시킵니다. 또한 개체를 응답 단위로 사용하지만 학습 단위로는 단어를 사용한다는 점은 학습과 테스트 조건 사이의 불일치를 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개체의 경계를 조금이라도 틀리면 여러 개의 오류로 간주되는 NER 평가의 엄격함과 그로 인한 문제점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.7 Further Details</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.7 추가 상세 내용</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터와 모델에 관한 남은 세부 사항들을 요약하는 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

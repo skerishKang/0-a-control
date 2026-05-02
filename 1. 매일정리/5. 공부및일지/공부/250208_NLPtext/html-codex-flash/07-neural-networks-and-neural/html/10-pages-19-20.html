@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">연쇄 법칙, 후향 미분</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6 • TRAINING NEURAL NETS 19</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6 • 신경망 학습시키기 19</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>to each of the input variables, i.e., \frac{\partial L}{\partial a}, \frac{\partial L}{\partial b}, and \frac{\partial L}{\partial c}. The derivative \frac{\partial L}{\partial a} tells us how much a small change in a affects L.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 각 입력 변수들, 즉 $\frac{\partial L}{\partial a}, \frac{\partial L}{\partial b}, \frac{\partial L}{\partial c}$에 대해 계산하는 것입니다. 미분값 $\frac{\partial L}{\partial a}$는 $a$의 작은 변화가 $L$에 얼마나 영향을 미치는지 알려줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미분값의 직관적인 의미(출력에 미치는 영향력)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Backwards differentiation makes use of the chain rule in calculus, so let's remind ourselves of that. Suppose we are computing the derivative of a composite function f(x) = u(v(x)). The derivative of f(x) is the derivative of u(x) with respect to v(x) times the derivative of v(x) with respect to x:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>후향 미분은 미적분학의 '연쇄 법칙(chain rule)'을 활용합니다. 잠시 상기해 봅시다. 합성 함수 $f(x) = u(v(x))$의 미분을 구한다고 가정하면, $f(x)$의 미분은 $v(x)$에 대한 $u(x)$의 미분과 $x$에 대한 $v(x)$의 미분을 곱한 것과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 학습의 수학적 근간인 연쇄 법칙을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>chain rule</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연쇄 법칙(chain rule)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 함수의 합성으로 이루어진 미분을 각 단계의 미분값들의 곱으로 계산하는 법칙입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{df}{dx} = \frac{du}{dv} \cdot \frac{dv}{dx} (7.30)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{df}{dx} = \frac{du}{dv} \cdot \frac{dv}{dx} (7.30)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.30). 두 함수의 합성에 대한 연쇄 법칙 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The chain rule extends to more than two functions. If computing the derivative of a composite function f(x) = u(v(w(x))), the derivative of f(x) is:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연쇄 법칙은 두 개 이상의 함수로도 확장됩니다. 합성 함수 $f(x) = u(v(w(x)))$의 미분을 계산한다면, $f(x)$의 미분값은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>세 개 이상의 함수 합성에 대한 연쇄 법칙 확장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{df}{dx} = \frac{du}{dv} \cdot \frac{dv}{dw} \cdot \frac{dw}{dx} (7.31)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{df}{dx} = \frac{du}{dv} \cdot \frac{dv}{dw} \cdot \frac{dw}{dx} (7.31)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.31). 여러 단계의 합성에 대한 연쇄 법칙 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition of backward differentiation is to pass gradients back from the final node to all the nodes in the graph. Fig. 7.17 shows part of the backward computation at one node e. Each node takes an upstream gradient that is passed in from its parent node to the right, and for each of its inputs computes a local gradient (the gradient of its output with respect to its input), and uses the chain rule to multiply these two to compute a downstream gradient to be passed on to the next earlier node.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>후향 미분의 직관적인 의미는 최종 노드에서 발생한 그래디언트를 그래프의 모든 노드로 되돌려 전달하는 데 있습니다. 그림 7.15는 하나의 노드 $e$에서 일어나는 역방향 계산의 일부를 보여줍니다. 각 노드는 오른쪽의 부모 노드로부터 전달된 '상류 그래디언트(upstream gradient)'를 받아, 각 입력에 대해 '로컬 그래디언트(local gradient, 입력에 대한 출력의 미분값)'를 계산합니다. 그리고 연쇄 법칙을 사용하여 이 둘을 곱함으로써 이전 노드로 전달할 '하류 그래디언트(downstream gradient)'를 계산합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상류, 로컬, 하류 그래디언트의 개념과 이들을 결합하는 연쇄 법칙의 물리적 흐름을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.15 Each node (like e here) takes an upstream gradient, multiplies it by the local gradient (the gradient of its output with respect to its input), and uses the chain rule to compute a downstream gradient to be passed on to a prior node. A node may have multiple local gradients if it has multiple inputs.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.15 (여기서 $e$와 같은) 각 노드는 상류 그래디언트를 받아 로컬 그래디언트(입력에 대한 출력의 그래디언트)와 곱합니다. 그리고 연쇄 법칙을 사용하여 이전 노드로 전달할 하류 그래디언트를 계산합니다. 만약 입력이 여러 개라면 노드는 여러 개의 로컬 그래디언트를 가질 수 있습니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.15. 노드 단위에서의 역전파 미분 연산 방식을 시각화한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.15 Each node (like e here) takes an upstream gradient, multiplies it by the local gradient (the gradient of its output with respect to its input), and uses the chain rule to compute a downstream gradient to be passed on to a prior node. A node may have multiple local gradients if it has multiple inputs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.15 (여기서 $e$와 같은) 각 노드는 상류 그래디언트를 받아 로컬 그래디언트(입력에 대한 출력의 그래디언트)와 곱합니다. 그리고 연쇄 법칙을 사용하여 이전 노드로 전달할 하류 그래디언트를 계산합니다. 만약 입력이 여러 개라면 노드는 여러 개의 로컬 그래디언트를 가질 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.15 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's now compute the 3 derivatives we need. Since in the computation graph L = ce, we can directly compute the derivative \frac{\partial L}{\partial c}:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 필요한 3개의 미분값을 계산해 봅시다. 계산 그래프에서 $L = ce$이므로, $c$에 대한 미분값 $\frac{\partial L}{\partial c}$를 직접 구할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제 함수 $L=ce$에 대한 직접 미분 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{\partial L}{\partial c} = e (7.32)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{\partial L}{\partial c} = e (7.32)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.32). $c$에 대한 $L$의 편미분값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For the other two, we'll need to use the chain rule:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>나머지 두 변수에 대해서는 연쇄 법칙을 사용해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$a, b$에 대한 연쇄 법칙 적용식들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{\partial L}{\partial a} = \frac{\partial L}{\partial e} \frac{\partial e}{\partial a} \\
+\frac{\partial L}{\partial b} = \frac{\partial L}{\partial e} \frac{\partial e}{\partial d} \frac{\partial d}{\partial b} (7.33)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{\partial L}{\partial a} = \frac{\partial L}{\partial e} \frac{\partial e}{\partial a} \\
+\frac{\partial L}{\partial b} = \frac{\partial L}{\partial e} \frac{\partial e}{\partial d} \frac{\partial d}{\partial b} (7.33)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.33). $a, b$에 대한 최종 미분값을 구하기 위한 연쇄 법칙의 전개 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Eq. 7.33 and Eq. 7.32 thus require five intermediate derivatives: \frac{\partial L}{\partial e}, \frac{\partial L}{\partial c}, \frac{\partial e}{\partial a}, \frac{\partial e}{\partial d}, and \frac{\partial d}{\partial b}, which are as follows (making use of the fact that the derivative of a sum is the</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 식 7.33과 식 7.32를 계산하기 위해서는 5개의 중간 미분값들, 즉 $\frac{\partial L}{\partial e}, \frac{\partial L}{\partial c}, \frac{\partial e}{\partial a}, \frac{\partial e}{\partial d}, \frac{\partial d}{\partial b}$가 필요합니다. 합의 미분은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최종 계산에 필요한 구성 요소가 되는 중간 미분값들을 나열합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">역방향 패스, 신경망 미분</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sum of the derivatives):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 미분들의 합과 같다는 사실을 이용하면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실질적인 중간 미분 계산값들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L = ce : \quad \frac{\partial L}{\partial e} = c, \quad \frac{\partial L}{\partial c} = e \\
+e = a + d : \quad \frac{\partial e}{\partial a} = 1, \quad \frac{\partial e}{\partial d} = 1 \\
+d = 2b : \quad \frac{\partial d}{\partial b} = 2</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L = ce : \quad \frac{\partial L}{\partial e} = c, \quad \frac{\partial L}{\partial c} = e \\
+e = a + d : \quad \frac{\partial e}{\partial a} = 1, \quad \frac{\partial e}{\partial d} = 1 \\
+d = 2b : \quad \frac{\partial d}{\partial b} = 2</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제 함수의 각 연산 과정에서의 로컬 미분값들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the backward pass, we compute each of these partials along each edge of the graph from right to left, using the chain rule just as we did above. Thus we begin by computing the downstream gradients from node L, which are \frac{\partial L}{\partial e} and \frac{\partial L}{\partial c}. For node e, we then multiply this upstream gradient \frac{\partial L}{\partial e} by the local gradient (the gradient of the output with respect to the input), \frac{\partial e}{\partial d} to get the output we send back to node d: \frac{\partial L}{\partial d}. And so on, until we have annotated the graph all the way to all the input variables. The forward pass conveniently already will have computed the values of the forward intermediate variables we need (like d and e) to compute these derivatives. Fig. 7.16 shows the backward pass.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>역방향 패스(backward pass)에서는 그래프의 각 에지를 따라 오른쪽에서 왼쪽으로, 위에서 했던 방식대로 연쇄 법칙을 사용하여 각 편미분값들을 계산합니다. 따라서 노드 $L$로부터 나오는 하류 그래디언트들인 $\frac{\partial L}{\partial e}$와 $\frac{\partial L}{\partial c}$를 계산하며 시작합니다. 노드 $e$의 경우, 이 상류 그래디언트 $\frac{\partial L}{\partial e}$에 로컬 그래디언트(입력에 대한 출력의 그래디언트)인 $\frac{\partial e}{\partial d}$를 곱하여 노드 $d$로 다시 전달할 출력값인 $\frac{\partial L}{\partial d}$를 구합니다. 이런 식으로 모든 입력 변수에 도달할 때까지 그래프를 채워 나갑니다. 순방향 패스에서 이러한 미분값들을 계산하는 데 필요한 순방향 중간 변수들($d, e$ 등)의 값을 이미 편리하게 계산해 두었을 것입니다. 그림 7.16은 이 역방향 패스 과정을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오른쪽(출력)에서 왼쪽(입력)으로 진행되는 역방향 패스의 구체적인 흐름과 순방향 패스와의 보완 관계를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.16 Computation graph for the function L(a, b, c) = c(a + 2b), showing the backward pass computation of ∂L/∂a, ∂L/∂b, and ∂L/∂c.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.16 함수 $L(a, b, c) = c(a + 2b)$에 대한 계산 그래프. $\frac{\partial L}{\partial a}, \frac{\partial L}{\partial b}, \frac{\partial L}{\partial c}$를 계산하기 위한 역방향 패스 과정을 보여줍니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.16. 수치 대입을 통해 최종 변수들에 대한 손실의 그래디언트를 구하는 역경로를 시각화했습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.16 Computation graph for the function L(a, b, c) = c(a + 2b), showing the backward pass computation of ∂L/∂a, ∂L/∂b, and ∂L/∂c.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.16 함수 $L(a, b, c) = c(a + 2b)$에 대한 계산 그래프. $\frac{\partial L}{\partial a}, \frac{\partial L}{\partial b}, \frac{\partial L}{\partial c}$를 계산하기 위한 역방향 패스 과정을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.16 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Backward differentiation for a neural network</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망을 위한 후향 미분</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 그래프 상의 추상적인 미분 원리를 실제 신경망의 각 층에 대입하여 구체화합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Of course computation graphs for real neural networks are much more complex. Fig. 7.17 shows a sample computation graph for a 2-layer neural network with n_0 = 2, n_1 = 2, and n_2 = 1, assuming binary classification and hence using a sigmoid output unit for simplicity. The function that the computation graph is computing is:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>물론 실제 신경망의 계산 그래프는 훨씬 더 복잡합니다. 그림 7.17은 $n_0 = 2, n_1 = 2, n_2 = 1$인 2층 신경망에 대한 샘플 계산 그래프를 보여줍니다. 단순화를 위해 이진 분류를 가정하고 출력 유닛으로 시그모이드를 사용했습니다. 이 계산 그래프가 계산하고 있는 함수는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 신경망을 계산 그래프로 모델링하기 위한 사례 설정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\mathbf{z}^{[1]} = \mathbf{W}^{[1]}\mathbf{x} + \mathbf{b}^{[1]} \\
+\mathbf{a}^{[1]} = \text{ReLU}(\mathbf{z}^{[1]}) \\
+\mathbf{z}^{[2]} = \mathbf{W}^{[2]}\mathbf{a}^{[1]} + \mathbf{b}^{[2]} \\
+\mathbf{a}^{[2]} = \sigma(\mathbf{z}^{[2]}) \\
+\hat{y} = \mathbf{a}^{[2]} (7.34)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\mathbf{z}^{[1]} = \mathbf{W}^{[1]}\mathbf{x} + \mathbf{b}^{[1]} \\
+\mathbf{a}^{[1]} = \text{ReLU}(\mathbf{z}^{[1]}) \\
+\mathbf{z}^{[2]} = \mathbf{W}^{[2]}\mathbf{a}^{[1]} + \mathbf{b}^{[2]} \\
+\mathbf{a}^{[2]} = \sigma(\mathbf{z}^{[2]}) \\
+\hat{y} = \mathbf{a}^{[2]} (7.34)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.34). 2층 신경망의 가중치 합산과 활성화를 포함하는 전체 순방향 흐름입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

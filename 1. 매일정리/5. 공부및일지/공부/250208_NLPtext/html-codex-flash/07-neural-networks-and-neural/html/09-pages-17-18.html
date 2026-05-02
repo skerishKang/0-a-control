@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">다중 클래스 교차 엔트로피, 그래디언트 계산</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6 • TRAINING NEURAL NETS 17</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6 • 신경망 학습시키기 17</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What about if the neural network is being used as a multinomial classifier? Let y be a vector over the C classes representing the true output probability distribution. The cross-entropy loss here is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망이 다중 분류기(multinomial classifier)로 사용되는 경우는 어떨까요? $C$개의 클래스에 대한 실제 출력 확률 분포를 나타내는 벡터를 $\mathbf{y}$라고 합시다. 이때의 교차 엔트로피 손실은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다중 클래스 분류 상황에서의 손실 함수 정의를 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_{i=1}^C y_i \log \hat{y}_i (7.24)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_{i=1}^C y_i \log \hat{y}_i (7.24)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.24). 다중 클래스 교차 엔트로피 손실의 일반식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can simplify this equation further. Assume this is a hard classification task, meaning that only one class is the correct one, and that there is one output unit in y for each class. If the true class is i, then y is a vector where y_i = 1 and y_j = 0 ∀j ≠ i. A vector like this, with one value=1 and the rest 0, is called a one-hot vector. The terms in the sum in Eq. 7.24 will be 0 except for the term corresponding to the true class, i.e.:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 식을 더 단순화할 수 있습니다. 단 하나의 클래스만이 정답이고 각 클래스마다 하나의 출력 유닛이 대응되는 '하드 분류(hard classification)' 작업이라고 가정해 봅시다. 만약 실제 정답 클래스가 $i$라면, $\mathbf{y}$는 $y_i = 1$이고 $j \neq i$인 모든 $j$에 대해 $y_j = 0$인 벡터가 됩니다. 이처럼 하나의 값만 1이고 나머지는 모두 0인 벡터를 '원-핫 벡터(one-hot vector)'라고 부릅니다. 이 경우 식 7.24의 합계 항들은 정답 클래스에 해당하는 항을 제외하고는 모두 0이 됩니다. 즉:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정답이 하나인 경우(원-핫 타겟) 교차 엔트로피 식이 어떻게 단순화되는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \hat{y}_k \\
+= -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \hat{p}(y = k | \mathbf{x}) \\
+= -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \frac{\exp(\mathbf{z}_k)}{\sum_{j=1}^K \exp(\mathbf{z}_j)} (7.25)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \hat{y}_k \\
+= -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \hat{p}(y = k | \mathbf{x}) \\
+= -\sum_{k=1}^K \mathbb{1}\{y = k\} \log \frac{\exp(\mathbf{z}_k)}{\sum_{j=1}^K \exp(\mathbf{z}_j)} (7.25)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.25). 지시 함수(indicator function)와 소프트맥스를 사용하여 손실 함수를 구체화한 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hence the cross-entropy loss is simply the log of the output probability corresponding to the correct class, and we therefore also call this the negative log likelihood loss:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 교차 엔트로피 손실은 간단히 정답 클래스에 해당하는 출력 확률의 로그값이 되며, 이를 '음의 로그 우도 손실(negative log likelihood loss, NLL)'이라고도 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교차 엔트로피 손실의 다른 명칭과 그 의미를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>negative log likelihood loss</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음의 로그 우도 손실(negative log likelihood loss)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>정답 클래스의 확률을 최대화하는 것과 동일한 의미를 갖는 손실 함수입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\log \hat{y}_i \quad \text{(where } i \text{ is the correct class)} (7.26)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\log \hat{y}_i \quad \text{(} i \text{가 정답 클래스인 경우)} (7.26)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.26). 단일 정답에 대한 NLL 손실의 간략한 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Plugging in the softmax formula from Eq. 7.9, and with K the number of classes:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>식 7.9의 소프트맥스 공식을 대입하고 $K$를 클래스의 수라고 하면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스가 포함된 최종 손실 함수 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\log \frac{\exp(\mathbf{z}_i)}{\sum_{j=1}^K \exp(\mathbf{z}_j)} \quad \text{(where } i \text{ is the correct class)} (7.27)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>L_{CE}(\hat{\mathbf{y}}, \mathbf{y}) = -\log \frac{\exp(\mathbf{z}_i)}{\sum_{j=1}^K \exp(\mathbf{z}_j)} \quad \text{(} i \text{가 정답 클래스인 경우)} (7.27)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.27). 출력 노드 값(z)을 이용한 최종 NLL 손실 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6.2 Computing the Gradient</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6.2 그래디언트 계산하기</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>손실을 최소화하기 위해 파라미터를 어떻게 업데이트할지 결정하는 그래디언트 계산법을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How do we compute the gradient of this loss function? Computing the gradient requires the partial derivative of the loss function with respect to each parameter. For a network with one weight layer and sigmoid output (which is what logistic regression is), we could simply use the derivative of the loss that we used for logistic regression in Eq. 7.28 (and derived in Section ??):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 손실 함수의 그래디언트를 어떻게 계산할까요? 그래디언트를 계산하려면 각 파라미터에 대한 손실 함수의 편미분값을 구해야 합니다. (로지스틱 회귀와 같이) 하나의 가중치 층과 시그모이드 출력을 가진 네트워크의 경우, 5장에서 유도했던 식 7.28의 손실 함수 미분값을 그대로 사용할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단층 네트워크(로지스틱 회귀)에서의 미분 공식을 복습합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{\partial L_{CE}(w, b)}{\partial \mathbf{w}_j} = (\hat{y} - y)\mathbf{x}_j \\
+= (\sigma(\mathbf{w} \cdot \mathbf{x} + b) - y)\mathbf{x}_j (7.28)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{\partial L_{CE}(w, b)}{\partial \mathbf{w}_j} = (\hat{y} - y)\mathbf{x}_j \\
+= (\sigma(\mathbf{w} \cdot \mathbf{x} + b) - y)\mathbf{x}_j (7.28)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.28). 가중치 w_j에 대한 오차의 편미분값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Or for a network with one hidden layer and softmax output, we could use the derivative of the softmax loss from Eq. ??:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>혹은 하나의 은닉층과 소프트웨어출력을 가진 네트워크의 경우, 식 ??에서 보았던 소프트웨어손실의 미분값을 사용할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소프트맥스 출력층에 대한 미분 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\frac{\partial L_{CE}}{\partial \mathbf{w}_k} = -(\mathbb{1}\{y = k\} - p(y = k | \mathbf{x}))\mathbf{x}_k \\
+= -\left(\mathbb{1}\{y = k\} - \frac{\exp(\mathbf{w}_k \cdot \mathbf{x} + \mathbf{b}_k)}{\sum_{j=1}^K \exp(\mathbf{w}_j \cdot \mathbf{x} + \mathbf{b}_j)}\right)\mathbf{x}_k (7.29)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\frac{\partial L_{CE}}{\partial \mathbf{w}_k} = -(\mathbb{1}\{y = k\} - p(y = k | \mathbf{x}))\mathbf{x}_k \\
+= -\left(\mathbb{1}\{y = k\} - \frac{\exp(\mathbf{w}_k \cdot \mathbf{x} + \mathbf{b}_k)}{\sum_{j=1}^K \exp(\mathbf{w}_j \cdot \mathbf{x} + \mathbf{b}_j)}\right)\mathbf{x}_k (7.29)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.29). 다중 클래스 분류에서의 가중치 업데이트를 위한 미분 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">역전파 알고리즘, 계산 그래프</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But these derivatives only give correct updates for one weight layer: the last one! For deep networks, computing the gradients for each weight is much more complex, since we are computing the derivative with respect to weight parameters that appear all the way back in the very early layers of the network, even though the loss is computed only at the very end of the network.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 이 미분값들은 단 하나의 가중치 층, 즉 '마지막 층'에 대해서만 올바른 업데이트를 제공할 뿐입니다! 심층 네트워크의 경우, 각 가중치에 대한 그래디언트를 계산하는 것은 훨씬 더 복잡합니다. 손실은 네트워크의 맨 끝에서만 계산되는데, 우리는 네트워크의 아주 초기 층에 위치한 가중치 파라미터들에 대한 미분값을 계산해야 하기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>심층 신경망에서 초기 층의 가중치 미분을 구하는 것의 난해함을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The solution to computing this gradient is an algorithm called error backpropagation or backprop (Rumelhart et al., 1986). While backprop was invented specially for neural networks, it turns out to be the same as a more general procedure called backward differentiation, which depends on the notion of computation graphs. Let's see how that works in the next subsection.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 그래디언트를 계산하기 위한 해결책은 '오차 역전파(error backpropagation)' 또는 '백프롭(backprop)'이라 불리는 알고리즘입니다(Rumelhart 등, 1986). 백프롭은 신경망을 위해 특별히 발명되었지만, 결과적으로는 '계산 그래프(computation graphs)' 개념에 의존하는 '후향 미분(backward differentiation)'이라는 더 일반적인 절차와 동일한 것으로 밝혀졌습니다. 다음 서브섹션에서 이것이 어떻게 작동하는지 살펴봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>역전파 알고리즘의 유래와 계산 그래프 기반의 후향 미분과의 관계를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>error backpropagation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오차 역전파(error backpropagation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>출력에서 발생한 오차를 입력 방향으로 되돌리며 각 가중치를 조정하는 핵심 학습 알고리즘입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6.3 Computation Graphs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6.3 계산 그래프(Computation Graphs)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>복잡한 수학적 연산을 노드와 에지로 시각화하여 미분을 효율적으로 수행하게 돕는 계산 그래프를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A computation graph is a representation of the process of computing a mathematical expression, in which the computation is broken down into separate operations, each of which is modeled as a node in a graph.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>계산 그래프는 수학적 표현을 계산하는 과정을 나타낸 것으로, 계산을 개별적인 연산들로 쪼개고 각각을 그래프의 '노드'로 모델링합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 그래프의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consider computing the function L(a, b, c) = c(a + 2b). If we make each of the component addition and multiplication operations explicit, and add names (d and e) for the intermediate outputs, the resulting series of computations is:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>함수 $L(a, b, c) = c(a + 2b)$를 계산하는 경우를 생각해 봅시다. 각 구성 요소인 덧셈과 곱셈 연산을 명시적으로 만들고, 중간 출력들에 이름($d$와 $e$)을 붙이면 일련의 계산 과정은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>함수를 연산 단위로 분해하는 예제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>d = 2 * b \\
+e = a + d \\
+L = c * e</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>d = 2 * b \\
+e = a + d \\
+L = c * e</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제 함수의 단계별 연산 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can now represent this as a graph, with nodes for each operation, and directed edges showing the outputs from each operation as the inputs to the next, as in Fig. 7.14. The simplest use of computation graphs is to compute the value of the function with some given inputs. In the figure, we've assumed the inputs a = 3, b = 1, c = -2, and we've shown the result of the forward pass to compute the result L(3, 1, -2) = -10. In the forward pass of a computation graph, we apply each operation left to right, passing the outputs of each computation as the input to the next node.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 이를 그림 7.14와 같이 각 연산을 위한 노드와, 한 연산의 출력이 다음 연산의 입력이 됨을 보여주는 유향 에지(directed edges)를 가진 그래프로 표현할 수 있습니다. 계산 그래프의 가장 단순한 용도는 주어진 입력값들에 대해 함수의 값을 계산하는 것입니다. 그림에서 우리는 입력 $a = 3, b = 1, c = -2$를 가정했으며, $L(3, 1, -2) = -10$을 계산하기 위한 '순방향 패스(forward pass)'의 결과를 보여주었습니다. 계산 그래프의 순방향 패스에서는 각 연산을 왼쪽에서 오른쪽으로 적용하며, 각 계산의 출력을 다음 노드의 입력으로 전달합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분해된 연산들을 그래프로 시각화하고 입력값을 이용해 최종 결과값을 도출하는 순방향 패스 과정을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.14 Computation graph for the function L(a, b, c) = c(a + 2b), with values for input nodes a = 3, b = 1, c = -2, showing the forward pass computation of L.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.14 함수 $L(a, b, c) = c(a + 2b)$에 대한 계산 그래프. 입력 노드 $a = 3, b = 1, c = -2$일 때 $L$을 계산하기 위한 순방향 패스 과정을 보여줍니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.14. 예제 함수의 계산 그래프와 순방향 연산 수치들을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.14 Computation graph for the function L(a, b, c) = c(a + 2b), with values for input nodes a = 3, b = 1, c = -2, showing the forward pass computation of L.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.14 함수 $L(a, b, c) = c(a + 2b)$에 대한 계산 그래프. 입력 노드 $a = 3, b = 1, c = -2$일 때 $L$을 계산하기 위한 순방향 패스 과정을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.14 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.6.4 Backward differentiation on computation graphs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.6.4 계산 그래프에서의 후향 미분</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 그래프를 거꾸로 거슬러 올라가며 미분값(그래디언트)을 효율적으로 구하는 역방향 패스 과정을 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The importance of the computation graph comes from the backward pass, which is used to compute the derivatives that we'll need for the weight update. In this example our goal is to compute the derivative of the output function L with respect</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>계산 그래프의 중요성은 가중치 업데이트에 필요한 미분값들을 계산하는 데 사용되는 '역방향 패스(backward pass)'에서 나옵니다. 이 예제에서 우리의 목표는 출력 함수 $L$을 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>역방향 패스를 통한 미분 계산의 목적과 그 중요성을 강조합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

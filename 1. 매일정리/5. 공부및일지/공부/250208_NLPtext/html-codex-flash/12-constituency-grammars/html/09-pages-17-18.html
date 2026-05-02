@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Constituency Grammars</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">12 Constituency Grammars</div>
+<h1>Constituency Grammars</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>12장의 내용을 복습하고 응용하기 위한 연습 문제 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    12.1 Write a set of context-free grammar rules to cover the following English sentences:
+    a. Can you help me?
+    b. Please book a flight to Dallas.
+    c. I want to travel from San Francisco at 5:00.
+    12.2 Draw the parse trees for the sentences in Exercise 12.1 using your grammar.
+    12.3 What kinds of subcategorization rules are needed for the verbs in Exercise 12.1?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    12.1 다음 영어 문장들을 포괄할 수 있는 일련의 문맥 자유 문법 규칙들을 작성하십시오.
+    a. 저자를 도와주실 수 있나요?(Can you help me?)
+    b. 달라스행 항공편을 예약해 주세요.(Please book a flight to Dallas.)
+    c. 저는 5시에 샌프란시스코에서 출발하고 싶습니다.(I want to travel from San Francisco at 5:00.)
+    12.2 귀하의 문법을 사용하여 연습 문제 12.1의 문장들에 대한 구문 분석 트리를 그리십시오.
+    12.3 연습 문제 12.1의 동사들을 위해 어떤 종류의 하위 범주화 규칙들이 필요합니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CFG 규칙 작성 및 트리 그리기 연습 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    12.4 How would you handle the following sentences using a CFG?
+    a. He is happy.
+    b. They are happy.
+    c. She is a student.
+    d. We are students.
+    Show how your grammar handles the agreement between the subject and the verb/noun.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    12.4 CFG를 사용하여 다음 문장들을 어떻게 처리하시겠습니까?
+    a. 그는 행복하다.(He is happy.)
+    b. 그들은 행복하다.(They are happy.)
+    c. 그녀는 학생이다.(She is a student.)
+    d. 우리는 학생들이다.(We are students.)
+    귀하의 문법이 주어와 동사/명사 사이의 일치를 어떻게 처리하는지 보여주십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일치(Agreement) 문제를 해결하는 문법 설계 연습 문제입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">연습 문제와 참고 문헌</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 12 • CONSTITUENCY GRAMMARS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제12장 • 구문 구조 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    12.5 Find three structurally ambiguous sentences from a newspaper or website and draw the different parse trees for each sentence.
+    12.6 Convert your grammar from Exercise 12.1 into a dependency grammar.
+    12.7 Draw the dependency trees for the sentences in Exercise 12.1 using your dependency grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    12.5 신문이나 웹사이트에서 구조적으로 모호한 문장 세 개를 찾아 각 문장에 대해 서로 다른 구문 분석 트리를 그리십시오.
+    12.6 연습 문제 12.1의 문법을 의존 문법으로 변환하십시오.
+    12.7 귀하의 의존 문법을 사용하여 연습 문제 12.1의 문장들에 대한 의존 트리(dependency trees)를 그리십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실생활 모호성 파악 및 의존 문법 변환 연습 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BIBLIOGRAPHICAL AND HISTORICAL NOTES</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌 및 역사적 배경</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장에서 다룬 개념들의 역사와 주요 문헌들을 소개하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The idea of constituency structure in linguistics has a long history, dating back at least to the work of American structuralists like Leonard Bloomfield (1933) and Zellig Harris (1951). Noam Chomsky's Syntactic Structures (1957) and Aspects of the Theory of Syntax (1965) provided the formal mathematical foundation for context-free grammars and their use in linguistics.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언어학에서 구문 구조(constituency structure)라는 아이디어는 레너드 블룸필드(Leonard Bloomfield, 1933)와 젤리그 해리스(Zellig Harris, 1951)와 같은 미국 구조주의자들의 연구로 거슬러 올라가는 긴 역사를 가지고 있습니다. 노암 촘스키(Noam Chomsky)의 『통사 구조』(Syntactic Structures, 1957)와 『통사 이론의 제형태』(Aspects of the Theory of Syntax, 1965)는 문맥 자유 문법과 언어학에서의 그 활용을 위한 정식 수학적 토대를 제공했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구 구조 문법의 역사적 선구자와 촘스키의 공헌을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

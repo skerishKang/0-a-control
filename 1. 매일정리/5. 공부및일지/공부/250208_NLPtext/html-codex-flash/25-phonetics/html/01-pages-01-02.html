@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>01 Pages 01 02</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. 모든 권리 보유. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재 상단의 저자 및 판본 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 25 Phonetics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제25장 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>25장의 제목입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The characters that make up the texts we’ve been discussing in this book aren’t just random symbols. They are also an amazing scientific invention: a theoretical model of the elements that make up human speech.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 책에서 논의해 온 텍스트를 구성하는 문자들은 단순한 임의의 기호가 아닙니다. 그것들은 인간의 말을 구성하는 요소들에 대한 이론적 모델이라는 놀라운 과학적 발명품이기도 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문자 체계를 인간 음성의 추상적 모델로 보는 관점을 제시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The earliest writing systems we know of (Sumerian, Chinese, Mayan) were mainly logographic: one symbol representing a whole word. But from the earliest stages we can find, some symbols were also used to represent the sounds that made up words. The cuneiform sign to the right pronounced ba and meaning “ration” in Sumerian could also function purely as the sound /ba/. The earliest Chinese characters we have, carved into bones for divination, similarly contain phonetic elements. Purely sound-based writing systems, whether syllabic (like Japanese hiragana), alphabetic (like the Roman alphabet), or consonantal (like Semitic writing systems), trace back to these early logo-syllabic systems, often as two cultures came together. Thus, the Arabic, Aramaic, Hebrew, Greek, and Roman systems all derive from a West Semitic script that is presumed to have been modified by Western Semitic mercenaries from a cursive form of Egyptian hieroglyphs. The Japanese syllabaries were modified from a cursive form of Chinese phonetic characters, which themselves were used in Chinese to phonetically represent the Sanskrit in the Buddhist scriptures that came to China in the Tang dynasty.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리가 알고 있는 가장 이른 문자 체계들인 수메르 문자, 중국 문자, 마야 문자는 주로 어표 문자였습니다. 즉 하나의 기호가 하나의 전체 단어를 나타냈습니다. 하지만 우리가 확인할 수 있는 가장 초기 단계부터, 일부 기호는 단어를 이루는 소리를 나타내는 데에도 쓰였습니다. 오른쪽의 설형문자 기호는 수메르어에서 “배급”을 뜻하고 ba라고 발음되었지만, 순수하게 /ba/라는 소리 자체를 나타내는 기능도 했습니다. 점복을 위해 뼈에 새겨진 초기 중국 문자에도 비슷하게 음성적 요소가 들어 있습니다. 일본어 히라가나 같은 음절 문자, 로마 알파벳 같은 알파벳 문자, 셈어계 문자 같은 자음 문자 등 순수한 음성 기반 문자 체계는 이런 초기 로고-음절 체계로 거슬러 올라가며, 대개 두 문화가 만나는 과정에서 발전했습니다. 따라서 아랍어, 아람어, 히브리어, 그리스어, 로마 문자 체계는 모두 이집트 상형문자의 초서체를 서부 셈계 용병들이 변형한 것으로 추정되는 서부 셈계 문자에서 유래합니다. 일본 음절 문자도 중국의 음성 문자의 초서체에서 변형되었는데, 이 중국 문자들은 당나라 시기에 중국에 들어온 불교 경전의 산스크리트어를 음성적으로 표기하는 데 쓰였습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>의미 중심 문자에서 음성 중심 문자로의 역사적 전개를 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This implicit idea that the spoken word is composed of smaller units of speech underlies algorithms for both speech recognition (transcribing waveforms into text) and text-to-speech (converting text into waveforms). In this chapter we give a computational perspective on phonetics, the study of the speech sounds used in the languages of the world, how they are produced in the human vocal tract, how they are realized acoustically, and how they can be digitized and processed.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>말해진 단어가 더 작은 음성 단위로 구성된다는 이러한 암묵적 아이디어는 음성 인식(파형을 텍스트로 옮김)과 음성 합성(텍스트를 파형으로 변환함) 알고리즘의 기초를 이룹니다. 이 장에서는 전 세계 언어의 말소리를 연구하는 학문인 음성학을 계산적 관점에서 살펴보며, 말소리가 인간의 성도에서 어떻게 산출되고, 음향적으로 어떻게 실현되며, 또 어떻게 디지털화되고 처리될 수 있는지를 다룹니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장의 전체 목표를 압축한 도입 문단입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.1 Speech Sounds and Phonetic Transcription</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.1 말소리와 음성 전사</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음소와 전사 체계를 소개하는 절입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A letter like ‘p’ or ‘a’ is already a useful model of the sounds of human speech, and indeed we’ll see in Chapter 26 how to map between letters and waveforms. Nonetheless, it is helpful to represent sounds slightly more abstractly. We’ll represent the pronunciation of a word as a string of phones, which are speech sounds, each represented with symbols adapted from the Roman alphabet.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>‘p’나 ‘a’ 같은 글자는 이미 인간 음성의 소리를 나타내는 유용한 모델이며, 실제로 26장에서는 글자와 파형 사이를 어떻게 대응시키는지 보게 될 것입니다. 그럼에도 소리를 조금 더 추상적으로 표현하는 것이 유익합니다. 이 책에서는 단어의 발음을 phone의 연쇄로 표현할 것이며, phone은 로마 알파벳을 바탕으로 한 기호로 표기되는 말소리입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문자보다 한 단계 추상화된 음성 단위인 phone을 도입합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>phone</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>폰(phone)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 발화된 말소리 단위를 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The standard phonetic representation for transcribing the world’s languages is the International Phonetic Alphabet (IPA), an evolving standard first developed in 1888. But in this chapter we’ll instead represent phones with the ARPAbet (Shoup, 1980), a simple phonetic alphabet (Fig. 25.1) that conveniently uses ASCII symbols to represent an American-English subset of the IPA.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>세계 언어를 전사하기 위한 표준 음성 표기 체계는 1888년에 처음 만들어진 이후 계속 발전해 온 국제 음성 기호(IPA)입니다. 하지만 이 장에서는 대신 ARPAbet(Shoup, 1980)을 사용해 phone을 표기하겠습니다. ARPAbet은 영어 음성의 IPA 일부를 ASCII 기호로 편리하게 나타내는 단순한 음성 문자 체계입니다(그림 25.1).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장이 IPA 대신 ARPAbet을 선택하는 이유를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>IPA</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>국제 음성 기호(IPA)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전 세계 언어의 음성을 표기하기 위한 표준 체계입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many of the IPA and ARPAbet symbols are equivalent to familiar Roman letters. So, for example, the ARPAbet phone [p] represents the consonant sound at the</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>많은 IPA 및 ARPAbet 기호는 익숙한 로마자와 동일합니다. 예를 들어 ARPAbet의 [p]는 다음 예들에 나오는 자음 소리를 나타냅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 페이지의 표와 예시로 이어지는 도입 문장입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 25 • PHONETICS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제25장 • 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| ARPAbet Symbol | IPA Symbol | Word | ARPAbet Transcription | ARPAbet Symbol | IPA Symbol | Word | ARPAbet Transcription |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | [p] | [p] | parsley | [p aa r s l iy] | [iy] | [i] | lily | [l ih l iy] |
+  | [t] | [t] | tea | [t iy] | [ih] | [ɪ] | lily | [l ih l iy] |
+  | [k] | [k] | cook | [k uh k] | [ey] | [eɪ] | daisy | [d ey z iy] |
+  | [b] | [b] | bay | [b ey] | [eh] | [ɛ] | pen | [p eh n] |
+  | [d] | [d] | dill | [d ih l] | [ae] | [æ] | aster | [ae s t axr] |
+  | [g] | [g] | garlic | [g aa r l ix k] | [aa] | [ɑ] | poppy | [p aa p iy] |
+  | [m] | [m] | mint | [m ih n t] | [ao] | [ɔ] | orchid | [ao r k ix d] |
+  | [n] | [n] | nutmeg | [n ah t m eh g] | [uh] | [ʊ] | wood | [w uh d] |
+  | [ng] | [ŋ] | baking | [b ey k ix ng] | [ow] | [oʊ] | lotus | [l ow dx ax s] |
+  | [f] | [f] | flour | [f l aw axr] | [uw] | [u] | tulip | [t uw l ix p] |
+  | [v] | [v] | clove | [k l ow v] | [ah] | [ʌ] | butter | [b ah dx axr] |
+  | [th] | [θ] | thick | [th ih k] | [er] | [ɝ] | bird | [b er d] |
+  | [dh] | [ð] | those | [dh ow z] | [ay] | [aɪ] | iris | [ay r ix s] |
+  | [s] | [s] | soup | [s uw p] | [aw] | [aʊ] | flower | [f l aw axr] |
+  | [z] | [z] | eggs | [eh g z] | [oy] | [ɔɪ] | soil | [s oy l] |
+  | [sh] | [ʃ] | squash | [s k w aa sh] |  |  |  |  |
+  | [zh] | [ʒ] | ambrosia | [ae m b r ow zh ax] |  |  |  |  |
+  | [ch] | [tʃ] | cherry | [ch eh r iy] |  |  |  |  |
+  | [jh] | [dʒ] | jar | [jh aa r] |  |  |  |  |
+  | [l] | [l] | licorice | [l ih k axr ix sh] |  |  |  |  |
+  | [w] | [w] | kiwi | [k iy w iy] |  |  |  |  |
+  | [r] | [ɹ] | rice | [r ay s] |  |  |  |  |
+  | [y] | [j] | yellow | [y eh l ow] |  |  |  |  |
+  | [h] | [h] | honey | [h ah n iy] |  |  |  |  |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| ARPAbet 기호 | IPA 기호 | 단어 | ARPAbet 전사 | ARPAbet 기호 | IPA 기호 | 단어 | ARPAbet 전사 |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | [p] | [p] | parsley | [p aa r s l iy] | [iy] | [i] | lily | [l ih l iy] |
+  | [t] | [t] | tea | [t iy] | [ih] | [ɪ] | lily | [l ih l iy] |
+  | [k] | [k] | cook | [k uh k] | [ey] | [eɪ] | daisy | [d ey z iy] |
+  | [b] | [b] | bay | [b ey] | [eh] | [ɛ] | pen | [p eh n] |
+  | [d] | [d] | dill | [d ih l] | [ae] | [æ] | aster | [ae s t axr] |
+  | [g] | [g] | garlic | [g aa r l ix k] | [aa] | [ɑ] | poppy | [p aa p iy] |
+  | [m] | [m] | mint | [m ih n t] | [ao] | [ɔ] | orchid | [ao r k ix d] |
+  | [n] | [n] | nutmeg | [n ah t m eh g] | [uh] | [ʊ] | wood | [w uh d] |
+  | [ng] | [ŋ] | baking | [b ey k ix ng] | [ow] | [oʊ] | lotus | [l ow dx ax s] |
+  | [f] | [f] | flour | [f l aw axr] | [uw] | [u] | tulip | [t uw l ix p] |
+  | [v] | [v] | clove | [k l ow v] | [ah] | [ʌ] | butter | [b ah dx axr] |
+  | [th] | [θ] | thick | [th ih k] | [er] | [ɝ] | bird | [b er d] |
+  | [dh] | [ð] | those | [dh ow z] | [ay] | [aɪ] | iris | [ay r ix s] |
+  | [s] | [s] | soup | [s uw p] | [aw] | [aʊ] | flower | [f l aw axr] |
+  | [z] | [z] | eggs | [eh g z] | [oy] | [ɔɪ] | soil | [s oy l] |
+  | [sh] | [ʃ] | squash | [s k w aa sh] |  |  |  |  |
+  | [zh] | [ʒ] | ambrosia | [ae m b r ow zh ax] |  |  |  |  |
+  | [ch] | [tʃ] | cherry | [ch eh r iy] |  |  |  |  |
+  | [jh] | [dʒ] | jar | [jh aa r] |  |  |  |  |
+  | [l] | [l] | licorice | [l ih k axr ix sh] |  |  |  |  |
+  | [w] | [w] | kiwi | [k iy w iy] |  |  |  |  |
+  | [r] | [ɹ] | rice | [r ay s] |  |  |  |  |
+  | [y] | [j] | yellow | [y eh l ow] |  |  |  |  |
+  | [h] | [h] | honey | [h ah n iy] |  |  |  |  |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어 자음과 모음에 대한 ARPAbet 및 IPA 대응표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.1 ARPAbet and IPA symbols for English consonants (left) and vowels (right).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.1 영어 자음(왼쪽)과 모음(오른쪽)에 대한 ARPAbet 및 IPA 기호.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞선 표의 설명 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>beginning of platypus, puma, and plantain, the middle of leopard, or the end of antelope. In general, however, the mapping between the letters of English orthography and phones is relatively opaque; a single letter can represent very different sounds in different contexts. The English letter c corresponds to phone [k] in cougar [k uw g axr], but phone [s] in cell [s eh l]. Besides appearing as c and k, the phone [k] can appear as part of x (fox [f aa k s]), as ck (jackal [jh ae k axl]) and as cc (raccoon [r ae k uw n]). Many other languages, for example, Spanish, are much more transparent in their sound-orthography mapping than English.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[p]는 platypus, puma, plantain의 첫머리, leopard의 중간, antelope의 끝에서 들리는 자음 소리와 같습니다. 그러나 일반적으로 영어 철자와 phone의 대응은 상당히 불투명합니다. 하나의 글자가 문맥에 따라 매우 다른 소리를 나타낼 수 있기 때문입니다. 예를 들어 영어 글자 c는 cougar [k uw g axr]에서는 [k]이지만 cell [s eh l]에서는 [s]입니다. 또한 [k]는 c나 k뿐 아니라 x의 일부(fox [f aa k s]), ck(jackal [jh ae k axl]), cc(raccoon [r ae k uw n])로도 나타날 수 있습니다. 스페인어처럼 많은 다른 언어들은 영어보다 소리와 철자의 대응이 훨씬 더 투명합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어의 철자-발음 대응이 불규칙하다는 점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.2 Articulatory Phonetics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.2 조음 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>말소리가 조음 기관에서 어떻게 만들어지는지 다루는 절입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>articulatory phonetics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>조음 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성을 만들어내는 신체 기관과 조음 과정을 연구하는 분야입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Articulatory phonetics is the study of how these phones are produced as the various organs in the mouth, throat, and nose modify the airflow from the lungs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>조음 음성학은 입, 목, 코의 여러 기관이 폐에서 나오는 공기 흐름을 어떻게 바꾸어 이러한 phone을 만들어내는지를 연구하는 분야입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 음성학의 핵심 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Vocal Organs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>발성 기관</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>말소리 생성에 관여하는 기관들을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.2 shows the organs of speech. Sound is produced by the rapid movement of air. Humans produce most sounds in spoken languages by expelling air from the lungs through the windpipe (technically, the trachea) and then out the mouth or nose. As it passes through the trachea, the air passes through the larynx, commonly known as the Adam’s apple or voice box. The larynx contains two small folds of</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.2는 발성 기관을 보여줍니다. 소리는 공기의 빠른 움직임에 의해 만들어집니다. 인간은 대부분의 말소리를 폐에서 공기를 내보내 기관(정확히는 trachea)을 지나 입이나 코로 배출함으로써 생성합니다. 공기가 기관을 지나는 동안 흔히 목젖 또는 voice box라고 불리는 후두를 통과합니다. 후두에는 두 개의 작은 주름이 들어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 페이지로 이어지는 발성 기관 설명의 시작입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

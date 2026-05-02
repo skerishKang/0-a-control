@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25-26 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a>
+<a class="chip" href="#page-26">Page 26</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25-26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By around 1990 neural alternatives to the HMM/GMM architecture for ASR arose, based on a number of earlier experiments with neural networks for phoneme recognition and other speech tasks. Architectures included the time-delay neural network (TDNN)—the first use of convolutional networks for speech— (Waibel et al. 1989, Lang et al. 1990), RNNs (Robinson and Fallside, 1991), and the hybrid HMM/MLP architecture in which a feedforward neural network is trained as a phonetic classifier whose outputs are used as probability estimates for an HMM-based architecture (Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1990년경에는 음소 인식 및 기타 음성 작업에 대한 신경망 실험을 바탕으로 ASR을 위한 HMM/GMM 아키텍처의 신경망 대안들이 등장했습니다. 여기에는 음성에 컨볼루션 네트워크를 처음으로 사용한 시간 지연 신경망(TDNN)(Waibel et al. 1989, Lang et al. 1990), RNN(Robinson and Fallside, 1991), 그리고 피드포워드 신경망을 음소 분류기로 훈련시켜 그 출력을 HMM 기반 아키텍처의 확률 추정치로 사용하는 하이브리드 HMM/MLP 아키텍처(Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995)가 포함되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Early neural approaches to ASR, including the first CNNs (TDNNs) and hybrid models.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>hybrid</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하이브리드</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Combining neural networks with HMMs.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While the hybrid systems showed performance close to the standard HMM/GMM models, the problem was speed: large hybrid models were too slow to train on the CPUs of that era. For example, the largest hybrid system, a feedforward network, was limited to a hidden layer of 4000 units, producing probabilities over only a few dozen monophones. Yet training this model still required the research group to design special hardware boards to do vector processing (Morgan and Bourlard, 1995). A later analytic study showed the performance of such simple feedforward MLPs for ASR increases sharply with more than 1 hidden layer, even controlling for the total number of parameters (Maas et al., 2017). But the computational resources of the time were insufficient for more layers.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하이브리드 시스템은 표준 HMM/GMM 모델에 근접한 성능을 보여주었지만, 문제는 속도였습니다. 당시의 CPU로는 대규모 하이브리드 모델을 훈련시키기에 너무 느렸습니다. 예를 들어, 가장 큰 하이브리드 시스템인 피드포워드 네트워크는 은닉층이 4000개 유닛으로 제한되었고, 수십 개의 단일 음소(monophone)에 대한 확률만을 생성했습니다. 그럼에도 이 모델을 훈련시키기 위해서는 연구팀이 벡터 처리를 위한 특수 하드웨어 보드를 설계해야 했습니다(Morgan and Bourlard, 1995). 이후의 분석 연구에 따르면, ASR을 위한 이러한 단순 피드포워드 MLP의 성능은 전체 파라미터 수를 제어하더라도 은닉층이 1개보다 많을 때 급격히 향상되는 것으로 나타났습니다(Maas et al., 2017). 하지만 당시의 계산 자원은 더 많은 층을 쌓기에 부족했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Computational constraints limited early neural ASR research.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Over the next two decades a combination of Moore’s law and the rise of GPUs allowed deep neural networks with many layers. Performance was getting close to traditional systems on smaller tasks like TIMIT phone recognition by 2009 (Mohamed et al., 2009), and by 2012, the performance of hybrid systems had surpassed traditional HMM/GMM systems (Jaitly et al. 2012, Dahl et al. 2012, inter alia). Originally it seemed that unsupervised pretraining of the networks using a technique like deep belief networks was important, but by 2013, it was clear that for hybrid HMM/GMM feedforward networks, all that mattered was to use a lot of data and enough layers, although a few other components did improve performance: using log mel features instead of MFCCs, using dropout, and using rectified linear units (Deng et al. 2013, Maas et al. 2013, Dahl et al. 2013).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이후 20년 동안 무어의 법칙과 GPU의 등장이 결합되어 많은 층을 가진 심층 신경망이 가능해졌습니다. 2009년경에는 TIMIT 음소 인식과 같은 작은 작업에서 성능이 전통적인 시스템에 근접했고(Mohamed et al., 2009), 2012년에는 하이브리드 시스템의 성능이 전통적인 HMM/GMM 시스템을 넘어섰습니다(Jaitly et al. 2012, Dahl et al. 2012 등). 원래는 심층 신뢰 신경망(deep belief networks)과 같은 기술을 이용한 네트워크의 비지도 사전 훈련이 중요해 보였으나, 2013년경에는 하이브리드 HMM/GMM 피드포워드 네트워크의 경우 많은 데이터와 충분한 층을 사용하는 것이 가장 중요하다는 것이 명확해졌습니다. 비록 MFCC 대신 로그 멜 특징 사용, 드롭아웃 사용, 렐루(ReLU) 사용 등 몇 가지 다른 요소들이 성능을 향상시키기는 했습니다(Deng et al. 2013, Maas et al. 2013, Dahl et al. 2013).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The shift from GMM to DNN in the early 2010s driven by big data and GPUs.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Meanwhile early work had proposed the CTC loss function by 2006 (Graves et al., 2006), and by 2012 the RNN-Transducer was defined and applied to phone recognition (Graves 2012, Graves et al. 2013), and then to end-to-end speech recognition rescoring (Graves and Jaitly, 2014), and then recognition (Maas et al., 2015), with advances such as specialized beam search (Hannun et al., 2014). (Our description of CTC in the chapter draws on Hannun (2017), which we encourage the interested reader to follow).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한편, 2006년에 CTC 손실 함수가 제안되었고(Graves et al., 2006), 2012년에는 RNN-Transducer가 정의되어 음소 인식에 적용되었습니다(Graves 2012, Graves et al. 2013). 이후 엔드투엔드 음성 인식 재점수화(rescoring)(Graves and Jaitly, 2014)와 인식(Maas et al., 2015)으로 이어졌으며, 특수 빔 서치(Hannun et al., 2014)와 같은 발전이 동반되었습니다. (이 장의 CTC 설명은 Hannun(2017)을 참고했으므로 관심 있는 독자는 이를 읽어보시기 바랍니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Development of CTC and RNN-Transducers for end-to-end ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The encoder-decoder architecture was applied to speech at about the same time by two different groups, in the Listen Attend and Spell system of Chan et al. (2016) and the attention-based encoder decoder architecture of Chorowski et al. (2014) and Bahdanau et al. (2016). By 2018 Transformers were included in this encoder-decoder architecture. Karita et al. (2019) is a nice comparison of RNNs vs Transformers in encoder-architectures for ASR, TTS, and speech-to-speech translation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더 아키텍처는 비슷한 시기에 두 그룹에 의해 음성에 적용되었습니다. Chan 등(2016)의 Listen Attend and Spell 시스템과 Chorowski 등(2014) 및 Bahdanau 등(2016)의 어텐션 기반 인코더-디코더 아키텍처가 그것입니다. 2018년경에는 트랜스포머(Transformers)가 이 인코더-디코더 아키텍처에 포함되었습니다. Karita 등(2019)은 ASR, TTS 및 음성 대 음성 번역을 위한 인코더 아키텍처에서 RNN과 트랜스포머를 잘 비교하고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction of LAS and Transformers to speech tasks.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kaldi</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Kaldi</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>A famous speech recognition toolkit.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>ESPnet</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ESPnet</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>An end-to-end speech processing toolkit.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Popular toolkits for speech processing include Kaldi (Povey et al., 2011) and ESPnet (Watanabe et al. 2018, Hayashi et al. 2020).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대중적인 음성 처리 툴킷으로는 Kaldi(Povey et al., 2011)와 ESPnet(Watanabe et al. 2018, Hayashi et al. 2020)이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Standard industry/research tools for ASR.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>TTS As we noted at the beginning of the chapter, speech synthesis is one of the earliest fields of speech and language processing. The 18th century saw a number of physical models of the articulation process, including the von Kempelen model mentioned above, as well as the 1773 vowel model of Kratzenstein in Copenhagen using organ pipes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>TTS 이 장의 시작 부분에서 언급했듯이, 음성 합성은 음성 및 언어 처리의 가장 초기 분야 중 하나입니다. 18세기에는 앞서 언급한 폰 켐펠렌(von Kempelen) 모델을 비롯하여 파이프 오르간을 이용한 코펜하겐의 크라첸슈타인(Kratzenstein)의 1773년 모음 모델 등 발음 과정에 대한 여러 물리적 모델이 등장했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Historical origins of TTS dating back to the 18th century.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The early 1950s saw the development of three early paradigms of waveform synthesis: formant synthesis, articulatory synthesis, and concatenative synthesis.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1950년대 초반에는 파형 합성의 세 가지 초기 패러다임인 포먼트 합성, 조음 합성, 그리고 연결 합성이 개발되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Three main traditional paradigms of speech synthesis.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern encoder-decoder systems are distant descendants of formant synthesizers. Formant synthesizers originally were inspired by attempts to mimic human speech by generating artificial spectrograms. The Haskins Laboratories Pattern Playback Machine generated a sound wave by painting spectrogram patterns on a moving transparent belt and using reflectance to filter the harmonics of a waveform (Cooper et al., 1951); other very early formant synthesizers include those of Lawrence (1953) and Fant (1951). Perhaps the most well-known of the formant synthesizers were the Klatt formant synthesizer and its successor systems, including the MITalk system (Allen et al., 1987) and the Klattalk software used in Digital Equipment Corporation’s DECtalk (Klatt, 1982). See Klatt (1975) for details.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 인코더-디코더 시스템은 포먼트 합성기(formant synthesizers)의 먼 후손입니다. 포먼트 합성기는 원래 인공적인 스펙트로그램을 생성하여 사람의 음성을 모방하려는 시도에서 영감을 받았습니다. 해스킨스 연구소(Haskins Laboratories)의 패턴 플레이백 머신은 움직이는 투명 벨트에 스펙트로그램 패턴을 그리고 반사율을 이용해 파형의 배음(harmonics)을 필터링함으로써 음파를 생성했습니다(Cooper et al., 1951). 다른 매우 초기 포먼트 합성기로는 Lawrence(1953)와 Fant(1951)의 것이 있습니다. 아마도 가장 잘 알려진 포먼트 합성기는 Klatt 포먼트 합성기와 그 후속 시스템들일 것입니다. 여기에는 MITalk 시스템(Allen et al., 1987)과 Digital Equipment Corporation의 DECtalk에 사용된 Klattalk 소프트웨어(Klatt, 1982)가 포함됩니다. 자세한 내용은 Klatt(1975)를 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>History of formant synthesis and its connection to modern spectral methods.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second early paradigm, concatenative synthesis, seems to have been first proposed by Harris (1953) at Bell Laboratories; he literally spliced together pieces of magnetic tape corresponding to phones. Soon afterwards, Peterson et al. (1958) proposed a theoretical model based on diphones, including a database with multiple copies of each diphone with differing prosody, each labeled with prosodic features including F0, stress, and duration, and the use of join costs based on F0 and formant distance between neighboring units. But such diphone synthesis models were not actually implemented until decades later (Dixon and Maxey 1968, Olive 1977). The 1980s and 1990s saw the invention of unit selection synthesis, based on larger units of non-uniform length and the use of a target cost, (Sagisaka 1988, Sagisaka et al. 1992, Hunt and Black 1996, Black and Taylor 1994, Syrdal et al. 2000).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 번째 초기 패러다임인 연결 합성(concatenative synthesis)은 벨 연구소의 Harris(1953)가 처음 제안한 것으로 보입니다. 그는 말 그대로 음소에 해당하는 자기 테이프 조각들을 서로 이어 붙였습니다. 직후 Peterson 등(1958)은 이중 음소(diphone)에 기반한 이론적 모델을 제안했습니다. 여기에는 다양한 운율을 가진 각 이중 음소의 여러 복사본이 포함된 데이터베이스가 있었으며, 각 복사본에는 F0, 강세, 지속 시간 등의 운율 특징 레이블이 붙어 있었고, 인접 유닛 사이의 F0 및 포먼트 거리에 기반한 결합 비용(join costs)을 사용했습니다. 하지만 이러한 이중 음소 합성 모델은 수십 년이 지난 후에야 실제로 구현되었습니다(Dixon and Maxey 1968, Olive 1977). 1980년대와 1990년대에는 균일하지 않은 길이의 더 큰 유닛과 타겟 비용(target cost)을 사용하는 유닛 선택 합성(unit selection synthesis)이 발명되었습니다(Sagisaka 1988, Sagisaka et al. 1992, Hunt and Black 1996, Black and Taylor 1994, Syrdal et al. 2000).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Evolution of concatenative synthesis from tape splicing to unit selection.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A third paradigm, articulatory synthesizers attempt to synthesize speech by modeling the physics of the vocal tract as an open tube. Representative models include Stevens et al. (1953), Flanagan et al. (1975), and Fant (1986). See Klatt (1975) and Flanagan (1972) for more details.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>세 번째 패러다임인 조음 합성기(articulatory synthesizers)는 성도를 열린 튜브로 모델링하여 음성의 물리학을 통해 음성을 합성하려고 시도합니다. 대표적인 모델로는 Stevens 등(1953), Flanagan 등(1975), Fant(1986)가 있습니다. 자세한 내용은 Klatt(1975)와 Flanagan(1972)을 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Articulatory synthesis focuses on the physical production of sound.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Most early TTS systems used phonemes as input; development of the text analysis components of TTS came somewhat later, drawing on NLP. Indeed the first true text-to-speech system seems to have been the system of Umeda and Teranishi (Umeda et al. 1968, Teranishi and Umeda 1968, Umeda 1976), which included a parser that assigned prosodic boundaries, as well as accent and stress.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대부분의 초기 TTS 시스템은 음소를 입력으로 사용했습니다. TTS의 텍스트 분석 구성 요소의 발전은 NLP의 도움을 받아 다소 늦게 이루어졌습니다. 실제로 최초의 진정한 텍스트 음성 변환 시스템은 Umeda와 Teranishi의 시스템(Umeda et al. 1968, Teranishi and Umeda 1968, Umeda 1976)으로 보입니다. 이 시스템은 악센트와 강세뿐만 아니라 운율 경계를 할당하는 파서를 포함했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The transition from phoneme-to-speech to full text-to-speech.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>End-of-chapter exercises.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.1 Analyze each of the errors in the incorrectly recognized transcription of “um the phone is I left the...” on page 15. For each one, give your best guess as to whether you think it is caused by a problem in signal processing, pronunciation modeling, lexicon size, language model, or pruning in the decoding search.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.1 15페이지에 있는 "um the phone is I left the..."의 잘못 인식된 전사에서 각 오류를 분석하십시오. 각 오류에 대해 신호 처리, 발음 모델링, 어휘집 크기, 언어 모델 또는 디코딩 검색에서의 가지치기(pruning) 문제 중 무엇 때문에 발생했다고 생각하는지 최선의 추측을 제시하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Exercise on diagnosing ASR errors.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

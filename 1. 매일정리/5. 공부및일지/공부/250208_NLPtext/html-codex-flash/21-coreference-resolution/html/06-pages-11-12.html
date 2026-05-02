@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-11">Page 11</a><a class="chip" href="#page-12">Page 12</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-11">
+<header class="page-header"><h2>Page 11</h2><div class="page-subtitle">평가 지표 소개</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.6 Evaluation: Evaluation Metrics for Coreference</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.6 평가: 상호 참조 평가 지표</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 해소 시스템의 성능을 측정하는 복잡한 지표들에 대해 자세히 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Evaluation of coreference is challenging because there isn't a single "standard" way to measure the similarity between predicted and gold clusters. The three most common metrics are:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>상호 참조의 평가는 예측된 클러스터와 골드 클러스터 사이의 유사성을 측정하는 단일한 "표준" 방식이 없기 때문에 어렵습니다. 가장 일반적인 세 가지 지표는 다음과 같습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 평가가 다른 태스크(분류 등)보다 까다로운 이유와 주요 지표들을 소개합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>MUC / B-cubed / CEAF</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MUC / B-cubed / CEAF</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 해소의 성능을 다각도로 분석하기 위해 사용하는 대표적인 세 가지 평가 지표입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-12">
+<header class="page-header"><h2>Page 12</h2><div class="page-subtitle">MUC 지표</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">subsection_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.6.1 MUC (Message Understanding Conference)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.6.1 MUC (메시지 이해 컨퍼런스)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 링크(link)를 기반으로 하는 역사적인 평가 지표인 MUC에 대해 알아봅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The MUC metric is link-based. It counts the number of links in the predicted clusters that are also in the gold clusters.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MUC 지표는 링크 기반입니다. 이는 예측된 클러스터 내의 링크들 중 골드 클러스터에도 존재하는 링크의 수를 셉니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MUC의 핵심 측정 방식인 '링크 수 계산'을 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While simple to compute, MUC has some limitations, such as failing to penalize over-clustering and being biased toward larger clusters.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>계산은 간단하지만, MUC에는 과도한 클러스터링(over-clustering)을 처벌하지 못하고 큰 클러스터에 편향되는 등의 몇 가지 한계가 있습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MUC 지표가 가진 기술적 취약점을 지적합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Link-based evaluation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>링크 기반 평가(Link-based evaluation)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클러스터의 전체 구조보다는 개별 언급들 사이의 연결 관계에 집중하는 평가 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

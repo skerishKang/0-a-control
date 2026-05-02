@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages 13-14 | Regular Expressions, Text Normalization, Edit Distance</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1f1b16;
+      --muted: #6f675d;
+      --line: #ddd2c2;
+      --accent: #8c5a2b;
+      --accent-soft: #f1e2cf;
+      --note-bg: #faf4ea;
+      --source-bg: #f5f3ef;
+      --translation-bg: #fff8ea;
+      --shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%),
+        linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 241, 232, 0.88);
+      border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .quick-nav,
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fcf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .meta-card dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .meta-card dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .page {
+      margin-bottom: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff8eb, #f5ead8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blocks {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fffdfa;
+    }
+
+    .block-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .block-title {
+      font-weight: 800;
+    }
+
+    .block-type {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .block-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .source,
+    .translation,
+    .note-panel {
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .source {
+      background: var(--source-bg);
+    }
+
+    .translation {
+      background: var(--translation-bg);
+    }
+
+    .note-panel {
+      background: var(--note-bg);
+    }
+
+    .source pre,
+    .translation pre,
+    .note-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: inherit;
+    }
+
+    .mono pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-toggle {
+      align-self: start;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-panel[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero,
+      .page-header,
+      .blocks,
+      .block-head,
+      .block-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="doc-meta">
+        <div class="eyebrow">02 PDF / HTML Sample</div>
+        <h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+      </div>
+      <div class="quick-nav">
+        <a class="chip" href="#page-13">Page 13</a>
+        <a class="chip" href="#page-14">Page 14</a>
+      </div>
+      <div class="actions">
+        <button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+        <button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Study Edition</div>
+      <h2>Pages 13-14 Annotated Page</h2>
+      <p>코퍼스 맥락, 데이터시트, 텍스트 정규화, Unix 도구를 다룹니다.</p>
+      <div class="hero-grid">
+        <dl class="meta-card">
+          <dt>Source</dt>
+          <dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Workflow</dt>
+          <dd>html-codex-flash</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Status</dt>
+          <dd>Accepted</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="page" id="page-13">
+      <header class="page-header">
+        <h2>Page 13</h2>
+        <div class="page-subtitle">코퍼스 맥락과 데이터시트</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>or transcripts of television shows or movies. It might come from work situations like doctors' notes, legal text, or parliamentary or congressional proceedings.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>혹은 TV 쇼나 영화의 대본일 수도 있습니다. 의사의 소견서, 법률 문서, 혹은 의회나 국회의 의사록과 같은 업무 상황에서 발생한 텍스트일 수도 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트가 발생하는 다양한 실제 상황(장르)에 대한 예시들입니다. 각 장르마다 언어적 특성이 다름을 인지해야 합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Text also reflects the demographic characteristics of the writer (or speaker): their age, gender, race, socioeconomic class can all influence the linguistic properties of the text we are processing.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>텍스트는 또한 저자(혹은 화자)의 인구통계학적 특성을 반영합니다. 연령, 성별, 인종, 사회경제적 계층 등은 우리가 처리하는 텍스트의 언어적 속성에 모두 영향을 미칠 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>발화자의 개인적 배경이 언어 사용 방식에 미치는 영향(인구통계학적 변이)을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>And finally, time matters too. Language changes over time, and for some languages we have good corpora of texts from different historical periods.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 시간 또한 중요합니다. 언어는 시간이 지남에 따라 변하며, 일부 언어의 경우 다양한 역사적 시기에 걸친 훌륭한 텍스트 코퍼스를 보유하고 있기도 합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>언어의 역사적 변화(통시적 변이)와 이를 연구하기 위한 역사적 코퍼스의 중요성을 언급합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Because language is so situated, when developing computational models for language processing from a corpus, it's important to consider who produced the language, in what context, for what purpose. How can a user of a dataset know all these details? The best way is for the corpus creator to build a datasheet (Gebru et al., 2020) or data statement (Bender and Friedman, 2018) for each corpus. A datasheet specifies properties of a dataset like:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>언어는 이처럼 상황에 따라 크게 달라지기 때문에, 코퍼스로부터 언어 처리를 위한 계산 모델을 개발할 때는 누가, 어떤 맥락에서, 어떤 목적으로 그 언어를 생산했는지 고려하는 것이 중요합니다. 데이터셋 사용자가 이러한 모든 세부 사항을 어떻게 알 수 있을까요? 가장 좋은 방법은 코퍼스 제작자가 각 코퍼스에 대해 데이터시트(datasheet, Gebru et al., 2020)나 데이터 명세서(data statement, Bender and Friedman, 2018)를 작성하는 것입니다. 데이터시트는 다음과 같은 데이터셋의 속성들을 명시합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터의 맥락을 투명하게 공개하기 위한 '데이터시트'의 필요성을 강조합니다. 이는 AI 윤리와 데이터 편향성 문제를 해결하는 핵심 도구입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>datasheet</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>데이터시트(datasheet)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터셋의 기원, 구성, 의도된 용도 등을 기록한 표준화된 문서 양식입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Motivation: Why was the corpus collected, by whom, and who funded it?
+Situation: When and in what situation was the text written/spoken? For example, was there a task? Was the language originally spoken conversation, edited text, social media communication, monologue vs. dialogue?
+Language variety: What language (including dialect/region) was the corpus in?
+Speaker demographics: What was, e.g., age or gender of the authors of the text?
+Collection process: How big is the data? If it is a subsample how was it sampled? Was the data collected with consent? How was the data pre-processed, and what metadata is available?
+Annotation process: What are the annotations, what are the demographics of the annotators, how were they trained, how was the data annotated?
+Distribution: Are there copyright or other intellectual property restrictions?</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>동기(Motivation): 코퍼스가 왜 수집되었는가, 누구에 의해 수집되었는가, 그리고 누가 자금을 지원했는가?
+상황(Situation): 텍스트가 언제, 어떤 상황에서 쓰여지거나 말해졌는가? 예를 들어, 특정 과업이 주어졌는가? 언어가 원래 구어체 대화였는가, 편집된 텍스트인가, 소셜 미디어 소통인가, 독백인가 대화인가?
+언어 변종(Language variety): 코퍼스는 어떤 언어(방언/지역 포함)로 되어 있는가?
+화자 인구통계(Speaker demographics): 텍스트 저자들의 연령이나 성별 등은 무엇인가?
+수집 과정(Collection process): 데이터의 규모는 어느 정도인가? 부분 표본이라면 어떻게 샘플링되었는가? 데이터 수집 시 동의를 얻었는가? 데이터는 어떻게 전처리되었으며, 어떤 메타데이터를 사용할 수 있는가?
+주석화 과정(Annotation process): 주석(annotation)은 무엇인가, 주석 작업자들의 인구통계학적 특성은 어떠하며 어떻게 교육받았는가, 데이터에 주석이 어떻게 달렸는가?
+배포(Distribution): 저작권이나 기타 지적 재산권 제한 사항이 있는가?</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터시트에 포함되어야 할 7가지 필수 항목들을 설명합니다. 데이터의 신뢰성과 재현성을 보장하는 데 매우 중요한 체크리스트입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">section_title</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.4 Text Normalization</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.4 텍스트 정규화 (Text Normalization)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>가공되지 않은 텍스트를 분석 가능한 형태로 표준화하는 핵심 전처리 단계를 다룹니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Before almost any natural language processing of a text, the text has to be normalized. At least three tasks are commonly applied as part of any normalization process:
+1. Tokenizing (segmenting) words
+2. Normalizing word formats
+3. Segmenting sentences
+In the next sections we walk through each of these tasks.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>텍스트에 대한 거의 모든 자연어 처리에 앞서, 텍스트는 정규화되어야 합니다. 정규화 과정의 일부로 대개 세 가지 작업이 공통적으로 적용됩니다.
+1. 단어 토큰화 (단어 분절)
+2. 단어 형식 정규화
+3. 문장 분절
+다음 섹션들에서 우리는 이러한 각 작업들을 살펴볼 것입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 정규화의 3대 핵심 작업인 토큰화, 형식 표준화, 문장 분리를 정의합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">section_title</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.4.1 Unix Tools for Crude Tokenization and Normalization</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.4.1 기본적인 토큰화와 정규화를 위한 Unix 도구들</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>프로그래밍 없이도 Unix 터미널 명령어를 통해 빠르게 텍스트 데이터를 처리하는 실무적인 방법을 배웁니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Let's begin with an easy, if somewhat naive version of word tokenization and normalization (and frequency computation) that can be accomplished for English solely in a single UNIX command-line, inspired by Church (1994). We'll make use of some Unix commands: tr, used to systematically change particular characters in the input; sort, which sorts input lines in alphabetical order; and uniq, which collapses and counts adjacent identical lines.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>처치(Church, 1994)로부터 영감을 받아, 오직 단일 UNIX 명령줄만으로 수행할 수 있는 쉽고도 약간은 단순한 버전의 단어 토큰화 및 정규화(그리고 빈도 계산)부터 시작해 봅시다. 우리는 몇 가지 Unix 명령어를 활용할 것입니다. 입력된 특정 문자들을 체계적으로 변경하는 데 사용하는 tr, 입력된 줄들을 알파벳 순서대로 정렬하는 sort, 그리고 인접한 동일한 줄들을 하나로 합치고 개수를 세는 uniq가 그것입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>`tr`, `sort`, `uniq`라는 고전적이지만 아주 강력한 Unix 텍스트 처리 도구 트리오를 소개합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>For example let's begin with the 'complete words' of Shakespeare in one file, sh.txt. We can use tr to tokenize the words by changing every sequence of non-alphabetic characters to a newline ('A-Za-z' means alphabetic, the -c option complements to non-alphabet, and the -s option squeezes all sequences into a single character):</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>예를 들어, 셰익스피어 전집(complete words)이 들어 있는 'sh.txt' 파일로 시작해 봅시다. 우리는 tr을 사용하여 모든 비알파벳 문자 시퀀스를 개행 문자(newline)로 바꿈으로써 단어들을 토큰화할 수 있습니다 ('A-Za-z'는 알파벳을 의미하며, -c 옵션은 알파벳이 아닌 것들로 보집합을 만들고, -s 옵션은 연속된 모든 시퀀스를 단일 문자로 압축합니다).</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>`tr` 명령어의 옵션들을 조합해 텍스트에서 단어만 추출하여 한 줄에 하나씩 나열하는 토큰화 기법을 설명합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-14">
+      <header class="page-header">
+        <h2>Page 14</h2>
+        <div class="page-subtitle">Unix 도구로 단어 빈도 분석</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>알파벳이 아닌 모든 문자(-c)를 줄바꿈(\n)으로 바꾸되, 연속된 것은 하나로 압축(-s)하여 단어만 추출하는 명령어입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The output of this command will be:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 명령어의 출력 결과는 다음과 같습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>위 명령어를 실행했을 때 실제 터미널에 나타나는 형태를 예고합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>THE
+SONNETS
+by
+William
+Shakespeare
+From
+fairest
+creatures
+We
+...</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>THE
+SONNETS
+by
+William
+Shakespeare
+From
+fairest
+creatures
+We
+...</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>공백 및 기호들이 제거되고 각 단어가 행 단위로 분리된 토큰화 결과입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Now that there is one word per line, we can sort the lines, and pass them to uniq -c which will collapse and count them:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이제 한 줄에 한 단어가 있게 되었으므로, 줄들을 정렬한 뒤 uniq -c에 전달하여 중복을 합치고 개수를 셀 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단어별 빈도수 측정을 위해 정렬(`sort`)과 중복 제거 및 카운트(`uniq -c`) 과정을 연결합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | sort | uniq -c</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | sort | uniq -c</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>파이프(`|`)를 사용하여 여러 명령어를 연결한 완성된 빈도수 계산 파이프라인입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>with the following output:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>출력 결과는 다음과 같습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도수와 단어가 함께 출력되는 형식을 보여줍니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>1945 A
+72 AARON
+19 ABBESS
+25 Aaron
+6 Abate
+1 Abates
+5 Abbess
+6 Abbey
+3 Abbot
+...</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>1945 A
+72 AARON
+19 ABBESS
+25 Aaron
+6 Abate
+1 Abates
+5 Abbess
+6 Abbey
+3 Abbot
+...</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>알파벳 순서대로 정렬된 빈도 결과입니다. 'ABBESS'와 'Abbess'가 대소문자 차이로 인해 별도로 집계된 것을 확인할 수 있습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Alternatively, we can collapse all the upper case to lower case:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>대신, 모든 대문자를 소문자로 통합할 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대소문자 구분을 없애기 위해 소문자로 변환하는 정규화 과정을 추가합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | tr A-Z a-z | sort | uniq -c</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | tr A-Z a-z | sort | uniq -c</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>중간에 `tr A-Z a-z`를 추가하여 모든 단어를 소문자 기준으로 집계합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>whose output is</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이 명령의 출력은 다음과 같습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>소문자화된 결과의 예시입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>14725 a
+97 aaron
+1 abaissez
+10 abandon
+2 abandoned
+2 abase
+1 abash
+14 abate
+3 abated
+3 abatement
+...</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>14725 a
+97 aaron
+1 abaissez
+10 abandon
+2 abandoned
+2 abase
+1 abash
+14 abate
+3 abated
+3 abatement
+...</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대소문자 통합으로 인해 'a'의 빈도가 훨씬 늘어났고, 모든 단어가 소문자로 정렬되었습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 12</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Now we can sort again to find the frequent words. The -n option to sort means to sort numerically rather than alphabetically, and the -r option means to sort in reverse order (highest-to-lowest):</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>이제 가장 빈번한 단어들을 찾기 위해 다시 정렬할 수 있습니다. sort의 -n 옵션은 알파벳순이 아닌 숫자순으로 정렬하라는 뜻이고, -r 옵션은 역순(가장 높은 것에서 낮은 것 순서)으로 정렬하라는 뜻입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>알파벳순 정렬된 결과를 빈도(숫자)순으로 다시 정렬하여 상위 키워드를 추출하는 옵션을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 13</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | tr A-Z a-z | sort | uniq -c | sort -n -r</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>tr -sc 'A-Za-z' '\n' < sh.txt | tr A-Z a-z | sort | uniq -c | sort -n -r</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 파일을 읽어 토큰화하고, 정규화하며, 빈도를 계산하고, 최종적으로 가장 많이 사용된 단어 순으로 정렬하는 전 과정의 명령어입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 14</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>The results show that the most frequent words in Shakespeare, as in any other corpus, are the short function words like articles, pronouns, prepositions:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>결과는 셰익스피어 전집에서도 다른 코퍼스와 마찬가지로, 가장 많이 등장하는 단어들이 관사, 대명사, 전치사와 같은 짧은 기능어(function words)들이라는 것을 보여줍니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도 분석의 결과를 요약합니다. 가장 많이 쓰이는 말들은 문법적 역할을 하는 기능어들이라는 보편적인 현상을 확인합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+    function setPanelState(toggle, expanded) {
+      const panel = toggle.nextElementSibling;
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+      panel.hidden = !expanded;
+    }
+
+    toggles.forEach((toggle) => {
+      setPanelState(toggle, false);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setPanelState(toggle, !expanded);
+      });
+    });
+
+    document.querySelector("[data-expand-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, true));
+    });
+
+    document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, false));
+    });
+  </script>
+</body>
+</html>

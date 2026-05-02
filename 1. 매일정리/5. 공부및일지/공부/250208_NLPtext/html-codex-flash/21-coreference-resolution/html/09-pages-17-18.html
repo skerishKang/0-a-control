@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-17">Page 17</a><a class="chip" href="#page-18">Page 18</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-17">
+<header class="page-header"><h2>Page 17</h2><div class="page-subtitle">참고 문헌 및 역사적 배경</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌 및 역사적 배경</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조 해소 연구의 역사적 발전 과정과 주요 연구자들을 소개합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Early work on coreference resolution relied on rule-based systems, such as the Hobbs (1978) algorithm for pronominal anaphora.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>초기 상호 참조 해소 연구는 대명사적 전방 참조를 위한 홉스(Hobbs, 1978) 알고리즘과 같은 규칙 기반 시스템에 의존했습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상호 참조解消의 초창기 기법인 홉스 알고리즘을 언급합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The introduction of supervised machine learning methods, such as the mention-pair model by Soon et al. (2001), significantly improved performance and paved the way for modern approaches.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Soon 등(2001)의 언급-쌍 모델과 같은 지도 학습 머신러닝 방식의 도입은 성능을 크게 향상시켰으며 현대적 접근법의 토대를 마련했습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>머신러닝 기반 상호 참조 해소의 시발점이 된 중요한 연구를 소개합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Winograd Schema Challenge was first proposed by Hector Levesque (2011) as a way to measure the common-sense reasoning capabilities of AI systems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위노그라드 스키마 챌린지는 헥터 레베스크(Hector Levesque, 2011)에 의해 AI 시스템의 상식 추론 능력을 측정하기 위한 방법으로 처음 제안되었습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>WSC의 제안자와 그 배경을 밝힙니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-18">
+<header class="page-header"><h2>Page 18</h2><div class="page-subtitle">참고 문헌</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliography</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>21장에서 인용된 중심적인 문헌들에 대한 목록입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Hobbs, J. R. (1978). Resolving pronoun references. Lingua, 44(4), 311-338.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Hobbs, Jerry R. (1978). 「대명사 참조 해소」(Resolving pronoun references). 『Lingua』, 44(4), 311-338.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 대명사 해소 알고리즘을 제안한 선구적인 논문입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Soon, W. M., Lim, H. T., and Ng, H. T. (2001). A machine learning approach to coreference resolution of noun phrases. Computational Linguistics, 27(4), 521-544.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Soon, Wee Meng, Lim, Hwee Tou, and Ng, Hwee Tou. (2001). 「명사구 상호 참조 해소를 위한 머신러닝 접근법」(A machine learning approach to coreference resolution of noun phrases). 『계산언어학』, 27(4), 521-544.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수작업 자질과 머신러닝을 결합한 최초의 주요 상호 참조 해소 논문 중 하나입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lee, K., He, L., Lewis, M., and Zettlemoyer, L. (2017). End-to-end neural coreference resolution. In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing (EMNLP).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Lee, Kenton, He, Luheng, Lewis, Mike, and Zettlemoyer, Luke. (2017). 「엔드투엔드 신경망 상호 참조 해소」(End-to-end neural coreference resolution). In 『2017 자연어 처리의 실증적 방법 학술대회(EMNLP) 논문집』.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 상호 참조 해소의 표준이 된 엔드투엔드 신경망 모델을 제안한 논문입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

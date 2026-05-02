@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Regular Expressions, Text Normalization, Edit Distance</title>
+<style>
+:root {
+--bg: #f6f1e8;
+--paper: #fffdf8;
+--ink: #1f1b16;
+--muted: #6f675d;
+--line: #ddd2c2;
+--accent: #8c5a2b;
+--accent-soft: #f1e2cf;
+--note-bg: #faf4ea;
+--source-bg: #f5f3ef;
+--translation-bg: #fff8ea;
+--shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+--radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+margin: 0;
+background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+color: var(--ink);
+font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+.shell {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 24px 0 64px;
+}
+
+.topbar {
+position: sticky;
+top: 0;
+z-index: 10;
+backdrop-filter: blur(10px);
+background: rgba(246, 241, 232, 0.88);
+border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+margin-bottom: 24px;
+}
+
+.topbar-inner {
+width: min(1100px, calc(100% - 32px));
+margin: 0 auto;
+padding: 14px 0;
+display: flex;
+gap: 16px;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+}
+
+.doc-meta {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.eyebrow {
+color: var(--muted);
+font-size: 13px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+}
+
+h1 {
+margin: 0;
+font-size: clamp(22px, 4vw, 34px);
+line-height: 1.15;
+font-weight: 800;
+}
+
+.quick-nav, .actions {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.chip, .action-btn {
+border: 1px solid var(--line);
+background: rgba(255, 253, 248, 0.92);
+color: var(--ink);
+border-radius: 999px;
+padding: 8px 14px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+text-decoration: none;
+transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover, .action-btn:hover {
+transform: translateY(-1px);
+background: #fff;
+}
+
+.hero {
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 4px);
+box-shadow: var(--shadow);
+padding: 28px;
+margin-bottom: 24px;
+}
+
+.hero p {
+margin: 10px 0 0;
+color: var(--muted);
+}
+
+.hero-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin-top: 18px;
+}
+
+.meta-card {
+padding: 14px 16px;
+border-radius: 14px;
+background: #fcf7f0;
+border: 1px solid var(--line);
+}
+
+.meta-card dt {
+font-size: 12px;
+color: var(--muted);
+margin-bottom: 6px;
+}
+
+.meta-card dd {
+margin: 0;
+font-weight: 700;
+}
+
+.page {
+margin-bottom: 28px;
+background: var(--paper);
+border: 1px solid var(--line);
+border-radius: calc(var(--radius) + 2px);
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+
+.page-header {
+padding: 20px 24px;
+background: linear-gradient(135deg, #fff8eb, #f5ead8);
+border-bottom: 1px solid var(--line);
+}
+
+.page-header h2 {
+margin: 0;
+font-size: 28px;
+line-height: 1.15;
+}
+
+.page-subtitle {
+margin-top: 6px;
+color: var(--muted);
+font-size: 14px;
+}
+
+.blocks {
+padding: 18px;
+display: grid;
+gap: 16px;
+}
+
+.block {
+border: 1px solid var(--line);
+border-radius: var(--radius);
+overflow: hidden;
+background: #fffdfa;
+}
+
+.block-head {
+padding: 14px 16px;
+border-bottom: 1px solid var(--line);
+display: flex;
+justify-content: space-between;
+gap: 10px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.block-title {
+font-weight: 800;
+}
+
+.block-type {
+color: var(--accent);
+background: var(--accent-soft);
+border-radius: 999px;
+padding: 4px 10px;
+font-size: 13px;
+font-weight: 700;
+}
+
+.block-body {
+padding: 16px;
+display: grid;
+gap: 14px;
+}
+
+.label {
+display: inline-block;
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 0.04em;
+color: var(--muted);
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+
+.source, .translation, .note-panel {
+border-radius: 14px;
+padding: 14px 16px;
+border: 1px solid var(--line);
+}
+
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+
+.source pre, .translation pre, .note-panel pre {
+margin: 0;
+white-space: pre-wrap;
+word-break: break-word;
+font: inherit;
+}
+
+.mono pre {
+font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.note-toggle {
+align-self: start;
+border: 1px solid var(--line);
+background: #fff;
+border-radius: 999px;
+padding: 8px 12px;
+font: inherit;
+font-size: 14px;
+cursor: pointer;
+}
+
+.note-panel[hidden] { display: none; }
+
+@media (max-width: 720px) {
+.shell { width: min(100% - 20px, 100%); }
+.topbar-inner { width: min(100% - 20px, 100%); }
+.hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">02 PDF / HTML Sample</div>
+<h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>단어 토큰화, Penn Treebank 표준, Unix 도구 활용을 다룹니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">단어 빈도와 토큰화 개념</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>27378 the
+26084 and
+22538 i
+19771 to
+17481 of
+14725 a
+13826 you
+12489 my
+11318 that
+11112 in
+...</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>27378 the
+26084 and
+22538 i
+19771 to
+17481 of
+14725 a
+13826 you
+12489 my
+11318 that
+11112 in
+...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>셰익스피어 코퍼스 분석 결과, 빈도수 1위부터 10위까지의 단어 목록입니다. 전체 코퍼스의 매우 높은 비중을 이러한 기능어들이 차지하고 있음을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unix tools of this sort can be very handy in building quick word count statistics for any corpus.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 종류의 Unix 도구들은 모든 코퍼스에 대해 빠른 단어 수 통계를 구축하는 데 매우 유용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전문적인 NLP 라이브러리를 쓰기 전, 데이터의 전반적인 특징을 파악하는 데 Unix 명령어 조합(tr, sort, uniq)이 효율적임을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2.4.2 Word Tokenization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2.4.2 단어 토큰화 (Word Tokenization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 정규화의 첫 번째 단계인 토큰화의 상세한 규칙과 예외 상황들을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simple UNIX tools above were fine for getting rough word statistics but more sophisticated algorithms are generally necessary for tokenization, the task of segmenting running text into words.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위의 간단한 UNIX 도구들은 대략적인 단어 통계를 얻는 데는 괜찮았지만, 연속된 텍스트를 단어로 분절하는 작업인 토큰화(tokenization)를 위해서는 일반적으로 더 정교한 알고리즘이 필요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 공백/기호 제거를 넘어 문맥을 고려한 정교한 토큰화의 필요성을 제기합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>tokenization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>토큰화(tokenization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 등의 텍스트를 토큰이라는 최소 단위로 나누는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While the Unix command sequence just removed all the numbers and punctuation, for most NLP applications we'll need to keep these in our tokenization. We often want to break off punctuation as a separate token; commas are a useful piece of information for parsers, periods help indicate sentence boundaries. But we'll often want to keep the punctuation that occurs word internally, in examples like m.p.h., Ph.D., AT&T, and cap'n. Special characters and numbers will need to be kept in prices ($45.55) and dates (01/02/06); we don't want to segment that price into separate tokens of "45" and "55". And there are URLs (http://www.stanford.edu), Twitter hashtags (#nlproc), or email addresses (someone@cs.colorado.edu).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Unix 명령어 시퀀스는 단순히 모든 숫자와 문장 부호를 제거했지만, 대부분의 NLP 응용 프로그램에서는 토큰화 과정에서 이들을 유지해야 합니다. 우리는 종종 문장 부호를 별개의 토큰으로 분리하고 싶어 합니다. 쉼표는 구문 분석기(parser)에게 유용한 정보를 제공하고, 마침표는 문장 경계를 나타내는 데 도움이 되기 때문입니다. 하지만 단어 내부에 나타나는 문장 부호는 유지해야 할 때가 많습니다. m.p.h., Ph.D., AT&T, cap'n 같은 예시들이 그렇습니다. 가격($45.55)이나 날짜(01/02/06)에 포함된 특수 문자나 숫자도 유지되어야 합니다. 우리는 가격을 "45"와 "55"라는 별개의 토큰으로 분리하고 싶지 않기 때문입니다. 또한 URL(http://www.stanford.edu), 트위터 해시태그(#nlproc), 이메일 주소(someone@cs.colorado.edu) 등도 마찬가지입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>토큰화의 까다로운 지점들을 설명합니다. 문장 부호를 떼어내야 할 때(문장 끝 마침표)와 붙여두어야 할 때(줄임표, URL, 가격 등)를 구분하는 것이 중요합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Number expressions introduce other complications as well; while commas normally appear at word boundaries, commas are used inside numbers in English, every three digits: 555,500.50. Languages, and hence tokenization requirements, differ on this; many continental European languages like Spanish, French, and German, by contrast, use a comma to mark the decimal point, and spaces (or sometimes periods) where English puts commas, for example, 555 500,50.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>숫자 표현 또한 다른 복잡한 문제들을 불러일으킵니다. 쉼표는 보통 단어 경계에 나타나지만, 영어에서 숫자를 표기할 때는 세 자리마다 쉼표를 사용합니다(예: 555,500.50). 언어에 따라, 따라서 토큰화 요구 사항에 따라 이 기준은 달라집니다. 스페인어, 프랑스어, 독일어와 같은 많은 대륙계 유럽 언어들은 반대로 쉼표를 소수점으로 사용하고, 영어에서 쉼표가 들어가는 자리에 공백(또는 때로는 마침표)을 사용합니다(예: 555 500,50).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어권마다 다른 숫자 표기 규약(쉼표와 마침표의 역할)이 토큰화 알고리즘에 미치는 영향을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A tokenizer can also be used to expand clitic contractions that are marked by apostrophes, for example, converting what're to the two tokens what are, and we're to we are. A clitic is a part of a word that can't stand on its own, and can only occur when it is attached to another word. Some such contractions occur in other alphabetic languages, including articles and pronouns in French (j'ai, l'homme).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>토크나이저는 아포스트로피로 표시된 속사(clitic) 축약형을 확장하는 데에도 사용될 수 있습니다. 예를 들어 "what're"를 "what"과 "are"라는 두 개의 토큰으로 변환하거나, "we're"를 "we"와 "are"로 바꾸는 식입니다. 속사(clitic)란 독자적으로는 존재할 수 없고 다른 단어에 붙어 있을 때만 나타날 수 있는 단어의 일부분을 말합니다. 이러한 축약형은 프랑스어의 관사나 대명사(j'ai, l'homme)를 포함한 다른 알파벳 언어들에서도 나타납니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'속사(clitic)'의 개념을 소개합니다. 형태적으로는 한 단어처럼 보이지만 의미적으로는 두 개 이상의 단어가 결합된 경우, 이를 적절히 분리하는 것이 토큰화의 역할 중 하나입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>clitic</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>속사(clitic)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자립성은 없으나 문법적으로 단어에 준하는 기능을 하는 언어 요소입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Depending on the application, tokenization algorithms may also tokenize multiword expressions like New York or rock 'n' roll as a single token, which requires a multiword expression dictionary of some sort. Tokenization is thus intimately tied up with named entity recognition, the task of detecting names, dates, and organizations (Chapter 8).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>애플리케이션에 따라, 토큰화 알고리즘은 "New York"이나 "rock 'n' roll" 같은 다어절 표현(multiword expressions)을 하나의 토큰으로 토큰화할 수도 있습니다. 이를 위해서는 일종의 다어절 표현 사전이 필요합니다. 따라서 토큰화는 이름, 날짜, 조직 등을 탐지하는 작업인 개체명 인식(named entity recognition, 8장)과 밀접하게 연관되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>토큰화가 단순히 '나누기'만 하는 것이 아니라, "New York"처럼 의미상 하나로 묶어야 하는 '공동 참조' 단어들을 처리하는 과정과도 연결됨을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One commonly used tokenization standard is known as the Penn Treebank tokenization standard, used for the parsed corpora (treebanks) released by the Linguistic Data Consortium (LDC), the source of many useful datasets. This standard separates out clitics (doesn't becomes does plus n't), keeps hyphenated words together, and separates out all punctuation (to save space we're showing visible spaces '' between tokens, although newlines is a more common output):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>흔히 사용되는 토큰화 표준 중 하나는 펜 트리뱅크(Penn Treebank) 토큰화 표준으로 알려져 있습니다. 이는 많은 유용한 데이터셋의 원천인 LDC(Linguistic Data Consortium)에서 출시한 구문 분석 코퍼스(트리뱅크)에 사용됩니다. 이 표준은 속사를 분리하고("doesn't"는 "does"와 "n't"가 됨), 하이픈으로 연결된 단어들은 하나로 유지하며, 모든 문장 부호를 분리합니다 (공간 절약을 위해 토큰 사이에 가시적인 공백 ''을 표시하여 보여주겠지만, 실제 출력으로는 줄바꿈이 더 일반적입니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLP 연구에서 정석적으로 사용되는 펜 트리뱅크 토큰화 규칙을 소개합니다. "n't"를 별도 토큰으로 떼어내는 방식이 특징적입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Penn Treebank tokenization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>펜 트리뱅크 토큰화</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어 NLP 데이터의 표준이 되는 토큰화 규약입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">토큰화 예시와 각국 언어 처리</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>Input: "The San Francisco-based restaurant," they said, "doesn't charge $10".
+Output: " The San Francisco-based restaurant , " they said , " does n't charge $ 10 " .</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력: "The San Francisco-based restaurant," they said, "doesn't charge $10".
+출력: " The San Francisco-based restaurant , " they said , " does n't charge $ 10 " .</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>펜 트리뱅크 표준에 따른 실제 토큰화 예시입니다. 하이픈(-based)은 유지되고, 따옴표("), 쉼표(,), 소속어(n't), 달러 기호($)는 모두 독립된 토큰으로 분리된 것을 볼 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In practice, since tokenization needs to be run before any other language processing, it needs to be very fast. The standard method for tokenization is therefore to use deterministic algorithms based on regular expressions compiled into very efficient finite state automata. For example, Fig. 2.12 shows an example of a basic regular expression that can be used to tokenize with the nltk.regexp_tokenize function of the Python-based Natural Language Toolkit (NLTK) (Bird et al. 2009; http://www.nltk.org).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제로 토큰화는 다른 모든 언어 처리보다 먼저 실행되어야 하므로 매우 빨라야 합니다. 따라서 토큰화의 표준적인 방법은 매우 효율적인 유한 상태 오토마타(finite state automata)로 컴파일된 정규 표현식 기반의 결정론적 알고리즘을 사용하는 것입니다. 예를 들어, 그림 2.12는 Python 기반의 자연어 도구 모음인 NLTK(Natural Language Toolkit, Bird et al. 2009; http://www.nltk.org)의 `nltk.regexp_tokenize` 함수를 사용하여 토큰화할 수 있는 기본적인 정규 표현식의 예시를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대용량 데이터를 처리하기 위해 토큰화는 속도가 중요하며, 이를 위해 정규 표현식을 효율적인 상태 기계로 변환하여 실행한다는 기술적 배경을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>>>> text = 'That U.S.A. poster-print costs $12.40...'
+>>> pattern = r'''(?x) # set flag to allow verbose regexps
+... ([A-Z]\.)+ # abbreviations, e.g. U.S.A.
+... | \w+(-\w+)* # words with optional internal hyphens
+... | \$?\d+(\.\d+)?%? # currency and percentages, e.g. $12.40, 82%
+... | \.\.\. # ellipsis
+... | [][.,;"'?():-_`] # these are separate tokens; includes ], [
+... '''
+>>> nltk.regexp_tokenize(text, pattern)
+['That', 'U.S.A.', 'poster-print', 'costs', '$12.40', '...']</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>>>> text = 'That U.S.A. poster-print costs $12.40...'
+>>> pattern = r'''(?x) # 자세한 정규 표현식을 허용하기 위한 플래그 설정
+... ([A-Z]\.)+ # 약어(U.S.A. 등)
+... | \w+(-\w+)* # 내부 하이픈이 포함될 수 있는 단어
+... | \$?\d+(\.\d+)?%? # 통계 및 퍼센트($12.40, 82% 등)
+... | \.\.\. # 줄임표
+... | [][.,;"'?():-_`] # 이들은 개별 토큰임; ], [ 포함
+... '''
+>>> nltk.regexp_tokenize(text, pattern)
+['That', 'U.S.A.', 'poster-print', 'costs', '$12.40', '...']</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NLTK를 활용한 실제 정규 표현식 토큰화 코드입니다. 주석을 통해 각 정규 표현식 덩어리가 어떤 형태의 텍스트(약어, 하이픈 단어, 금액 등)를 잡아내는지 잘 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 2.12 A Python trace of regular expression tokenization in the NLTK Python-based natural language processing toolkit (Bird et al., 2009), commented for readability; the (?x) verbose flag tells Python to strip comments and whitespace. Figure from Chapter 3 of Bird et al. (2009).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 2.12 가독성을 위해 주석을 단 NLTK(Python 기반 자연어 처리 도구 모음)에서의 정규 표현식 토큰화 실행 과정(Bird et al., 2009). `(?x)` 플래그는 Python에게 주석과 공백을 무시하라고 지시합니다. Bird et al. (2009)의 3장에서 가져온 그림입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위 코드 예시의 정체와 `(?x)` 플래그의 역할을 설명하는 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Carefully designed deterministic algorithms can deal with the ambiguities that arise, such as the fact that the apostrophe needs to be tokenized differently when used as a genitive marker (as in the book's cover), a quotative as in 'The other class', she said, or in clitics like they're.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정교하게 설계된 결정론적 알고리즘은 아포스트로피가 소유격 표시어("the book's cover"), 인용 부호("'The other class', she said"), 혹은 속사("they're")로 쓰일 때 각각 다르게 토큰화되어야 한다는 사실과 같이 발생하는 중의성들을 처리할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동일한 기호(아포스트로피)가 문맥에 따라 다른 용도로 쓰일 때의 처리 난이도를 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Word tokenization is more complex in languages like written Chinese, Japanese, and Thai, which do not use spaces to mark potential word-boundaries. In Chinese, for example, words are composed of characters (called hanzi in Chinese). Each character generally represents a single unit of meaning (called a morpheme) and is pronounceable as a single syllable. Words are about 2.4 characters long on average. But deciding what counts as a word in Chinese is complex. For example, consider the following sentence:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 경계를 표시하기 위해 공백을 사용하지 않는 중국어, 일본어, 태국어와 같은 언어들에서는 단어 토큰화가 더욱 복잡해집니다. 예를 들어 중국어의 경우, 단어는 문자(중국어로 한자(hanzi)라고 부름)들로 구성됩니다. 각 문자는 일반적으로 하나의 의미 단위(형태소(morpheme))를 나타내며 하나의 음절로 발음됩니다. 단어는 평균적으로 약 2.4자 길이입니다. 하지만 중국어에서 무엇을 단어로 간주할지는 매우 복잡합니다. 예를 들어, 다음 문장을 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공백이 없는 동양권 언어의 토큰화 문제를 소개합니다. 한자 단위가 아닌 형태소와 단어 단위의 경계를 찾는 것이 핵심 과제임을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>hanzi</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한자(hanzi)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어의 기본 표기 단위인 한자를 뜻합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body mono">
+<section class="source"><div class="label">Source Text</div><pre>(2.4) 姚明进入总决赛
+"Yao Ming reaches the finals"
+As Chen et al. (2017) point out, this could be treated as 3 words ('Chinese Treebank' segmentation):
+(2.5) 姚明 进入 总决赛
+YaoMing reaches finals
+or as 5 words ('Peking University' segmentation):
+(2.6) 姚 明 进入 总 决赛
+Yao Ming reaches overall finals</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(2.4) 姚明进入总决赛
+"야오밍이 결승에 진출하다"
+Chen et al. (2017)이 지적했듯이, 이것은 3개의 단어('중국어 트리뱅크' 분절)로 처리될 수도 있고:
+(2.5) 姚明 进入 总决赛
+야오밍 진출하다 결승전
+혹은 5개의 단어('북경 대학교' 분절)로 처리될 수도 있습니다:
+(2.6) 姚 明 进入 总 决赛
+야오 명 진출하다 총 결승전</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어 분절의 모호함을 보여주는 유명한 예시입니다. 야오밍의 이름을 한 단어로 볼지(姚明), 아니면 성과 이름을 나눌지(姚 명)에 따라 단어 수가 달라집니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, it is possible in Chinese simply to ignore words altogether and use characters as the basic elements, treating the sentence as a series of 7 characters:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 중국어에서는 단어라는 단위를 아예 무시하고 문자를 기본 요소로 사용하여 문장을 다음처럼 7개의 문자 시퀀스로 취급하는 것도 가능합니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 단위 분절의 어려움 때문에 아예 글자 하나하나를 최소 단위로 보기도 한다는 점을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

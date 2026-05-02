@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-11">Page 11</a>
+<a class="chip" href="#page-12">Page 12</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>C. Statistical Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Draft</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-11">
+<header class="page-header">
+<h2>Page 11</h2>
+<div class="page-subtitle">Improving PCFGs by Splitting Non-Terminals</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>IMPROVING PCFGS BY SPLITTING NON-TERMINALS 11</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비단말 기호 분할을 통한 PCFG 개선 11</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 정보.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.6 Another view of the preposition attachment problem. Should the PP on the right attach to the VP or NP nodes of the partial parse tree on the left?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.6 전치사 부착 문제의 또 다른 관점. 오른쪽의 PP(전치사구)가 왼쪽 부분 구문 트리의 VP(동사구) 노드에 부착되어야 할까, 아니면 NP(명사구) 노드에 부착되어야 할까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전치사구 부착 중의성을 설명하는 그림의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(C.19) fishermen caught tons of herring</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(C.19) 어부들이 엄청난 양의 청어를 잡았다</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What information in the input sentence lets us know that (C.19) requires NP attachment while (C.18) requires VP attachment? These preferences come from the identities of the verbs, nouns, and prepositions. The affinity between the verb dumped and the preposition into is greater than the affinity between the noun sacks and the preposition into, thus leading to VP attachment. On the other hand, in (C.19) the affinity between tons and of is greater than that between caught and of, leading to NP attachment. Thus, to get the correct parse for these kinds of examples, we need a model that somehow augments the PCFG probabilities to deal with these lexical dependency statistics for different verbs and prepositions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력 문장에서 어떤 정보가 (C.19)는 NP 부착을 요구하고 (C.18)은 VP 부착을 요구한다는 것을 알게 해 줄까요? 이러한 선호도는 동사, 명사, 전치사의 정체성에서 비롯됩니다. 동사 dumped와 전치사 into 사이의 연관성은 명사 sacks와 전치사 into 사이의 연관성보다 더 커서 VP 부착으로 이어집니다. 반면에 (C.19)에서는 tons와 of 사이의 연관성이 caught와 of 사이의 연관성보다 크기 때문에 NP 부착으로 이어집니다. 따라서 이러한 종류의 예시들에 대한 올바른 구문 분석을 얻기 위해서는, 서로 다른 동사와 전치사에 대한 이러한 어휘 의존성(lexical dependency) 통계를 다루기 위해 어떻게든 PCFG 확률을 증강시키는 모델이 필요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 간의 어휘적 연관성이 구조적 중의성을 해결하는 핵심임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Coordination ambiguities are another case in which lexical dependencies are the key to choosing the proper parse. Figure C.7 shows an example from Collins (1999) with two parses for the phrase dogs in houses and cats. Because dogs is semantically a better conjunct for cats than houses (and because most dogs can't fit inside cats), the parse [dogs in [NP houses and cats]] is intuitively unnatural and should be dispreferred. The two parses in Fig. C.7, however, have exactly the same PCFG rules, and thus a PCFG will assign them the same probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>접속사 중의성(Coordination ambiguities)은 어휘 의존성이 적절한 구문 분석을 선택하는 핵심인 또 다른 사례입니다. 그림 C.7은 "dogs in houses and cats"라는 구문에 대한 두 가지 구문 분석을 보여주는 콜린스(Collins, 1999)의 예입니다. 의미론적으로 dogs가 houses보다 cats에 더 잘 어울리는 접속 성분이기 때문에 (그리고 대부분의 개는 고양이 안에 들어갈 수 없기 때문에), [dogs in [NP houses and cats]]라는 구문 분석은 직관적으로 부자연스럽고 선호되지 않아야 합니다. 그러나 그림 C.7의 두 구문 분석은 정확히 동일한 PCFG 규칙을 가지므로, PCFG는 이들에 동일한 확률을 할당할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>접속사 중의성 문제에서도 기존 PCFG가 한계를 지닌다는 점을 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In summary, we have shown in this section and the previous one that probabilistic context-free grammars are incapable of modeling important structural and lexical dependencies. In the next two sections we sketch current methods for augmenting PCFGs to deal with both these issues.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약하자면, 우리는 이번 섹션과 이전 섹션을 통해 확률적 문맥 자유 문법이 중요한 구조적 및 어휘적 의존성을 모델링할 수 없다는 것을 보여주었습니다. 다음 두 섹션에서는 이러한 두 가지 문제를 모두 처리하기 위해 PCFG를 확장하는 최신 방법들을 간략히 설명합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 한계점 요약과 이후 섹션에 대한 안내.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.5 Improving PCFGs by Splitting Non-Terminals</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.5 비단말 기호 분할을 통한 PCFG 개선</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구조적 의존성 문제를 해결하기 위한 비단말 기호 분할법 섹션 시작.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's start with the first of the two problems with PCFGs mentioned above: their inability to model structural dependencies, like the fact that NPs in subject position tend to be pronouns, whereas NPs in object position tend to have full lexical (non-pronominal) form. How could we augment a PCFG to correctly model this fact?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위에서 언급한 PCFG의 두 가지 문제 중 첫 번째 문제, 즉 구조적 의존성을 모델링할 수 없다는 문제부터 시작하겠습니다. 주어 위치의 NP는 대명사인 경향이 있는 반면, 목적어 위치의 NP는 완전한 어휘적(비대명사) 형태를 띠는 경향이 있다는 사실이 그 예입니다. 이 사실을 올바르게 모델링하려면 PCFG를 어떻게 확장할 수 있을까요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주어와 목적어 명사구의 특성 차이를 모델링하기 위한 문제 제기.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One idea would be to split the NP non-terminal into two versions: one for subjects, one for objects. Having two nodes (e.g., NPsubject and NPobject) would allow us to correctly model their different distributional properties, since we would have</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 가지 아이디어는 NP 비단말 기호를 주어용과 목적어용의 두 가지 버전으로 분할하는 것입니다. 두 개의 노드(예: NPsubject와 NPobject)를 가지면 그들의 다른 분포 속성을 올바르게 모델링할 수 있을 것입니다. 왜냐하면 우리는...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비단말 기호를 세분화하여 구조적 차이를 반영하는 아이디어입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-12">
+<header class="page-header">
+<h2>Page 12</h2>
+<div class="page-subtitle">Parent Annotation</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>12 APPENDIX C STATISTICAL CONSTITUENCY PARSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>12 부록 C 통계적 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 여백 정보.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.7 An instance of coordination ambiguity. Although the left structure is intuitively the correct one, a PCFG will assign them identical probabilities since both structures use exactly the same set of rules. After Collins (1999).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.7 접속사 중의성의 예. 비록 왼쪽 구조가 직관적으로 올바른 것이지만, 두 구조 모두 정확히 동일한 규칙 세트를 사용하기 때문에 PCFG는 이들에 동일한 확률을 할당합니다. 콜린스(Collins, 1999)에서 발췌.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>접속사 중의성에서 PCFG가 실패하는 이유를 시각적으로 보여주는 그림의 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>different probabilities for the rule NPsubject -> PRP and the rule NPobject -> PRP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NPsubject -> PRP 규칙과 NPobject -> PRP 규칙에 대해 서로 다른 확률을 가질 수 있기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 페이지에서 이어진 문장으로, 노드를 분할하면 위치에 따른 대명사 발생 확률을 다르게 모델링할 수 있음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One way to implement this intuition of splits is to do parent annotation (Johnson, 1998), in which we annotate each node with its parent in the parse tree. Thus, an NP node that is the subject of the sentence and hence has parent S would be annotated NP^S, while a direct object NP whose parent is VP would be annotated NP^VP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 분할 직관을 구현하는 한 가지 방법은 구문 분석 트리의 각 노드에 부모를 주석으로 다는 부모 주석(parent annotation)을 수행하는 것입니다(Johnson, 1998). 따라서 문장의 주어이면서 부모가 S인 NP 노드는 NP^S로 주석이 달리고, 부모가 VP인 직접 목적어 NP는 NP^VP로 주석이 달립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부모 노드의 정보를 현재 노드에 추가하여 문맥을 반영하는 부모 주석 기법의 도입.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.8 shows an example of a tree produced by a grammar that parent-annotates the phrasal non-terminals (like NP and VP).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.8은 구 비단말 기호(NP 및 VP와 같은)에 부모 주석을 다는 문법에 의해 생성된 트리의 예를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 C.8에 대한 설명입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.8 A standard PCFG parse tree (a) and one which has parent annotation on the nodes which aren't pre-terminal (b). All the non-terminal nodes (except the pre-terminal part-of-speech nodes) in parse (b) have been annotated with the identity of their parent.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.8 표준 PCFG 구문 분석 트리 (a)와 전단말(pre-terminal)이 아닌 노드들에 부모 주석이 있는 트리 (b). (b)의 모든 비단말 노드(전단말 품사 노드 제외)에는 부모의 신원(identity)이 주석으로 달려 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부모 주석이 어떻게 구문 트리의 노드 이름을 바꾸는지 보여주는 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In addition to splitting these phrasal nodes, we can also improve a PCFG by splitting the pre-terminal part-of-speech nodes (Klein and Manning, 2003b). For example, different kinds of adverbs (RB) tend to occur in different syntactic positions: the most common adverbs with ADVP parents are also and now, with VP parents n't and not, and with NP parents only and just. Thus, adding tags like RB^ADVP, RB^VP, and RB^NP can be useful in improving PCFG modeling.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 구(phrasal) 노드를 분할하는 것 외에도, 전단말 품사 노드를 분할함으로써 PCFG를 개선할 수도 있습니다(Klein and Manning, 2003b). 예를 들어, 여러 종류의 부사(RB)는 각기 다른 구문 위치에 발생하는 경향이 있습니다. ADVP 부모를 가진 가장 일반적인 부사는 also와 now이고, VP 부모는 n't와 not, NP 부모는 only와 just입니다. 따라서 RB^ADVP, RB^VP, RB^NP와 같은 태그를 추가하는 것은 PCFG 모델링을 개선하는 데 유용할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 노드 분할을 통해 어휘의 분포 차이를 세밀하게 반영하는 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Similarly, the Penn Treebank tag IN can mark a wide variety of parts-of-speech, including subordinating conjunctions (while, as, if), complementizers (that, for), and prepositions (of, in, from). Some of these differences can be captured by parent</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이와 유사하게, 펜 트리뱅크 태그 IN은 종속 접속사(while, as, if), 보문소(that, for), 전치사(of, in, from)를 포함한 매우 다양한 품사를 표시할 수 있습니다. 이러한 차이 중 일부는 부모 노드를 통해 포착할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>IN 태그의 다양한 쓰임새를 부모 주석으로 구별하는 예시 도입.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

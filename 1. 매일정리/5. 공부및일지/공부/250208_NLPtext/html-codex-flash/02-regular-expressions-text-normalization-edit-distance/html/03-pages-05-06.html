@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages 5-6 | Regular Expressions, Text Normalization, Edit Distance</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1f1b16;
+      --muted: #6f675d;
+      --line: #ddd2c2;
+      --accent: #8c5a2b;
+      --accent-soft: #f1e2cf;
+      --note-bg: #faf4ea;
+      --source-bg: #f5f3ef;
+      --translation-bg: #fff8ea;
+      --shadow: 0 10px 30px rgba(53, 40, 24, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%),
+        linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 241, 232, 0.88);
+      border-bottom: 1px solid rgba(221, 210, 194, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .topbar-inner {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .quick-nav,
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fcf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .meta-card dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .meta-card dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .page {
+      margin-bottom: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff8eb, #f5ead8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blocks {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fffdfa;
+    }
+
+    .block-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .block-title {
+      font-weight: 800;
+    }
+
+    .block-type {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .block-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .source,
+    .translation,
+    .note-panel {
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .source {
+      background: var(--source-bg);
+    }
+
+    .translation {
+      background: var(--translation-bg);
+    }
+
+    .note-panel {
+      background: var(--note-bg);
+    }
+
+    .source pre,
+    .translation pre,
+    .note-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: inherit;
+    }
+
+    .mono pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .note-toggle {
+      align-self: start;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-panel[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero,
+      .page-header,
+      .blocks,
+      .block-head,
+      .block-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="doc-meta">
+        <div class="eyebrow">02 PDF / HTML Sample</div>
+        <h1>Regular Expressions, Text Normalization, Edit Distance</h1>
+      </div>
+      <div class="quick-nav">
+        <a class="chip" href="#page-5">Page 5</a>
+        <a class="chip" href="#page-6">Page 6</a>
+      </div>
+      <div class="actions">
+        <button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+        <button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Study Edition</div>
+      <h2>Pages 5-6 Annotated Page</h2>
+      <p>앵커(^, $), 단어 경계(\b), 연산자 우선순위, 탐욕적 매칭을 다룹니다.</p>
+      <div class="hero-grid">
+        <dl class="meta-card">
+          <dt>Source</dt>
+          <dd>2. Regular Expressions, Text Normalization, Edit Distance.pdf</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Workflow</dt>
+          <dd>html-codex-flash</dd>
+        </dl>
+        <dl class="meta-card">
+          <dt>Status</dt>
+          <dd>Accepted</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="page" id="page-5">
+      <header class="page-header">
+        <h2>Page 5</h2>
+        <div class="page-subtitle">앵커와 단어 경계</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.1 • REGULAR EXPRESSIONS 5</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.1 • 정규 표현식 5</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 섹션 번호와 제목, 그리고 페이지 번호(5)를 나타내는 헤더입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>start of a line. Thus, the caret ^ has three uses: to match the start of a line, to indicate a negation inside of square brackets, and just to mean a caret. (What are the contexts that allow grep or Python to know which function a given caret is supposed to have?) The dollar sign $ matches the end of a line. So the pattern ␣$ is a useful pattern for matching a space at the end of a line, and /^The dog\.$/ matches a line that contains only the phrase The dog. (We have to use the backslash here since we want the . to mean "period" and not the wildcard.)</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>줄의 시작입니다. 따라서 캐럿(^)은 세 가지 용도로 쓰입니다: 줄의 시작 부분과 일치시키기 위해, 대괄호 안에서 부정을 나타내기 위해, 그리고 단순히 캐럿 기호 자체를 의미하기 위해 사용됩니다. (grep이나 Python과 같은 도구들이 어떤 문맥에서 캐럿이 어떤 기능을 수행해야 하는지 어떻게 알 수 있을까요?) 달러 기호($)는 줄의 끝과 일치합니다. 따라서 ␣$ 패턴은 줄 끝의 공백을 찾는 데 유용하며, /^The dog\.$/는 오직 "The dog."이라는 구구절만 포함된 줄과 일치합니다. (여기서는 마침표(.)를 와일드카드가 아닌 실제 마침표 의미로 사용하기 위해 백슬래시를 사용해야 합니다.)</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>캐럿(^)의 세 가지 중의적 용도를 정리하고, 줄의 시작(^)과 끝($)을 나타내는 앵커(anchor)의 기초를 설명합니다. 특히 마침표(.)와 같은 특수 문자를 일반 문자로 취급하기 위한 이스케이프(\) 처리의 중요성을 언급합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: RE | Match
+row 2: ^ | start of line
+row 3: $ | end of line
+row 4: \b | word boundary
+row 5: \B | non-word boundary</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 정규 표현식(RE) | 일치 대상
+행 2: ^ | 줄의 시작
+행 3: $ | 줄의 끝
+행 4: \b | 단어 경계
+행 5: \B | 단어 경계가 아님</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 내의 특정 위치를 지정하는 앵커 기호들을 표로 정리한 것입니다. 이들은 실제 문자와 매칭되는 것이 아니라 문자의 '위치' 조건과 매칭됩니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">figure_caption</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Figure 2.7 Anchors in regular expressions.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>그림 2.7 정규 표현식에서의 앵커.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>위 표의 내용을 설명하는 캡션으로, 앵커(anchors)라는 용어를 공식화합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>There are also two other anchors: \b matches a word boundary, and \B matches a non-boundary. Thus, /\bthe\b/ matches the word the but not the word other. More technically, a "word" for the purposes of a regular expression is defined as any sequence of digits, underscores, or letters; this is based on the definition of "words" in programming languages. For example, /\b99\b/ will match the string 99 in There are 99 bottles of beer on the wall (because 99 follows a space) but not 99 in There are 299 bottles of beer on the wall (since 99 follows a number). But it will match 99 in $99 (since 99 follows a dollar sign ($), which is not a digit, underscore, or letter).</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>앵커에는 이 밖에도 두 가지가 더 있습니다. \b는 단어 경계(word boundary)와 일치하고, \B는 단어 경계가 아닌 위치와 일치합니다. 따라서 /\bthe\b/는 the라는 단어와는 일치하지만 other라는 단어와는 일치하지 않습니다. 좀 더 기술적으로 말하면, 정규 표현식에서의 "단어"는 숫자, 밑줄, 또는 문자로 이루어진 임의의 연속열로 정의되며, 이는 프로그래밍 언어에서의 "단어" 정의를 따른 것입니다. 예를 들어 /\b99\b/는 There are 99 bottles of beer on the wall에서의 99와는 일치합니다(99 앞에 공백이 있기 때문입니다). 하지만 There are 299 bottles of beer on the wall에서의 99와는 일치하지 않습니다(99 앞에 숫자가 오기 때문입니다). 반면 $99에서의 99와는 일치합니다(99 앞에 있는 달러 기호($)는 숫자, 밑줄, 또는 문자가 아니기 때문입니다).</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>\b와 \B는 실제 문자와 매칭되는 것이 아니라 단어의 경계를 판별하는 위치 조건입니다. 여기서 "단어"의 정의가 일상적인 의미가 아니라 문자, 숫자, 밑줄 중심의 기술적 정의라는 점이 중요합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-6">
+      <header class="page-header">
+        <h2>Page 6</h2>
+        <div class="page-subtitle">연산자 우선순위와 탐욕적 매칭</div>
+      </header>
+      <div class="blocks">
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 1</div>
+            <div class="block-type">other</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>6 CHAPTER 2 • REGULAR EXPRESSIONS, TEXT NORMALIZATION, EDIT DISTANCE</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>6 제2장 • 정규 표현식, 텍스트 정규화, 편집 거리</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단의 장 제목과 페이지 번호(6) 정보입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 2</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>/(Column␣[0-9]+␣*)*/ to match the word Column, followed by a number and optional spaces, the whole pattern repeated zero or more times.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/(Column␣[0-9]+␣*)*/ 패턴은 단어 Column 뒤에 숫자와 선택적인 공백들이 뒤따르는 전체 패턴이 0번 이상 반복되는 경우와 일치합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>전 페이지에서 이어지는 내용으로, 소괄호를 사용하여 복합적인 패턴(Column + 숫자 + 공백)을 하나의 단위로 묶어 반복 연산(*)을 적용하는 방법을 보여 줍니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 3</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>This idea that one operator may take precedence over another, requiring us to sometimes use parentheses to specify what we mean, is formalized by the operator precedence hierarchy for regular expressions. The following table gives the order of RE operator precedence, from highest precedence to lowest precedence.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>어떤 연산자가 다른 연산자보다 우선순위를 가질 수 있다는 개념, 그리고 때로는 의도를 명확히 하기 위해 괄호를 사용해야 한다는 점은 정규 표현식의 연산자 우선순위 계층 구조로 공식화되어 있습니다. 다음 표는 정규 표현식 연산자의 순위를 가장 높은 것부터 가장 낮은 것 순으로 보여 줍니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 연산자가 섞여 있을 때 어떤 것이 먼저 계산되는지 결정하는 '우선순위(precedence)' 개념을 도입합니다. 수학의 사칙연산 우선순위와 같은 원리입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 4</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>operator precedence</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>연산자 우선순위</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>연산자 간의 처리 순서를 나타내는 핵심 용어입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 5</div>
+            <div class="block-type">table</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: Parenthesis | ()
+row 2: Counters | * + ? {}
+row 3: Sequences and anchors | the ^my end$
+row 4: Disjunction | |</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: 괄호 | ()
+행 2: 수량자(Counters) | * + ? {}
+행 3: 시퀀스 및 앵커 | the ^my end$
+행 4: 선택(Disjunction) | |</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>정규 표현식 연산자의 우선순위를 표로 정리한 것입니다. 맨 위의 괄호가 가장 우선권이 높고, 맨 아래의 선택(|) 연산자가 가장 낮습니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 6</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Thus, because counters have a higher precedence than sequences, /the*/ matches theeeee but not thethe. Because sequences have a higher precedence than disjunction, /the|any/ matches the or any but not thany or theny.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>따라서 수량자가 시퀀스보다 높은 우선순위를 갖기 때문에, /the*/는 'theeeee'와는 일치하지만 'thethe'와는 일치하지 않습니다. 또한 시퀀스가 선택 연산자보다 우선순위가 높기 때문에, /the|any/는 'the' 또는 'any'와는 일치하지만 'thany'나 'theny'와는 일치하지 않습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>우선순위가 실제 매칭 결과에 어떤 영향을 주는지 예시를 들어 설명합니다. /the*/에서 `*`가 `the` 전체가 아닌 마지막 `e`에만 적용되는 이유가 바로 수량자의 높은 우선순위 때문입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 7</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Patterns can be ambiguous in another way. Consider the expression /[a-z]*/ when matching against the text once upon a time. Since /[a-z]*/ matches zero or more letters, this expression could match nothing, or just the first letter o, on, onc, or once. In these cases regular expressions always match the largest string they can; we say that patterns are greedy, expanding to cover as much of a string as they can.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>패턴은 다른 방식으로도 모호해질 수 있습니다. "once upon a time"이라는 텍스트에 대해 /[a-z]*/라는 표현식을 매칭하는 경우를 생각해 봅시다. /[a-z]*/는 0개 이상의 문자와 일치하므로, 이 표현식은 아무것도 선택하지 않거나, 첫 글자인 o, 혹은 on, onc, once 중 어느 것과도 일치할 수 있습니다. 이런 경우 정규 표현식은 항상 가능한 가장 긴 문자열과 일치합니다. 우리는 이를 패턴이 탐욕적(greedy)이라고 하며, 가능한 한 많은 문자열을 포함하도록 확장된다고 말합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>정규 표현식의 중요한 속성인 '탐욕적 매칭(greedy matching)'을 설명합니다. 여러 가능성이 있을 때 기본적으로 가장 긴 범위를 선택하려는 성향을 뜻합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 8</div>
+            <div class="block-type">margin_note</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>greedy non-greedy *? +?</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>탐욕적/비탐욕적 *? +?</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>매칭 범위를 결정하는 방식과 이를 조절하는 기호를 나타냅니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 9</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>There are, however, ways to enforce non-greedy matching, using another meaning of the ? qualifier. The operator *? is a Kleene star that matches as little text as possible. The operator +? is a Kleene plus that matches as little text as possible.</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>하지만 물음표(?) 수량자의 다른 의미를 사용하여 비탐욕적(non-greedy) 매칭을 강제하는 방법도 있습니다. 연산자 *?는 가능한 한 적은 텍스트와 일치하는 클레이니 별표입니다. 연산자 +?는 가능한 한 적은 텍스트와 일치하는 클레이니 플러스입니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>탐욕적 성향을 억제하고 최소한의 범위만 매칭하게 만드는 비탐욕적 연산자들을 소개합니다. 기존 수량자 뒤에 물음표를 붙여서 표현합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 10</div>
+            <div class="block-type">section_title</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>2.1.3 A Simple Example</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>2.1.3 간단한 예시</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>지금까지 배운 개념들을 종합하여 실제 문제를 해결해 보는 실습 섹션입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 11</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Suppose we wanted to write a RE to find cases of the English article the. A simple (but incorrect) pattern might be:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>영어의 관사 'the'를 찾는 정규 표현식을 작성하고 싶다고 가정해 봅시다. 간단하지만 (잘못된) 패턴은 다음과 같을 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 매칭 시도가 가질 수 있는 문제점들을 하나씩 해결해 나가는 과정을 예고합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 12</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/the/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/the/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 직관적이지만 많은 예외를 남기는 기초적인 패턴입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 13</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>One problem is that this pattern will miss the word when it begins a sentence and hence is capitalized (i.e., The). This might lead us to the following pattern:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>한 가지 문제는 이 패턴이 문장 처음에 와서 대문자로 표기된 단어(즉, The)를 놓친다는 점입니다. 이는 우리를 다음과 같은 패턴으로 이끕니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대소문자 매칭 문제를 인지하는 단계입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 14</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/[tT]he/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/[tT]he/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>대괄호를 사용하여 't'와 'T'를 모두 수용하도록 개선된 패턴입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 15</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>But we will still incorrectly return texts with the embedded in other words (e.g., other or theology). So we need to specify that we want instances with a word boundary on both sides:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>하지만 여전히 다른 단어 속에 포함된 'the'를 가진 텍스트(예: other 또는 theology)를 잘못 반환할 것입니다. 따라서 우리는 양쪽에 단어 경계가 있는 사례를 원한다고 지정해야 합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 일부로 포함된 문자열을 걸러내기 위해 단어 경계(\b)의 필요성을 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 16</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/\b[tT]he\b/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/\b[tT]he\b/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 경계 앵커를 추가하여 독립된 단어로서의 'the'만 찾도록 정교화된 패턴입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 17</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>Suppose we wanted to do this without the use of \b. We might want this since \b won't treat underscores and numbers as word boundaries; but we might want to find the in some context where it might also have underlines or numbers nearby (the_ or the25). We need to specify that we want instances in which there are no alphabetic letters on either side of the the:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>만약 \b를 사용하지 않고 이 작업을 수행하고 싶다고 가정해 봅시다. \b는 밑줄(_)이나 숫자를 단어 경계로 취급하지 않기 때문에, 근처에 밑줄이나 숫자가 있는 문맥(the_ 또는 the25)에서 the를 찾고 싶을 때는 이 방식이 필요할 수 있습니다. 우리는 the의 양옆에 알파벳 문자가 없는 사례를 지정해야 합니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>특수한 환경(밑줄이나 숫자가 포함된 경우)을 고려하여 `\b` 대신 사용자 정의 경계 조건을 설정하는 이유를 설명합니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 18</div>
+            <div class="block-type">code</div>
+          </div>
+          <div class="block-body mono">
+            <section class="source"><div class="label">Source Text</div><pre>/[^a-zA-Z][tT]he[^a-zA-Z]/</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>/[^a-zA-Z][tT]he[^a-zA-Z]/</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>부정을 나타내는 대괄호를 사용하여 양옆에 알파벳이 오지 않아야 함을 명시한 패턴입니다.</pre></section>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block-head">
+            <div class="block-title">Block 19</div>
+            <div class="block-type">paragraph</div>
+          </div>
+          <div class="block-body">
+            <section class="source"><div class="label">Source Text</div><pre>But there is still one more problem with this pattern: it won't find the word the when it begins a line. This is because the regular expression [^a-zA-Z], which we used to avoid embedded instances of the, implies that there must be some single (although non-alphabetic) character before the the. We can avoid this by specifying that before the the we require either the beginning-of-line or a non-alphabetic character, and the same at the end of the line:</pre></section>
+            <section class="translation"><div class="label">Korean Translation</div><pre>하지만 이 패턴에도 아직 한 가지 문제가 더 있습니다. 바로 줄의 시작 부분에 오는 단어 the를 찾지 못한다는 점입니다. 이는 우리가 the가 다른 단어에 포함되는 것을 피하기 위해 사용한 정규 표현식 [^a-zA-Z]가, the 앞에 반드시 어떤 단일 문자(알파벳이 아닌 것이라도)가 '존재해야 함'을 전제하기 때문입니다. 우리는 the 앞에 '줄의 시작' 혹은 '알파벳이 아닌 문자'가 오도록 지정하고, 줄의 끝에서도 마찬가지로 처리함으로써 이 문제를 피할 수 있습니다.</pre></section>
+            <button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+            <section class="note-panel" hidden><div class="label">Study Note</div><pre>줄의 시작 부분에는 앞에 문자가 존재하지 않기 때문에 발생하는 매칭 실패 문제를 분석합니다. 위치 정보(줄의 시작)와 문자 범위를 결합해야 함을 시사합니다.</pre></section>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+    function setPanelState(toggle, expanded) {
+      const panel = toggle.nextElementSibling;
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+      panel.hidden = !expanded;
+    }
+
+    toggles.forEach((toggle) => {
+      setPanelState(toggle, false);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setPanelState(toggle, !expanded);
+      });
+    });
+
+    document.querySelector("[data-expand-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, true));
+    });
+
+    document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+      toggles.forEach((toggle) => setPanelState(toggle, false));
+    });
+  </script>
+</body>
+</html>

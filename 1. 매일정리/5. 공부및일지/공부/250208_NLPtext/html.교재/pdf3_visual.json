@@ -1,0 +1,4517 @@
+[
+  {
+    "page": 1,
+    "elements": [
+      {
+        "type": "text",
+        "content": "Speech and Language Processing.\nDaniel Jurafsky & James H. Martin.\nCopyright © 2021.\nAll\nrights reserved.\nDraft of September 21, 2021.",
+        "bbox": [
+          95.4010009765625,
+          39.82692337036133,
+          476.1729431152344,
+          57.26205062866211
+        ]
+      },
+      {
+        "type": "text",
+        "content": "CHAPTER\n3",
+        "bbox": [
+          98.38999938964844,
+          118.42036437988281,
+          152.85789489746094,
+          201.70553588867188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N-gram Language Models",
+        "bbox": [
+          167.33099365234375,
+          141.6693878173828,
+          444.1037292480469,
+          166.45648193359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "“You are uniformly charming!” cried he, with a smile of associating and now\nand then I bowed and they perceived a chaise and four to wish for.\nRandom sentence generated from a Jane Austen trigram model",
+        "bbox": [
+          185.10699462890625,
+          217.9859619140625,
+          493.20013427734375,
+          251.79534912109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Predicting is difﬁcult—especially about the future, as the old quip goes. But how\nabout predicting something that seems much easier, like the next few words someone\nis going to say? What word, for example, is likely to follow",
+        "bbox": [
+          160.19998168945312,
+          281.2854309082031,
+          493.19976806640625,
+          315.15802001953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Please turn your homework ...",
+        "bbox": [
+          185.1069793701172,
+          322.50286865234375,
+          336.7877197265625,
+          332.4654846191406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Hopefully, most of you concluded that a very likely word is in, or possibly over,\nbut probably not refrigerator or the. In the following sections we will formalize\nthis intuition by introducing models that assign a probability to each possible next\nword. The same models will also serve to assign a probability to an entire sentence.\nSuch a model, for example, could predict that the following sequence has a much\nhigher probability of appearing in a text:",
+        "bbox": [
+          160.19998168945312,
+          340.46295166015625,
+          493.20513916015625,
+          410.3779602050781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "all of a sudden I notice three guys standing on the sidewalk",
+        "bbox": [
+          185.10699462890625,
+          418.5197448730469,
+          467.54901123046875,
+          427.48614501953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "than does this same set of words in a different order:",
+        "bbox": [
+          160.1999969482422,
+          435.85931396484375,
+          369.0260009765625,
+          445.8219299316406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "on guys all I of notice sidewalk three a sudden standing the",
+        "bbox": [
+          185.10699462890625,
+          456.38372802734375,
+          467.54901123046875,
+          465.3501281738281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Why would you want to predict upcoming words, or assign probabilities to sen-\ntences? Probabilities are essential in any task in which we have to identify words in\nnoisy, ambiguous input, like speech recognition. For a speech recognizer to realize\nthat you said I will be back soonish and not I will be bassoon dish, it helps to know\nthat back soonish is a much more probable sequence than bassoon dish. For writing\ntools like spelling correction or grammatical error correction, we need to ﬁnd and\ncorrect errors in writing like Their are two midterms, in which There was mistyped\nas Their, or Everything has improve, in which improve should have been improved.\nThe phrase There are will be much more probable than Their are, and has improved\nthan has improve, allowing us to help users by detecting and correcting these errors.\nAssigning probabilities to sequences of words is also essential in machine trans-\nlation. Suppose we are translating a Chinese source sentence:",
+        "bbox": [
+          160.19992065429688,
+          476.1443176269531,
+          493.20513916015625,
+          617.6138305664062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "他向记者\n介绍了\n主要内容\nHe to\nreporters introduced main content",
+        "bbox": [
+          178.13291931152344,
+          621.709228515625,
+          356.8719177246094,
+          646.0338745117188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "As part of the process we might have built the following set of potential rough\nEnglish translations:",
+        "bbox": [
+          160.199951171875,
+          652.2892456054688,
+          493.19964599609375,
+          674.2068481445312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "he introduced reporters to the main contents of the statement\nhe briefed to reporters the main contents of the statement\nhe briefed reporters on the main contents of the statement",
+        "bbox": [
+          170.18995666503906,
+          680.6072387695312,
+          416.5353088378906,
+          714.388916015625
+        ]
+      }
+    ]
+  },
+  {
+    "page": 2,
+    "elements": [
+      {
+        "type": "text",
+        "content": "2\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          295.206298828125,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A probabilistic model of word sequences could suggest that briefed reporters on\nis a more probable English phrase than briefed to reporters (which has an awkward\nto after briefed) or introduced reporters to (which uses a verb that is less ﬂuent\nEnglish in this context), allowing us to correctly select the boldfaced sentence above.\nProbabilities are also important for augmentative and alternative communi-\ncation systems (Trnka et al. 2007, Kane et al. 2017). People often use such AAC\nAAC",
+        "bbox": [
+          112.552978515625,
+          111.385986328125,
+          475.2053527832031,
+          181.30111694335938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "devices if they are physically unable to speak or sign but can instead use eye gaze or\nother speciﬁc movements to select words from a menu to be spoken by the system.\nWord prediction can be used to suggest likely words for the menu.\nModels that assign probabilities to sequences of words are called language mod-\nels or LMs. In this chapter we introduce the simplest model that assigns probabil-\nlanguage model",
+        "bbox": [
+          79.44298553466797,
+          183.2935333251953,
+          475.2011413574219,
+          241.07717895507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "LM\nities to sentences and sequences of words, the n-gram. An n-gram is a sequence\nn-gram\nof n words: a 2-gram (which we’ll call bigram) is a two-word sequence of words\nlike “please turn”, “turn your”, or ”your homework”, and a 3-gram (a trigram) is\na three-word sequence of words like “please turn your”, or “turn your homework”.\nWe’ll see how to use n-gram models to estimate the probability of the last word of\nan n-gram given the previous words, and also to assign probabilities to entire se-\nquences. In a bit of terminological ambiguity, we usually drop the word “model”,\nand use the term n-gram (and bigram, etc.) to mean either the word sequence itself\nor the predictive model that assigns it a probability. While n-gram models are much\nsimpler than state-of-the art neural language models based on the RNNs and trans-\nformers we will introduce in Chapter 9, they are an important foundational tool for\nunderstanding the fundamental concepts of language modeling.",
+        "bbox": [
+          104.93301391601562,
+          242.9786376953125,
+          475.201904296875,
+          384.5390930175781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.1\nN-Grams",
+        "bbox": [
+          77.40100860595703,
+          407.9930419921875,
+          180.1941680908203,
+          425.20843505859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Let’s begin with the task of computing P(w|h), the probability of a word w given\nsome history h. Suppose the history h is “its water is so transparent that” and we\nwant to know the probability that the next word is the:",
+        "bbox": [
+          142.19998168945312,
+          447.10382080078125,
+          475.20037841796875,
+          481.3360595703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(the|its water is so transparent that).\n(3.1)",
+        "bbox": [
+          232.17300415039062,
+          494.09478759765625,
+          475.2003173828125,
+          504.41705322265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "One way to estimate this probability is from relative frequency counts: take a\nvery large corpus, count the number of times we see its water is so transparent that,\nand count the number of times this is followed by the. This would be answering the\nquestion “Out of the times we saw the history h, how many times was it followed by\nthe word w”, as follows:",
+        "bbox": [
+          142.1999969482422,
+          517.534423828125,
+          475.2020263671875,
+          575.3179931640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(the|its water is so transparent that) =\nC(its water is so transparent that the)",
+        "bbox": [
+          221.4910125732422,
+          588.0757446289062,
+          382.7684631347656,
+          612.1695556640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(its water is so transparent that)\n(3.2)",
+        "bbox": [
+          239.28900146484375,
+          609.8839721679688,
+          475.2005920410156,
+          625.7485961914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "With a large enough corpus, such as the web, we can compute these counts and\nestimate the probability from Eq. 3.2. You should pause now, go to the web, and\ncompute this estimate for yourself.\nWhile this method of estimating probabilities directly from counts works ﬁne in\nmany cases, it turns out that even the web isn’t big enough to give us good estimates\nin most cases. This is because language is creative; new sentences are created all the\ntime, and we won’t always be able to count entire sentences. Even simple extensions",
+        "bbox": [
+          142.19998168945312,
+          637.3694458007812,
+          475.20001220703125,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 3,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.1\n•\nN-GRAMS\n3",
+        "bbox": [
+          395.39801025390625,
+          84.38048553466797,
+          493.2003173828125,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "of the example sentence may have counts of zero on the web (such as “Walden\nPond’s water is so transparent that the”; well, used to have counts of zero).\nSimilarly, if we wanted to know the joint probability of an entire sequence of\nwords like its water is so transparent, we could do it by asking “out of all possible\nsequences of ﬁve words, how many of them are its water is so transparent?” We\nwould have to get the count of its water is so transparent and divide by the sum of\nthe counts of all possible ﬁve word sequences. That seems rather a lot to estimate!\nFor this reason, we’ll need to introduce more clever ways of estimating the prob-\nability of a word w given a history h, or the probability of an entire word sequence\nW. Let’s start with a little formalizing of notation. To represent the probability\nof a particular random variable Xi taking on the value “the”, or P(Xi = “the”), we\nwill use the simpliﬁcation P(the). We’ll represent a sequence of N words either as\nw1 ...wn or w1:n (so the expression w1:n−1 means the string w1,w2,...,wn−1). For the\njoint probability of each word in a sequence having a particular value P(X = w1,Y =\nw2,Z = w3,...,W = wn) we’ll use P(w1,w2,...,wn).\nNow how can we compute probabilities of entire sequences like P(w1,w2,...,wn)?\nOne thing we can do is decompose this probability using the chain rule of proba-\nbility:",
+        "bbox": [
+          159.70204162597656,
+          111.385986328125,
+          496.4893493652344,
+          324.76318359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(X1...Xn) = P(X1)P(X2|X1)P(X3|X1:2)...P(Xn|X1:n−1)",
+        "bbox": [
+          212.1319580078125,
+          337.6429138183594,
+          441.2784423828125,
+          348.8443298339844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n\nY",
+        "bbox": [
+          274.010986328125,
+          350.5114440917969,
+          286.7431945800781,
+          368.5620422363281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "k=1\nP(Xk|X1:k−1)\n(3.3)",
+        "bbox": [
+          273.9700012207031,
+          360.77191162109375,
+          493.2005920410156,
+          382.6833190917969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=",
+        "bbox": [
+          260.2509765625,
+          360.9010314941406,
+          268.00189208984375,
+          370.8636169433594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Applying the chain rule to words, we get",
+        "bbox": [
+          160.20098876953125,
+          393.4615478515625,
+          322.800537109375,
+          403.4241638183594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(w1:n) = P(w1)P(w2|w1)P(w3|w1:2)...P(wn|w1:n−1)",
+        "bbox": [
+          215.18698120117188,
+          416.30389404296875,
+          438.22332763671875,
+          427.50531005859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n\nY",
+        "bbox": [
+          265.307861328125,
+          429.17242431640625,
+          278.0400695800781,
+          447.2230224609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "k=1\nP(wk|w1:k−1)\n(3.4)",
+        "bbox": [
+          265.265869140625,
+          439.431884765625,
+          493.2004699707031,
+          461.34429931640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=",
+        "bbox": [
+          251.54786682128906,
+          439.5610046386719,
+          259.29876708984375,
+          449.5235900878906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The chain rule shows the link between computing the joint probability of a sequence\nand computing the conditional probability of a word given previous words. Equa-\ntion 3.4 suggests that we could estimate the joint probability of an entire sequence of\nwords by multiplying together a number of conditional probabilities. But using the\nchain rule doesn’t really seem to help us! We don’t know any way to compute the\nexact probability of a word given a long sequence of preceding words, P(wn|wn−1\n1\n).\nAs we said above, we can’t just estimate by counting the number of times every word\noccurs following every long string, because language is creative and any particular\ncontext might have never occurred before!\nThe intuition of the n-gram model is that instead of computing the probability of\na word given its entire history, we can approximate the history by just the last few\nwords.\nThe bigram model, for example, approximates the probability of a word given\nbigram",
+        "bbox": [
+          123.32980346679688,
+          472.1225280761719,
+          493.2052307128906,
+          625.5470581054688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "all the previous words P(wn|w1:n−1) by using only the conditional probability of the\npreceding word P(wn|wn−1). In other words, instead of computing the probability",
+        "bbox": [
+          160.2007598876953,
+          627.1798095703125,
+          493.1986999511719,
+          650.3363037109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(the|Walden Pond’s water is so transparent that)\n(3.5)",
+        "bbox": [
+          227.8277587890625,
+          662.3367919921875,
+          493.2000732421875,
+          672.6590576171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "we approximate it with the probability",
+        "bbox": [
+          160.20074462890625,
+          685.8984375,
+          313.2261962890625,
+          695.8610229492188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(the|that)\n(3.6)",
+        "bbox": [
+          304.85272216796875,
+          708.7407836914062,
+          493.2000732421875,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 4,
+    "elements": [
+      {
+        "type": "text",
+        "content": "4\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          295.206298828125,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "When we use a bigram model to predict the conditional probability of the next word,\nwe are thus making the following approximation:",
+        "bbox": [
+          142.20001220703125,
+          111.56245422363281,
+          475.1996765136719,
+          133.48007202148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|w1:n−1) ≈P(wn|wn−1)\n(3.7)",
+        "bbox": [
+          252.0980224609375,
+          145.22181701660156,
+          475.2002868652344,
+          156.42324829101562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The assumption that the probability of a word depends only on the previous word is\ncalled a Markov assumption. Markov models are the class of probabilistic models\nMarkov",
+        "bbox": [
+          103.10598754882812,
+          167.6444854736328,
+          475.1996765136719,
+          189.56210327148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "that assume we can predict the probability of some future unit without looking too\nfar into the past. We can generalize the bigram (which looks one word into the past)\nto the trigram (which looks two words into the past) and thus to the n-gram (which\nn-gram",
+        "bbox": [
+          104.93295288085938,
+          191.5545196533203,
+          475.2000732421875,
+          225.42813110351562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "looks n−1 words into the past).\nThus, the general equation for this n-gram approximation to the conditional\nprobability of the next word in a sequence is",
+        "bbox": [
+          142.199951171875,
+          227.0608673095703,
+          475.19964599609375,
+          261.2931823730469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|w1:n−1) ≈P(wn|wn−N+1:n−1)\n(3.8)",
+        "bbox": [
+          233.00094604492188,
+          273.0339050292969,
+          475.2005310058594,
+          284.2353210449219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Given the bigram assumption for the probability of an individual word, we can com-\npute the probability of a complete word sequence by substituting Eq. 3.7 into Eq. 3.4:",
+        "bbox": [
+          142.19992065429688,
+          295.4575500488281,
+          475.1996154785156,
+          317.3751525878906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n\nY",
+        "bbox": [
+          299.5198974609375,
+          326.61541748046875,
+          312.2521057128906,
+          344.666015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(w1:n) ≈",
+        "bbox": [
+          256.9269104003906,
+          336.8748779296875,
+          297.2748107910156,
+          348.0762939453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "k=1\nP(wk|wk−1)\n(3.9)",
+        "bbox": [
+          299.4789123535156,
+          336.8748779296875,
+          475.2001953125,
+          358.78729248046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "How do we estimate these bigram or n-gram probabilities? An intuitive way to\nestimate probabilities is called maximum likelihood estimation or MLE. We get\nmaximum\nlikelihood\nestimation\nthe MLE estimate for the parameters of an n-gram model by getting counts from a\ncorpus, and normalizing the counts so that they lie between 0 and 1.1\nnormalize",
+        "bbox": [
+          95.701904296875,
+          364.5145263671875,
+          475.2003479003906,
+          410.3421325683594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "For example, to compute a particular bigram probability of a word y given a\nprevious word x, we’ll compute the count of the bigram C(xy) and normalize by the\nsum of all the bigrams that share the same ﬁrst word x:",
+        "bbox": [
+          142.19989013671875,
+          412.1580505371094,
+          475.2013854980469,
+          446.2080993652344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|wn−1) =\nC(wn−1wn)\nP\nwC(wn−1w)\n(3.10)",
+        "bbox": [
+          248.58290100097656,
+          456.65594482421875,
+          475.2005615234375,
+          482.5306396484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can simplify this equation, since the sum of all bigram counts that start with\na given word wn−1 must be equal to the unigram count for that word wn−1 (the reader\nshould take a moment to be convinced of this):",
+        "bbox": [
+          142.19992065429688,
+          487.4364318847656,
+          475.19989013671875,
+          521.3090209960938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|wn−1) = C(wn−1wn)",
+        "bbox": [
+          255.00991821289062,
+          531.7578735351562,
+          361.2043151855469,
+          549.5751953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−1)\n(3.11)",
+        "bbox": [
+          320.9419860839844,
+          538.7334594726562,
+          475.2005920410156,
+          556.4092407226562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Let’s work through an example using a mini-corpus of three sentences. We’ll\nﬁrst need to augment each sentence with a special symbol <s> at the beginning\nof the sentence, to give us the bigram context of the ﬁrst word. We’ll also need a\nspecial end-symbol. </s>2",
+        "bbox": [
+          142.199951171875,
+          562.04443359375,
+          475.19989013671875,
+          607.873046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "<s> I am Sam </s>\n<s> Sam I am </s>\n<s> I do not like green eggs and ham </s>",
+        "bbox": [
+          185.94393920898438,
+          615.139892578125,
+          400.3891906738281,
+          649.0134887695312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nFor probabilistic models, normalizing means dividing by some total count so that the resulting proba-\nbilities fall legally between 0 and 1.",
+        "bbox": [
+          142.1999969482422,
+          660.91064453125,
+          475.1997985839844,
+          678.7306518554688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2\nWe need the end-symbol to make the bigram grammar a true probability distribution. Without an\nend-symbol, the sentence probabilities for all sentences of a given length would sum to one. This model\nwould deﬁne an inﬁnite set of probability distributions, with one distribution per sentence length. See\nExercise 3.5.",
+        "bbox": [
+          142.1999969482422,
+          681.8316650390625,
+          475.1997375488281,
+          718.5816650390625
+        ]
+      }
+    ]
+  },
+  {
+    "page": 5,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.1\n•\nN-GRAMS\n5",
+        "bbox": [
+          395.39801025390625,
+          84.33849334716797,
+          493.2003173828125,
+          94.39205932617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Here are the calculations for some of the bigram probabilities from this corpus",
+        "bbox": [
+          160.20001220703125,
+          111.56245422363281,
+          472.85626220703125,
+          121.52505493164062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(I|<s>) = 2",
+        "bbox": [
+          165.1820068359375,
+          127.65190887451172,
+          222.20216369628906,
+          139.39857482910156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3 = .67\nP(Sam|<s>) = 1",
+        "bbox": [
+          218.51600646972656,
+          127.65190887451172,
+          346.4041748046875,
+          142.781494140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3 = .33\nP(am|I) = 2",
+        "bbox": [
+          342.7179870605469,
+          127.65190887451172,
+          439.2241516113281,
+          142.781494140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3 = .67",
+        "bbox": [
+          435.5379943847656,
+          129.3818817138672,
+          465.3105773925781,
+          142.781494140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(</s>|Sam) = 1",
+        "bbox": [
+          165.1820068359375,
+          143.0848846435547,
+          237.89317321777344,
+          154.83155822753906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 = 0.5\nP(Sam|am) = 1",
+        "bbox": [
+          234.20700073242188,
+          143.08494567871094,
+          341.17315673828125,
+          158.21453857421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 = .5\nP(do|I) = 1",
+        "bbox": [
+          337.48699951171875,
+          143.08494567871094,
+          439.2241516113281,
+          158.21453857421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3 = .33",
+        "bbox": [
+          435.5379943847656,
+          144.81492614746094,
+          465.3105773925781,
+          158.21453857421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "For the general case of MLE n-gram parameter estimation:",
+        "bbox": [
+          160.19998168945312,
+          162.4615020751953,
+          394.6697998046875,
+          172.42410278320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|wn−N+1:n−1) = C(wn−N+1:n−1 wn)",
+        "bbox": [
+          245.66598510742188,
+          182.74790954589844,
+          406.54937744140625,
+          200.56423950195312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−N+1:n−1)\n(3.12)",
+        "bbox": [
+          338.9419860839844,
+          189.72242736816406,
+          493.2005920410156,
+          207.39920043945312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Equation 3.12 (like Eq. 3.11) estimates the n-gram probability by dividing the\nobserved frequency of a particular sequence by the observed frequency of a preﬁx.\nThis ratio is called a relative frequency. We said above that this use of relative\nrelative\nfrequency",
+        "bbox": [
+          115.03797912597656,
+          222.72340393066406,
+          493.2051696777344,
+          258.3271179199219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "frequencies as a way to estimate probabilities is an example of maximum likelihood\nestimation or MLE. In MLE, the resulting parameter set maximizes the likelihood\nof the training set T given the model M (i.e., P(T|M)). For example, suppose the\nword Chinese occurs 400 times in a corpus of a million words like the Brown corpus.\nWhat is the probability that a random word selected from some other text of, say,\na million words will be the word Chinese? The MLE of its probability is\n400\n1000000\nor .0004. Now .0004 is not the best possible estimate of the probability of Chinese\noccurring in all situations; it might turn out that in some other corpus or context\nChinese is a very unlikely word. But it is the probability that makes it most likely\nthat Chinese will occur 400 times in a million-word corpus. We present ways to\nmodify the MLE estimates slightly to get better probability estimates in Section 3.5.\nLet’s move on to some examples from a slightly larger corpus than our 14-word\nexample above. We’ll use data from the now-defunct Berkeley Restaurant Project,\na dialogue system from the last century that answered questions about a database\nof restaurants in Berkeley, California (Jurafsky et al., 1994). Here are some text-\nnormalized sample user queries (a sample of 9332 sentences is on the website):",
+        "bbox": [
+          160.19996643066406,
+          258.58837890625,
+          493.20404052734375,
+          447.87896728515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "can you tell me about any good cantonese restaurants close by\nmid priced thai food is what i’m looking for\ntell me about chez panisse\ncan you give me a listing of the kinds of food that are available\ni’m looking for a good place to eat breakfast\nwhen is caffe venezia open during the day",
+        "bbox": [
+          185.1070098876953,
+          453.6778869628906,
+          410.7104797363281,
+          517.438232421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 3.1 shows the bigram counts from a piece of a bigram grammar from the\nBerkeley Restaurant Project. Note that the majority of the values are zero. In fact,\nwe have chosen the sample words to cohere with each other; a matrix selected from\na random set of seven words would be even more sparse.",
+        "bbox": [
+          160.20001220703125,
+          526.707275390625,
+          493.1999206542969,
+          572.535888671875
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page5_vis9.png",
+        "bbox": [
+          160.1999969482422,
+          584.302978515625,
+          493.20001220703125,
+          694.5889892578125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant\nto\neat\nchinese\nfood\nlunch\nspend\ni\n5\n827\n0\n9\n0\n0\n0\n2\nwant\n2\n0\n608\n1\n6\n6\n5\n1\nto\n2\n0\n4\n686\n2\n0\n6\n211\neat\n0\n0\n2\n0\n16\n2\n42\n0\nchinese\n1\n0\n0\n0\n0\n82\n1\n0\nfood\n15\n0\n15\n0\n1\n4\n0\n0\nlunch\n2\n0\n0\n0\n0\n1\n0\n0\nspend\n1\n0\n1\n0\n0\n0\n0\n0\nFigure 3.1\nBigram counts for eight of the words (out of V = 1446) in the Berkeley Restau-\nrant Project corpus of 9332 sentences. Zero counts are in gray.",
+        "bbox": [
+          160.20001220703125,
+          586.91748046875,
+          493.1998596191406,
+          716.88037109375
+        ]
+      }
+    ]
+  },
+  {
+    "page": 6,
+    "elements": [
+      {
+        "type": "text",
+        "content": "6\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          295.206298828125,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 3.2 shows the bigram probabilities after normalization (dividing each cell\nin Fig. 3.1 by the appropriate unigram for its row, taken from the following set of\nunigram probabilities):",
+        "bbox": [
+          142.20001220703125,
+          111.56245422363281,
+          475.19976806640625,
+          145.43606567382812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant to\neat\nchinese food lunch spend\n2533 927\n2417 746 158\n1093 341\n278",
+        "bbox": [
+          200.04400634765625,
+          156.10650634765625,
+          417.3575134277344,
+          178.51309204101562
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page6_vis14.png",
+        "bbox": [
+          142.1999969482422,
+          199.60800170898438,
+          475.20001220703125,
+          309.8940124511719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant\nto\neat\nchinese\nfood\nlunch\nspend\ni\n0.002\n0.33\n0\n0.0036\n0\n0\n0\n0.00079\nwant\n0.0022\n0\n0.66\n0.0011\n0.0065\n0.0065\n0.0054\n0.0011\nto\n0.00083\n0\n0.0017\n0.28\n0.00083\n0\n0.0025\n0.087\neat\n0\n0\n0.0027\n0\n0.021\n0.0027\n0.056\n0\nchinese\n0.0063\n0\n0\n0\n0\n0.52\n0.0063\n0\nfood\n0.014\n0\n0.014\n0\n0.00092\n0.0037\n0\n0\nlunch\n0.0059\n0\n0\n0\n0\n0.0029\n0\n0\nspend\n0.0036\n0\n0.0036\n0\n0\n0\n0\n0\nFigure 3.2\nBigram probabilities for eight words in the Berkeley Restaurant Project corpus\nof 9332 sentences. Zero probabilities are in gray.",
+        "bbox": [
+          142.1999969482422,
+          200.728515625,
+          475.20513916015625,
+          332.1864013671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Here are a few other useful probabilities:",
+        "bbox": [
+          142.1999969482422,
+          342.9084777832031,
+          305.1781311035156,
+          352.87109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(i|<s>) = 0.25\nP(english|want) = 0.0011\nP(food|english) = 0.5\nP(</s>|food) = 0.68",
+        "bbox": [
+          145.18899536132812,
+          359.1649169921875,
+          378.023193359375,
+          381.4970703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Now we can compute the probability of sentences like I want English food or\nI want Chinese food by simply multiplying the appropriate bigram probabilities to-\ngether, as follows:",
+        "bbox": [
+          142.20001220703125,
+          387.90899658203125,
+          475.2008361816406,
+          421.95904541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(<s> i want english food </s>)",
+        "bbox": [
+          190.2650146484375,
+          431.4278869628906,
+          350.5434875488281,
+          441.6285705566406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= P(i|<s>)P(want|i)P(english|want)",
+        "bbox": [
+          236.09303283691406,
+          446.37188720703125,
+          411.573486328125,
+          456.57257080078125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(food|english)P(</s>|food)",
+        "bbox": [
+          289.6620178222656,
+          461.3158874511719,
+          427.1454772949219,
+          471.5165710449219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= .25×.33×.0011×0.5×0.68",
+        "bbox": [
+          236.093017578125,
+          476.3147888183594,
+          370.39959716796875,
+          486.6370544433594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= .000031",
+        "bbox": [
+          236.093017578125,
+          491.3879089355469,
+          282.4587707519531,
+          501.5810546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We leave it as Exercise 3.2 to compute the probability of i want chinese food.\nWhat kinds of linguistic phenomena are captured in these bigram statistics?\nSome of the bigram probabilities above encode some facts that we think of as strictly\nsyntactic in nature, like the fact that what comes after eat is usually a noun or an\nadjective, or that what comes after to is usually a verb. Others might be a fact about\nthe personal assistant task, like the high probability of sentences beginning with\nthe words I. And some might even be cultural rather than linguistic, like the higher\nprobability that people are looking for Chinese versus English food.",
+        "bbox": [
+          142.19996643066406,
+          511.28900146484375,
+          475.2004699707031,
+          605.114013671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Some practical issues:\nAlthough for pedagogical purposes we have only described\nbigram models, in practice it’s more common to use trigram models, which con-\ntrigram",
+        "bbox": [
+          103.7340087890625,
+          613.3674926757812,
+          476.523681640625,
+          635.3760375976562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "dition on the previous two words rather than the previous word, or 4-gram or even\n4-gram",
+        "bbox": [
+          105.33700561523438,
+          637.2785034179688,
+          475.2012939453125,
+          647.33203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "5-gram models, when there is sufﬁcient training data. Note that for these larger n-\n5-gram",
+        "bbox": [
+          105.3370132446289,
+          649.2335205078125,
+          475.1966857910156,
+          659.2870483398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "grams, we’ll need to assume extra contexts to the left and right of the sentence end.\nFor example, to compute trigram probabilities at the very beginning of the sentence,\nwe use two pseudo-words for the ﬁrst trigram (i.e., P(I|<s><s>).\nWe always represent and compute language model probabilities in log format\nas log probabilities. Since probabilities are (by deﬁnition) less than or equal to\nlog\nprobabilities",
+        "bbox": [
+          88.99898529052734,
+          661.2794189453125,
+          475.19989013671875,
+          720.794189453125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 7,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.2\n•\nEVALUATING LANGUAGE MODELS\n7",
+        "bbox": [
+          289.7550048828125,
+          84.33849334716797,
+          493.2002868652344,
+          94.39205932617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1, the more probabilities we multiply together, the smaller the product becomes.\nMultiplying enough n-grams together would result in numerical underﬂow. By using\nlog probabilities instead of raw probabilities, we get numbers that are not as small.\nAdding in log space is equivalent to multiplying in linear space, so we combine log\nprobabilities by adding them. The result of doing all computation and storage in log\nspace is that we only need to convert back into probabilities if we need to report\nthem at the end; then we can just take the exp of the logprob:",
+        "bbox": [
+          160.19998168945312,
+          111.56245422363281,
+          493.19989013671875,
+          193.25613403320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "p1 × p2 × p3 × p4 = exp(log p1 +log p2 +log p3 +log p4)\n(3.13)",
+        "bbox": [
+          211.52598571777344,
+          206.84486389160156,
+          493.2004699707031,
+          218.44158935546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.2\nEvaluating Language Models",
+        "bbox": [
+          95.40084838867188,
+          239.29608154296875,
+          336.4337158203125,
+          256.511474609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The best way to evaluate the performance of a language model is to embed it in\nan application and measure how much the application improves. Such end-to-end\nevaluation is called extrinsic evaluation. Extrinsic evaluation is the only way to\nextrinsic\nevaluation",
+        "bbox": [
+          113.87583923339844,
+          278.7145080566406,
+          493.20074462890625,
+          314.80621337890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "know if a particular improvement in a component is really going to help the task\nat hand. Thus, for speech recognition, we can compare the performance of two\nlanguage models by running the speech recognizer twice, once with each language\nmodel, and seeing which gives the more accurate transcription.\nUnfortunately, running big NLP systems end-to-end is often very expensive. In-\nstead, it would be nice to have a metric that can be used to quickly evaluate potential\nimprovements in a language model. An intrinsic evaluation metric is one that mea-\nintrinsic\nevaluation",
+        "bbox": [
+          113.87581634521484,
+          314.5794982910156,
+          493.20068359375,
+          398.4921569824219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "sures the quality of a model independent of any application.\nFor an intrinsic evaluation of a language model we need a test set. As with many\nof the statistical models in our ﬁeld, the probabilities of an n-gram model come from\nthe corpus it is trained on, the training set or training corpus. We can then measure\ntraining set",
+        "bbox": [
+          110.68978881835938,
+          398.26544189453125,
+          493.2025451660156,
+          444.0940246582031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "the quality of an n-gram model by its performance on some unseen data called the\ntest set or test corpus. We will also sometimes call test sets and other datasets that\ntest set",
+        "bbox": [
+          124.74578857421875,
+          446.08642578125,
+          493.2005920410156,
+          468.0040283203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "are not in our training sets held out corpora because we hold them out from the\nheld out",
+        "bbox": [
+          120.71575927734375,
+          469.9054870605469,
+          493.2012023925781,
+          479.95904541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "training data.\nSo if we are given a corpus of text and want to compare two different n-gram\nmodels, we divide the data into training and test sets, train the parameters of both\nmodels on the training set, and then compare how well the two trained models ﬁt the\ntest set.\nBut what does it mean to “ﬁt the test set”? The answer is simple: whichever\nmodel assigns a higher probability to the test set—meaning it more accurately\npredicts the test set—is a better model. Given two probabilistic models, the better\nmodel is the one that has a tighter ﬁt to the test data or that better predicts the details\nof the test data, and hence will assign a higher probability to the test data.\nSince our evaluation metric is based on test set probability, it’s important not to\nlet the test sentences into the training set. Suppose we are trying to compute the\nprobability of a particular “test” sentence. If our test sentence is part of the training\ncorpus, we will mistakenly assign it an artiﬁcially high probability when it occurs\nin the test set. We call this situation training on the test set. Training on the test\nset introduces a bias that makes the probabilities all look too high, and causes huge\ninaccuracies in perplexity, the probability-based metric we introduce below.\nSometimes we use a particular test set so often that we implicitly tune to its\ncharacteristics. We then need a fresh test set that is truly unseen. In such cases, we\ncall the initial test set the development test set or, devset. How do we divide our\ndevelopment\ntest",
+        "bbox": [
+          106.6597900390625,
+          481.9524230957031,
+          493.20074462890625,
+          721.4771118164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 8,
+    "elements": [
+      {
+        "type": "text",
+        "content": "8\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          295.206298828125,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "data into training, development, and test sets? We want our test set to be as large\nas possible, since a small test set may be accidentally unrepresentative, but we also\nwant as much training data as possible. At the minimum, we would want to pick\nthe smallest test set that gives us enough statistical power to measure a statistically\nsigniﬁcant difference between two potential models. In practice, we often just divide\nour data into 80% training, 10% development, and 10% test. Given a large corpus\nthat we want to divide into training and test, test data can either be taken from some\ncontinuous sequence of text inside the corpus, or we can remove smaller “stripes”\nof text from randomly selected parts of our corpus and combine them into a test set.",
+        "bbox": [
+          142.20001220703125,
+          111.56245422363281,
+          475.1999816894531,
+          217.16714477539062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.2.1\nPerplexity",
+        "bbox": [
+          142.20001220703125,
+          232.94720458984375,
+          230.16636657714844,
+          244.90240478515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In practice we don’t use raw probability as our metric for evaluating language mod-\nels, but a variant called perplexity. The perplexity (sometimes called PP for short)\nperplexity",
+        "bbox": [
+          96.57601928710938,
+          252.7985382080078,
+          475.19970703125,
+          274.7161560058594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "of a language model on a test set is the inverse probability of the test set, normalized\nby the number of words. For a test set W = w1w2 ...wN,:",
+        "bbox": [
+          142.20001220703125,
+          276.70855712890625,
+          475.1998291015625,
+          299.901611328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PP(W) = P(w1w2 ...wN)−1",
+        "bbox": [
+          247.6259765625,
+          318.3497314453125,
+          366.4337158203125,
+          333.5836181640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\n(3.14)",
+        "bbox": [
+          362.7669982910156,
+          323.1019592285156,
+          475.2008361816406,
+          332.068359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=\nN\ns",
+        "bbox": [
+          281.4389953613281,
+          336.5523376464844,
+          306.6985778808594,
+          356.8735046386719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nP(w1w2 ...wN)",
+        "bbox": [
+          307.8940124511719,
+          340.3964538574219,
+          368.58941650390625,
+          365.2125244140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can use the chain rule to expand the probability of W:",
+        "bbox": [
+          157.14395141601562,
+          376.4949951171875,
+          386.2935485839844,
+          386.6340637207031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "v\nu\nu\nt",
+        "bbox": [
+          285.9269714355469,
+          407.1253356933594,
+          296.4474792480469,
+          434.6219177246094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\nY",
+        "bbox": [
+          296.4429931640625,
+          410.5833435058594,
+          309.1752014160156,
+          428.6339416503906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nP(wi|w1 ...wi−1)\n(3.15)",
+        "bbox": [
+          311.4750061035156,
+          414.4584655761719,
+          475.2007751464844,
+          439.2745056152344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PP(W) =\nN",
+        "bbox": [
+          236.81695556640625,
+          419.7087707519531,
+          291.10302734375,
+          431.1650695800781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1",
+        "bbox": [
+          297.07598876953125,
+          435.0683288574219,
+          308.5401611328125,
+          442.6112365722656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Thus, if we are computing the perplexity of W with a bigram language model,\nwe get:",
+        "bbox": [
+          142.19996643066406,
+          453.0459899902344,
+          475.1973571777344,
+          475.1400451660156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "v\nu\nu\nt",
+        "bbox": [
+          297.6949768066406,
+          495.63031005859375,
+          308.2154846191406,
+          523.1279296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\nY",
+        "bbox": [
+          308.21099853515625,
+          499.08935546875,
+          320.9432067871094,
+          517.1389770507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nP(wi|wi−1)\n(3.16)",
+        "bbox": [
+          323.2430114746094,
+          502.9634704589844,
+          475.2008361816406,
+          527.38427734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PP(W) =\nN",
+        "bbox": [
+          248.5849609375,
+          508.2137451171875,
+          302.87103271484375,
+          519.6710205078125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1",
+        "bbox": [
+          308.843994140625,
+          523.5743408203125,
+          320.30816650390625,
+          531.1172485351562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Note that because of the inverse in Eq. 3.15, the higher the conditional probabil-\nity of the word sequence, the lower the perplexity. Thus, minimizing perplexity is\nequivalent to maximizing the test set probability according to the language model.\nWhat we generally use for word sequence in Eq. 3.15 or Eq. 3.16 is the entire se-\nquence of words in some test set. Since this sequence will cross many sentence\nboundaries, we need to include the begin- and end-sentence markers <s> and </s>\nin the probability computation. We also need to include the end-of-sentence marker\n</s> (but not the beginning-of-sentence marker <s>) in the total count of word to-\nkens N.\nThere is another way to think about perplexity: as the weighted average branch-\ning factor of a language. The branching factor of a language is the number of possi-\nble next words that can follow any word. Consider the task of recognizing the digits\nin English (zero, one, two,..., nine), given that (both in some training set and in some\ntest set) each of the 10 digits occurs with equal probability P = 1",
+        "bbox": [
+          142.19996643066406,
+          541.7274169921875,
+          475.6673278808594,
+          707.1069946289062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "10. The perplexity of\nthis mini-language is in fact 10. To see that, imagine a test string of digits of length",
+        "bbox": [
+          142.19998168945312,
+          697.1444702148438,
+          475.19976806640625,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 9,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.3\n•\nSAMPLING SENTENCES FROM A LANGUAGE MODEL\n9",
+        "bbox": [
+          222.48899841308594,
+          84.38048553466797,
+          493.2002868652344,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N, and assume that in the training set all the digits occurred with equal probability.\nBy Eq. 3.15, the perplexity will be",
+        "bbox": [
+          160.19998168945312,
+          111.385986328125,
+          493.19976806640625,
+          133.48007202148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PP(W) = P(w1w2 ...wN)−1",
+        "bbox": [
+          266.1099853515625,
+          155.2476043701172,
+          384.917724609375,
+          170.48150634765625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N",
+        "bbox": [
+          381.2510070800781,
+          160.6197509765625,
+          385.2380676269531,
+          166.59735107421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\n)−1",
+        "bbox": [
+          329.8609924316406,
+          172.3383331298828,
+          350.1747741699219,
+          190.800537109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= ( 1",
+        "bbox": [
+          299.9230041503906,
+          174.3234405517578,
+          326.1742858886719,
+          191.03103637695312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N",
+        "bbox": [
+          346.50799560546875,
+          182.44378662109375,
+          350.49505615234375,
+          188.42138671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "10",
+        "bbox": [
+          318.7030029296875,
+          187.90248107910156,
+          328.66558837890625,
+          197.86508178710938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "−1",
+        "bbox": [
+          325.9949951171875,
+          198.67274475097656,
+          335.41015625,
+          206.31118774414062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=\n1\n10",
+        "bbox": [
+          299.9230041503906,
+          200.79347229003906,
+          324.7995910644531,
+          224.33505249023438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= 10\n(3.17)",
+        "bbox": [
+          299.9230041503906,
+          224.94590759277344,
+          493.2008361816406,
+          235.13906860351562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "But suppose that the number zero is really frequent and occurs far more often\nthan other numbers. Let’s say that 0 occur 91 times in the training set, and each\nof the other digits occurred 1 time each. Now we see the following test set: 0 0\n0 0 0 3 0 0 0 0. We should expect the perplexity of this test set to be lower since\nmost of the time the next number will be zero, which is very predictable, i.e. has\na high probability. Thus, although the branching factor is still 10, the perplexity or\nweighted branching factor is smaller. We leave this exact calculation as exercise 12.\nWe see in Section 3.8 that perplexity is also closely related to the information-\ntheoretic notion of entropy.\nFinally, let’s look at an example of how perplexity can be used to compare dif-\nferent n-gram models. We trained unigram, bigram, and trigram grammars on 38\nmillion words (including start-of-sentence tokens) from the Wall Street Journal, us-\ning a 19,979 word vocabulary. We then computed the perplexity of each of these\nmodels on a test set of 1.5 million words with Eq. 3.16. The table below shows the\nperplexity of a 1.5 million word WSJ test set according to each of these grammars.",
+        "bbox": [
+          160.19998168945312,
+          248.9484405517578,
+          493.1998596191406,
+          426.28289794921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Unigram Bigram Trigram\nPerplexity 962\n170\n109",
+        "bbox": [
+          242.99000549316406,
+          435.98052978515625,
+          410.41064453125,
+          458.3880615234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "As we see above, the more information the n-gram gives us about the word\nsequence, the lower the perplexity (since as Eq. 3.15 showed, perplexity is related\ninversely to the likelihood of the test sequence according to the model).\nNote that in computing perplexities, the n-gram model P must be constructed\nwithout any knowledge of the test set or any prior knowledge of the vocabulary of\nthe test set. Any kind of knowledge of the test set can cause the perplexity to be\nartiﬁcially low. The perplexity of two language models is only comparable if they\nuse identical vocabularies.\nAn (intrinsic) improvement in perplexity does not guarantee an (extrinsic) im-\nprovement in the performance of a language processing task like speech recognition\nor machine translation. Nonetheless, because perplexity often correlates with such\nimprovements, it is commonly used as a quick check on an algorithm. But a model’s\nimprovement in perplexity should always be conﬁrmed by an end-to-end evaluation\nof a real task before concluding the evaluation of the model.",
+        "bbox": [
+          160.1999969482422,
+          468.032470703125,
+          493.1998291015625,
+          633.4119873046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.3\nSampling sentences from a language model",
+        "bbox": [
+          95.40100860595703,
+          657.6430053710938,
+          433.92474365234375,
+          674.8583984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "One important way to visualize what kind of knowledge a language model embodies\nis to sample from it. Sampling from a distribution means to choose random points\nsampling",
+        "bbox": [
+          117.70399475097656,
+          697.1444091796875,
+          493.1997985839844,
+          719.06298828125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 10,
+    "elements": [
+      {
+        "type": "text",
+        "content": "10\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "according to their likelihood. Thus sampling from a language model—which rep-\nresents a distribution over sentences—means to generate some sentences, choosing\neach sentence according to its likelihood as deﬁned by the model. Thus we are more\nlikely to generate sentences that the model thinks have a high probability and less\nlikely to generate sentences that the model thinks have a low probability.\nThis technique of visualizing a language model by sampling was ﬁrst suggested\nvery early on by Shannon (1951) and Miller and Selfridge (1950) It’s simplest to\nvisualize how this works for the unigram case. Imagine all the words of the English\nlanguage covering the probability space between 0 and 1, each word covering an\ninterval proportional to its frequency. Fig. 3.3 shows a visualization, using a unigram\nLM computed from the text of this book. We choose a random value between 0 and\n1, ﬁnd that point on the probability line, and print the word whose interval includes\nthis chosen value. We continue choosing random numbers and generating words\nuntil we randomly generate the sentence-ﬁnal token </s>.",
+        "bbox": [
+          142.1999969482422,
+          111.56245422363281,
+          475.20001220703125,
+          276.9422302246094
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page10_vis3.png",
+        "bbox": [
+          189.89999389648438,
+          295.2107238769531,
+          427.5010986328125,
+          383.239990234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "0\n1",
+        "bbox": [
+          190.39309692382812,
+          369.18023681640625,
+          426.88018798828125,
+          382.5793762207031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 3.3\nA visualization of the sampling distribution for sampling sentences by repeat-\nedly sampling unigrams. The blue bar represents the frequency of each word. The number\nline shows the cumulative probabilities. If we choose a random number between 0 and 1, it\nwill fall in an interval corresponding to some word. The expectation for the random number\nto fall in the larger intervals of one of the frequent words (the, of, a) is much higher than in\nthe smaller interval of one of the rare words (polyphonic).",
+        "bbox": [
+          142.1999969482422,
+          389.9081115722656,
+          475.20501708984375,
+          453.7503662109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can use the same technique to generate bigrams by ﬁrst generating a ran-\ndom bigram that starts with <s> (according to its bigram probability). Let’s say the\nsecond word of that bigram is w. We next choose a random bigram starting with w\n(again, drawn according to its bigram probability), and so on.",
+        "bbox": [
+          142.19998168945312,
+          468.8164367675781,
+          475.2044372558594,
+          514.6449584960938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.4\nGeneralization and Zeros",
+        "bbox": [
+          77.4009780883789,
+          538.1220092773438,
+          290.14892578125,
+          555.33740234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The n-gram model, like many statistical models, is dependent on the training corpus.\nOne implication of this is that the probabilities often encode speciﬁc facts about a\ngiven training corpus. Another implication is that n-grams do a better and better job\nof modeling the training corpus as we increase the value of N.\nWe can use the sampling method from the prior section to visualize both of\nthese facts! To give an intuition for the increasing power of higher-order n-grams,\nFig. 3.4 shows random sentences generated from unigram, bigram, trigram, and 4-\ngram models trained on Shakespeare’s works.\nThe longer the context on which we train the model, the more coherent the sen-\ntences. In the unigram sentences, there is no coherent relation between words or any\nsentence-ﬁnal punctuation. The bigram sentences have some local word-to-word\ncoherence (especially if we consider that punctuation counts as a word). The tri-",
+        "bbox": [
+          142.19998168945312,
+          577.5933837890625,
+          475.1997985839844,
+          719.06298828125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 11,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.4\n•\nGENERALIZATION AND ZEROS\n11",
+        "bbox": [
+          304.9079895019531,
+          84.38848114013672,
+          493.2005615234375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page11_vis1.png",
+        "bbox": [
+          95.3010025024414,
+          109.156005859375,
+          493.1009826660156,
+          268.3590087890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "–To him swallowed confess hear both. Which. Of save on trail for are ay device and\nrote life have\ngram\n–Hill he late speaks; or! a more to leg less ﬁrst you enter\n2",
+        "bbox": [
+          106.18800354003906,
+          110.36744689941406,
+          490.20770263671875,
+          180.9818115234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "–Why dost stand forth thy canopy, forsooth; he is this palpable hit the King Henry. Live\nking. Follow.\ngram\n–What means, sir. I confess she? then all sorts, he is trim, captain.\n3",
+        "bbox": [
+          106.18800354003906,
+          151.2144317626953,
+          490.20751953125,
+          221.82781982421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "–Fly, and will rid me these news of price. Therefore the sadness of parting, as they say,\n’tis done.\ngram\n–This shall forbid it should be branded, if renown made it empty.\n4",
+        "bbox": [
+          106.18800354003906,
+          192.06044006347656,
+          490.20782470703125,
+          262.6748046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "–King Henry. What! I will go seek the traitor Gloucester. Exeunt some of the watch. A\ngreat banquet serv’d in;\ngram\n–It cannot be but so.\nFigure 3.4\nEight sentences randomly generated from four n-grams computed from Shakespeare’s works. All\ncharacters were mapped to lower-case and punctuation marks were treated as words. Output is hand-corrected\nfor capitalization to improve readability.",
+        "bbox": [
+          95.40101623535156,
+          232.9074249267578,
+          493.2052307128906,
+          301.609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "gram and 4-gram sentences are beginning to look a lot like Shakespeare. Indeed, a\ncareful investigation of the 4-gram sentences shows that they look a little too much\nlike Shakespeare. The words It cannot be but so are directly from King John. This is\nbecause, not to put the knock on Shakespeare, his oeuvre is not very large as corpora\ngo (N = 884,647,V = 29,066), and our n-gram probability matrices are ridiculously\nsparse. There are V 2 = 844,000,000 possible bigrams alone, and the number of pos-\nsible 4-grams is V 4 = 7×1017. Thus, once the generator has chosen the ﬁrst 4-gram\n(It cannot be but), there are only ﬁve possible continuations (that, I, he, thou, and\nso); indeed, for many 4-grams, there is only one continuation.\nTo get an idea of the dependence of a grammar on its training set, let’s look at an\nn-gram grammar trained on a completely different corpus: the Wall Street Journal\n(WSJ) newspaper. Shakespeare and the Wall Street Journal are both English, so\nwe might expect some overlap between our n-grams for the two genres. Fig. 3.5\nshows sentences generated by unigram, bigram, and trigram grammars trained on\n40 million words from WSJ.",
+        "bbox": [
+          160.19998168945312,
+          318.36346435546875,
+          493.2037048339844,
+          495.6979064941406
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page11_vis21.png",
+        "bbox": [
+          160.1999969482422,
+          507.0059814453125,
+          493.20001220703125,
+          622.3729858398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nMonths the my and issue of year foreign new exchange’s september\nwere recession exchange new endorsed a acquire to six executives\ngram\n2",
+        "bbox": [
+          171.08700561523438,
+          507.2197265625,
+          490.3099670410156,
+          568.8688354492188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Last December through the way to preserve the Hudson corporation N.\nB. E. C. Taylor would seem to complete the major central planners one\ngram\npoint ﬁve percent of U. S. E. has already old M. X. corporation of living\non information such as more frequently ﬁshing to keep her\n3",
+        "bbox": [
+          171.08700561523438,
+          539.1014404296875,
+          490.3099670410156,
+          616.6898193359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "They also point to ninety nine point six billion dollars from two hundred\nfour oh six three percent of the rates of interest stores as Mexico and\ngram\nBrazil on market conditions\nFigure 3.5\nThree sentences randomly generated from three n-gram models computed from\n40 million words of the Wall Street Journal, lower-casing all characters and treating punctua-\ntion as words. Output was then hand-corrected for capitalization to improve readability.",
+        "bbox": [
+          160.1999969482422,
+          586.9224853515625,
+          493.2051696777344,
+          655.6243896484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Compare these examples to the pseudo-Shakespeare in Fig. 3.4. While they both\nmodel “English-like sentences”, there is clearly no overlap in generated sentences,\nand little overlap even in small phrases. Statistical models are likely to be pretty use-\nless as predictors if the training sets and the test sets are as different as Shakespeare",
+        "bbox": [
+          160.1999969482422,
+          673.2344360351562,
+          493.1999206542969,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 12,
+    "elements": [
+      {
+        "type": "text",
+        "content": "12\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "and WSJ.\nHow should we deal with this problem when we build n-gram models? One step\nis to be sure to use a training corpus that has a similar genre to whatever task we are\ntrying to accomplish. To build a language model for translating legal documents,\nwe need a training corpus of legal documents. To build a language model for a\nquestion-answering system, we need a training corpus of questions.\nIt is equally important to get training data in the appropriate dialect or variety,\nespecially when processing social media posts or spoken transcripts. For example\nsome tweets will use features of African American Language (AAL)— the name\nfor the many variations of language used in African American communities (King,\n2020). Such features include words like ﬁnna—an auxiliary verb that marks imme-\ndiate future tense —that don’t occur in other varieties, or spellings like den for then,\nin tweets like this one (Blodgett and O’Connor, 2017):",
+        "bbox": [
+          142.1999969482422,
+          111.56245422363281,
+          475.2007141113281,
+          264.9872131347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(3.18) Bored af den my phone ﬁnna die!!!",
+        "bbox": [
+          142.20001220703125,
+          271.8095703125,
+          311.80322265625,
+          281.7721862792969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "while tweets from varieties like Nigerian English have markedly different vocabu-\nlary and n-gram patterns from American English (Jurgens et al., 2017):",
+        "bbox": [
+          142.20001220703125,
+          288.5945739746094,
+          475.1998291015625,
+          310.5121765136719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(3.19) @username R u a wizard or wat gan sef: in d mornin - u tweet, afternoon - u\ntweet, nyt gan u dey tweet. beta get ur IT placement wiv twitter",
+        "bbox": [
+          142.20001220703125,
+          317.3345642089844,
+          475.1995849609375,
+          339.2521667480469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Matching genres and dialects is still not sufﬁcient. Our models may still be\nsubject to the problem of sparsity. For any n-gram that occurred a sufﬁcient number\nof times, we might have a good estimate of its probability. But because any corpus is\nlimited, some perfectly acceptable English word sequences are bound to be missing\nfrom it. That is, we’ll have many cases of putative “zero probability n-grams” that\nshould really have some non-zero probability. Consider the words that follow the\nbigram denied the in the WSJ Treebank3 corpus, together with their counts:",
+        "bbox": [
+          142.1999969482422,
+          346.07354736328125,
+          475.199951171875,
+          427.76708984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "denied the allegations:\n5\ndenied the speculation: 2\ndenied the rumors:\n1\ndenied the report:\n1",
+        "bbox": [
+          257.28900146484375,
+          434.1564636230469,
+          360.1129455566406,
+          479.9840393066406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "But suppose our test set has phrases like:",
+        "bbox": [
+          157.14401245117188,
+          486.2284240722656,
+          320.0325012207031,
+          496.1910400390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "denied the offer\ndenied the loan",
+        "bbox": [
+          277.28900146484375,
+          502.5794372558594,
+          340.1131286621094,
+          524.4970092773438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Our model will incorrectly estimate that the P(offer|denied the) is 0!\nThese zeros— things that don’t ever occur in the training set but do occur in\nzeros",
+        "bbox": [
+          111.88902282714844,
+          531.0597534179688,
+          475.2007751464844,
+          553.3369750976562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "the test set—are a problem for two reasons. First, their presence means we are\nunderestimating the probability of all sorts of words that might occur, which will\nhurt the performance of any application we want to run on this data.\nSecond, if the probability of any word in the test set is 0, the entire probability\nof the test set is 0. By deﬁnition, perplexity is based on the inverse probability of the\ntest set. Thus if some words have zero probability, we can’t compute perplexity at\nall, since we can’t divide by 0!",
+        "bbox": [
+          142.2000274658203,
+          555.3294067382812,
+          475.19989013671875,
+          637.0230102539062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.4.1\nUnknown Words",
+        "bbox": [
+          142.2000274658203,
+          653.2271118164062,
+          264.4060974121094,
+          665.1823120117188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The previous section discussed the problem of words whose bigram probability is\nzero. But what about words we simply have never seen before?\nSometimes we have a language task in which this can’t happen because we know\nall the words that can occur. In such a closed vocabulary system the test set can\nclosed\nvocabulary",
+        "bbox": [
+          93.50601959228516,
+          673.2344360351562,
+          475.1998596191406,
+          720.794189453125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 13,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.5\n•\nSMOOTHING\n13",
+        "bbox": [
+          381.1310119628906,
+          84.38048553466797,
+          493.20062255859375,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "only contain words from this lexicon, and there will be no unknown words. This is\na reasonable assumption in some domains, such as speech recognition or machine\ntranslation, where we have a pronunciation dictionary or a phrase table that are ﬁxed\nin advance, and so the language model can only use the words in that dictionary or\nphrase table.\nIn other cases we have to deal with words we haven’t seen before, which we’ll\ncall unknown words, or out of vocabulary (OOV) words. The percentage of OOV\nOOV",
+        "bbox": [
+          129.70799255371094,
+          111.56245422363281,
+          493.199951171875,
+          193.25613403320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "words that appear in the test set is called the OOV rate. An open vocabulary system\nopen\nvocabulary",
+        "bbox": [
+          111.50595092773438,
+          192.4873504638672,
+          493.2010803222656,
+          206.18626403808594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "is one in which we model these potential unknown words in the test set by adding a\npseudo-word called <UNK>.\nThere are two common ways to train the probabilities of the unknown word\nmodel <UNK>. The ﬁrst one is to turn the problem back into a closed vocabulary one\nby choosing a ﬁxed vocabulary in advance:",
+        "bbox": [
+          160.19993591308594,
+          207.2045440673828,
+          493.1996765136719,
+          264.9872131347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1. Choose a vocabulary (word list) that is ﬁxed in advance.\n2. Convert in the training set any word that is not in this set (any OOV word) to\nthe unknown word token <UNK> in a text normalization step.\n3. Estimate the probabilities for <UNK> from its counts just like any other regular\nword in the training set.",
+        "bbox": [
+          172.6539306640625,
+          271.57763671875,
+          493.19940185546875,
+          333.64215087890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The second alternative, in situations where we don’t have a prior vocabulary in ad-\nvance, is to create such a vocabulary implicitly, replacing words in the training data\nby <UNK> based on their frequency. For example we can replace by <UNK> all words\nthat occur fewer than n times in the training set, where n is some small number, or\nequivalently select a vocabulary size V in advance (say 50,000) and choose the top\nV words by frequency and replace the rest by UNK. In either case we then proceed\nto train the language model as before, treating <UNK> like a regular word.\nThe exact choice of <UNK> model does have an effect on metrics like perplexity.\nA language model can achieve low perplexity by choosing a small vocabulary and\nassigning the unknown word a high probability. For this reason, perplexities should\nonly be compared across language models with the same vocabularies (Buck et al.,\n2014).",
+        "bbox": [
+          160.199951171875,
+          340.3225402832031,
+          493.2038879394531,
+          481.7920227050781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.5\nSmoothing",
+        "bbox": [
+          95.40100860595703,
+          504.16900634765625,
+          209.7112579345703,
+          521.3843994140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "What do we do with words that are in our vocabulary (they are not unknown words)\nbut appear in a test set in an unseen context (for example they appear after a word\nthey never appeared after in training)? To keep a language model from assigning\nzero probability to these unseen events, we’ll have to shave off a bit of probability\nmass from some more frequent events and give it to the events we’ve never seen.\nThis modiﬁcation is called smoothing or discounting. In this section and the fol-\nsmoothing",
+        "bbox": [
+          113.69500732421875,
+          543.596435546875,
+          493.1998596191406,
+          613.3350219726562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "discounting\nlowing ones we’ll introduce a variety of ways to do smoothing: Laplace (add-one)\nsmoothing, add-k smoothing, stupid backoff, and Kneser-Ney smoothing.",
+        "bbox": [
+          110.07600402832031,
+          615.2364501953125,
+          493.2008361816406,
+          637.2449951171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.5.1\nLaplace Smoothing",
+        "bbox": [
+          160.19998168945312,
+          653.2901000976562,
+          294.70794677734375,
+          665.2453002929688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The simplest way to do smoothing is to add one to all the n-gram counts, before\nwe normalize them into probabilities. All the counts that used to be zero will now\nhave a count of 1, the counts of 1 will be 2, and so on. This algorithm is called\nLaplace smoothing. Laplace smoothing does not perform well enough to be used\nLaplace\nsmoothing",
+        "bbox": [
+          113.69497680664062,
+          673.2344360351562,
+          493.2037658691406,
+          720.7901611328125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 14,
+    "elements": [
+      {
+        "type": "text",
+        "content": "14\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "in modern n-gram models, but it usefully introduces many of the concepts that we\nsee in other smoothing algorithms, gives a useful baseline, and is also a practical\nsmoothing algorithm for other tasks like text classiﬁcation (Chapter 4).\nLet’s start with the application of Laplace smoothing to unigram probabilities.\nRecall that the unsmoothed maximum likelihood estimate of the unigram probability\nof the word wi is its count ci normalized by the total number of word tokens N:",
+        "bbox": [
+          142.1999969482422,
+          111.56245422363281,
+          475.1999206542969,
+          182.79513549804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wi) = ci",
+        "bbox": [
+          280.3160095214844,
+          196.92706298828125,
+          323.29949951171875,
+          214.54872131347656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N",
+        "bbox": [
+          316.6910095214844,
+          210.5059814453125,
+          323.3360595703125,
+          220.4685821533203
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Laplace smoothing merely adds one to each count (hence its alternate name add-\none smoothing). Since there are V words in the vocabulary and each one was incre-\nadd-one",
+        "bbox": [
+          102.91799926757812,
+          227.1505126953125,
+          475.20025634765625,
+          249.15908813476562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "mented, we also need to adjust the denominator to take into account the extra V\nobservations. (What happens to our P values if we don’t increase the denominator?)",
+        "bbox": [
+          142.1999969482422,
+          250.97503662109375,
+          475.197998046875,
+          273.0691223144531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PLaplace(wi) = ci +1",
+        "bbox": [
+          257.8200378417969,
+          291.09197998046875,
+          345.35833740234375,
+          310.4764404296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N +V\n(3.20)",
+        "bbox": [
+          321.82501220703125,
+          298.8219909667969,
+          475.2008361816406,
+          314.6875915527344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Instead of changing both the numerator and denominator, it is convenient to\ndescribe how a smoothing algorithm affects the numerator, by deﬁning an adjusted\ncount c∗. This adjusted count is easier to compare directly with the MLE counts and\ncan be turned into a probability like an MLE count by normalizing by N. To deﬁne\nthis count, since we are only changing the numerator in addition to adding 1 we’ll\nalso need to multiply by a normalization factor\nN\nN+V :",
+        "bbox": [
+          142.20001220703125,
+          322.10345458984375,
+          475.2042236328125,
+          395.278076171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "c∗\ni = (ci +1)\nN\nN +V\n(3.21)",
+        "bbox": [
+          269.7189636230469,
+          401.1189880371094,
+          475.20062255859375,
+          424.66058349609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We can now turn c∗\ni into a probability P∗\ni by normalizing by N.\nA related way to view smoothing is as discounting (lowering) some non-zero\ndiscounting",
+        "bbox": [
+          92.07598876953125,
+          426.96173095703125,
+          475.1966857910156,
+          450.7970275878906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "counts in order to get the probability mass that will be assigned to the zero counts.\nThus, instead of referring to the discounted counts c∗, we might describe a smooth-\ning algorithm in terms of a relative discount dc, the ratio of the discounted counts\ndiscount",
+        "bbox": [
+          101.71096801757812,
+          452.7893981933594,
+          475.20098876953125,
+          487.4005432128906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "to the original counts:",
+        "bbox": [
+          142.19996643066406,
+          488.6553955078125,
+          229.37271118164062,
+          498.6180114746094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "dc = c∗",
+        "bbox": [
+          286.7629699707031,
+          515.32470703125,
+          316.9891052246094,
+          535.2134399414062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "c",
+        "bbox": [
+          310.97198486328125,
+          530.64501953125,
+          315.3953857421875,
+          540.6076049804688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Now that we have the intuition for the unigram case, let’s smooth our Berkeley\nRestaurant Project bigrams. Figure 3.6 shows the add-one smoothed counts for the\nbigrams in Fig. 3.1.\nFigure 3.7 shows the add-one smoothed probabilities for the bigrams in Fig. 3.2.\nRecall that normal bigram probabilities are computed by normalizing each row of\ncounts by the unigram count:",
+        "bbox": [
+          142.19998168945312,
+          547.3214721679688,
+          475.1997985839844,
+          617.06005859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P(wn|wn−1) = C(wn−1wn)",
+        "bbox": [
+          255.00997924804688,
+          627.2899169921875,
+          361.2043762207031,
+          645.1072387695312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−1)\n(3.22)",
+        "bbox": [
+          320.9419860839844,
+          634.2654418945312,
+          475.2005920410156,
+          651.9412841796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "For add-one smoothed bigram counts, we need to augment the unigram count by\nthe number of total word types in the vocabulary V:",
+        "bbox": [
+          142.19998168945312,
+          656.5404663085938,
+          475.1999206542969,
+          678.4580688476562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P∗\nLaplace(wn|wn−1) =\nC(wn−1wn)+1\nP\nw (C(wn−1w)+1) = C(wn−1wn)+1",
+        "bbox": [
+          173.5129852294922,
+          697.2869262695312,
+          418.6222229003906,
+          723.6885375976562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−1)+V\n(3.23)",
+        "bbox": [
+          361.9429931640625,
+          704.262451171875,
+          475.2005920410156,
+          721.938232421875
+        ]
+      }
+    ]
+  },
+  {
+    "page": 15,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.5\n•\nSMOOTHING\n15",
+        "bbox": [
+          381.1310119628906,
+          84.38848114013672,
+          493.20062255859375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page15_vis1.png",
+        "bbox": [
+          160.1999969482422,
+          109.15601348876953,
+          493.20001220703125,
+          219.4420166015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant\nto\neat\nchinese\nfood\nlunch\nspend\ni\n6\n828\n1\n10\n1\n1\n1\n3\nwant\n3\n1\n609\n2\n7\n7\n6\n2\nto\n3\n1\n5\n687\n3\n1\n7\n212\neat\n1\n1\n3\n1\n17\n3\n43\n1\nchinese\n2\n1\n1\n1\n1\n83\n2\n1\nfood\n16\n1\n16\n1\n2\n5\n1\n1\nlunch\n3\n1\n1\n1\n1\n2\n1\n1\nspend\n2\n1\n2\n1\n1\n1\n1\n1\nFigure 3.6\nAdd-one smoothed bigram counts for eight of the words (out of V = 1446) in\nthe Berkeley Restaurant Project corpus of 9332 sentences. Previously-zero counts are in gray.",
+        "bbox": [
+          160.19998168945312,
+          110.27648162841797,
+          493.20440673828125,
+          240.73736572265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Thus, each of the unigram counts given in the previous section will need to be\naugmented by V = 1446. The result is the smoothed bigram probabilities in Fig. 3.7.",
+        "bbox": [
+          160.19998168945312,
+          257.00042724609375,
+          493.20172119140625,
+          278.9180603027344
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page15_vis6.png",
+        "bbox": [
+          95.2020034790039,
+          291.75299072265625,
+          493.0019836425781,
+          402.03900146484375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant\nto\neat\nchinese\nfood\nlunch\nspend\ni\n0.0015\n0.21\n0.00025\n0.0025\n0.00025\n0.00025\n0.00025\n0.00075\nwant\n0.0013\n0.00042\n0.26\n0.00084\n0.0029\n0.0029\n0.0025\n0.00084\nto\n0.00078\n0.00026\n0.0013\n0.18\n0.00078\n0.00026\n0.0018\n0.055\neat\n0.00046\n0.00046\n0.0014\n0.00046\n0.0078\n0.0014\n0.02\n0.00046\nchinese\n0.0012\n0.00062\n0.00062\n0.00062\n0.00062\n0.052\n0.0012\n0.00062\nfood\n0.0063\n0.00039\n0.0063\n0.00039\n0.00079\n0.002\n0.00039\n0.00039\nlunch\n0.0017\n0.00056\n0.00056\n0.00056\n0.00056\n0.0011\n0.00056\n0.00056\nspend\n0.0012\n0.00058\n0.0012\n0.00058\n0.00058\n0.00058\n0.00058\n0.00058\nFigure 3.7\nAdd-one smoothed bigram probabilities for eight of the words (out of V = 1446) in the BeRP\ncorpus of 9332 sentences. Previously-zero probabilities are in gray.",
+        "bbox": [
+          95.4010009765625,
+          292.8725280761719,
+          493.19830322265625,
+          423.33441162109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "It is often convenient to reconstruct the count matrix so we can see how much a\nsmoothing algorithm has changed the original counts. These adjusted counts can be\ncomputed by Eq. 3.24. Figure 3.8 shows the reconstructed counts.",
+        "bbox": [
+          160.1999969482422,
+          438.4364929199219,
+          493.1998596191406,
+          472.30908203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "c∗(wn−1wn) = [C(wn−1wn)+1]×C(wn−1)",
+        "bbox": [
+          240.20098876953125,
+          483.7038269042969,
+          412.0143737792969,
+          501.6502380371094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−1)+V\n(3.24)",
+        "bbox": [
+          330.1409912109375,
+          490.8084411621094,
+          493.2005920410156,
+          508.4842224121094
+        ]
+      },
+      {
+        "type": "image",
+        "src": "images/page15_vis12.png",
+        "bbox": [
+          160.1999969482422,
+          527.8809814453125,
+          493.20001220703125,
+          638.1669921875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nwant\nto\neat\nchinese\nfood\nlunch\nspend\ni\n3.8\n527\n0.64\n6.4\n0.64\n0.64\n0.64\n1.9\nwant\n1.2\n0.39\n238\n0.78\n2.7\n2.7\n2.3\n0.78\nto\n1.9\n0.63\n3.1\n430\n1.9\n0.63\n4.4\n133\neat\n0.34\n0.34\n1\n0.34\n5.8\n1\n15\n0.34\nchinese\n0.2\n0.098\n0.098\n0.098\n0.098\n8.2\n0.2\n0.098\nfood\n6.9\n0.43\n6.9\n0.43\n0.86\n2.2\n0.43\n0.43\nlunch\n0.57\n0.19\n0.19\n0.19\n0.19\n0.38\n0.19\n0.19\nspend\n0.32\n0.16\n0.32\n0.16\n0.16\n0.16\n0.16\n0.16\nFigure 3.8\nAdd-one reconstituted counts for eight words (of V = 1446) in the BeRP corpus\nof 9332 sentences. Previously-zero counts are in gray.",
+        "bbox": [
+          160.19996643066406,
+          529.0015258789062,
+          493.19830322265625,
+          659.46240234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Note that add-one smoothing has made a very big change to the counts. C(want to)\nchanged from 609 to 238! We can see this in probability space as well: P(to|want)\ndecreases from .66 in the unsmoothed case to .26 in the smoothed case. Looking at\nthe discount d (the ratio between new and old counts) shows us how strikingly the",
+        "bbox": [
+          160.20001220703125,
+          673.0039672851562,
+          499.1564636230469,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 16,
+    "elements": [
+      {
+        "type": "text",
+        "content": "16\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "counts for each preﬁx word have been reduced; the discount for the bigram want to\nis .39, while the discount for Chinese food is .10, a factor of 10!\nThe sharp change in counts and probabilities occurs because too much probabil-\nity mass is moved to all the zeros.",
+        "bbox": [
+          142.1999969482422,
+          111.385986328125,
+          475.2032470703125,
+          157.39108276367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.5.2\nAdd-k smoothing",
+        "bbox": [
+          142.20001220703125,
+          173.7021484375,
+          266.7492980957031,
+          185.6573486328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "One alternative to add-one smoothing is to move a bit less of the probability mass\nfrom the seen to the unseen events. Instead of adding 1 to each count, we add a frac-\ntional count k (.5? .05? .01?). This algorithm is therefore called add-k smoothing.\nadd-k",
+        "bbox": [
+          109.73602294921875,
+          193.75343322753906,
+          475.1997985839844,
+          227.62606811523438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P∗\nAdd-k(wn|wn−1) = C(wn−1wn)+k",
+        "bbox": [
+          236.3790283203125,
+          238.51890563964844,
+          379.6573486328125,
+          258.81134033203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wn−1)+kV\n(3.25)",
+        "bbox": [
+          321.0450134277344,
+          245.4944610595703,
+          475.2005920410156,
+          263.1701965332031
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Add-k smoothing requires that we have a method for choosing k; this can be\ndone, for example, by optimizing on a devset. Although add-k is useful for some\ntasks (including text classiﬁcation), it turns out that it still doesn’t work well for\nlanguage modeling, generating counts with poor variances and often inappropriate\ndiscounts (Gale and Church, 1994).",
+        "bbox": [
+          142.19998168945312,
+          269.13897705078125,
+          475.19976806640625,
+          327.0989990234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.5.3\nBackoff and Interpolation",
+        "bbox": [
+          142.20001220703125,
+          343.41009521484375,
+          310.6129455566406,
+          355.36529541015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The discounting we have been discussing so far can help solve the problem of zero\nfrequency n-grams. But there is an additional source of knowledge we can draw on.\nIf we are trying to compute P(wn|wn−2wn−1) but we have no examples of a particular\ntrigram wn−2wn−1wn, we can instead estimate its probability by using the bigram\nprobability P(wn|wn−1). Similarly, if we don’t have counts to compute P(wn|wn−1),\nwe can look to the unigram P(wn).\nIn other words, sometimes using less context is a good thing, helping to general-\nize more for contexts that the model hasn’t learned much about. There are two ways\nto use this n-gram “hierarchy”. In backoff, we use the trigram if the evidence is\nbackoff",
+        "bbox": [
+          104.63694763183594,
+          363.4613952636719,
+          475.202880859375,
+          469.0649108886719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "sufﬁcient, otherwise we use the bigram, otherwise the unigram. In other words, we\nonly “back off” to a lower-order n-gram if we have zero evidence for a higher-order\nn-gram. By contrast, in interpolation, we always mix the probability estimates from\ninterpolation",
+        "bbox": [
+          87.74293518066406,
+          471.0572814941406,
+          475.2045593261719,
+          504.9308776855469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "all the n-gram estimators, weighing and combining the trigram, bigram, and unigram\ncounts.\nIn simple linear interpolation, we combine different order n-grams by linearly\ninterpolating them. Thus, we estimate the trigram probability P(wn|wn−2wn−1) by\nmixing together the unigram, bigram, and trigram probabilities, each weighted by a\nλ:",
+        "bbox": [
+          142.20089721679688,
+          506.92327880859375,
+          475.2007141113281,
+          577.4412231445312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(wn|wn−2wn−1) = λ1P(wn)",
+        "bbox": [
+          222.2609100341797,
+          587.0762939453125,
+          344.162353515625,
+          599.9000244140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+λ2P(wn|wn−1)",
+        "bbox": [
+          309.85089111328125,
+          603.642578125,
+          374.90631103515625,
+          614.8440551757812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+λ3P(wn|wn−2wn−1)\n(3.26)",
+        "bbox": [
+          309.8508605957031,
+          618.5866088867188,
+          475.2006530761719,
+          629.7880859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The λs must sum to 1, making Eq. 3.26 equivalent to a weighted average:\nX",
+        "bbox": [
+          142.2008056640625,
+          641.3062744140625,
+          435.828125,
+          672.7557373046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i\nλi = 1\n(3.27)",
+        "bbox": [
+          288.5608215332031,
+          665.09375,
+          475.2005920410156,
+          686.4554443359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "In a slightly more sophisticated version of linear interpolation, each λ weight is\ncomputed by conditioning on the context. This way, if we have particularly accurate",
+        "bbox": [
+          142.20074462890625,
+          697.144287109375,
+          475.2027893066406,
+          719.0618286132812
+        ]
+      }
+    ]
+  },
+  {
+    "page": 17,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.6\n•\nKNESER-NEY SMOOTHING\n17",
+        "bbox": [
+          320.1409912109375,
+          84.38848114013672,
+          493.20062255859375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "counts for a particular bigram, we assume that the counts of the trigrams based on\nthis bigram will be more trustworthy, so we can make the λs for those trigrams\nhigher and thus give that trigram more weight in the interpolation. Equation 3.28\nshows the equation for interpolation with context-conditioned weights:",
+        "bbox": [
+          160.20004272460938,
+          111.56245422363281,
+          493.20086669921875,
+          157.39108276367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ˆP(wn|wn−2wn−1) = λ1(wn−2:n−1)P(wn)",
+        "bbox": [
+          217.3150634765625,
+          170.24049377441406,
+          382.3404541015625,
+          183.06423950195312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+λ2(wn−2:n−1)P(wn|wn−1)",
+        "bbox": [
+          304.9049987792969,
+          186.8068389892578,
+          413.08538818359375,
+          198.00827026367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "+λ3(wn−2:n−1)P(wn|wn−2wn−1)\n(3.28)",
+        "bbox": [
+          306.2889404296875,
+          201.7508087158203,
+          493.2006530761719,
+          212.95223999023438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "How are these λ values set? Both the simple interpolation and conditional interpo-\nlation λs are learned from a held-out corpus. A held-out corpus is an additional\nheld-out",
+        "bbox": [
+          120.11585998535156,
+          226.9044952392578,
+          493.20306396484375,
+          249.60243225097656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "training corpus that we use to set hyperparameters like these λ values, by choosing\nthe λ values that maximize the likelihood of the held-out corpus. That is, we ﬁx\nthe n-gram probabilities and then search for the λ values that—when plugged into\nEq. 3.26—give us the highest probability of the held-out set. There are various ways\nto ﬁnd this optimal set of λs. One way is to use the EM algorithm, an iterative\nlearning algorithm that converges on locally optimal λs (Jelinek and Mercer, 1980).\nIn a backoff n-gram model, if the n-gram we need has zero counts, we approxi-\nmate it by backing off to the (N-1)-gram. We continue backing off until we reach a\nhistory that has some counts.\nIn order for a backoff model to give a correct probability distribution, we have\nto discount the higher-order n-grams to save some probability mass for the lower\ndiscount",
+        "bbox": [
+          119.71184539794922,
+          250.8155059814453,
+          493.20343017578125,
+          380.33001708984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "order n-grams. Just as with add-one smoothing, if the higher-order n-grams aren’t\ndiscounted and we just used the undiscounted MLE probability, then as soon as we\nreplaced an n-gram which has zero probability with a lower-order n-gram, we would\nbe adding probability mass, and the total probability assigned to all possible strings\nby the language model would be greater than 1! In addition to this explicit discount\nfactor, we’ll need a function α to distribute this probability mass to the lower order\nn-grams.\nThis kind of backoff with discounting is also called Katz backoff. In Katz back-\nKatz backoff",
+        "bbox": [
+          105.98782348632812,
+          382.3224182128906,
+          493.2005920410156,
+          475.970947265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "off we rely on a discounted probability P∗if we’ve seen this n-gram before (i.e., if\nwe have non-zero counts). Otherwise, we recursively back off to the Katz probabil-\nity for the shorter-history (N-1)-gram. The probability for a backoff n-gram PBO is\nthus computed as follows:",
+        "bbox": [
+          160.2008056640625,
+          476.0456237792969,
+          493.20086669921875,
+          523.7918701171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "\n",
+        "bbox": [
+          216.0298309326172,
+          536.754150390625,
+          224.88658142089844,
+          555.6828002929688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "P∗(wn|wn−N+1:n−1),\nif C(wn−N+1:n) > 0",
+        "bbox": [
+          227.8748321533203,
+          537.2686157226562,
+          466.63006591796875,
+          550.028076171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PBO(wn|wn−N+1:n−1) =",
+        "bbox": [
+          116.88180541992188,
+          549.8856201171875,
+          213.8239288330078,
+          563.5748901367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "α(wn−N+1:n−1)PBO(wn|wn−N+2:n−1),\notherwise.\n(3.29)",
+        "bbox": [
+          227.87477111816406,
+          551.0007934570312,
+          493.2005310058594,
+          569.452880859375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "",
+        "bbox": [
+          216.0298309326172,
+          563.6531372070312,
+          224.88658142089844,
+          573.6157836914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Katz backoff is often combined with a smoothing method called Good-Turing.\nGood-Turing",
+        "bbox": [
+          105.52572631835938,
+          586.2963256835938,
+          493.20037841796875,
+          596.349853515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The combined Good-Turing backoff algorithm involves quite detailed computation\nfor estimating the Good-Turing smoothing and the P∗and α values.",
+        "bbox": [
+          160.2007293701172,
+          598.2513427734375,
+          493.2007751464844,
+          621.0392456054688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.6\nKneser-Ney Smoothing",
+        "bbox": [
+          95.4007568359375,
+          645.641845703125,
+          296.5799255371094,
+          662.8572387695312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "One of the most commonly used and best performing n-gram smoothing methods is\nthe interpolated Kneser-Ney algorithm (Kneser and Ney 1995, Chen and Goodman\nKneser-Ney",
+        "bbox": [
+          109.56375122070312,
+          685.1892700195312,
+          493.2016906738281,
+          707.1078491210938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1998).",
+        "bbox": [
+          160.20074462890625,
+          709.1002807617188,
+          185.93411254882812,
+          719.0628662109375
+        ]
+      }
+    ]
+  },
+  {
+    "page": 18,
+    "elements": [
+      {
+        "type": "text",
+        "content": "18\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Kneser-Ney has its roots in a method called absolute discounting. Recall that\ndiscounting of the counts for frequent n-grams is necessary to save some probability\nmass for the smoothing algorithm to distribute to the unseen n-grams.\nTo see this, we can use a clever idea from Church and Gale (1991). Consider\nan n-gram that has count 4. We need to discount this count by some amount. But\nhow much should we discount it? Church and Gale’s clever idea was to look at a\nheld-out corpus and just see what the count is for all those bigrams that had count\n4 in the training set. They computed a bigram grammar from 22 million words of\nAP newswire and then checked the counts of each of these bigrams in another 22\nmillion words. On average, a bigram that occurred 4 times in the ﬁrst 22 million\nwords occurred 3.23 times in the next 22 million words. Fig. 3.9 from Church and\nGale (1991) shows these counts for bigrams with c from 0 to 9.",
+        "bbox": [
+          142.19998168945312,
+          111.47148895263672,
+          475.2033996582031,
+          253.03219604492188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bigram count in\nBigram count in\ntraining set\nheldout set\n0\n0.0000270\n1\n0.448\n2\n1.25\n3\n2.24\n4\n3.23\n5\n4.21\n6\n5.23\n7\n6.21\n8\n7.21\n9\n8.26",
+        "bbox": [
+          231.04200744628906,
+          263.31451416015625,
+          386.3592834472656,
+          405.2740783691406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Figure 3.9\nFor all bigrams in 22 million words of AP newswire of count 0, 1, 2,...,9, the\ncounts of these bigrams in a held-out corpus also of 22 million words.",
+        "bbox": [
+          142.1999969482422,
+          412.62310791015625,
+          475.205078125,
+          432.63037109375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Notice in Fig. 3.9 that except for the held-out counts for 0 and 1, all the other\nbigram counts in the held-out set could be estimated pretty well by just subtracting\n0.75 from the count in the training set! Absolute discounting formalizes this intu-\nAbsolute\ndiscounting",
+        "bbox": [
+          92.07600402832031,
+          444.0604553222656,
+          475.1997985839844,
+          479.66015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ition by subtracting a ﬁxed (absolute) discount d from each count. The intuition is\nthat since we have good estimates already for the very high counts, a small discount\nd won’t affect them much. It will mainly modify the smaller counts, for which we\ndon’t necessarily trust the estimate anyway, and Fig. 3.9 suggests that in practice this\ndiscount is actually a good one for bigrams with counts 2 through 9. The equation\nfor interpolated absolute discounting applied to bigrams:",
+        "bbox": [
+          142.20001220703125,
+          479.7489929199219,
+          475.2027587890625,
+          549.6640014648438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PAbsoluteDiscounting(wi|wi−1) = C(wi−1wi)−d\nP\nvC(wi−1 v) +λ(wi−1)P(wi)\n(3.30)",
+        "bbox": [
+          175.70504760742188,
+          565.4896850585938,
+          475.2005615234375,
+          591.49365234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The ﬁrst term is the discounted bigram, and the second term is the unigram with\nan interpolation weight λ. We could just set all the d values to .75, or we could keep\na separate discount value of 0.5 for the bigrams with counts of 1.\nKneser-Ney discounting (Kneser and Ney, 1995) augments absolute discount-\ning with a more sophisticated way to handle the lower-order unigram distribution.\nConsider the job of predicting the next word in this sentence, assuming we are inter-\npolating a bigram and a unigram model.",
+        "bbox": [
+          142.199951171875,
+          595.9274291992188,
+          475.20159912109375,
+          677.6210327148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "I can’t see without my reading\n.\nThe word glasses seems much more likely to follow here than, say, the word\nKong, so we’d like our unigram model to prefer glasses. But in fact it’s Kong that is",
+        "bbox": [
+          142.19998168945312,
+          682.4014282226562,
+          475.2018737792969,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 19,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.6\n•\nKNESER-NEY SMOOTHING\n19",
+        "bbox": [
+          320.1409912109375,
+          84.38048553466797,
+          493.20062255859375,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "more common, since Hong Kong is a very frequent word. A standard unigram model\nwill assign Kong a higher probability than glasses. We would like to capture the\nintuition that although Kong is frequent, it is mainly only frequent in the phrase Hong\nKong, that is, after the word Hong. The word glasses has a much wider distribution.\nIn other words, instead of P(w), which answers the question “How likely is\nw?”, we’d like to create a unigram model that we might call PCONTINUATION, which\nanswers the question “How likely is w to appear as a novel continuation?”. How can\nwe estimate this probability of seeing the word w as a novel continuation, in a new\nunseen context? The Kneser-Ney intuition is to base our estimate of PCONTINUATION\non the number of different contexts word w has appeared in, that is, the number of\nbigram types it completes. Every bigram type was a novel continuation the ﬁrst time\nit was seen. We hypothesize that words that have appeared in more contexts in the\npast are more likely to appear in some new context as well. The number of times a\nword w appears as a novel continuation can be expressed as:",
+        "bbox": [
+          160.20004272460938,
+          111.385986328125,
+          493.20501708984375,
+          276.9422302246094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PCONTINUATION(w) ∝|{v : C(vw) > 0}|\n(3.31)",
+        "bbox": [
+          246.64810180664062,
+          290.5309753417969,
+          493.2006530761719,
+          302.37982177734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "To turn this count into a probability, we normalize by the total number of word\nbigram types. In summary:",
+        "bbox": [
+          160.20004272460938,
+          307.8136291503906,
+          493.19970703125,
+          329.7312316894531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PCONTINUATION(w) =\n|{v : C(vw) > 0}|\n|{(u′,w′) : C(u′w′) > 0}|\n(3.32)",
+        "bbox": [
+          230.404052734375,
+          339.83197021484375,
+          493.2005615234375,
+          363.7330627441406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "An equivalent formulation based on a different metaphor is to use the number of\nword types seen to precede w (Eq. 3.31 repeated):",
+        "bbox": [
+          160.199951171875,
+          369.0194396972656,
+          493.1997985839844,
+          390.9370422363281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PCONTINUATION(w) ∝|{v : C(vw) > 0}|\n(3.33)",
+        "bbox": [
+          246.64794921875,
+          400.8487854003906,
+          493.2005310058594,
+          412.6986389160156
+        ]
+      },
+      {
+        "type": "text",
+        "content": "normalized by the number of words preceding all words, as follows:",
+        "bbox": [
+          160.19992065429688,
+          421.44342041015625,
+          431.7404479980469,
+          431.4060363769531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PCONTINUATION(w) =\n|{v : C(vw) > 0}|\nP\nw′ |{v : C(vw′) > 0}|\n(3.34)",
+        "bbox": [
+          234.28091430664062,
+          441.50677490234375,
+          493.2005615234375,
+          467.5116271972656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A frequent word (Kong) occurring in only one context (Hong) will have a low\ncontinuation probability.\nThe ﬁnal equation for Interpolated Kneser-Ney smoothing for bigrams is then:\nInterpolated\nKneser-Ney",
+        "bbox": [
+          107.35293579101562,
+          471.18841552734375,
+          493.20465087890625,
+          506.7921142578125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PKN(wi|wi−1) = max(C(wi−1wi)−d,0)",
+        "bbox": [
+          172.09494018554688,
+          523.4417114257812,
+          330.806396484375,
+          541.38818359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "C(wi−1)\n+λ(wi−1)PCONTINUATION(wi)\n(3.35)",
+        "bbox": [
+          268.12701416015625,
+          530.31591796875,
+          493.2005310058594,
+          548.2222900390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The λ is a normalizing constant that is used to distribute the probability mass\nwe’ve discounted.:",
+        "bbox": [
+          160.19992065429688,
+          556.5634765625,
+          493.1957092285156,
+          578.4820556640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "λ(wi−1) =\nd\nP\nvC(wi−1v)|{w : C(wi−1w) > 0}|\n(3.36)",
+        "bbox": [
+          233.73191833496094,
+          588.1530151367188,
+          493.2005920410156,
+          613.9736328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The ﬁrst term,\nd\nP\nvC(wi−1v), is the normalized discount. The second term,",
+        "bbox": [
+          175.14398193359375,
+          617.5399780273438,
+          493.2035217285156,
+          643.360595703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "|{w : C(wi−1w) > 0}|, is the number of word types that can follow wi−1 or, equiva-\nlently, the number of word types that we discounted; in other words, the number of\ntimes we applied the normalized discount.\nThe general recursive formulation is as follows:",
+        "bbox": [
+          160.19998168945312,
+          642.3887329101562,
+          493.1996765136719,
+          688.5760498046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PKN(wi|wi−n+1:i−1) = max(cKN(wi−n+1:i)−d,0)\nP\nv cKN(wi−n+1:i−1 v)\n+λ(wi−n+1:i−1)PKN(wi|wi−n+2:i−1)\n(3.37)",
+        "bbox": [
+          113.85798645019531,
+          697.1577758789062,
+          493.2007751464844,
+          723.7426147460938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 20,
+    "elements": [
+      {
+        "type": "text",
+        "content": "20\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "where the deﬁnition of the count cKN depends on whether we are counting the\nhighest-order n-gram being interpolated (for example trigram if we are interpolating\ntrigram, bigram, and unigram) or one of the lower-order n-grams (bigram or unigram\nif we are interpolating trigram, bigram, and unigram):",
+        "bbox": [
+          142.1999969482422,
+          111.385986328125,
+          475.19976806640625,
+          157.39108276367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "cKN(·) =\n\u001a count(·)\nfor the highest order\ncontinuationcount(·)\nfor lower orders\n(3.38)",
+        "bbox": [
+          195.3280029296875,
+          161.67945861816406,
+          475.20062255859375,
+          191.56704711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The continuation count is the number of unique single word contexts for ·.\nAt the termination of the recursion, unigrams are interpolated with the uniform\ndistribution, where the parameter ϵ is the empty string:",
+        "bbox": [
+          142.20001220703125,
+          199.50074768066406,
+          475.19989013671875,
+          233.73306274414062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "PKN(w) = max(cKN(w)−d,0)\nP\nw′ cKN(w′)\n+λ(ϵ) 1",
+        "bbox": [
+          227.5560302734375,
+          244.59974670410156,
+          387.7132873535156,
+          270.6036376953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "V\n(3.39)",
+        "bbox": [
+          381.2969970703125,
+          251.7034454345703,
+          475.2005920410156,
+          268.3245849609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "If we want to include an unknown word <UNK>, it’s just included as a regular vo-\ncabulary entry with count zero, and hence its probability will be a lambda-weighted\nuniform distribution λ(ϵ)",
+        "bbox": [
+          142.19996643066406,
+          279.4618835449219,
+          475.1997375488281,
+          315.4080505371094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "V .\nThe best performing version of Kneser-Ney smoothing is called modiﬁed Kneser-\nNey smoothing, and is due to Chen and Goodman (1998). Rather than use a single\nmodiﬁed\nKneser-Ney",
+        "bbox": [
+          91.5630111694336,
+          305.4454345703125,
+          480.6783752441406,
+          341.0501403808594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "ﬁxed discount d, modiﬁed Kneser-Ney uses three different discounts d1, d2, and\nd3+ for n-grams with counts of 1, 2 and three or more, respectively. See Chen and\nGoodman (1998, p. 19) or Heaﬁeld et al. (2013) for the details.",
+        "bbox": [
+          142.19998168945312,
+          341.1349792480469,
+          475.2015380859375,
+          375.18402099609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.7\nHuge Language Models and Stupid Backoff",
+        "bbox": [
+          77.4009780883789,
+          398.0059814453125,
+          419.1439514160156,
+          415.22137451171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "By using text from the web or other enormous collections, it is possible to build\nextremely large language models. The Web 1 Trillion 5-gram corpus released by\nGoogle includes various large sets of n-grams, including 1-grams through 5-grams\nfrom all the ﬁve-word sequences that appear in at least 40 distinct books from\n1,024,908,267,229 words of text from publicly accessible Web pages in English\n(Franz and Brants, 2006). Google has also released Google Books Ngrams corpora\nwith n-grams drawn from their book collections, including another 800 billion to-\nkens of n-grams from Chinese, English, French, German, Hebrew, Italian, Russian,\nand Spanish (Lin et al., 2012). Smaller but more carefully curated n-gram corpora\nfor English include the million most frequent n-grams drawn from the COCA (Cor-\npus of Contemporary American English) 1 billion word corpus of American English\n(Davies, 2020). COCA is a balanced corpora, meaning that it has roughly equal\nnumbers of words from different genres: web, newspapers, spoken conversation\ntranscripts, ﬁction, and so on, drawn from the period 1990-2019, and has the context\nof each n-gram as well as labels for genre and provenance).\nSome example 4-grams from the Google Web corpus:",
+        "bbox": [
+          142.19998168945312,
+          437.451416015625,
+          475.1999206542969,
+          626.7409057617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4-gram\nCount\nserve as the incoming\n92\nserve as the incubator\n99\nserve as the independent\n794\nserve as the index\n223\nserve as the indication\n72\nserve as the indicator\n120\nserve as the indicators\n45",
+        "bbox": [
+          243.6699981689453,
+          633.29248046875,
+          373.73126220703125,
+          721.4540405273438
+        ]
+      }
+    ]
+  },
+  {
+    "page": 21,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.8\n•\nADVANCED: PERPLEXITY’S RELATION TO ENTROPY\n21",
+        "bbox": [
+          212.27699279785156,
+          84.38848114013672,
+          493.20062255859375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Efﬁciency considerations are important when building language models that use\nsuch large sets of n-grams. Rather than store each word as a string, it is generally\nrepresented in memory as a 64-bit hash number, with the words themselves stored\non disk. Probabilities are generally quantized using only 4-8 bits (instead of 8-byte\nﬂoats), and n-grams are stored in reverse tries.\nAn n-gram language model can also be shrunk by pruning, for example only\nstoring n-grams with counts greater than some threshold (such as the count threshold\nof 40 used for the Google n-gram release) or using entropy to prune less-important\nn-grams (Stolcke, 1998). Another option is to build approximate language models\nusing techniques like Bloom ﬁlters (Talbot and Osborne 2007, Church et al. 2007).\nBloom ﬁlters",
+        "bbox": [
+          106.27705383300781,
+          111.56245422363281,
+          493.20001220703125,
+          229.12216186523438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Finally, efﬁcient language model toolkits like KenLM (Heaﬁeld 2011, Heaﬁeld et al.\n2013) use sorted arrays, efﬁciently combine probabilities and backoffs in a single\nvalue, and use merge sorts to efﬁciently build the probability tables in a minimal\nnumber of passes through a large corpus.\nAlthough with these toolkits it is possible to build web-scale language models\nusing full Kneser-Ney smoothing, Brants et al. (2007) show that with very large lan-\nguage models a much simpler algorithm may be sufﬁcient. The algorithm is called\nstupid backoff. Stupid backoff gives up the idea of trying to make the language\nstupid backoff",
+        "bbox": [
+          101.56005859375,
+          231.1145782470703,
+          493.2012634277344,
+          324.7631530761719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "model a true probability distribution. There is no discounting of the higher-order\nprobabilities. If a higher-order n-gram has a zero count, we simply backoff to a\nlower order n-gram, weighed by a ﬁxed (context-independent) weight. This algo-\nrithm does not produce a probability distribution, so we’ll follow Brants et al. (2007)\nin referring to it as S:",
+        "bbox": [
+          160.20005798339844,
+          326.75555419921875,
+          493.1998596191406,
+          384.53912353515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "count(wi−k+1:i)\ncount(wi−k+1:i−1)\nif count(wi−k+1:i) > 0",
+        "bbox": [
+          264.4230041503906,
+          393.7208251953125,
+          447.542236328125,
+          418.3411560058594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "\n",
+        "bbox": [
+          250.90504455566406,
+          393.73638916015625,
+          259.7618103027344,
+          412.66497802734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "S(wi|wi−k+1:i−1) =",
+        "bbox": [
+          171.1070556640625,
+          406.8668518066406,
+          248.6991424560547,
+          418.2122497558594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "(3.40)",
+        "bbox": [
+          471.53790283203125,
+          407.98199462890625,
+          493.2007141113281,
+          416.9483947753906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "λS(wi|wi−k+2:i−1)\notherwise",
+        "bbox": [
+          262.74993896484375,
+          419.0348205566406,
+          386.8774719238281,
+          430.3802185058594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "",
+        "bbox": [
+          250.90504455566406,
+          420.6354064941406,
+          259.7618103027344,
+          430.5979919433594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The backoff terminates in the unigram, which has probability S(w) = count(w)",
+        "bbox": [
+          160.19989013671875,
+          440.06231689453125,
+          460.61468505859375,
+          453.1620788574219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\n. Brants\net al. (2007) ﬁnd that a value of 0.4 worked well for λ.",
+        "bbox": [
+          160.20001220703125,
+          443.1994323730469,
+          493.2051086425781,
+          465.8963928222656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.8\nAdvanced: Perplexity’s Relation to Entropy",
+        "bbox": [
+          95.40103149414062,
+          487.0469970703125,
+          435.5602111816406,
+          504.26239013671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We introduced perplexity in Section 3.2.1 as a way to evaluate n-gram models on\na test set. A better n-gram model is one that assigns a higher probability to the\ntest data, and perplexity is a normalized version of the probability of the test set.\nThe perplexity measure actually arises from the information-theoretic concept of\ncross-entropy, which explains otherwise mysterious properties of perplexity (why\nthe inverse probability, for example?) and its relationship to entropy. Entropy is a\nEntropy",
+        "bbox": [
+          120.24603271484375,
+          526.4654541015625,
+          493.1999816894531,
+          596.2040405273438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "measure of information. Given a random variable X ranging over whatever we are\npredicting (words, letters, parts of speech, the set of which we’ll call χ) and with a\nparticular probability function, call it p(x), the entropy of the random variable X is:",
+        "bbox": [
+          160.2000274658203,
+          598.0199584960938,
+          493.1976013183594,
+          632.0690307617188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(X) = −\nX",
+        "bbox": [
+          269.6440124511719,
+          643.4852905273438,
+          327.7009582519531,
+          655.8035278320312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "x∈χ\np(x)log2 p(x)\n(3.41)",
+        "bbox": [
+          313.9759826660156,
+          645.786865234375,
+          493.2005920410156,
+          667.387939453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The log can, in principle, be computed in any base. If we use log base 2, the\nresulting value of entropy will be measured in bits.\nOne intuitive way to think about entropy is as a lower bound on the number of\nbits it would take to encode a certain decision or piece of information in the optimal",
+        "bbox": [
+          160.19998168945312,
+          673.234375,
+          493.199951171875,
+          719.06298828125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 22,
+    "elements": [
+      {
+        "type": "text",
+        "content": "22\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "coding scheme.\nConsider an example from the standard information theory textbook Cover and\nThomas (1991). Imagine that we want to place a bet on a horse race but it is too\nfar to go all the way to Yonkers Racetrack, so we’d like to send a short message to\nthe bookie to tell him which of the eight horses to bet on. One way to encode this\nmessage is just to use the binary representation of the horse’s number as the code;\nthus, horse 1 would be 001, horse 2 010, horse 3 011, and so on, with horse 8 coded\nas 000. If we spend the whole day betting and each horse is coded with 3 bits, on\naverage we would be sending 3 bits per race.\nCan we do better? Suppose that the spread is the actual distribution of the bets\nplaced and that we represent it as the prior probability of each horse as follows:",
+        "bbox": [
+          142.19998168945312,
+          111.56245422363281,
+          475.20489501953125,
+          241.07717895507812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Horse 1\n1\n2\nHorse 5\n1\n64\nHorse 2\n1\n4\nHorse 6\n1\n64\nHorse 3\n1\n8\nHorse 7\n1\n64\nHorse 4\n1\n16\nHorse 8\n1\n64",
+        "bbox": [
+          255.57000732421875,
+          250.0168914794922,
+          360.63531494140625,
+          302.0832214355469
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The entropy of the random variable X that ranges over horses gives us a lower\nbound on the number of bits and is",
+        "bbox": [
+          142.2000274658203,
+          311.35601806640625,
+          475.200439453125,
+          333.4500732421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=8\nX",
+        "bbox": [
+          259.16802978515625,
+          349.7483215332031,
+          273.5639953613281,
+          367.83795166015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(X) = −",
+        "bbox": [
+          207.97903442382812,
+          360.0478210449219,
+          258.0709533691406,
+          370.193603515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1\np(i)log p(i)",
+        "bbox": [
+          260.63104248046875,
+          360.17694091796875,
+          322.07843017578125,
+          381.81622314453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=\n−1",
+        "bbox": [
+          236.6019744873047,
+          384.2149353027344,
+          260.2327880859375,
+          394.1775207519531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 log 1",
+        "bbox": [
+          257.2439880371094,
+          384.5626525878906,
+          276.67279052734375,
+          396.4752197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 −1",
+        "bbox": [
+          273.6839904785156,
+          384.5626525878906,
+          287.7807922363281,
+          396.2090759277344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4 log 1",
+        "bbox": [
+          284.7919921875,
+          384.5626525878906,
+          304.21978759765625,
+          396.4752197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "4 −1",
+        "bbox": [
+          301.2309875488281,
+          384.5626525878906,
+          315.3277893066406,
+          396.2090759277344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "8 log 1",
+        "bbox": [
+          312.3389892578125,
+          384.5626525878906,
+          331.7677917480469,
+          396.4752197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "8 −1",
+        "bbox": [
+          328.77899169921875,
+          384.5626525878906,
+          344.37078857421875,
+          396.2090759277344
+        ]
+      },
+      {
+        "type": "text",
+        "content": "16 log 1",
+        "bbox": [
+          339.8869934082031,
+          384.5626525878906,
+          363.7987976074219,
+          396.5592346191406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "16 −4( 1",
+        "bbox": [
+          359.3160095214844,
+          384.5626525878906,
+          384.44281005859375,
+          396.2930908203125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "64 log 1",
+        "bbox": [
+          379.9590148925781,
+          384.5626525878906,
+          403.871826171875,
+          396.5592346191406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "64 )",
+        "bbox": [
+          399.38800048828125,
+          386.23931884765625,
+          409.4288330078125,
+          396.3886413574219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= 2 bits\n(3.42)",
+        "bbox": [
+          236.6009979248047,
+          399.158935546875,
+          475.2008361816406,
+          409.3520812988281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A code that averages 2 bits per race can be built with short encodings for more\nprobable horses, and longer encodings for less probable horses. For example, we\ncould encode the most likely horse with the code 0, and the remaining horses as 10,\nthen 110, 1110, 111100, 111101, 111110, and 111111.\nWhat if the horses are equally likely? We saw above that if we used an equal-\nlength binary code for the horse numbers, each horse took 3 bits to code, so the\naverage was 3. Is the entropy the same? In this case each horse would have a\nprobability of 1",
+        "bbox": [
+          142.19993591308594,
+          416.93145751953125,
+          475.20062255859375,
+          510.5799865722656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "8. The entropy of the choice of horses is then",
+        "bbox": [
+          200.40199279785156,
+          500.617431640625,
+          380.6446533203125,
+          513.3912353515625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=8\nX",
+        "bbox": [
+          269.9429931640625,
+          521.2913208007812,
+          284.3389587402344,
+          539.3819580078125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\n8 log 1",
+        "bbox": [
+          286.635986328125,
+          525.2064208984375,
+          313.936279296875,
+          548.748046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "8 = −log 1",
+        "bbox": [
+          308.9549865722656,
+          525.2064208984375,
+          356.16326904296875,
+          548.748046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(X) = −",
+        "bbox": [
+          226.281982421875,
+          531.5907592773438,
+          268.84588623046875,
+          541.736572265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "8 = 3 bits\n(3.43)",
+        "bbox": [
+          351.1820068359375,
+          531.7199096679688,
+          475.20123291015625,
+          548.748046875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1",
+        "bbox": [
+          271.406982421875,
+          545.8163452148438,
+          282.8701477050781,
+          553.3592529296875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Until now we have been computing the entropy of a single variable. But most\nof what we will use entropy for involves sequences. For a grammar, for example,\nwe will be computing the entropy of some sequence of words W = {w1,w2,...,wn}.\nOne way to do this is to have a variable that ranges over sequences of words. For\nexample we can compute the entropy of a random variable that ranges over all ﬁnite\nsequences of words of length n in some language L as follows:",
+        "bbox": [
+          142.199951171875,
+          556.242431640625,
+          475.20062255859375,
+          625.9810180664062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(w1,w2,...,wn) = −\nX",
+        "bbox": [
+          211.14198303222656,
+          637.3973388671875,
+          322.37396240234375,
+          650.771240234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "w1:n∈L\np(w1:n)log p(w1:n)\n(3.44)",
+        "bbox": [
+          303.4670104980469,
+          639.6989135742188,
+          475.2005310058594,
+          662.3162841796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "We could deﬁne the entropy rate (we could also think of this as the per-word\nentropy rate",
+        "bbox": [
+          89.62091064453125,
+          665.4335327148438,
+          475.20111083984375,
+          675.487060546875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "entropy) as the entropy of this sequence divided by the number of words:",
+        "bbox": [
+          142.20091247558594,
+          677.3885498046875,
+          435.97698974609375,
+          687.4420776367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nnH(w1:n) = −1",
+        "bbox": [
+          223.70700073242188,
+          692.8844604492188,
+          289.7943115234375,
+          716.2495727539062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "X",
+        "bbox": [
+          296.6089782714844,
+          697.0972900390625,
+          311.00494384765625,
+          707.0599365234375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "w1:n∈L\np(w1:n)log p(w1:n)\n(3.45)",
+        "bbox": [
+          292.09698486328125,
+          699.39794921875,
+          475.2005310058594,
+          722.0162963867188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n",
+        "bbox": [
+          284.81298828125,
+          706.2869873046875,
+          289.7942810058594,
+          716.2495727539062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 23,
+    "elements": [
+      {
+        "type": "text",
+        "content": "3.8\n•\nADVANCED: PERPLEXITY’S RELATION TO ENTROPY\n23",
+        "bbox": [
+          212.27699279785156,
+          84.38048553466797,
+          493.20062255859375,
+          94.43405151367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "But to measure the true entropy of a language, we need to consider sequences of\ninﬁnite length. If we think of a language as a stochastic process L that produces a\nsequence of words, and allow W to represent the sequence of words w1,...,wn, then\nL’s entropy rate H(L) is deﬁned as",
+        "bbox": [
+          160.19998168945312,
+          111.56245422363281,
+          493.20452880859375,
+          157.39108276367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(L) = lim\nn→∞\n1\nnH(w1,w2,...,wn)",
+        "bbox": [
+          218.5509796142578,
+          176.86048889160156,
+          355.54937744140625,
+          200.22560119628906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= −lim\nn→∞\n1\nn",
+        "bbox": [
+          245.7189178466797,
+          201.30946350097656,
+          291.88330078125,
+          224.67457580566406
+        ]
+      },
+      {
+        "type": "text",
+        "content": "X",
+        "bbox": [
+          294.84600830078125,
+          205.5222930908203,
+          309.2419738769531,
+          215.48489379882812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "W∈L\np(w1,...,wn)log p(w1,...,wn)\n(3.46)",
+        "bbox": [
+          293.8170166015625,
+          207.8238983154297,
+          493.2007751464844,
+          229.1856231689453
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The Shannon-McMillan-Breiman theorem (Algoet and Cover 1988, Cover and\nThomas 1991) states that if the language is regular in certain ways (to be exact, if it\nis both stationary and ergodic),",
+        "bbox": [
+          160.199951171875,
+          238.8694610595703,
+          493.19970703125,
+          272.7420959472656
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(L) = lim\nn→∞−1",
+        "bbox": [
+          256.9539489746094,
+          282.3954772949219,
+          321.65228271484375,
+          304.9703063964844
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n log p(w1w2 ...wn)\n(3.47)",
+        "bbox": [
+          316.6709899902344,
+          288.909912109375,
+          493.2005310058594,
+          305.93707275390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "That is, we can take a single sequence that is long enough instead of summing\nover all possible sequences. The intuition of the Shannon-McMillan-Breiman the-\norem is that a long-enough sequence of words will contain in it many other shorter\nsequences and that each of these shorter sequences will reoccur in the longer se-\nquence according to their probabilities.\nA stochastic process is said to be stationary if the probabilities it assigns to a\nStationary",
+        "bbox": [
+          113.29791259765625,
+          309.87542724609375,
+          493.1997375488281,
+          379.6139831542969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "sequence are invariant with respect to shifts in the time index. In other words, the\nprobability distribution for words at time t is the same as the probability distribution\nat time t + 1. Markov models, and hence n-grams, are stationary. For example, in\na bigram, Pi is dependent only on Pi−1. So if we shift our time index by x, Pi+x is\nstill dependent on Pi+x−1. But natural language is not stationary, since as we show\nin Chapter 12, the probability of upcoming words can be dependent on events that\nwere arbitrarily distant and time dependent. Thus, our statistical models only give\nan approximation to the correct distributions and entropies of natural language.\nTo summarize, by making some incorrect but convenient simplifying assump-\ntions, we can compute the entropy of some stochastic process by taking a very long\nsample of the output and computing its average log probability.\nNow we are ready to introduce cross-entropy. The cross-entropy is useful when\ncross-entropy",
+        "bbox": [
+          103.93693542480469,
+          381.60638427734375,
+          493.2010192871094,
+          523.0758666992188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "we don’t know the actual probability distribution p that generated some data. It\nallows us to use some m, which is a model of p (i.e., an approximation to p). The\ncross-entropy of m on p is deﬁned by",
+        "bbox": [
+          160.200927734375,
+          524.8917846679688,
+          493.2001647949219,
+          558.9418334960938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(p,m) = lim\nn→∞−1",
+        "bbox": [
+          216.52694702148438,
+          568.59521484375,
+          292.4442443847656,
+          591.1690673828125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "X",
+        "bbox": [
+          295.406005859375,
+          572.808349609375,
+          309.8019714355469,
+          582.77099609375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "W∈L\np(w1,...,wn)logm(w1,...,wn)\n(3.48)",
+        "bbox": [
+          294.37799072265625,
+          575.1089477539062,
+          493.20050048828125,
+          596.4706420898438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n",
+        "bbox": [
+          287.4620056152344,
+          581.9979858398438,
+          292.44329833984375,
+          591.9605712890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "That is, we draw sequences according to the probability distribution p, but sum\nthe log of their probabilities according to m.\nAgain, following the Shannon-McMillan-Breiman theorem, for a stationary er-\ngodic process:",
+        "bbox": [
+          160.1998291015625,
+          602.052001953125,
+          493.1996765136719,
+          648.0560302734375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(p,m) = lim\nn→∞−1",
+        "bbox": [
+          250.61183166503906,
+          657.71044921875,
+          326.5291442871094,
+          680.2842407226562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "n logm(w1w2 ...wn)\n(3.49)",
+        "bbox": [
+          321.5480041503906,
+          664.2239379882812,
+          493.2005310058594,
+          681.2520141601562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "This means that, as for entropy, we can estimate the cross-entropy of a model\nm on some distribution p by taking a single sequence that is long enough instead of\nsumming over all possible sequences.",
+        "bbox": [
+          160.19992065429688,
+          685.189453125,
+          493.1998596191406,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 24,
+    "elements": [
+      {
+        "type": "text",
+        "content": "24\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "What makes the cross-entropy useful is that the cross-entropy H(p,m) is an up-\nper bound on the entropy H(p). For any model m:",
+        "bbox": [
+          142.19998168945312,
+          111.33189392089844,
+          475.2005310058594,
+          133.48007202148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(p) ≤H(p,m)\n(3.50)",
+        "bbox": [
+          275.7369689941406,
+          141.16676330566406,
+          475.2005920410156,
+          151.48904418945312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "This means that we can use some simpliﬁed model m to help estimate the true en-\ntropy of a sequence of symbols drawn according to probability p. The more accurate\nm is, the closer the cross-entropy H(p,m) will be to the true entropy H(p). Thus,\nthe difference between H(p,m) and H(p) is a measure of how accurate a model is.\nBetween two models m1 and m2, the more accurate model will be the one with the\nlower cross-entropy. (The cross-entropy can never be lower than the true entropy, so\na model cannot err by underestimating the true entropy.)\nWe are ﬁnally ready to see the relation between perplexity and cross-entropy\nas we saw it in Eq. 3.49. Cross-entropy is deﬁned in the limit as the length of the\nobserved word sequence goes to inﬁnity. We will need an approximation to cross-\nentropy, relying on a (sufﬁciently long) sequence of ﬁxed length. This approxima-\ntion to the cross-entropy of a model M = P(wi|wi−N+1:i−1) on a sequence of words\nW is",
+        "bbox": [
+          141.70187377929688,
+          159.35797119140625,
+          475.2039794921875,
+          312.9591064453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "H(W) = −1",
+        "bbox": [
+          243.78887939453125,
+          322.6134948730469,
+          295.6531677246094,
+          339.14361572265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N logP(w1w2 ...wN)\n(3.51)",
+        "bbox": [
+          289.5419921875,
+          329.1269226074219,
+          475.2005615234375,
+          346.1550598144531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The perplexity of a model P on a sequence of words W is now formally deﬁned as\nperplexity",
+        "bbox": [
+          96.57595825195312,
+          347.6780090332031,
+          475.2003173828125,
+          357.81707763671875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 raised to the power of this cross-entropy:",
+        "bbox": [
+          142.199951171875,
+          359.8094787597656,
+          312.5702819824219,
+          369.7720947265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Perplexity(W) = 2H(W)",
+        "bbox": [
+          221.95294189453125,
+          387.45233154296875,
+          322.43975830078125,
+          399.735107421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "= P(w1w2 ...wN)−1",
+        "bbox": [
+          285.4939270019531,
+          403.2696533203125,
+          370.4886474609375,
+          418.5035400390625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N",
+        "bbox": [
+          366.8219909667969,
+          408.64178466796875,
+          370.8090515136719,
+          414.619384765625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=\nN\ns",
+        "bbox": [
+          285.4939880371094,
+          421.47235107421875,
+          310.7535705566406,
+          441.79351806640625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nP(w1w2 ...wN)",
+        "bbox": [
+          311.9490051269531,
+          425.31646728515625,
+          372.6444091796875,
+          450.13250732421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "v\nu\nu\nt",
+        "bbox": [
+          300.79095458984375,
+          455.74432373046875,
+          311.31146240234375,
+          483.24090576171875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N\nY",
+        "bbox": [
+          311.3070068359375,
+          459.2023620605469,
+          324.0392150878906,
+          477.2529602050781
+        ]
+      },
+      {
+        "type": "text",
+        "content": "1\nP(wi|w1 ...wi−1)\n(3.52)",
+        "bbox": [
+          326.3399963378906,
+          463.0774841308594,
+          475.2007751464844,
+          487.8935241699219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "=\nN",
+        "bbox": [
+          285.49395751953125,
+          468.3277587890625,
+          305.9670104980469,
+          479.5534973144531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "i=1",
+        "bbox": [
+          311.94000244140625,
+          483.6883239746094,
+          323.4041442871094,
+          491.2312316894531
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.9\nSummary",
+        "bbox": [
+          77.40097045898438,
+          506.50299072265625,
+          183.0863037109375,
+          523.7183837890625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "This chapter introduced language modeling and the n-gram, one of the most widely\nused tools in language processing.",
+        "bbox": [
+          142.19998168945312,
+          545.92041015625,
+          475.1997375488281,
+          567.8380126953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "• Language models offer a way to assign a probability to a sentence or other\nsequence of words, and to predict a word from preceding words.\n• n-grams are Markov models that estimate words from a ﬁxed window of pre-\nvious words. n-gram probabilities can be estimated by counting in a corpus\nand normalizing (the maximum likelihood estimate).\n• n-gram language models are evaluated extrinsically in some task, or intrinsi-\ncally using perplexity.\n• The perplexity of a test set according to a language model is the geometric\nmean of the inverse test set probability computed by the model.\n• Smoothing algorithms provide a more sophisticated way to estimate the prob-\nability of n-grams. Commonly used smoothing algorithms for n-grams rely on\nlower-order n-gram counts through backoff or interpolation.",
+        "bbox": [
+          158.63897705078125,
+          572.7504272460938,
+          475.2022399902344,
+          719.0630493164062
+        ]
+      }
+    ]
+  },
+  {
+    "page": 25,
+    "elements": [
+      {
+        "type": "text",
+        "content": "BIBLIOGRAPHICAL AND HISTORICAL NOTES\n25",
+        "bbox": [
+          281.5769958496094,
+          84.38848114013672,
+          493.2005920410156,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "• Both backoff and interpolation require discounting to create a probability dis-\ntribution.\n• Kneser-Ney smoothing makes use of the probability of a word being a novel\ncontinuation. The interpolated Kneser-Ney smoothing algorithm mixes a\ndiscounted probability with a lower-order continuation probability.",
+        "bbox": [
+          176.63900756835938,
+          111.47148895263672,
+          493.20416259765625,
+          171.30105590820312
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Bibliographical and Historical Notes",
+        "bbox": [
+          95.40099334716797,
+          191.1710205078125,
+          348.346923828125,
+          208.38641357421875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The underlying mathematics of the n-gram was ﬁrst proposed by Markov (1913),\nwho used what are now called Markov chains (bigrams and trigrams) to predict\nwhether an upcoming letter in Pushkin’s Eugene Onegin would be a vowel or a con-\nsonant. Markov classiﬁed 20,000 letters as V or C and computed the bigram and\ntrigram probability that a given letter would be a vowel given the previous one or\ntwo letters. Shannon (1948) applied n-grams to compute approximations to English\nword sequences. Based on Shannon’s work, Markov models were commonly used in\nengineering, linguistic, and psychological work on modeling word sequences by the\n1950s. In a series of extremely inﬂuential papers starting with Chomsky (1956) and\nincluding Chomsky (1957) and Miller and Chomsky (1963), Noam Chomsky argued\nthat “ﬁnite-state Markov processes”, while a possibly useful engineering heuristic,\nwere incapable of being a complete cognitive model of human grammatical knowl-\nedge. These arguments led many linguists and computational linguists to ignore\nwork in statistical modeling for decades.\nThe resurgence of n-gram models came from Jelinek and colleagues at the IBM\nThomas J. Watson Research Center, who were inﬂuenced by Shannon, and Baker\nat CMU, who was inﬂuenced by the work of Baum and colleagues. Independently\nthese two labs successfully used n-grams in their speech recognition systems (Baker\n1975b, Jelinek 1976, Baker 1975a, Bahl et al. 1983, Jelinek 1990).\nAdd-one smoothing derives from Laplace’s 1812 law of succession and was ﬁrst\napplied as an engineering solution to the zero frequency problem by Jeffreys (1948)\nbased on an earlier Add-K suggestion by Johnson (1932). Problems with the add-\none algorithm are summarized in Gale and Church (1994).\nA wide variety of different language modeling and smoothing techniques were\nproposed in the 80s and 90s, including Good-Turing discounting—ﬁrst applied to\nthe n-gram smoothing at IBM by Katz (N´adas 1984, Church and Gale 1991)—\nWitten-Bell discounting (Witten and Bell, 1991), and varieties of class-based n-\ngram models that used information about word classes.\nclass-based\nn-gram",
+        "bbox": [
+          111.29000854492188,
+          218.93849182128906,
+          493.20294189453125,
+          553.4180297851562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Starting in the late 1990s, Chen and Goodman performed a number of carefully\ncontrolled experiments comparing different discounting algorithms, cache models,\nclass-based models, and other language model parameters (Chen and Goodman\n1999, Goodman 2006, inter alia). They showed the advantages of Modiﬁed In-\nterpolated Kneser-Ney, which became the standard baseline for n-gram language\nmodeling, especially because they showed that caches and class-based models pro-\nvided only minor additional improvement. These papers are recommended for any\nreader with further interest in n-gram language modeling. SRILM (Stolcke, 2002)\nand KenLM (Heaﬁeld 2011, Heaﬁeld et al. 2013) are publicly available toolkits for\nbuilding n-gram language models.\nModern language modeling is more commonly done with neural network lan-\nguage models, which solve the major problems with n-grams: the number of param-\neters increases exponentially as the n-gram order increases, and n-grams have no\nway to generalize from training to test set. Neural language models instead project",
+        "bbox": [
+          160.20001220703125,
+          553.6832885742188,
+          493.20391845703125,
+          719.0628662109375
+        ]
+      }
+    ]
+  },
+  {
+    "page": 26,
+    "elements": [
+      {
+        "type": "text",
+        "content": "26\nCHAPTER 3\n•\nN-GRAM LANGUAGE MODELS",
+        "bbox": [
+          77.4010009765625,
+          83.50951385498047,
+          300.1872863769531,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "words into a continuous space in which words with similar contexts have similar\nrepresentations. We’ll introduce both feedforward language models (Bengio et al.\n2006, Schwenk 2007) in Chapter 7, and recurrent language models (Mikolov, 2012)\nin Chapter 9.",
+        "bbox": [
+          142.19998168945312,
+          111.47148895263672,
+          475.205078125,
+          157.39108276367188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Exercises",
+        "bbox": [
+          77.40099334716797,
+          177.36505126953125,
+          143.11216735839844,
+          194.5804443359375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.1\nWrite out the equation for trigram probability estimation (modifying Eq. 3.11).\nNow write out all the non-zero trigram probabilities for the I am Sam corpus\non page 4.",
+        "bbox": [
+          142.1999969482422,
+          205.0555419921875,
+          475.7580261230469,
+          239.01913452148438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.2\nCalculate the probability of the sentence i want chinese food. Give two\nprobabilities, one using Fig. 3.2 and the ‘useful probabilities’ just below it on\npage 6, and another using the add-1 smoothed table in Fig. 3.7. Assume the\nadditional add-1 smoothed probabilities P(i|<s>) = 0.19 and P(</s>|food) =\n0.40.",
+        "bbox": [
+          142.1999969482422,
+          245.11097717285156,
+          482.983154296875,
+          303.3091125488281
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.3\nWhich of the two probabilities you computed in the previous exercise is higher,\nunsmoothed or smoothed? Explain why.",
+        "bbox": [
+          142.1999969482422,
+          309.7255554199219,
+          476.2661437988281,
+          331.7341003417969
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.4\nWe are given the following corpus, modiﬁed from the one in the chapter:",
+        "bbox": [
+          142.1999969482422,
+          338.1495361328125,
+          457.01861572265625,
+          348.2030944824219
+        ]
+      },
+      {
+        "type": "text",
+        "content": "<s> I am Sam </s>\n<s> Sam I am </s>\n<s> I am Sam </s>\n<s> I do not like green eggs and Sam </s>",
+        "bbox": [
+          167.10699462890625,
+          354.2959289550781,
+          381.5522155761719,
+          400.1235046386719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Using a bigram language model with add-one smoothing, what is P(Sam |\nam)? Include <s> and </s> in your counts just like any other token.",
+        "bbox": [
+          167.10699462890625,
+          406.685791015625,
+          475.2106018066406,
+          428.9630432128906
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.5\nSuppose we didn’t use the end-symbol </s>. Train an unsmoothed bigram\ngrammar on the following training corpus without using the end-symbol </s>:",
+        "bbox": [
+          142.20001220703125,
+          435.0558776855469,
+          475.20513916015625,
+          457.3880310058594
+        ]
+      },
+      {
+        "type": "text",
+        "content": "<s> a b\n<s> b b\n<s> b a\n<s> a a",
+        "bbox": [
+          177.56802368164062,
+          463.4798583984375,
+          214.18055725097656,
+          509.3084411621094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Demonstrate that your bigram model does not assign a single probability dis-\ntribution across all sentence lengths by showing that the sum of the probability\nof the four possible 2 word sentences over the alphabet {a,b} is 1.0, and the\nsum of the probability of all possible 3 word sentences over the alphabet {a,b}\nis also 1.0.",
+        "bbox": [
+          167.10696411132812,
+          516.2293701171875,
+          475.2034912109375,
+          574.012939453125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.6\nSuppose we train a trigram language model with add-one smoothing on a\ngiven corpus. The corpus contains V word types. Express a formula for esti-\nmating P(w3|w1,w2), where w3 is a word which follows the bigram (w1,w2),\nin terms of various n-gram counts and V. Use the notation c(w1,w2,w3) to\ndenote the number of times that trigram (w1,w2,w3) occurs in the corpus, and\nso on for bigrams and unigrams.",
+        "bbox": [
+          142.19996643066406,
+          580.4284057617188,
+          475.20025634765625,
+          650.2579345703125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.7\nWe are given the following corpus, modiﬁed from the one in the chapter:",
+        "bbox": [
+          142.199951171875,
+          656.6744384765625,
+          457.0185546875,
+          666.7279663085938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "<s> I am Sam </s>\n<s> Sam I am </s>\n<s> I am Sam </s>\n<s> I do not like green eggs and Sam </s>",
+        "bbox": [
+          167.10694885253906,
+          672.81982421875,
+          381.5521545410156,
+          718.6483764648438
+        ]
+      }
+    ]
+  },
+  {
+    "page": 27,
+    "elements": [
+      {
+        "type": "text",
+        "content": "EXERCISES\n27",
+        "bbox": [
+          423.37298583984375,
+          84.38848114013672,
+          493.2005615234375,
+          94.44204711914062
+        ]
+      },
+      {
+        "type": "text",
+        "content": "If we use linear interpolation smoothing between a maximum-likelihood bi-\ngram model and a maximum-likelihood unigram model with λ1 = 1",
+        "bbox": [
+          185.10696411132812,
+          111.56245422363281,
+          493.2001953125,
+          134.7545166015625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "2 and λ2 =\n1\n2, what is P(Sam|am)? Include <s> and </s> in your counts just like any\nother token.",
+        "bbox": [
+          185.10702514648438,
+          123.28691101074219,
+          493.2109069824219,
+          158.72610473632812
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.8\nWrite a program to compute unsmoothed unigrams and bigrams.",
+        "bbox": [
+          160.2000274658203,
+          165.111572265625,
+          442.7199401855469,
+          175.16513061523438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.9\nRun your n-gram program on two different small corpora of your choice (you\nmight use email text or newsgroups). Now compare the statistics of the two\ncorpora. What are the differences in the most common unigrams between the\ntwo? How about interesting differences in bigrams?",
+        "bbox": [
+          160.2000274658203,
+          181.549560546875,
+          493.20037841796875,
+          227.46817016601562
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.10 Add an option to your program to generate random sentences.",
+        "bbox": [
+          160.2000274658203,
+          233.8536376953125,
+          431.91046142578125,
+          243.90719604492188
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.11 Add an option to your program to compute the perplexity of a test set.",
+        "bbox": [
+          160.2000274658203,
+          250.2916259765625,
+          463.8804016113281,
+          260.3451843261719
+        ]
+      },
+      {
+        "type": "text",
+        "content": "3.12 You are given a training set of 100 numbers that consists of 91 zeros and 1\neach of the other digits 1-9. Now we see the following test set: 0 0 0 0 0 3 0 0\n0 0. What is the unigram perplexity?",
+        "bbox": [
+          160.2000274658203,
+          266.7296142578125,
+          493.2004699707031,
+          300.69415283203125
+        ]
+      }
+    ]
+  },
+  {
+    "page": 28,
+    "elements": [
+      {
+        "type": "text",
+        "content": "28\nChapter 3\n•\nN-gram Language Models",
+        "bbox": [
+          79.89199829101562,
+          83.60047912597656,
+          269.37066650390625,
+          93.56307983398438
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Goodman, J. 2006. A bit of progress in language model-\ning: Extended version. Technical Report MSR-TR-2001-\n72, Machine Learning and Applied Statistics Group, Mi-\ncrosoft Research, Redmond, WA.\nHeaﬁeld, K. 2011.\nKenLM: Faster and smaller language\nmodel queries. Workshop on Statistical Machine Trans-\nlation.\nHeaﬁeld, K., I. Pouzyrevsky, J. H. Clark, and P. Koehn. 2013.",
+        "bbox": [
+          283.27496337890625,
+          113.07347869873047,
+          475.2030944824219,
+          192.2236328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Algoet, P. H. and T. M. Cover. 1988. A sandwich proof of\nthe Shannon-McMillan-Breiman theorem. The Annals of\nProbability, 16(2):899–909.\nBahl, L. R., F. Jelinek, and R. L. Mercer. 1983. A maxi-\nmum likelihood approach to continuous speech recogni-\ntion. IEEE Transactions on Pattern Analysis and Machine\nIntelligence, 5(2):179–190.\nBaker, J. K. 1975a. The DRAGON system – An overview.\nIEEE Transactions on Acoustics, Speech, and Signal Pro-\ncessing, ASSP-23(1):24–29.\nBaker, J. K. 1975b.\nStochastic modeling for automatic\nspeech understanding. In D. Raj Reddy, editor, Speech\nRecognition. Academic Press.\nBengio, Y., H. Schwenk, J.-S. Sen´ecal, F. Morin, and J.-\nL. Gauvain. 2006. Neural probabilistic language mod-\nels. In Innovations in Machine Learning, pages 137–186.\nSpringer.\nBlodgett, S. L. and B. O’Connor. 2017. Racial disparity in\nnatural language processing: A case study of social media\nAfrican-American English. Fairness, Accountability, and\nTransparency in Machine Learning (FAT/ML) Workshop,\nKDD.\nBrants, T., A. C. Popat, P. Xu, F. J. Och, and J. Dean.\n2007.\nLarge language models in machine translation.\nEMNLP/CoNLL.\nBuck, C., K. Heaﬁeld, and B. Van Ooyen. 2014. N-gram\ncounts and language models from the common crawl.\nLREC.\nChen, S. F. and J. Goodman. 1998. An empirical study of\nsmoothing techniques for language modeling.\nTechni-\ncal Report TR-10-98, Computer Science Group, Harvard\nUniversity.\nChen, S. F. and J. Goodman. 1999. An empirical study of\nsmoothing techniques for language modeling. Computer\nSpeech and Language, 13:359–394.\nChomsky, N. 1956.\nThree models for the description of\nlanguage.\nIRE Transactions on Information Theory,\n2(3):113–124.\nChomsky, N. 1957.\nSyntactic Structures.\nMouton, The\nHague.\nChurch, K. W. and W. A. Gale. 1991. A comparison of the\nenhanced Good-Turing and deleted estimation methods\nfor estimating probabilities of English bigrams.\nCom-\nputer Speech and Language, 5:19–54.\nChurch, K. W., T. Hart, and J. Gao. 2007.\nCom-\npressing trigram language models with Golomb coding.\nEMNLP/CoNLL.\nCover, T. M. and J. A. Thomas. 1991. Elements of Informa-\ntion Theory. Wiley.\nDavies, M. 2020.\nThe Corpus of Contemporary Amer-\nican English (COCA): One billion words, 1990-2019.\nhttps://www.english-corpora.org/coca/.\nFranz, A. and T. Brants. 2006. All our n-gram are belong\nto you.\nhttp://googleresearch.blogspot.com/\n2006/08/all-our-n-gram-are-belong-to-you.\nhtml.\nGale, W. A. and K. W. Church. 1994. What is wrong with\nadding one? In Nelleke Oostdijk and Pieter de Haan, edi-\ntors, Corpus-Based Research into Language, pages 189–\n198. Rodopi.",
+        "bbox": [
+          77.40095520019531,
+          113.07353973388672,
+          269.3304138183594,
+          719.3285522460938
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Scalable modiﬁed Kneser-Ney language model estima-\ntion. ACL.\nJeffreys, H. 1948. Theory of Probability, 2nd edition. Claren-\ndon Press. Section 3.23.\nJelinek, F. 1976. Continuous speech recognition by statisti-\ncal methods. Proceedings of the IEEE, 64(4):532–557.\nJelinek, F. 1990.\nSelf-organized language modeling for\nspeech recognition. In Alex Waibel and Kai-Fu Lee, ed-\nitors, Readings in Speech Recognition, pages 450–506.\nMorgan Kaufmann. Originally distributed as IBM tech-\nnical report in 1985.\nJelinek, F. and R. L. Mercer. 1980.\nInterpolated estima-\ntion of Markov source parameters from sparse data. In\nEdzard S. Gelsema and Laveen N. Kanal, editors, Pro-\nceedings, Workshop on Pattern Recognition in Practice,\npages 381–397. North Holland.\nJohnson, W. E. 1932. Probability: deductive and inductive\nproblems (appendix to). Mind, 41(164):421–423.\nJurafsky, D., C. Wooters, G. Tajchman, J. Segal, A. Stolcke,\nE. Fosler, and N. Morgan. 1994. The Berkeley restaurant\nproject. ICSLP.\nJurgens, D., Y. Tsvetkov, and D. Jurafsky. 2017. Incorpo-\nrating dialectal variability for socially equitable language\nidentiﬁcation. ACL.\nKane, S. K., M. R. Morris, A. Paradiso, and J. Campbell.\n2017.\n“at times avuncular and cantankerous, with the\nreﬂexes of a mongoose”: Understanding self-expression\nthrough augmentative and alternative communication de-\nvices. CSCW 2017.\nKing, S. 2020. From African American Vernacular English\nto African American Language: Rethinking the study of\nrace and language in African Americans’ speech. Annual\nReview of Linguistics, 6:285–300.\nKneser, R. and H. Ney. 1995. Improved backing-off for M-\ngram language modeling. ICASSP, volume 1.\nLin, Y., J.-B. Michel, E. Aiden Lieberman, J. Orwant,\nW. Brockman, and S. Petrov. 2012. Syntactic annotations\nfor the Google books NGram corpus. ACL.\nMarkov, A. A. 1913. Essai d’une recherche statistique sur\nle texte du roman “Eugene Onegin” illustrant la liaison\ndes epreuve en chain (‘Example of a statistical investiga-\ntion of the text of “Eugene Onegin” illustrating the de-\npendence between samples in chain’). Izvistia Impera-\ntorskoi Akademii Nauk (Bulletin de l’Acad´emie Imp´eriale\ndes Sciences de St.-P´etersbourg), 7:153–162.\nMikolov, T. 2012. Statistical language models based on neu-\nral networks. Ph.D. thesis, Ph. D. thesis, Brno University\nof Technology.\nMiller, G. A. and N. Chomsky. 1963. Finitary models of\nlanguage users.\nIn R. Duncan Luce, Robert R. Bush,\nand Eugene Galanter, editors, Handbook of Mathemati-\ncal Psychology, volume II, pages 419–491. John Wiley.",
+        "bbox": [
+          283.27496337890625,
+          193.717529296875,
+          475.20452880859375,
+          718.8734741210938
+        ]
+      }
+    ]
+  },
+  {
+    "page": 29,
+    "elements": [
+      {
+        "type": "text",
+        "content": "Exercises\n29",
+        "bbox": [
+          433.2560119628906,
+          84.39747619628906,
+          493.2009582519531,
+          94.36007690429688
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Miller, G. A. and J. A. Selfridge. 1950. Verbal context and\nthe recall of meaningful material. American Journal of\nPsychology, 63:176–185.",
+        "bbox": [
+          95.4010009765625,
+          113.07353973388672,
+          287.3289794921875,
+          139.97265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "N´adas, A. 1984. Estimation of probabilities in the language\nmodel of the IBM speech recognition system.\nIEEE\nTransactions on Acoustics, Speech, Signal Processing,\n32(4):859–861.",
+        "bbox": [
+          95.4010009765625,
+          144.41656494140625,
+          287.3284912109375,
+          180.81964111328125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Schwenk, H. 2007.\nContinuous space language models.\nComputer Speech & Language, 21(3):492–518.",
+        "bbox": [
+          95.40098571777344,
+          185.30255126953125,
+          287.3288879394531,
+          202.7376708984375
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Shannon, C. E. 1948. A mathematical theory of commu-\nnication. Bell System Technical Journal, 27(3):379–423.\nContinued in the following volume.",
+        "bbox": [
+          95.40098571777344,
+          207.2205810546875,
+          287.3289489746094,
+          234.11968994140625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Shannon, C. E. 1951. Prediction and entropy of printed En-\nglish. Bell System Technical Journal, 30:50–64.",
+        "bbox": [
+          95.40098571777344,
+          238.60260009765625,
+          287.32891845703125,
+          256.0377197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Stolcke, A. 1998.\nEntropy-based pruning of backoff lan-\nguage models. Proc. DARPA Broadcast News Transcrip-\ntion and Understanding Workshop.",
+        "bbox": [
+          95.40097045898438,
+          260.5206298828125,
+          287.3288879394531,
+          287.41973876953125
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Stolcke, A. 2002. SRILM – an extensible language modeling\ntoolkit. ICSLP.",
+        "bbox": [
+          95.40097045898438,
+          291.9036560058594,
+          287.32891845703125,
+          309.3377380371094
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Talbot, D. and M. Osborne. 2007.\nSmoothed Bloom ﬁl-\nter language models:\nTera-scale LMs on the cheap.\nEMNLP/CoNLL.",
+        "bbox": [
+          95.40097045898438,
+          313.8206481933594,
+          287.329345703125,
+          340.7197265625
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Trnka, K., D. Yarrington, J. McCaw, K. F. McCoy, and\nC. Pennington. 2007. The effects of word prediction on\ncommunication rate for AAC. NAACL-HLT.",
+        "bbox": [
+          95.40097045898438,
+          345.2036437988281,
+          287.3292541503906,
+          372.10272216796875
+        ]
+      },
+      {
+        "type": "text",
+        "content": "Witten, I. H. and T. C. Bell. 1991. The zero-frequency prob-\nlem: Estimating the probabilities of novel events in adap-\ntive text compression. IEEE Transactions on Information\nTheory, 37(4):1085–1094.",
+        "bbox": [
+          95.40095520019531,
+          376.58563232421875,
+          287.3304138183594,
+          412.94970703125
+        ]
+      }
+    ]
+  }
+]

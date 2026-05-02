@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 3-4 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-3">Page 3</a>
+<a class="chip" href="#page-4">Page 4</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 3-4 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-3">
+<header class="page-header">
+<h2>Page 3</h2>
+<div class="page-subtitle">신경망 유닛 예시 및 활성화 함수</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.1 • UNITS 3</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.1 • 유닛(UNITS) 3</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 7.2 shows a final schematic of a basic neural unit. In this example the unit takes 3 input values x_1, x_2, and x_3, and computes a weighted sum, multiplying each value by a weight (w_1, w_2, and w_3, respectively), adds them to a bias term b, and then passes the resulting sum through a sigmoid function to result in a number between 0 and 1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.2는 기본적인 신경망 유닛의 최종 개략도를 보여줍니다. 이 예에서 유닛은 3개의 입력값 $x_1, x_2, x_3$을 받아, 각 값에 가중치($w_1, w_2, w_3$)를 각각 곱하여 가중치 합을 계산하고, 여기에 바이어스 항 $b$를 더한 뒤, 그 결과 합계를 시그모이드 함수에 통과시켜 0과 1 사이의 숫자를 산출합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>3개의 입력을 받는 신경망 유닛의 동작 과정을 한데 묶어 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.2 A neural unit, taking 3 inputs x1, x2, and x3 (and a bias b that we represent as a weight for an input clamped at +1) and producing an output y. We include some convenient intermediate variables: the output of the summation, z, and the output of the sigmoid, a. In this case the output of the unit y is the same as a, but in deeper networks we'll reserve y to mean the final output of the entire network, leaving a as the activation of an individual node.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.2 3개의 입력 $x_1, x_2, x_3$(그리고 +1로 고정된 입력의 가중치로 표현되는 바이어스 $b$)를 받아 출력 $y$를 생성하는 신경망 유닛. 우리는 몇 가지 편리한 중간 변수들을 포함했습니다: 합산의 출력인 $z$와 시그모이드의 출력인 $a$. 이 경우 유닛의 출력 $y$는 $a$와 동일하지만, 더 깊은 네트워크에서는 $y$를 전체 네트워크의 최종 출력으로 남겨두고 $a$를 개별 노드의 활성화 값으로 부를 것입니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.2. 단일 유닛의 구조와 중간 변수(z, a)의 의미를 도식화한 그림입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.2 A neural unit, taking 3 inputs x1, x2, and x3 (and a bias b that we represent as a weight for an input clamped at +1) and producing an output y. We include some convenient intermediate variables: the output of the summation, z, and the output of the sigmoid, a. In this case the output of the unit y is the same as a, but in deeper networks we'll reserve y to mean the final output of the entire network, leaving a as the activation of an individual node.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.2 3개의 입력 $x_1, x_2, x_3$(그리고 +1로 고정된 입력의 가중치로 표현되는 바이어스 $b$)를 받아 출력 $y$를 생성하는 신경망 유닛. 우리는 몇 가지 편리한 중간 변수들을 포함했습니다: 합산의 출력인 $z$와 시그모이드의 출력인 $a$. 이 경우 유닛의 출력 $y$는 $a$와 동일하지만, 더 깊은 네트워크에서는 $y$를 전체 네트워크의 최종 출력으로 남겨두고 $a$를 개별 노드의 활성화 값으로 부를 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.2 캡션입니다. 출력 y와 활성화 값 a를 구분하여 사용하는 이유를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's walk through an example just to get an intuition. Let's suppose we have a unit with the following weight vector and bias:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>직관을 얻기 위해 예제를 하나 살펴보겠습니다. 다음과 같은 가중치 벡터와 바이어스를 가진 유닛이 있다고 가정해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수치 계산 예제 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\mathbf{w} = [0.2, 0.3, 0.9] \
+b = 0.5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\mathbf{w} = [0.2, 0.3, 0.9] \
+b = 0.5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제에 사용될 가중치와 바이어스 값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What would this unit do with the following input vector:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 유닛이 다음과 같은 입력 벡터를 받으면 어떻게 될까요?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 벡터 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\mathbf{x} = [0.5, 0.6, 0.1]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\mathbf{x} = [0.5, 0.6, 0.1]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예제 입력 벡터 값입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The resulting output y would be:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그 결과로 나오는 출력 $y$는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산 결과 산출 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y = \sigma(\mathbf{w} \cdot \mathbf{x} + b) = \frac{1}{1 + e^{-(\mathbf{w} \cdot \mathbf{x} + b)}} = \frac{1}{1 + e^{-(.5*.2 + .6*.3 + .1*.9 + .5)}} = \frac{1}{1 + e^{-0.87}} = .70</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>y = \sigma(\mathbf{w} \cdot \mathbf{x} + b) = \frac{1}{1 + e^{-(\mathbf{w} \cdot \mathbf{x} + b)}} = \frac{1}{1 + e^{-(.5*.2 + .6*.3 + .1*.9 + .5)}} = \frac{1}{1 + e^{-0.87}} = .70</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 수치를 대입하여 최종 출력 0.70을 계산하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In practice, the sigmoid is not commonly used as an activation function. A function that is very similar but almost always better is the tanh function shown in Fig. 7.3a; tanh is a variant of the sigmoid that ranges from -1 to +1:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제로 시그모이드는 활성화 함수로 흔히 사용되지는 않습니다. 시그모이드와 매우 유사하지만 거의 항상 성능이 더 좋은 함수는 그림 7.3a에 나타난 탄젠트 하이퍼볼릭(tanh) 함수입니다. tanh는 시그모이드의 변형으로, 출력 범위가 -1에서 +1 사이입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실무에서 시그모이드의 대안으로 사용되는 tanh 함수를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>tanh</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>tanh</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쌍곡선 탄젠트 함수로, 원점 대칭인 출력 범위를 가집니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y = \frac{e^z - e^{-z}}{e^z + e^{-z}} (7.5)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>y = \frac{e^z - e^{-z}}{e^z + e^{-z}} (7.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.5). tanh 함수의 정의식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simplest activation function, and perhaps the most commonly used, is the rectified linear unit, also called the ReLU, shown in Fig. 7.3b. It's just the same as z when z is positive, and 0 otherwise:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 간단하면서도 아마도 가장 흔히 사용되는 활성화 함수는 그림 7.3b에 나타난 정류 선형 유닛, 즉 ReLU(Rectified Linear Unit)입니다. 이는 $z$가 양수일 때는 $z$와 동일하고, 그 외에는 0입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>딥러닝에서 가장 널리 쓰이는 ReLU 함수를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>ReLU</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ReLU</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산이 매우 간단하고 경사 소실 문제를 완화해 주는 특징이 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y = \max(z, 0) (7.6)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>y = \max(z, 0) (7.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.6). ReLU 함수의 수학적 정의입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These activation functions have different properties that make them useful for different language applications or network architecture. For example, the tanh function has the nice properties of being smoothly differentiable and mapping outlier</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 활성화 함수들은 서로 다른 언어 처리 애플리케이션이나 네트워크 구조에서 유용하게 쓰일 수 있는 저마다의 특성을 가지고 있습니다. 예를 들어 tanh 함수는 부드럽게 미분 가능하며 아웃라이어 값들을 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>활성화 함수들의 상이한 성질들이 애플리케이션에 따라 적절히 선택되어야 함을 시사합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-4">
+<header class="page-header">
+<h2>Page 4</h2>
+<div class="page-subtitle">tanh/ReLU 비교 및 XOR 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>4 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>4 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.3 The tanh and ReLU activation functions. (a) tanh, (b) ReLU]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.3 tanh와 ReLU 활성화 함수. (a) tanh, (b) ReLU]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.3. tanh와 ReLU 함수의 그래프를 비교하여 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.3 The tanh and ReLU activation functions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.3 tanh와 ReLU 활성화 함수.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.3 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>values toward the mean. The rectifier function, on the other hand has nice properties that result from it being very close to linear. In the sigmoid or tanh functions, very high values of z result in values of y that are saturated, i.e., extremely close to 1, and have derivatives very close to 0. Zero derivatives cause problems for learning, because as we'll see in Section 7.6, we'll train networks by propagating an error signal backwards, multiplying gradients (partial derivatives) from each layer of the network; gradients that are almost 0 cause the error signal to get smaller and smaller until it is too small to be used for training, a problem called the vanishing gradient problem. Rectifiers don't have this problem, since the derivative of ReLU for high values of z is 1 rather than very close to 0.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 평균 쪽으로 모아주는 좋은 성질을 가지고 있습니다. 반면, 정류 함수(ReLU)는 선형 함수에 매우 가깝다는 점에서 기인하는 장점들을 가지고 있습니다. 시그모이드나 tanh 함수의 경우, $z$값이 매우 크면 $y$값이 '포화(saturated)' 됩니다. 즉, 1에 극도로 가까워져 미분값이 0에 아주 가깝게 됩니다. 미분값이 0이 되면 학습에 문제가 생깁니다. 7.6절에서 보겠지만, 우리는 오차 신호를 뒤로 전파하면서 네트워크의 각 층에서 나온 그래디언트(편미분값)들을 곱하는 방식으로 네트워크를 학습시킵니다. 따라서 0에 가까운 그래디언트들은 오차 신호를 점점 더 작게 만들어 결국 학습에 사용할 수 없을 정도로 작아지게 하는데, 이 문제를 '기울기 소실(vanishing gradient)' 문제라고 합니다. ReLU는 $z$값이 클 때 미분값이 0에 가까워지는 대신 1이 되므로 이러한 문제가 발생하지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>tanh/시그모이드의 포화 문제와 그로 인한 기울기 소실 문제, 그리고 이를 극복하는 ReLU의 장점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>saturated
+vanishing gradient</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>포화된(saturated)
+기울기 소실(vanishing gradient)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>활성화 함수 선택 시 고려해야 할 중요한 기술적 개념들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.2 The XOR problem</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.2 XOR 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단층 신경망의 한계를 보여주는 역사적으로 중요한 사례인 XOR 문제를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Early in the history of neural networks it was realized that the power of neural networks, as with the real neurons that inspired them, comes from combining these units into larger networks. One of the most clever demonstrations of the need for multi-layer networks was the proof by Minsky and Papert (1969) that a single neural unit cannot compute some very simple functions of its input. Consider the task of computing elementary logical functions of two inputs, like AND, OR, and XOR. As a reminder, here are the truth tables for those functions:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망 역사의 초기부터 신경망의 위력은, 영감을 준 실제 뉴런들이 그렇듯이, 이러한 유닛들을 더 큰 네트워크로 결합함으로써 나온다는 사실이 인식되었습니다. 다층 네트워크의 필요성을 가장 명쾌하게 보여준 사례 중 하나는 단일 신경 유닛이 입력의 매우 간단한 함수조차 계산할 수 없다는 Minsky와 Papert(1969)의 증명이었습니다. AND, OR, XOR와 같은 두 입력에 대한 기본적인 논리 함수를 계산하는 작업을 생각해 보십시오. 참고로 이 함수들의 진리표는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 뉴런(퍼셉트론)의 한계와 다층 구조의 필요성을 역설한 Minsky와 Papert의 연구를 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| AND | | | | OR | | | | XOR | | |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| x1 | x2 | y | | x1 | x2 | y | | x1 | x2 | y |
+| 0 | 0 | 0 | | 0 | 0 | 0 | | 0 | 0 | 0 |
+| 0 | 1 | 0 | | 0 | 1 | 1 | | 0 | 1 | 1 |
+| 1 | 0 | 0 | | 1 | 0 | 1 | | 1 | 0 | 1 |
+| 1 | 1 | 1 | | 1 | 1 | 1 | | 1 | 1 | 0 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| AND | | | | OR | | | | XOR | | |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| x1 | x2 | y | | x1 | x2 | y | | x1 | x2 | y |
+| 0 | 0 | 0 | | 0 | 0 | 0 | | 0 | 0 | 0 |
+| 0 | 1 | 0 | | 0 | 1 | 1 | | 0 | 1 | 1 |
+| 1 | 0 | 0 | | 1 | 0 | 1 | | 1 | 0 | 1 |
+| 1 | 1 | 1 | | 1 | 1 | 1 | | 1 | 1 | 0 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기본 논리 게이트의 진리표입니다. XOR가 선형 분리가 불가능하다는 것이 핵심입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This example was first shown for the perceptron, which is a very simple neural unit that has a binary output and does not have a non-linear activation function. The output y of a perceptron is 0 or 1, and is computed as follows (using the same weight w, input x, and bias b as in Eq. 7.2):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 예제는 원래 퍼셉트론(perceptron)을 위해 처음 제시되었습니다. 퍼셉트론은 이진 출력(binary output)을 가지며 비선형 활성화 함수를 포함하지 않는 아주 단순한 신경 유닛입니다. 퍼셉트론의 출력 $y$는 0 또는 1이며, 다음과 같이 계산됩니다(식 7.2와 동일한 가중치 $\mathbf{w}$, 입력 $\mathbf{x}$, 바이어스 $b$ 사용).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 임계치를 기반으로 하는 초기 신경망 모델인 퍼셉트론을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>perceptron</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>퍼셉트론(perceptron)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인공 신경망의 초기 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>y = \begin{cases} 0, & \text{if } \mathbf{w} \cdot \mathbf{x} + b \le 0 \\ 1, & \text{if } \mathbf{w} \cdot \mathbf{x} + b > 0 \end{cases} (7.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>y = \begin{cases} 0, & \text{만약 } \mathbf{w} \cdot \mathbf{x} + b \le 0 \\ 1, & \text{만약 } \mathbf{w} \cdot \mathbf{x} + b > 0 \end{cases} (7.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (7.7). 합산 결과가 0을 넘는지 여부에 따라 0 또는 1을 출력하는 퍼셉트론의 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-19">Page 19</a><a class="chip" href="#page-20">Page 20</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-19">
+<header class="page-header"><h2>Page 19</h2><div class="page-subtitle">참고 문헌 및 연습 문제</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Joshi, M., Chen, D., Liu, Y., Weld, D. S., Zettlemoyer, L., and Levy, O. (2019). SpanBERT: Improving pre-training by representing and predicting spans. Transactions of the Association for Computational Linguistics, 8, 64-77.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Joshi, Mandar, Chen, Danqi, Liu, Yinhan, Weld, Daniel S., Zettlemoyer, Luke, and Levy, Omer. (2019). 「SpanBERT: 구간 표현 및 예측을 통한 사전 학습 개선」(SpanBERT: Improving pre-training by representing and predicting spans). 『계산언어학협회 트랜잭션』, 8, 64-77.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 구간(span) 학습을 강화하여 상호 참조와 같은 태스크의 성능을 극대화시킨 SpanBERT 논문입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Pradhan, S., Mueller, K., Lita, L. V., Ittycheriah, A., and Hovy, E. (2007). OntoNotes: A corpus of all-encompassing semantic annotation. In Proceedings of the IEEE International Conference on Semantic Computing (ICSC).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Pradhan, Sameer, Mueller, Karin, Lita, Lucian Vlad, Ittycheriah, Abe, and Hovy, Eduard. (2007). 「OntoNotes: 전방위적 의미 주석 코퍼스」(OntoNotes: A corpus of all-encompassing semantic annotation). In 『IEEE 국제 의미론 컴퓨팅 학술대회(ICSC) 논문집』.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 상호 참조 해소의 가장 광범위한 표준 데이터셋인 OntoNotes를 소개한 논문입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>21장의 핵심 개념들을 복습하고 적용하기 위한 과제 섹션입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-20">
+<header class="page-header"><h2>Page 20</h2><div class="page-subtitle">연습 문제</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.1 Identify the mentions and their coreference chains in the following text: "The President visited the capital today. He was welcomed by the local officials, who escorted him to the state palace."</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.1 다음 텍스트에서 언급(mentions)들과 그들의 상호 참조 체인(coreference chains)을 식별하시오: "오늘 대통령이 수도를 방문했습니다. 그는 지역 관리들의 환영을 받았으며, 그들은 그를 국빈관으로 안내했습니다."</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 내에서 '대통령(He, him)'과 '지역 관리들(who)' 등의 상호 참조 관계를 직접 도출해보는 기초 훈련입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.2 Explain the main difference between anaphora and coreference. Can anaphora exist without coreference?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.2 전방 참조와 상호 참조의 주요 차이점을 설명하시오. 상호 참조 없이 전방 참조가 존재할 수 있습니까?</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대용어(pro-form)의 연결 관계와 실세계 개체의 동일성 관계 사이의 미묘한 차이를 묻는 이론적 고찰 문제입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.3 Describe the advantages and disadvantages of the mention-pair model compared to the entity-mention model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.3 언급-쌍 모델과 개체-언급 모델을 비교하여 각각의 장단점을 서술하시오.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>쌍별 독립 결정의 단순함과 클러스터 기반 일관성 유지의 장단점을 평가하는 설계 문제입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

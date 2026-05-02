@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Vector Semantics and Embeddings</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">06 Vector Semantics and Embeddings</div>
+<h1>Vector Semantics and Embeddings</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>6. Vector Semantics and Embeddings.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">시작</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 정보와 판본을 나타내는 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+CHAPTER
+6 Vector Semantics and Embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+제6장
+벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>6장의 제목입니다. 단어의 의미를 수치화된 벡터로 표현하는 현대 NLP의 핵심 기술인 벡터 의미론과 임베딩을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>荃者所以在魚而得魚而忘荃 Nets are for fish; Once you get the fish, you can forget the net.
+言者所以在意而得意而忘言 Words are for meaning; Once you get the meaning, you can forget the words
+庄子(Zhuangzi), Chapter 26</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>荃者所以在魚而得魚而忘荃 통발은 물고기를 잡기 위한 것이니, 물고기를 잡고 나면 통발은 잊어도 된다.
+言者所以在意而得意而忘言 말은 뜻을 담기 위한 것이니, 의미를 얻고 나면 말은 잊어도 된다.
+장자(庄子), 외물(外物)편</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장자 외물편의 구절을 인용하여, '말(형식)'보다 '뜻(의미)'이 본질임을 강조하며 장을 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The asphalt that Los Angeles is famous for occurs mainly on its freeways. But in the middle of the city is another patch of asphalt, the La Brea tar pits, and this asphalt preserves millions of fossil bones from the last of the Ice Ages of the Pleistocene Epoch. One of these fossils is the Smilodon, or saber-toothed tiger, instantly recognizable by its long canines. Five million years ago or so, a completely different sabre-tooth tiger called Thylacosmilus lived in Argentina and other parts of South America. Thylacosmilus was a marsupial whereas Smilodon was a placental mammal, but Thylacosmilus had the same long upper canines and, like Smilodon, had a protective bone flange on the lower jaw. The similarity of these two mammals is one of many examples of parallel or convergent evolution, in which particular contexts or environments lead to the evolution of very similar structures in different species (Gould, 1980).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>로스앤젤레스가 유명한 아스팔트는 주로 고속도로에서 볼 수 있습니다. 하지만 도시 한복판에는 또 다른 아스팔트 조각인 라 브레아 타르 피트(La Brea tar pits)가 있으며, 이 아스팔트는 플라이스토세 빙하기의 마지막 시기부터 수백만 개의 화석 뼈를 보존하고 있습니다. 이 화석들 중 하나는 긴 송곳니로 즉석에서 알아볼 수 있는 스밀로돈(Smilodon), 즉 검치호입니다. 약 5백만 년 전, 아르헨티나와 남미의 다른 지역에는 틸라코스밀루스(Thylacosmilus)라고 불리는 완전히 다른 검치호가 살았습니다. 틸라코스밀루스는 유서류(marsupial)였던 반면 스밀로돈은 태반 포유류였지만, 틸라코스밀루스는 똑같이 긴 윗 송곳니를 가졌으며 스밀로돈처럼 아래턱에 보호용 뼈 돌기가 있었습니다. 이 두 포유류의 유사성은 병행 진화 또는 수렴 진화(parallel or convergent evolution)의 많은 예 중 하나이며, 여기서 특정 맥락이나 환경은 서로 다른 종에서 매우 유사한 구조의 진화로 이어집니다(Gould, 1980).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수렴 진화의 예시를 통해, 서로 다른 배경을 가졌더라도 같은 '맥락'이나 '환경'에 놓이면 유사한 특성을 갖게 된다는 점을 시사하며 본론으로 들어갑니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The role of context is also important in the similarity of a less biological kind of organism: the word. Words that occur in similar contexts tend to have similar meanings. This link between similarity in how words are distributed and similarity in what they mean is called the distributional hypothesis. The hypothesis was first formulated in the 1950s by linguists like Joos (1950), Harris (1954), and Firth (1957), who noticed that words which are synonyms (like oculist and eye-doctor) tended to occur in the same environment (e.g., near words like eye or examined) with the amount of meaning difference between two words "corresponding roughly to the amount of difference in their environments" (Harris, 1954, 157).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>맥락의 역할은 생물학적이지 않은 종류의 유기체인 '단어'의 유사성에서도 중요합니다. 유사한 맥락에서 발생하는 단어들은 유사한 의미를 갖는 경향이 있습니다. 단어들이 분포(distributed)하는 방식의 유사성과 그 의미의 유사성 사이의 이러한 연결을 분포 가설(distributional hypothesis)이라고 합니다. 이 가설은 1950년대에 주스(Joos, 1950), 해리스(Harris, 1954), 퍼스(Firth, 1957)와 같은 언어학자들에 의해 처음 정식화되었습니다. 이들은 유의어(oculist와 eye-doctor 같은)가 동일한 환경(예: eye나 examined와 같은 단어 근처)에서 나타나는 경향이 있으며, 두 단어 사이의 의미 차이의 양은 "그 환경의 차이의 양과 대략적으로 일치한다"는 점을 발견했습니다(Harris, 1954, 157).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 단어 임베딩의 근간이 되는 '분포 가설'을 정의합니다. 핵심은 "단어의 의미는 그 단어를 둘러싼 맥락에 의해 정의된다"는 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>distributional hypothesis</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분포 가설(distributional hypothesis)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유사한 맥락에서 쓰이는 단어는 유사한 의미를 가진다는 가설입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter we introduce vector semantics, which instantiates this linguistic hypothesis by learning representations of the meaning of words, called embeddings, directly from their distributions in texts. These representations are used in every natural language processing application that makes use of meaning, and the static embeddings we introduce here underlie the more powerful dynamic or contextualized embeddings like BERT that we will see in Chapter 11.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 텍스트 내의 분포로부터 직접 임베딩(embeddings)이라 불리는 단어 의미의 표현을 학습함으로써 이 언어학적 가설을 구체화하는 벡터 의미론(vector semantics)을 소개합니다. 이러한 표현은 의미를 활용하는 모든 자연어 처리 응용 프로그램에서 사용되며, 여기서 소개하는 정적 임베딩(static embeddings)은 11장에서 보게 될 BERT와 같은 더 강력한 동적 또는 문맥화된 임베딩(contextualized embeddings)의 기초가 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>벡터 의미론과 임베딩의 관계를 설명하며, 이후 배우게 될 문맥화된 임베딩(예: BERT)의 기반이 됨을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+vector semantics
+embeddings</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>벡터 의미론(vector semantics)
+임베딩(embeddings)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 의미를 벡터 공간에 매핑하는 기술적 틀과 그 결과물을 가리킵니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These word representations are also the first example in this book of representation learning, automatically learning useful representations of the input text. Finding such self-supervised ways to learn representations of the input, instead of creating representations by hand via feature engineering, is an important focus of NLP research (Bengio et al., 2013).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 단어 표현은 또한 이 책에서 다루는 표현 학습(representation learning), 즉 입력 텍스트의 유용한 표현을 자동으로 학습하는 방식의 첫 번째 예시입니다. 특징 설계(feature engineering)를 통해 수작업으로 표현을 만드는 대신, 입력의 표현을 학습하는 이러한 자기 지도 학습(self-supervised) 방식을 찾는 것은 NLP 연구의 중요한 초점입니다(Bengio et al., 2013).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>수동적인 특징 설계에서 자동화된 표현 학습으로의 패러다임 변화를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>representation learning</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표현 학습(representation learning)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델이 데이터로부터 스스로 유용한 특징이나 표현을 추출해내는 학습 방식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">어휘 의미론</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 6 • VECTOR SEMANTICS AND EMBEDDINGS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제6장 • 벡터 의미론과 임베딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6.1 Lexical Semantics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6.1 어휘 의미론</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어 수준의 의미를 다루는 언어학의 한 분야인 어휘 의미론을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's begin by introducing some basic principles of word meaning. How should we represent the meaning of a word? In the n-gram models of Chapter 3, and in classical NLP applications, our only representation of a word is as a string of letters, or an index in a vocabulary list. This representation is not that different from a tradition in philosophy, perhaps you've seen it in introductory logic classes, in which the meaning of words is represented by just spelling the word with small capital letters; representing the meaning of "dog" as DOG, and "cat" as CAT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 의미의 몇 가지 기본 원리를 소개하며 시작하겠습니다. 단어의 의미를 어떻게 표현해야 할까요? 3장의 n-gram 모델과 고전적인 NLP 응용 프로그램에서 단어에 대한 우리의 유일한 표현은 문자열이거나 어휘 목록의 인덱스입니다. 이러한 표현은 아마 입문 논리학 수업에서 보았을 법한 철학의 전통과 크게 다르지 않은데, 거기서는 단어의 의미를 단순히 단어의 철자를 작은 대문자로 표기하여 나타냅니다. 예를 들어 "dog"의 의미를 DOG로, "cat"을 CAT으로 표현하는 식입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고전적이고 기호적인 단어 의미 표현 방식의 한계를 시사하기 위해 예시를 듭니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Representing the meaning of a word by capitalizing it is a pretty unsatisfactory model. You might have seen a joke due originally to semanticist Barbara Partee (Carlson, 1977):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어를 대문자화하여 의미를 표현하는 것은 상당히 만족스럽지 못한 모델입니다. 여러분은 의미론자 바바라 파티(Barbara Partee)로부터 유래된 농담을 보았을지도 모릅니다(Carlson, 1977).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기호적 표현이 의미의 실체를 담지 못함을 풍자하는 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">dialogue</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+Q: What's the meaning of life?
+A: LIFE'</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>질문: 삶(life)의 의미는 무엇인가요?
+답변: LIFE'</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>LIFE의 의미를 merely 기호 LIFE로 정의하는 순환 논리의 허무함을 보여주는 농담입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Surely we can do better than this! After all, we'll want a model of word meaning to do all sorts of things for us. It should tell us that some words have similar meanings (cat is similar to dog), others are antonyms (cold is the opposite of hot), some have positive connotations (happy) while others have negative connotations (sad). It should represent the fact that the meanings of buy, sell, and pay offer differing perspectives on the same underlying purchasing event (If I buy something from you, you've probably sold it to me, and I likely paid you). More generally, a model of word meaning should allow us to draw inferences to address meaning-related tasks like question-answering or dialogue.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분명 우리는 이보다 더 잘할 수 있습니다! 결국 우리는 단어 의미 모델이 우리를 위해 온갖 일을 해주기를 원합니다. 모델은 어떤 단어들이 유사한 의미를 갖는지(cat은 dog와 유사함), 다른 것들은 반의어인지(cold는 hot의 반대), 어떤 것들은 긍정적인 함축 의미(happy)를 갖는 반면 다른 것들은 부정적인 함축 의미(sad)를 갖는지 알려주어야 합니다. 또한 buy, sell, pay의 의미가 동일한 기저의 구매 사건에 대해 서로 다른 관점을 제공한다는 사실(만약 내가 당신에게 무언가를 산다면, 당신은 아마 그것을 나에게 팔았을 것이고, 나는 당신에게 돈을 지불했을 것입니다)을 표현할 수 있어야 합니다. 더 일반적으로, 단어 의미 모델은 질의응답이나 대화와 같은 의미 관련 작업을 해결하기 위해 추론을 이끌어낼 수 있게 해주어야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 의미 모델이 갖추어야 할 요건들(유사성, 반의 관계, 감성, 사건 관계, 추론 능력 등)을 나열합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>lexical semantics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘 의미론(lexical semantics)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 의미의 구조와 관계를 연구하는 분야입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we summarize some of these desiderata, drawing on results in the linguistic study of word meaning, which is called lexical semantics; we'll return to and expand on this list in Chapter 18 and Chapter 10.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 어휘 의미론(lexical semantics)이라 불리는 단어 의미에 대한 언어학적 연구 결과를 바탕으로 이러한 요구 사항(desiderata) 중 일부를 요약합니다. 이 목록은 18장과 10장에서 다시 다루고 확장할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이후 장들에서 더 깊게 다룰 것임을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Lemmas and Senses</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표제어와 의미(Lemmas and Senses)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 형태적 기본 단위인 표제어와 그 실제 의미 단위인 sense를 구분합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's start by looking at how one word (we'll choose mouse) might be defined in a dictionary (simplified from the online dictionary WordNet):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>한 단어(mouse를 선택하겠습니다)가 사전(WordNet 온라인 사전을 단순화함)에서 어떻게 정의되는지 살펴보는 것으로 시작하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대표적인 어휘 데이터베이스인 WordNet의 구조를 차용하여 예시를 듭니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>mouse (N)
+1. any of numerous small rodents...
+2. a hand-operated device that controls a cursor...</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>mouse (명사)
+1. 수많은 작은 설치류 중 하나...
+2. 커서를 제어하는 수동 조작 장치...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'mouse'라는 하나의 표제어가 동물과 장치라는 두 가지 서로 다른 의미(senses)를 가지고 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+lemma
+citation form</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표제어(lemma)
+기본형(citation form)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사전에서 단어를 찾을 때 사용하는 표준화된 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Here the form mouse is the lemma, also called the citation form. The form mouse would also be the lemma for the word mice; dictionaries don't have separate definitions for inflected forms like mice. Similarly sing is the lemma for sing, sang, sung. In many languages the infinitive form is used as the lemma for the verb, so Spanish dormir "to sleep" is the lemma for duermes "you sleep". The specific forms sung or carpets or sing or duermes are called wordforms.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 mouse라는 형태는 표제어(lemma)이며, 기본형(citation form)이라고도 불립니다. mouse라는 형태는 mice라는 단어의 표제어이기도 합니다. 사전에는 mice와 같은 굴절된 형태에 대한 별도의 정의가 없습니다. 마찬가지로 sing은 sing, sang, sung의 표제어입니다. 많은 언어에서 부정사(infinitive) 형태가 동사의 표제어로 사용되는데, 예를 들어 스페인어 dormir("to sleep")는 duermes("you sleep")의 표제어입니다. sung, carpets, sing, duermes와 같은 구체적인 형태들을 어형(wordforms)이라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>굴절된 형태들을 대표하는 '표제어'와 실제 텍스트에 나타나는 개별 형태인 '어형'을 구분합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>wordform</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어형(wordform)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥에 따라 굴절되거나 변형된 단어의 구체적인 철자 형태입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As the example above shows, each lemma can have multiple meanings; the lemma mouse can refer to the rodent or the cursor control device. We call each of these aspects of the meaning of mouse a word sense. The fact that lemmas can be polysemous (have multiple senses) can make interpretation difficult (is someone who types "mouse info" into a search engine looking for a pet or a tool?). Chapter 18 will discuss the problem of polysemy, and introduce word sense disambiguation, the task of determining which sense of a word is being used in a particular context.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위의 예가 보여주듯, 각 표제어는 여러 의미를 가질 수 있습니다. 표제어 mouse는 설치류나 커서 제어 장치를 가리킬 수 있습니다. 우리는 mouse 의미의 이러한 각 측면을 단어 의미(word sense)라고 부릅니다. 표제어가 다의성을 가질(polysemous, 여러 의미를 가질) 수 있다는 사실은 해석을 어렵게 만들 수 있습니다(검색창에 "mouse info"를 입력하는 사람이 애완동물을 찾는 것일까요, 아니면 도구를 찾는 것일까요?). 18장에서는 다의성 문제를 논의하고, 특정 문맥에서 단어의 어떤 의미가 사용되고 있는지 결정하는 작업인 단어 의미 중의성 해소(word sense disambiguation)를 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다의성과 그로 인한 자연어 처리의 난제인 중의성 해소 문제를 짚어줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Synonymy</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유의 관계(Synonymy)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>서로 다른 단어가 유사한 의미를 갖는 관계를 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One important component of word meaning is the relationship between word senses. For example when one word has a sense whose meaning is identical to a sense of another word, or nearly identical, we say the two senses of those two words are synonyms. Synonyms include such pairs as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 의미의 한 가지 중요한 구성 요소는 단어 의미 간의 관계입니다. 예를 들어, 한 단어가 가진 의미가 다른 단어가 가진 의미와 동일하거나 거의 동일할 때, 우리는 그 두 단어의 두 의미가 유의어(synonyms)라고 말합니다. 유의어에는 다음과 같은 쌍들이 포함됩니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유의 관계의 정의를 설명하며 다음 페이지의 예시로 연결합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>synonym</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유의어(synonym)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>의미가 같거나 매우 비슷한 서로 다른 단어들입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

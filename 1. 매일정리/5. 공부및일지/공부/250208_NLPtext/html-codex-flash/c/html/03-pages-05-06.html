@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 5-6 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 5-6 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Speech and Language Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">언어 모델링, CKY 알고리즘</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">header</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.1 • PROBABILISTIC CONTEXT-FREE GRAMMARS 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.1 • 확률적 문맥 자유 문법 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>constant for each tree, so we can eliminate it:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 트리에 대해 상수이므로, 이를 제거할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이전 페이지에서 이어지는 내용으로, 확률 계산 시 분모 P(S)를 생략할 수 있는 이유를 마무리합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T,S) (C.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T,S) (C.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>P(S)를 제거한 후의 최적 트리 선택 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Furthermore, since we showed above that P(T,S) = P(T), the final equation for choosing the most likely parse neatly simplifies to choosing the parse with the highest probability:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또한 위에서 P(T,S) = P(T)임을 보였으므로, 가장 가능성 있는 파싱을 선택하기 위한 최종 방정식은 단순히 가장 높은 확률을 가진 파싱을 선택하는 것으로 간결하게 요약됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>결합 확률 P(T,S)가 결국 트리 자체의 확률 P(T)와 같음을 이용하여 식을 더 단순화합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T) (C.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T) (C.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중의성 해소를 위한 최종적인 트리 선택 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.1.2 PCFGs for Language Modeling</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.1.2 언어 모델링을 위한 PCFG</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG를 언어 모델링에 활용하는 방법을 다루는 소절입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second attribute of a PCFG is that it assigns a probability to the string of words constituting a sentence. This is important in language modeling, whether for use in speech recognition, machine translation, spelling correction, augmentative communication, or other applications. The probability of an unambiguous sentence is P(T,S) = P(T) or just the probability of the single parse tree for that sentence. The probability of an ambiguous sentence is the sum of the probabilities of all the parse trees for the sentence:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG의 두 번째 속성은 문장을 구성하는 단어열에 확률을 할당한다는 것입니다. 이는 음성 인식, 기계 번역, 맞춤법 검사, 보완 대체 의사소통 또는 기타 응용 분야에서 사용되는 언어 모델링에 중요합니다. 중의적이지 않은 문장의 확률은 P(T,S) = P(T), 즉 해당 문장에 대한 단일 파스 트리의 확률과 같습니다. 중의적인 문장의 확률은 해당 문장에 대한 모든 파스 트리 확률의 합입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장 자체의 확률 P(S)를 구하는 방법을 설명합니다. 중의적인 경우에는 모든 가능한 트리의 확률을 더해야 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    P(S) = Σ_{T s.t. S=yield(T)} P(T,S) (C.9)
+    = Σ_{T s.t. S=yield(T)} P(T) (C.10)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    P(S) = Σ_{T s.t. S=yield(T)} P(T,S) (C.9)
+    = Σ_{T s.t. S=yield(T)} P(T) (C.10)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장의 확률 P(S)를 모든 가능한 트리 T의 확률 합으로 나타낸 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An additional feature of PCFGs that is useful for language modeling is their ability to assign a probability to substrings of a sentence. For example, suppose we want to know the probability of the next word w_i in a sentence given all the words we've seen so far w_1,...,w_{i-1}. The general formula for this is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언어 모델링에 유용한 PCFG의 추가 기능은 문장의 부분 문자열(substring)에 확률을 할당하는 능력입니다. 예를 들어, 지금까지 본 모든 단어 w_1,...,w_{i-1}가 주어졌을 때 문장의 다음 단어 w_i의 확률을 알고 싶다고 가정해 봅시다. 이에 대한 일반적인 공식은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 단어 예측(Next Word Prediction)에 PCFG를 활용하는 개념입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(w_i|w_1,w_2,...,w_{i-1}) = P(w_1,w_2,...,w_{i-1},w_i) / P(w_1,w_2,...,w_{i-1}) (C.11)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(w_i|w_1,w_2,...,w_{i-1}) = P(w_1,w_2,...,w_{i-1},w_i) / P(w_1,w_2,...,w_{i-1}) (C.11)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조건부 확률의 정의를 이용한 다음 단어 예측 수식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We saw in Chapter 3 a simple approximation of this probability using N-grams, conditioning on only the last word or two instead of the entire context; thus, the bigram approximation would give us</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 3장에서 전체 문맥 대신 마지막 한두 단어에만 조건을 거는 N-gram을 사용한 이 확률의 간단한 근사치를 보았습니다. 따라서 바이그램(bigram) 근사는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기존 N-gram 모델과의 차이점을 설명하기 위한 도입부입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(w_i|w_1,w_2,...,w_{i-1}) ≈ P(w_{i-1},w_i) / P(w_{i-1}) (C.12)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(w_i|w_1,w_2,...,w_{i-1}) ≈ P(w_{i-1},w_i) / P(w_{i-1}) (C.12)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>바이그램 모델에서의 근사 식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But the fact that the N-gram model can only make use of a couple words of context means it is ignoring potentially useful prediction cues. Consider predicting the word after in the following sentence from Chelba and Jelinek (2000):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 N-gram 모델이 단지 몇 단어의 문맥만을 활용할 수 있다는 사실은 잠재적으로 유용한 예측 단서들을 무시하고 있음을 의미합니다. Chelba와 Jelinek(2000)의 다음 문장에서 'after'라는 단어를 예측하는 경우를 생각해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>N-gram의 한계인 좁은 문맥 창(Context Window) 문제를 지적합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(C.13) the contract ended with a loss of 7 cents after trading as low as 9 cents</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(C.13) the contract ended with a loss of 7 cents after trading as low as 9 cents</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장거리 의존성(Long-distance dependency)이 필요한 예시 문장입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A trigram grammar must predict after from the words 7 cents, while it seems clear that the verb ended and the subject contract would be useful predictors that a PCFG-based parser could help us make use of. Indeed, it turns out that PCFGs allow us to condition on the entire previous context w1,w2,...,wi-1 shown in Eq. C.11.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>트라이그램(trigram) 문법은 '7 cents'라는 단어들로부터 'after'를 예측해야 하지만, 동사 'ended'와 주어 'contract'가 PCFG 기반 파서가 활용을 도와줄 수 있는 유용한 예측 인자가 될 것임이 분명해 보입니다. 실제로 PCFG는 식 C.11에 표시된 것처럼 이전의 전체 문맥 w1,w2,...,wi-1에 조건을 거는 것을 가능하게 해줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구문 구조를 파악함으로써 N-gram이 놓치는 멀리 떨어진 단어 간의 관계를 활용할 수 있음을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In summary, this section and the previous one have shown that PCFGs can be applied both to disambiguation in syntactic parsing and to word prediction in language modeling. Both of these applications require that we be able to compute the probability of parse tree T for a given sentence S. The next few sections introduce some algorithms for computing this probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약하자면, 이번 절과 이전 절에서는 PCFG가 구문 분석의 중의성 해소와 언어 모델링의 단어 예측 모두에 적용될 수 있음을 보여주었습니다. 이 두 응용 분야 모두 주어진 문장 S에 대해 파스 트리 T의 확률을 계산할 수 있어야 합니다. 다음 몇 절에서는 이 확률을 계산하기 위한 몇 가지 알고리즘을 소개합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 주요 용도를 정리하고 다음 절(알고리즘)로 넘어가는 요약 문구입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">확률적 CKY 알고리즘</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">header</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6 APPENDIX C • STATISTICAL CONSTITUENCY PARSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6 부록 C • 통계적 구문 분석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 헤더 정보입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.2 Probabilistic CKY Parsing of PCFGs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.2 PCFG를 위한 확률적 CKY 파싱</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY 알고리즘을 소개하는 절의 시작입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The parsing problem for PCFGs is to produce the most-likely parse T^ for a given sentence S, that is,</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PCFG의 파싱 문제는 주어진 문장 S에 대해 가장 가능성 있는 파싱 결과 T^를 생성하는 것입니다. 즉,</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파싱 문제의 목표를 정의합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T) (C.14)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>T^(S) = argmax_{T s.t. S=yield(T)} P(T) (C.14)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 높은 확률의 트리를 찾는 공식입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The algorithms for computing the most likely parse are simple extensions of the standard algorithms for parsing; most modern probabilistic parsers are based on the probabilistic CKY algorithm, first described by Ney (1991). The probabilistic CKY algorithm assumes the PCFG is in Chomsky normal form. Recall from page ?? that in CNF, the right-hand side of each rule must expand to either two non-terminals or to a single terminal, i.e., rules have the form A → B C, or A → w.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 가능성 있는 파싱을 계산하기 위한 알고리즘은 표준 파싱 알고리즘의 간단한 확장입니다. 대부분의 현대적인 확률적 파서는 네이(Ney, 1991)가 처음 설명한 확률적 CKY 알고리즘에 기반하고 있습니다. 확률적 CKY 알고리즘은 PCFG가 촘스키 정규형(CNF)이라고 가정합니다. ?? 페이지에서 보았듯이, CNF에서 각 규칙의 오른쪽은 두 개의 비단말 기호로 확장되거나 단일 단말 기호로 확장되어야 합니다. 즉, 규칙은 A → B C 또는 A → w 형태를 갖습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY 알고리즘의 유래와 전제 조건(CNF)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>probabilistic CKY</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 CKY (probabilistic CKY)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>핵심 알고리즘 용어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For the CKY algorithm, we represented each sentence as having indices between the words. Thus, an example sentence like</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CKY 알고리즘을 위해, 우리는 각 문장의 단어들 사이에 인덱스가 있는 것으로 표현했습니다. 따라서 다음과 같은 예시 문장은</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CKY 알고리즘에서 사용하는 인덱스 표현 방식을 상기시킵니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>    (C.15) Book the flight through Houston.
+    (C.16) 0 Book 1 the 2 flight 3 through 4 Houston 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    (C.15) Book the flight through Houston.
+    (C.16) 0 Book 1 the 2 flight 3 through 4 Houston 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문장에 인덱스를 부여한 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Using these indices, each constituent in the CKY parse tree is encoded in a two-dimensional matrix. Specifically, for a sentence of length n and a grammar that contains V non-terminals, we use the upper-triangular portion of an (n+ 1) * (n+ 1) matrix. For CKY, each cell table[i, j] contained a list of constituents that could span the sequence of words from i to j. For probabilistic CKY, it's slightly simpler to think of the constituents in each cell as constituting a third dimension of maximum length V. This third dimension corresponds to each non-terminal that can be placed in this cell, and the value of the cell is then a probability for that non-terminal/constituent rather than a list of constituents. In summary, each cell [i, j, A] in this (n+ 1) * (n+ 1) * V matrix is the probability of a constituent of type A that spans positions i through j of the input.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 인덱스들을 사용하여 CKY 파스 트리의 각 구성 성분(constituent)은 2차원 행렬에 인코딩됩니다. 구체적으로, 길이가 n인 문장과 V개의 비단말 기호를 포함하는 문법에 대해, 우리는 (n+ 1) * (n+ 1) 행렬의 상삼각 부분을 사용합니다. CKY의 경우, 각 셀 table[i, j]에는 i에서 j까지의 단어열을 포괄할 수 있는 구성 성분들의 리스트가 들어 있었습니다. 확률적 CKY의 경우, 각 셀의 구성 성분들을 최대 길이 V인 세 번째 차원을 구성하는 것으로 생각하는 것이 조금 더 간단합니다. 이 세 번째 차원은 이 셀에 배치될 수 있는 각 비단말 기호에 해당하며, 셀의 값은 구성 성분 리스트가 아니라 해당 비단말 기호/구성 성분에 대한 확률입니다. 요약하자면, 이 (n+ 1) * (n+ 1) * V 행렬의 각 셀 [i, j, A]는 입력의 i 위치부터 j 위치까지를 포괄하는 A 타입 구성 성분의 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CKY 행렬 구조를 확률적으로 확장하는 방식을 설명합니다. 기존 리스트 형태에서 확률값을 저장하는 3차원 배열 형태로 변화합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.3 gives the probabilistic CKY algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.3은 확률적 CKY 알고리즘을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>알고리즘의 의사코드를 소개하는 문구입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    function PROBABILISTIC-CKY(words, grammar) returns most probable parse and its probability
+      for j from 1 to LENGTH(words) do
+        for all { A | A → words[j] ∈ grammar }
+          table[j-1, j, A] ← P(A → words[j])
+        for i from j-2 downto 0 do
+          for k from i + 1 to j-1 do
+            for all { A | A → BC ∈ grammar and table[i,k,B] > 0 and table[k,j,C] > 0 }
+              if (table[i,j,A] < P(A → BC) * table[i,k,B] * table[k,j,C]) then
+                table[i,j,A] ← P(A → BC) * table[i,k,B] * table[k,j,C]
+                back[i,j,A] ← {k,B,C}
+      return BUILD_TREE(back[1, LENGTH(words), S]), table[1, LENGTH(words), S]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    function PROBABILISTIC-CKY(words, grammar) returns 가장 높은 확률의 파싱 결과와 그 확률
+      for j from 1 to LENGTH(words) do
+        for all { A | A → words[j] ∈ grammar }
+          table[j-1, j, A] ← P(A → words[j])
+        for i from j-2 downto 0 do
+          for k from i + 1 to j-1 do
+            for all { A | A → BC ∈ grammar and table[i,k,B] > 0 and table[k,j,C] > 0 }
+              if (table[i,j,A] < P(A → BC) * table[i,k,B] * table[k,j,C]) then
+                table[i,j,A] ← P(A → BC) * table[i,k,B] * table[k,j,C]
+                back[i,j,A] ← {k,B,C}
+      return BUILD_TREE(back[1, LENGTH(words), S]), table[1, LENGTH(words), S]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 CKY 알고리즘의 의사코드입니다. 각 단계에서 확률을 곱하고 최대 확률을 업데이트하며 역추적(backpointer) 정보를 저장하는 과정이 핵심입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

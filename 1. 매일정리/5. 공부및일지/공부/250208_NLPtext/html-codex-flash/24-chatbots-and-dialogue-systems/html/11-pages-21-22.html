@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 21-22 | Chatbots and Dialogue Systems</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; }
+th { background: var(--source-bg); font-weight: 700; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">24 Chatbots and Dialogue Systems</div>
+<h1>Chatbots and Dialogue Systems</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 21-22 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>24. Chatbots and Dialogue Systems.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Regenerated from MD</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">대화 상태 추적 및 수정 행위 감지</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>User: I'm looking for a cheaper restaurant
+inform(price=cheap)
+System: Sure. What kind - and where?
+User: Thai food, somewhere downtown
+inform(price=cheap, food=Thai, area=centre)
+System: The House serves cheap Thai food
+User: Where is it?
+inform(price=cheap, food=Thai, area=centre); request(address)
+System: The House is at 106 Regent Street</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>사용자: 더 저렴한 식당을 찾고 있어요
+inform(price=cheap)
+시스템: 물론이죠. 어떤 종류를 어디에서 찾으시나요?
+사용자: 태국 음식, 시내 어딘가요
+inform(price=cheap, food=Thai, area=centre)
+시스템: The House에서 저렴한 태국 음식을 제공합니다
+사용자: 거기가 어디인가요?
+inform(price=cheap, food=Thai, area=centre); request(address)
+시스템: The House는 Regent Street 106번지에 있습니다</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Example of a dialogue showing intent and slot filling.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Since dialogue acts place some constraints on the slots and values, the tasks of dialogue-act detection and slot-filling are often performed jointly. Consider the task of determining that
+I'd like Cantonese food near the Mission District
+has the structure
+inform(food=cantonese,area=mission).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 행위(dialogue acts)가 슬롯과 값에 제약을 가하기 때문에, 대화 행위 감지와 슬롯 채우기 작업은 종종 공동으로 수행됩니다. "Mission District 근처에서 광둥 요리를 먹고 싶어요"라는 문장이 inform(food=cantonese, area=mission)이라는 구조를 가짐을 결정하는 작업을 생각해 보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Joint task of dialogue-act detection and slot-filling.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dialogue act interpretation—in this example choosing inform from the set of dialogue acts for this task—is done by supervised classification trained on hand-labeled dialog acts, predicting the dialogue act tag based on embeddings representing the current input sentence and the prior dialogue acts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 행위 해석—이 예에서는 이 작업에 대한 대화 행위 집합 중에서 inform을 선택하는 것—은 수작업으로 레이블이 지정된 대화 행위로 훈련된 지도 분류를 통해 수행되며, 현재 입력 문장과 이전 대화 행위를 나타내는 임베딩을 기반으로 대화 행위 태그를 예측합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Dialogue act interpretation using supervised classification.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simplest dialogue state tracker might just take the output of a slot-filling sequence-model (Section 24.4.2) after each sentence. Alternatively, a more complex model can make use of the reading-comprehension architectures from Chapter 23. For example the model of Gao et al. (2019) trains a classifier for each slot to decide whether its value is being changed in the current sentence or should be carried over from the previous sentences. If the slot value is being changed, a span-prediction model is used to predict the start and end of the span with the slot filler.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 단순한 대화 상태 추적기는 각 문장 후에 슬롯 채우기 시퀀스 모델(섹션 24.4.2)의 출력을 취할 수 있습니다. 대안적으로, 더 복잡한 모델은 23장의 독해 이해(reading-comprehension) 아키텍처를 활용할 수 있습니다. 예를 들어 Gao 등(2019)의 모델은 각 슬롯에 대한 분류기를 훈련시켜 현재 문장에서 값이 변경되고 있는지 아니면 이전 문장에서 이월되어야 하는지를 결정합니다. 슬롯 값이 변경되는 경우, 슬롯 필러가 포함된 범위의 시작과 끝을 예측하기 위해 범위 예측 모델이 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Methods for dialogue state tracking, including simple sequence models and reading comprehension architectures.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A special case: detecting correction acts</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>특별한 사례: 수정 행위 감지</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Focus on identifying when a user is correcting the system.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Some dialogue acts are important because of their implications for dialogue control. If a dialogue system misrecognizes or misunderstands an utterance, the user will generally correct the error by repeating or reformulating the utterance. Detecting these user correction acts is therefore quite important. Ironically, it turns out that corrections are actually harder to recognize than normal sentences! In fact, corrections in one early dialogue system (the TOOT system) had double the ASR word error rate of non-corrections (Swerts et al., 2000)! One reason for this is that speakers sometimes use a specific prosodic style for corrections called hyperarticulation, in which the utterance contains exaggerated energy, duration, or F0 contours, such as I said BAL-TI-MORE, not Boston (Wade et al. 1992, Levow 1998, Hirschberg et al. 2001). Even when they are not hyperarticulating, users who are frustrated seem to speak in a way that is harder for speech recognizers (Goldberg et al., 2003).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일부 대화 행위는 대화 제어에 미치는 영향 때문에 중요합니다. 대화 시스템이 발화를 오인식하거나 오해하면, 사용자는 일반적으로 발화를 반복하거나 재구성하여 오류를 수정합니다. 따라서 이러한 사용자 수정 행위를 감지하는 것은 매우 중요합니다. 아이러니하게도 수정 사항은 일반 문장보다 인식하기가 실제로 더 어렵다는 것이 밝혀졌습니다! 사실, 초기 대화 시스템(TOOT 시스템) 중 하나에서의 수정 사항은 비수정 사항보다 ASR 단어 오류율이 두 배나 높았습니다(Swerts 등, 2000)! 이에 대한 한 가지 이유는 화자가 때때로 "Boston이 아니라 BAL-TI-MORE라고 했어요"와 같이 발화에 과장된 에너지, 지속 시간 또는 F0 윤곽이 포함된 하이퍼아티큘레이션(hyperarticulation)이라고 불리는 특정 운율 스타일을 수정에 사용하기 때문입니다(Wade 등 1992, Levow 1998, Hirschberg 등 2001). 하이퍼아티큘레이션을 하지 않더라도 좌절한 사용자는 음성 인식기가 인식하기 더 어려운 방식으로 말하는 경향이 있습니다(Goldberg 등, 2003).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Challenges in detecting user corrections due to hyperarticulation and user frustration.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>user correction acts</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>사용자 수정 행위</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term defined in text.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>hyperarticulation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>과도 조음(하이퍼아티큘레이션)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term defined in text.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What are the characteristics of these corrections? User corrections tend to be either exact repetitions or repetitions with one or more words omitted, although they may also be paraphrases of the original utterance. (Swerts et al., 2000). Detecting these reformulations or correction acts can be part of the general dialogue act detection classifier. Alternatively, because the cues to these acts tend to appear in different ways than for simple acts (like INFORM or request), we can make use of features orthogonal to simple contextual embedding features; some typical features are shown below (Levow 1998, Litman et al. 1999, Hirschberg et al. 2001, Bulyko et al. 2005, Awadallah et al. 2015):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 수정의 특징은 무엇입니까? 사용자 수정은 원래 발화의 패러프레이즈일 수도 있지만, 정확한 반복이거나 하나 이상의 단어가 생략된 반복인 경향이 있습니다(Swerts 등, 2000). 이러한 재구성 또는 수정 행위를 감지하는 것은 일반적인 대화 행위 감지 분류기의 일부가 될 수 있습니다. 대안적으로, 이러한 행위에 대한 단서가 단순한 행위(INFORM 또는 request와 같은)와는 다른 방식으로 나타나는 경향이 있기 때문에, 단순한 문맥 임베딩 특징과 직교하는 특징을 활용할 수 있습니다. 몇 가지 전형적인 특징은 아래와 같습니다(Levow 1998, Litman 등 1999, Hirschberg 등 2001, Bulyko 등 2005, Awadallah 등 2015).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Characteristics and features of user corrections.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<h2>Page 22</h2>
+<div class="page-subtitle">수정 감지特徴 및 대화 정책</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| features | examples |
+|---|---|
+| lexical | words like "no", "correction", "I don't", swear words, utterance length |
+| semantic | similarity (word overlap or embedding dot product) between the candidate correction act and the user's prior utterance |
+| phonetic | phonetic overlap between the candidate correction act and the user's prior utterance (i.e. "WhatsApp" may be incorrectly recognized as "What's up") |
+| prosodic | hyperarticulation, increases in F0 range, pause duration, and word duration, generally normalized by the values for previous sentences |
+| ASR | ASR confidence, language model probability |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 특징 | 예시 |
+|---|---|
+| 어휘적 | "no", "correction", "I don't"와 같은 단어, 욕설, 발화 길이 |
+| 의미적 | 후보 수정 행위와 사용자의 이전 발화 사이의 유사성(단어 중복 또는 임베딩 내적) |
+| 음성적 | 후보 수정 행위와 사용자의 이전 발화 사이의 음성적 중복(예: "WhatsApp"이 "What's up"으로 잘못 인식될 수 있음) |
+| 운율적 | 하이퍼아티큘레이션, F0 범위 증가, 휴지 기간 및 단어 지속 시간, 일반적으로 이전 문장의 값에 의해 정규화됨 |
+| ASR | ASR 신뢰도, 언어 모델 확률 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Features used for detecting correction acts in dialogue systems.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24.4.4 Dialogue Policy</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24.4.4 대화 정책</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to the dialogue policy component.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>dialogue policy</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 정책</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key term.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The goal of the dialogue policy is to decide what action the system should take next, that is, what dialogue act to generate.
+More formally, at turn i in the conversation we want to predict which action Ai to take, based on the entire dialogue state. The state could mean the entire sequence of dialogue acts from the system (A) and from the user (U), in which case the task would be to compute:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대화 정책의 목표는 시스템이 다음에 어떤 조치를 취해야 할지, 즉 어떤 대화 행위를 생성할지를 결정하는 것입니다.
+좀 더 공식적으로는 대화의 i번째 턴에서 전체 대화 상태를 기반으로 어떤 작업 Ai를 취할지 예측하고자 합니다. 상태는 시스템(A)과 사용자(U)의 전체 대화 행위 시퀀스를 의미할 수 있으며, 이 경우 작업은 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Formal definition of dialogue policy as predicting the next action based on state.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Âi = argmax_{Ai ∈ A} P(Ai | A1, U1, ..., Ai-1, Ui-1) (24.7)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Âi = argmax_{Ai ∈ A} P(Ai | A1, U1, ..., Ai-1, Ui-1) (24.7)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Equation for predicting the next dialogue act based on history.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can simplify this by maintaining as the dialogue state mainly just the set of slot-fillers that the user has expressed, collapsing across the many different conversational paths that could lead to the same set of filled slots.
+Such a policy might then just condition on the current dialogue state as represented just by the current state of the frame Framei (which slots are filled and with what) and the last turn by the system and user:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 대화 상태로서 주로 사용자가 표현한 슬롯 필러 세트만을 유지함으로써 이를 단순화할 수 있으며, 동일한 슬롯 세트 채우기로 이어질 수 있는 많은 다양한 대화 경로를 하나로 통합할 수 있습니다.
+그러한 정책은 단지 현재 프레임 Framei의 상태(어떤 슬롯이 무엇으로 채워졌는지)와 시스템 및 사용자의 마지막 턴으로 표시되는 현재 대화 상태에만 조건을 둘 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Simplifying the dialogue state to the current frame of slot-fillers.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Âi = argmax_{Ai ∈ A} P(Ai | Framei-1, Ai-1, Ui-1) (24.8)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Âi = argmax_{Ai ∈ A} P(Ai | Framei-1, Ai-1, Ui-1) (24.8)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Equation for predicting the next act based on the current frame and the last turn.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>These probabilities can be estimated by a neural classifier using neural representations of the slot fillers (for example as spans) and the utterances (for example as sentence embeddings computed over contextual embeddings)
+More sophisticated models train the policy via reinforcement learning. To decide which action to take, a reinforcement learning system gets a reward at the end of the dialogue, and uses that reward to train a policy to take actions. For example in the movie-recommendation dialogue system of Fazel-Zarandi et al. (2017), the action space has only three actions: EXECUTE, CONFIRM, and ELICIT. The EXECUTE sends a query to the database and answers the user's question, CONFIRM clarifies the intent or slot with the users (e.g., "Do you want movies directed by Christopher Nolan?") while ELICIT asks the user for missing information (e.g., "Which movie are you talking about?"). The system gets a large positive reward if the dialogue system terminates with the correct slot representation at the end, a large negative reward if the slots are wrong, and a small negative reward for confirmation and elicitation questions to keep the system from re-confirming everything.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 확률은 슬롯 필러(예: 범위(span))와 발화(예: 문맥 임베딩을 통해 계산된 문장 임베딩)의 신경망 표현을 사용하여 신경망 분류기에 의해 추정될 수 있습니다.
+더 정교한 모델은 강화 학습을 통해 정책을 훈련시킵니다. 어떤 행동을 취할지 결정하기 위해 강화 학습 시스템은 대화가 끝날 때 보상을 받고, 그 보상을 사용하여 행동을 취하도록 정책을 훈련시킵니다. 예를 들어 Fazel-Zarandi 등(2017)의 영화 추천 대화 시스템에서 행동 공간에는 EXECUTE, CONFIRM, ELICIT의 세 가지 행동만 있습니다. EXECUTE는 데이터베이스에 쿼리를 보내고 사용자의 질문에 답하며, CONFIRM은 사용자에게 의도나 슬롯을 명확히 하고(예: "Christopher Nolan이 감독한 영화를 원하시나요?"), ELICIT은 사용자에게 누락된 정보를 요청합니다(예: "어떤 영화에 대해 말씀하시는 건가요?"). 시스템은 대화 시스템이 마지막에 올바른 슬롯 표현으로 종료되면 큰 양의 보상을 받고, 슬롯이 틀리면 큰 음의 보상을 받으며, 시스템이 모든 것을 재확인하는 것을 방지하기 위해 확인 및 유도 질문에 대해서는 작은 음의 보상을 받습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Neural classification and reinforcement learning for dialogue policy.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Policy Example: Confirmation and Rejection</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정책 예시: 확인 및 거절</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Importance of achieving correct interpretation of user's intent.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern dialogue systems often make mistakes. It is therefore important for dialogue systems to make sure that they have achieved the correct interpretation of the user's</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대의 대화 시스템은 종종 실수를 합니다. 따라서 대화 시스템이 사용자의 의도에 대해 올바른 해석을 달성했는지 확인하는 것이 중요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Context for confirmation and rejection strategies.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | N-gram Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+table th, table td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+table th { background: var(--source-bg); font-weight: 700; }
+table tr:nth-child(even) { background: var(--translation-bg); }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">03 PDF / HTML Sample</div>
+<h1>N-gram Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>3. N-gram Language Models</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">보간과 백오프, 카츠 백오프</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.6 • KNESER-NEY SMOOTHING 17</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.6 • 크네저-네이 스무딩(Kneser-Ney Smoothing) 17</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>counts for a particular bigram, we assume that the counts of the trigrams based on this bigram will be more trustworthy, so we can make the λs for those trigrams higher and thus give that trigram more weight in the interpolation. Equation 3.28 shows the equation for interpolation with context-conditioned weights:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 특정 바이그램에 대한 빈도가 충분하다면, 해당 바이그램을 기반으로 한 트라이그램들의 빈도 또한 더 신뢰할 수 있다고 가정할 수 있습니다. 따라서 이러한 트라이그램들에 대해서는 보간 식의 $\lambda$값을 높게 설정하여 트라이그램에 더 많은 가중치를 부여할 수 있습니다. 식 3.28은 이렇듯 맥락에 따라 조건부로 가중치를 부여하는 보간 공식을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>맥락의 데이터 풍부도에 따라 보간 가중치를 동적으로 조절하는 아이디어를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_hat(wn|wn−2wn−1) = λ1(wn−2:n−1) P(wn) + λ2(wn−2:n−1) P(wn|wn−1) + λ3(wn−2:n−1) P(wn|wn−2wn−1) (3.28)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_hat(wn|wn−2wn−1) = λ1(wn−2:n−1) P(wn) + λ2(wn−2:n−1) P(wn|wn−1) + λ3(wn−2:n−1) P(wn|wn−2wn−1) (3.28)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.28). 가중치 $\lambda$가 고정된 상수가 아니라 이전 컨틀래스트(맥락)인 $w_{n-2:n-1}$에 대한 함수로 정의된 보간 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>held-out</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>홀드아웃(held-out)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델 파라미터가 아닌 하이퍼파라미터를 튜닝하기 위해 따로 떼어둔 데이터셋을 의미합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>How are these λ values set? Both the simple interpolation and conditional interpolation λs are learned from a held-out corpus. A held-out corpus is an additional training corpus that we use to set hyperparameters like these λ values, by choosing the λ values that maximize the likelihood of the held-out corpus. That is, we fix the n-gram probabilities and then search for the λ values that—when plugged into Eq. 3.26—give us the highest probability of the held-out set. There are various ways to find this optimal set of λs. One way is to use the EM algorithm, an iterative learning algorithm that converges on locally optimal λs (Jelinek and Mercer, 1980).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 $\lambda$값들은 어떻게 설정될까요? 단순 보간과 조건부 보간의 $\lambda$값 모두 '홀드아웃 코퍼스(held-out corpus)'로부터 학습됩니다. 홀드아웃 코퍼스는 $\lambda$와 같은 하이퍼파라미터를 설정하기 위해 사용하는 별도의 학습 코퍼스로, 해당 코퍼스의 우도(likelihood)를 최대화하는 $\lambda$값을 선택하게 됩니다. 즉, N-그램 확률들은 고정해 둔 상태에서, 식 3.26에 대입했을 때 홀아웃 세트에 대해 가장 높은 확률을 산출하는 $\lambda$값들을 탐색하는 것입니다. 이렇게 최적의 $\lambda$ 조합을 찾는 방법은 여러 가지가 있는데, 그중 하나는 국소 최적해로 수렴하는 반복 학습 알고리즘인 EM 알고리즘(Jelinek and Mercer, 1980)을 사용하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보간법의 가중치 $ \lambda $를 최적화하기 위한 데이터 분할 전략과 수치적 최적화 방법론(EM 알고리즘)을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In a backoff n-gram model, if the n-gram we need has zero counts, we approximate it by backing off to the (N-1)-gram. We continue backing off until we reach a history that has some counts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>백오프 N-그램 모델에서는 필요한 N-그램의 빈도가 0인 경우, 차수를 하나 낮춘 (N-1)-그램으로 물러나(back off) 확률을 근사합니다. 관측된 빈도가 있는 맥락을 만날 때까지 계속해서 차수를 낮추며 물러나는 방식을 취합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>백오프 알고리즘의 동작 메커니즘을 요약합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>discount</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>디스카운트(discount)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률의 총합을 맞추기 위해 관측된 빈도를 삭감하는 과정입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In order for a backoff model to give a correct probability distribution, we have to discount the higher-order n-grams to save some probability mass for the lower order n-grams. Just as with add-one smoothing, if the higher-order n-grams aren't discounted and we just used the undiscounted MLE probability, then as soon as we replaced an n-gram which has zero probability with a lower-order n-gram, we would be adding probability mass, and the total probability assigned to all possible strings by the language model would be greater than 1! In addition to this explicit discount factor, we'll need a function α to distribute this probability mass to the lower order n-grams.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>백오프 모델이 올바른 확률 분포를 형성하려면, 하위 차수 N-그램에 배정할 확률 질량을 확보하기 위해 고차 N-그램의 확률을 디스카운트(삭감)해야 합니다. 1 더하기 스무딩에서와 마찬가지로, 만약 고차 N-그램을 깎아내지 않고 가공되지 않은 MLE 확률을 그대로 사용한다면, 제로 확률인 N-그램을 하위 차수 N-그램으로 대체하는 순간 확률 질량이 추가되어 버립니다. 결과적으로 언어 모델이 가능한 모든 문자열에 할당하는 총 확률의 합이 1을 초과하게 될 것입니다! 따라서 이러한 명시적 디스카운트 계수 외에도, 확보된 확률 질량을 하위 차수 N-그램들에게 적절히 배분해 주기 위한 함수 $\alpha$가 필요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>백오프 시스템에서 확률의 총합을 1로 유지하기 위해 필수적인 '디스카운팅'과 '확률 재배분($\alpha$)'의 수학적 필연성을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Katz backoff</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>카츠 백오프(Katz backoff)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>디스카운팅과 백오프를 결합한 대표적인 알고리즘입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This kind of backoff with discounting is also called Katz backoff. In Katz backoff we rely on a discounted probability P* if we've seen this n-gram before (i.e., if we have non-zero counts). Otherwise, we recursively back off to the Katz probability for the shorter-history (N-1)-gram. The probability for a backoff n-gram PBO is thus computed as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>디스카운팅을 결합한 이러한 형태의 백오프를 카츠 백오프(Katz backoff)라고도 부릅니다. 카츠 백오프에서는 해당 N-그램을 이전에 본 적이 있다면(즉, 빈도가 0이 아니라면) 디스카운트된 확률 $P^*$를 사용합니다. 그렇지 않으면 맥락의 길이가 짧아진 (N-1)-그램의 카츠 확률로 재귀적으로 물러납니다. 따라서 백오프 N-그램 확률 $P_{BO}$는 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>카츠 백오프의 확률 결정 로직을 수평적으로 설명합니다. 데이터 유무에 따라 직접 확률($P^*$)을 쓸 것인지, 하위 단계로 백오프할 것인지를 결정합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_BO(wn|wn−N+1:n−1) = { P*(wn|wn−N+1:n−1), if C(wn−N+1:n) > 0 α(wn−N+1:n−1) P_{BO}(wn|wn−N+2:n−1), otherwise } (3.29)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_BO(wn|wn−N+1:n−1) = { P*(wn|wn−N+1:n−1), if C(wn−N+1:n) > 0 α(wn−N+1:n−1) P_{BO}(wn|wn−N+2:n−1), otherwise } (3.29)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.29). 카츠 백오프의 조건부 정의식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Good-Turing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>굿-튜링(Good-Turing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관측된 빈도를 바탕으로 한 번도 관측되지 않은 사건의 확률을 추정하는 기법입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Katz backoff is often combined with a smoothing method called Good-Turing. The combined Good-Turing backoff algorithm involves quite detailed computation for estimating the Good-Turing smoothing and the P* and α values.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>카츠 백오프는 주로 굿-튜링(Good-Turing)이라 불리는 스무딩 기법과 결합됩니다. 이 결합된 굿-튜링 백오프 알고리즘은 굿-튜링 스무딩 추정과 $P^*$, $\alpha$ 값을 계산하기 위해 상당히 정교한 연산 과정을 포함합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>카츠 백오프가 실제 구현 시 굿-튜링 스무딩과 연계되어 복잡한 확률 보정을 수행함을 언급합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.6 Kneser-Ney Smoothing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.6 크네저-네이 스무딩(Kneser-Ney Smoothing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 언어 모델링에서 가장 우수한 성능을 보이는 스무딩 기법 중 하나인 크네저-네이 스무딩을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kneser-Ney</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>크네저-네이(Kneser-Ney)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>절대 디스카운팅을 기반으로 저차 모델을 교묘하게 활용하는 기법입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One of the most commonly used and best performing n-gram smoothing methods is the interpolated Kneser-Ney algorithm (Kneser and Ney 1995, Chen and Goodman 1998).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 널리 사용되면서도 성능이 가장 뛰어난 N-그램 스무딩 방법 중 하나는 보간형 크네저-네이(interpolated Kneser-Ney) 알고리즘입니다(Kneser and Ney 1995, Chen and Goodman 1998).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>크네저-네이 알고리즘의 위상과 주요 참고 문헌을 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">절대 디스카운팅과 크네저-네이 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>18 CHAPTER 3 • N-GRAM LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>18 제3장 • N-그램 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kneser-Ney has its roots in a method called absolute discounting. Recall that discounting of the counts for frequent n-grams is necessary to save some probability mass for the smoothing algorithm to distribute to the unseen n-grams.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>크네저-네이 스무딩의 뿌리는 '절대 디스카운팅(absolute discounting)'이라는 방법에 있습니다. 앞서 언급했듯이, 스무딩 알고리즘이 미관측 N-그램에 배분할 확률 질량을 확보하기 위해서는 빈번한 N-그램의 빈도를 디스카운팅하는 과정이 필수적입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>크네저-네이의 이론적 배경인 절대 디스카운팅을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To see this, we can use a clever idea from Church and Gale (1991). Consider an n-gram that has count 4. We need to discount this count by some amount. But how much should we discount it? Church and Gale's clever idea was to look at a held-out corpus and just see what the count is for all those bigrams that had count 4 in the training set. They computed a bigram grammar from 22 million words of AP newswire and then checked the counts of each of these bigrams in another 22 million words. On average, a bigram that occurred 4 times in the first 22 million words occurred 3.23 times in the next 22 million words. Fig. 3.9 from Church and Gale (1991) shows these counts for bigrams with c from 0 to 9.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 이해하기 위해 Church와 Gale(1991)의 기발한 아이디어를 살펴봅시다. 빈도가 4인 어떤 N-그램이 있다고 가정해 봅시다. 이 빈도를 일정량 삭감해야 하는데, 과연 얼마나 깎아야 할까요? 그들의 아이디어는 홀드아웃 코퍼스를 들여다보고, 학습 세트에서 빈도가 4였던 모든 바이그램들이 그곳에서는 실제로 어떤 빈도를 보이는지 확인하는 것이었습니다. 그들은 2,200만 단어 분량의 AP 뉴스 데이터를 통해 바이그램 문법을 구축한 뒤, 또 다른 2,200만 단어 데이터에서 이 바이그램들의 빈도를 대조했습니다. 결과적으로, 첫 데이터에서 4번 등장했던 바이그램들은 다음 데이터에서 평균적으로 3.23번 등장했습니다. Church와 Gale(1991)의 연구에서 발췌한 그림 3.9는 빈도 $c$가 0에서 9 사이인 바이그램들에 대한 이러한 대조 결과를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 데이터를 통해 스무딩의 타당성을 입증하는 실험 방식을 설명합니다. '학습 시 빈도'와 '실제 발생 빈도' 사이의 격차를 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>| Bigram count in training set | Bigram count in heldout set |
+|:---:|:---:|
+| 0 | 0.0000270 |
+| 1 | 0.448 |
+| 2 | 1.25 |
+| 3 | 2.24 |
+| 4 | 3.23 |
+| 5 | 4.21 |
+| 6 | 5.23 |
+| 7 | 6.21 |
+| 8 | 7.21 |
+| 9 | 8.26 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 학습 세트의 바이그램 빈도 | 홀드아웃 세트의 바이그램 빈도 |
+|:---:|:---:|
+| 0 | 0.0000270 |
+| 1 | 0.448 |
+| 2 | 1.25 |
+| 3 | 2.24 |
+| 4 | 3.23 |
+| 5 | 4.21 |
+| 6 | 5.23 |
+| 7 | 6.21 |
+| 8 | 7.21 |
+| 9 | 8.26 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 3.9의 데이터 표입니다. 학습 시 관측된 빈도보다 실제(홀드아웃) 빈도가 일정한 값만큼 낮게 나타나는 경향성을 수치로 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 3.9 For all bigrams in 22 million words of AP newswire of count 0, 1, 2,...,9, the counts of these bigrams in a held-out corpus also of 22 million words.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.9 2,200만 단어 분량의 AP 뉴스 데이터에서 빈도가 0, 1, 2, ..., 9인 모든 바이그램들에 대해, 동일한 규모의 홀드아웃 코퍼스에서 측정된 해당 바이그램들의 실제 빈도.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 3.9의 설명입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Absolute Discounting</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>절대 디스카운팅(Absolute Discounting)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도에서 고정된 상수값을 빼서 확률을 보정하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Notice in Fig. 3.9 that except for the held-out counts for 0 and 1, all the other bigram counts in the held-out set could be estimated pretty well by just subtracting 0.75 from the count in the training set! Absolute discounting formalizes this intuition by subtracting a fixed (absolute) discount d from each count. The intuition is that since we have good estimates already for the very high counts, a small discount d won't affect them much. It will mainly modify the smaller counts, for which we don't necessarily trust the estimate anyway, and Fig. 3.9 suggests that in practice this discount is actually a good one for bigrams with counts 2 through 9. The equation for interpolated absolute discounting applied to bigrams:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.9를 보면 0과 1에 대한 빈도를 제외하고, 홀드아웃 세트의 다른 모든 바이그램 빈도는 학습 세트 빈도에서 단순히 0.75 정도를 빼는 것만으로도 꽤 정확하게 추정할 수 있음을 알 수 있습니다! 절대 디스카운팅은 각 빈도에서 고정된(절대적인) 디스카운트 값 $d$를 빼줌으로써 이러한 직관을 공식화합니다. 이미 빈도가 매우 높은 경우에는 작은 값인 $d$가 큰 영향을 미치지 않지만, 애초에 추정치를 전적으로 신뢰하기 어려운 낮은 빈도들에는 주요한 영향을 미치게 된다는 것이 핵심입니다. 그림 3.9는 실제로 빈도가 2에서 9 사이인 바이그램들에 대해 이 디스카운트 방식이 유효함을 시사합니다. 보간형 절대 디스카운팅을 바이그램에 적용한 공식은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>0.75라는 매직 넘버(상수)를 빼는 '절대 디스카운팅'의 직관과 그것이 특히 낮은 빈도의 데이터 처리에 효과적인 이유를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_AbsoluteDiscounting(wi|wi−1) = (C(wi−1wi) − d) / Sum_v C(wi−1v) + λ(wi−1) P(wi) (3.30)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_AbsoluteDiscounting(wi|wi−1) = (C(wi−1wi) − d) / Sum_v C(wi−1v) + λ(wi−1) P(wi) (3.30)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.30). 절대 디스카운팅을 기반으로 한 보간형 바이그램 확률 공식입니다. 첫 번째 항은 삭감된 바이그램 확률이며, 두 번째 항은 보간 계수 $ \lambda $를 곱한 유니그램 확률입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first term is the discounted bigram, and the second term is the unigram with an interpolation weight λ. We could just set all the d values to .75, or we could keep a separate discount value of 0.5 for the bigrams with counts of 1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>첫 번째 항은 디스카운트된 바이그램 확률이고, 두 번째 항은 보간 가중치 $\lambda$가 적용된 유니그램 확률입니다. 모든 $d$ 값을 0.75로 고정해 버릴 수도 있고, 빈도가 1인 바이그램에 대해서는 별도로 0.5이라는 디스카운트 값을 유지할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공식의 각 항에 대한 의미와 파라미터 $d$의 구체적인 설정값 예시를 제공합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Kneser-Ney discounting (Kneser and Ney, 1995) augments absolute discounting with a more sophisticated way to handle the lower-order unigram distribution. Consider the job of predicting the next word in this sentence, assuming we are interpolating a bigram and a unigram model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>크네저-네이 디스카운팅(Kneser and Ney, 1995)은 절대 디스카운팅에 하위 차수의 유니그램 분포를 처리하는 더 정교한 방식을 추가하여 보완한 기법입니다. 바이그램과 유니그램 모델을 보간하여 사용한다고 가정하고, 아래 문장에서 다음 단어를 예측하는 상황을 생각해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>크네저-네이가 절대 디스카운팅을 어떻게 개선했는지 보여주기 위한 예시 상황을 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>I can't see without my reading ___________.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>I can't see without my reading ___________. (독서용 ___________ 없이는 잘 볼 수가 없어.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예시 문장입니다. 문맥상 적절한 단어를 고르는 실험을 위한 템플릿입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The word glasses seems much more likely to follow here than, say, the word Kong, so we'd like our unigram model to prefer glasses. But in fact it's Kong that is</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 자리에는 'Kong'이라는 단어보다는 'glasses'가 올 확률이 훨씬 높아 보이므로, 우리의 유니그램 모델이 'glasses'를 더 선호하기를 바랄 것입니다. 하지만 조사를 해보면 실제로는 'Kong'이라는 단어가 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유니그램 확률 데이터만 보았을 때 발생할 수 있는 직관과의 불일치를 지적하려는 대목입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) { const panel = toggle.nextElementSibling; toggle.setAttribute("aria-expanded", expanded ? "true" : "false"); toggle.textContent = expanded ? "study_note 접기" : "study_note 보기"; panel.hidden = !expanded; }
+toggles.forEach((toggle) => { setPanelState(toggle, false); toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; setPanelState(toggle, !expanded); }); });
+document.querySelector("[data-expand-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, true)); });
+document.querySelector("[data-collapse-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, false)); });
+</script>
+</body>
+</html>

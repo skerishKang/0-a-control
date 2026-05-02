@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Appendix B: Spelling Correction</title>
+<style>
+
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix B: Spelling Correction and the Noisy Channel</div>
+<h1>Spelling Correction and the Noisy Channel</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Appendix B.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">제B장 철자 교정 및 노이즈 채널</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER B Spelling Correction and the Noisy Channel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제B장 철자 교정 및 노이즈 채널</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장에서는 노이즈 채널 모델을 이용한 맞춤법 오류 탐지 및 교정 방법에 대해 배웁니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>ALGERNON: But my own sweet Cecily, I have never written you any letters. CECILY: You need hardly remind me of that, Ernest. I remember only too well that I was forced to write your letters for you. I wrote always three times a week, and sometimes oftener. ALGERNON: Oh, do let me read them, Cecily? CECILY: Oh, I couldn’t possibly. They would make you far too conceited. The three you wrote me after I had broken off the engagement are so beautiful, and so badly spelled, that even now I can hardly read them without crying a little. Oscar Wilde, The Importance of Being Earnest</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>앨저넌: 하지만 나의 사랑스러운 세실리, 난 당신에게 편지를 한 통도 쓴 적이 없소. 세실리: 어니스트, 굳이 상기시켜 주실 필요 없어요. 제가 당신 대신 편지를 써야만 했던 걸 너무나 잘 기억하고 있으니까요. 전 항상 일주일에 세 번, 때로는 그보다 더 자주 썼답니다. 앨저넌: 오, 세실리, 내가 읽어볼 수 있게 해주겠소? 세실리: 오, 그럴 수는 없어요. 그러면 당신이 너무 자만해질 테니까요. 약혼을 파기한 후 당신이 저에게 쓴 세 통의 편지는 너무나 아름답고 철자가 엉망이어서, 지금도 울지 않고는 거의 읽을 수가 없답니다. - 오스카 와일드, '진지함의 중요성'</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문학 작품을 인용하여 철자 오류(badly spelled)가 주는 감정적 효과를 재치있게 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Like Oscar Wilde’s fabulous Cecily, a lot of people were thinking about spelling during the last turn of the century. Gilbert and Sullivan provide many examples. The Gondoliers’ Giuseppe, for example, worries that his private secretary is “shaky in his spelling”, while Iolanthe’s Phyllis can “spell every word that she uses”. Thorstein Veblen’s explanation (in his 1899 classic The Theory of the Leisure Class) was that a main purpose of the “archaic, cumbrous, and ineffective” English spelling system was to be difficult enough to provide a test of membership in the leisure class.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오스카 와일드의 멋진 세실리처럼, 지난 세기 전환기에 많은 사람들이 철자에 대해 생각하고 있었습니다. 길버트와 설리번은 많은 예를 제공합니다. 예를 들어, '곤돌리에'의 주세페는 자신의 개인 비서가 "철자가 불안정하다"고 걱정하는 반면, '이올란테'의 필리스는 "자신이 사용하는 모든 단어의 철자를 맞출 수 있다"고 합니다. 소스타인 베블런은 (그의 1899년 고전 '유한계급론'에서) "고풍스럽고 번거로우며 비효율적인" 영어 철자 시스템의 주요 목적은 유한계급의 구성원임을 증명하는 시험이 될 만큼 어렵게 만드는 것이라고 설명했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>과거에는 철자 실력이 사회적 지위나 유한계급의 일원임을 나타내는 척도로 여겨졌음을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Whatever the social role of spelling, we can certainly agree that many more of us are like Cecily than like Phyllis. Estimates for the frequency of spelling errors in human-typed text vary from 1-2% for carefully retyping already printed text to 10-15% for web queries.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>철자의 사회적 역할이 무엇이든, 우리 중 훨씬 더 많은 사람이 필리스보다는 세실리에 가깝다는 점에는 확실히 동의할 수 있습니다. 사람이 직접 입력한 텍스트에서 철자 오류가 발생하는 빈도에 대한 추정치는 이미 인쇄된 텍스트를 주의 깊게 다시 입력하는 경우의 1-2%에서 웹 쿼리의 경우의 10-15%까지 다양합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대에도 텍스트 입력 시 철자 오류는 매우 흔하게 발생하며, 특히 웹 검색어에서 그 빈도가 높습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter we introduce the problem of detecting and correcting spelling errors. Fixing spelling errors is an integral part of writing in the modern world, whether this writing is part of texting on a phone, sending email, writing longer documents, or finding information on the web. Modern spell correctors aren’t perfect (indeed, autocorrect-gone-wrong is a popular source of amusement on the web) but they are ubiquitous in pretty much any software that relies on keyboard input.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 철자 오류를 탐지하고 교정하는 문제를 소개합니다. 휴대폰으로 문자를 보내거나, 이메일을 보내거나, 긴 문서를 작성하거나, 웹에서 정보를 찾는 등 철자 오류를 수정하는 것은 현대 사회의 글쓰기에서 필수적인 부분입니다. 현대의 철자 교정기가 완벽하지는 않지만(실제로 잘못된 자동 수정은 웹에서 인기 있는 유머 소재입니다), 키보드 입력에 의존하는 거의 모든 소프트웨어에 보편적으로 존재합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 교정기는 현대 소프트웨어에서 필수적이고 보편적인 기능(ubiquitous)임을 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Spelling correction is often considered from two perspectives. Non-word spelling correction is the detection and correction of spelling errors that result in non-words (like graffe for giraffe). By contrast, real word spelling correction is the task of detecting and correcting spelling errors even if they accidentally result in an actual real-word of English (real-word errors). This can happen from typographical errors (insertion, deletion, transposition) that accidentally produce a real word (e.g., there for three), or cognitive errors where the writer substituted the wrong spelling of a homophone or near-homophone (e.g., dessert for desert, or piece for peace).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>철자 교정은 종종 두 가지 관점에서 고려됩니다. 비단어(Non-word) 철자 교정은 존재하지 않는 단어(예: giraffe 대신 graffe)를 낳는 철자 오류를 탐지하고 교정하는 것입니다. 이와 대조적으로, 실단어(Real-word) 철자 교정은 철자 오류가 우연히 실제 영어 단어가 된 경우(실단어 오류)에도 이를 탐지하고 교정하는 작업입니다. 이는 우연히 실제 단어를 생성하는 오타(삽입, 삭제, 전치)(예: three 대신 there)나, 작가가 동음이의어 또는 유사 동음이의어의 잘못된 철자를 사용한 인지적 오류(예: desert 대신 dessert, peace 대신 piece)로 인해 발생할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 오류를 사전에 없는 단어로 잘못 쓰는 '비단어 오류'와 문맥상 틀린 실제 단어를 쓰는 '실단어 오류'로 분류합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Non-word errors are detected by looking for any word not found in a dictionary. For example, the misspelling graffe above would not occur in a dictionary. The larger the dictionary the better; modern systems often use enormous dictionaries derived from the web.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비단어 오류는 사전에 없는 단어를 찾음으로써 탐지됩니다. 예를 들어, 위에서 언급한 오타 graffe는 사전에 나타나지 않을 것입니다. 사전이 클수록 더 좋습니다. 현대 시스템은 종종 웹에서 얻은 거대한 사전을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비단어 오류는 주로 대규모 사전을 활용한 단순 조회(dictionary lookup) 방식으로 탐지할 수 있습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To correct non-word spelling errors we first generate candidates: real words that have a similar letter sequence to the error. Candidate corrections from the spelling error graffe might include giraffe, graf, gaffe, grail, or craft.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비단어 철자 오류를 교정하기 위해 먼저 오류와 유사한 문자 시퀀스를 가진 실제 단어들인 후보군(candidates)을 생성합니다. 철자 오류 graffe에 대한 후보 교정 단어로는 giraffe, graf, gaffe, grail 또는 craft 등이 포함될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 교정의 첫 단계는 오류와 유사한 형태를 가진 후보 단어들을 생성하는 것입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We then rank the candidates using a distance metric between the source and the surface error. We’d like a metric that shares our intuition that giraffe is a more likely source than grail for graffe because giraffe is closer in spelling to graffe than grail is to graffe. The minimum edit distance algorithm from Chapter 2 will play a role here. But we’d also like to prefer corrections that are more frequent words, or more likely to occur in the context of the error. The noisy channel model introduced in the next section offers a way to formalize this intuition.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그런 다음 원본과 표면적 오류 사이의 거리 측정법(distance metric)을 사용하여 후보들의 순위를 매깁니다. 우리는 giraffe의 철자가 grail보다 graffe에 더 가깝기 때문에 graffe의 원본으로 grail보다 giraffe일 가능성이 더 높다는 우리의 직관을 반영하는 측정법을 원합니다. 2장에서 배운 최소 편집 거리(minimum edit distance) 알고리즘이 여기서 역할을 할 것입니다. 하지만 우리는 또한 더 자주 사용되는 단어나 오류의 문맥상 나타날 가능성이 더 높은 교정 단어를 선호하고자 합니다. 다음 섹션에서 소개할 노이즈 채널 모델은 이러한 직관을 공식화하는 방법을 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>후보의 순위를 매길 때는 편집 거리뿐만 아니라 단어의 빈도와 문맥을 고려해야 하며, 노이즈 채널 모델이 이 과정을 공식화합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Real word spelling error detection is a much more difficult task, since any word in the input text could be an error. Still, it is possible to use the noisy channel to find candidates for each word w typed by the user, and rank the correction that is most likely to have been the user’s original intention.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실단어 철자 오류 탐지는 입력 텍스트의 모든 단어가 오류일 수 있기 때문에 훨씬 더 어려운 작업입니다. 그럼에도 불구하고, 노이즈 채널을 사용하여 사용자가 입력한 각 단어 w에 대한 후보를 찾고 사용자의 원래 의도였을 가능성이 가장 높은 교정 단어의 순위를 매기는 것이 가능합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실단어 오류 교정은 모든 단어를 검사해야 하므로 어렵지만, 노이즈 채널 모델을 통해 원래 의도를 추정할 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>B.1 The Noisy Channel Model</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B.1 노이즈 채널 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>철자 교정의 확률론적 접근법인 노이즈 채널 모델에 대해 소개하는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section we introduce the noisy channel model and show how to apply it to the task of detecting and correcting spelling errors. The noisy channel model was applied to the spelling correction task at about the same time by researchers at AT&T Bell Laboratories (Kernighan et al. 1990, Church and Gale 1991) and IBM Watson Research (Mays et al., 1991).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 노이즈 채널 모델을 소개하고 이를 철자 오류 탐지 및 교정 작업에 적용하는 방법을 보여줍니다. 노이즈 채널 모델은 AT&T 벨 연구소의 연구원들(Kernighan et al. 1990, Church and Gale 1991)과 IBM 왓슨 연구소(Mays et al., 1991)에 의해 거의 같은 시기에 철자 교정 작업에 적용되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>노이즈 채널 모델이 1990년대 초반에 맞춤법 교정에 처음 도입된 역사적 배경입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure B.1 In the noisy channel model, we imagine that the surface form we see is actually a “distorted” form of an original word passed through a noisy channel. The decoder passes each hypothesis through a model of this channel and picks the word that best matches the surface noisy word.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 B.1 노이즈 채널 모델에서는 우리가 보는 표면 형태가 실제로는 노이즈가 있는 채널을 통과한 원래 단어의 "왜곡된" 형태라고 상상합니다. 디코더는 각 가설을 이 채널의 모델을 통과시키고 표면의 노이즈가 섞인 단어와 가장 잘 일치하는 단어를 선택합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>의도한 단어가 노이즈 채널을 거쳐 오타가 되고, 이를 디코더가 원래 단어로 복원하는 모델 구조를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition of the noisy channel model (see Fig. B.1) is to treat the misspelled word as if a correctly spelled word had been “distorted” by being passed through a noisy communication channel.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>노이즈 채널 모델(그림 B.1 참조)의 직관은 오타를 마치 올바르게 철자가 쓰인 단어가 노이즈가 있는 통신 채널을 통과하면서 "왜곡된" 것처럼 취급하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>통신 이론의 노이즈 개념을 빌려와 철자 오류 현상을 모델링하는 핵심 아이디어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This channel introduces “noise” in the form of substitutions or other changes to the letters, making it hard to recognize the “true” word. Our goal, then, is to build a model of the channel. Given this model, we then find the true word by passing every word of the language through our model of the noisy channel and seeing which one comes the closest to the misspelled word.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 채널은 문자의 교체나 다른 변경의 형태로 "노이즈"를 도입하여 "진짜" 단어를 인식하기 어렵게 만듭니다. 우리의 목표는 이 채널의 모델을 구축하는 것입니다. 이 모델이 주어지면, 우리는 언어의 모든 단어를 노이즈 채널 모델에 통과시켜 보고 어떤 것이 오타와 가장 가깝게 나오는지 확인함으로써 진짜 단어를 찾습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>노이즈 채널을 통과했을 때 관측된 오타와 가장 유사한 결과를 내는 원본 단어를 역추적하여 교정합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This noisy channel model is a kind of Bayesian inference. We see an observation x (a misspelled word) and our job is to find the word w that generated this misspelled word. Out of all possible words in the vocabulary V we want to find the word w such that P(w|x) is highest. We use the hat notation ˆ to mean “our estimate of the correct word”.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 노이즈 채널 모델은 일종의 베이즈 추론(Bayesian inference)입니다. 우리는 관측치 x(오타)를 보고 이 오타를 생성한 단어 w를 찾는 것이 임무입니다. 어휘집 V에 있는 모든 가능한 단어 중에서 P(w|x)가 가장 높은 단어 w를 찾고자 합니다. 우리는 올바른 단어에 대한 "우리의 추정치"를 의미하기 위해 햇(hat) 기호 ˆ를 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관측된 오타(x)를 바탕으로 사후 확률 P(w|x)를 최대화하는 원본 단어(w)를 찾는 베이즈 추론 과정입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>wˆ = argmax_{w \in V} P(w|x) (B.1)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>wˆ = argmax_{w \in V} P(w|x) (B.1)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>P(w|x)를 최대로 만드는 단어 w를 수식으로 나타낸 것입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The function argmax_x f(x) means “the x such that f(x) is maximized”. Equation B.1 thus means, that out of all words in the vocabulary, we want the particular word that maximizes the right-hand side P(w|x).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>argmax_x f(x) 함수는 "f(x)를 최대화하는 x"를 의미합니다. 따라서 식 B.1은 어휘집의 모든 단어 중에서 우변의 P(w|x)를 최대화하는 특정 단어를 원한다는 것을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>argmax는 함수값을 최대로 만드는 입력값을 찾는 연산자임을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition of Bayesian classification is to use Bayes’ rule to transform Eq. B.1 into a set of other probabilities. Bayes’ rule gives us a way to break down any conditional probability P(a|b) into three other probabilities:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>베이즈 분류의 직관은 베이즈 정리를 사용하여 식 B.1을 다른 확률들의 집합으로 변환하는 것입니다. 베이즈 정리는 조건부 확률 P(a|b)를 세 개의 다른 확률로 분해하는 방법을 제공합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>계산하기 어려운 사후 확률을 우도와 사전 확률로 변환하기 위해 베이즈 정리를 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(a|b) = \frac{P(b|a)P(a)}{P(b)} (B.2)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>P(a|b) = \frac{P(b|a)P(a)}{P(b)} (B.2)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>베이즈 정리 공식으로, 조건부 확률을 계산 가능한 다른 확률로 변환합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+
+</script>
+</body>
+</html>

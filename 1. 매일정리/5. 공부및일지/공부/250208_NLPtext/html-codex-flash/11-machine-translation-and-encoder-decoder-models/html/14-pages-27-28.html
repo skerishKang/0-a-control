@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 27-28 | Machine Translation and Encoder-Decoder Models</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">11 Machine Translation and Encoder-Decoder Models</div>
+<h1>Machine Translation and Encoder-Decoder Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-27">Page 27</a>
+<a class="chip" href="#page-28">Page 28</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 27-28 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>11. Machine Translation and Encoder-Decoder Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-27">
+<header class="page-header">
+<h2>Page 27</h2>
+<div class="page-subtitle">신경망 기계 번역</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>BIBLIOGRAPHICAL AND HISTORICAL NOTES 27</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고 문헌 및 역사적 배경 27</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 11.20 The Vauquois (1968) triangle]
+  Peak: Interlingua
+  Middle: Transfer
+  Bottom: Direct Translation
+  Left side: source language analysis (ascending arrow)
+  Right side: target language generation (descending arrow)
+  Labels: Source Text: Semantic/Syntactic Structure, Target Text: Semantic/Syntactic Structure</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 11.20 보쿠아(1968) 삼각형]
+  정점: 인터링구아(Interlingua, 중간 언어)
+  중간: 전이(Transfer)
+  바닥: 직접 번역(Direct Translation)
+  왼쪽 면: 소스 언어 분석 (상향 화살표)
+  오른쪽 면: 타깃 언어 생성 (하향 화살표)
+  라벨: 소스 텍스트: 의미론적/구문론적 구조, 타깃 텍스트: 의미론적/구문론적 구조</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역에서 분석의 깊이에 따른 서로 다른 접근 방식들을 시각화한 도식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 11.20 The Vauquois (1968) triangle.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 11.20 보쿠아(1968) 삼각형.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 11.20에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The algorithms (except for the decoder) were published in full detail—encouraged by the US government which had partially funded the work—which gave them a huge impact on the research community (Brown et al. 1990, Brown et al. 1993). By the turn of the century, most academic research on machine translation used the statistical noisy channel model. Progress was made hugely easier by the development of publicly available toolkits, like the GIZA toolkit (Och and Ney, 2003) which implements IBM models 1–5 as well as the HMM alignment model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(디코더를 제외한) 알고리즘들은 미국 정부의 부분적인 자금 지원과 권장 하에 매우 상세하게 공개되었으며, 이는 연구계에 거대한 영향을 미쳤습니다(Brown et al. 1990, Brown et al. 1993). 세기가 바뀔 무렵, 대부분의 기계 번역 학술 연구는 통계적 노이즈 채널 모델을 사용했습니다. IBM 모델 1~5뿐만 아니라 HMM 정렬 모델을 구현한 GIZA 툴킷(Och and Ney, 2003)과 같은 공개 툴킷의 개발은 연구 진척을 훨씬 수월하게 만들었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>SMT 연구의 기반이 된 IBM 모델들의 공개와 GIZA 툴킷의 공헌을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>phrase-based translation
+  MERT
+  Moses</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>구 기반 번역(phrase-based translation)
+  MERT(최소 오류율 학습)
+  모세(Moses)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>SMT의 주요 기술과 툴킷입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Around the turn of the century, an extended approach, called phrase-based translation was developed, which was based on inducing translations for phrase-pairs (Och 1998, Marcu and Wong 2002, Koehn et al. (2003), Och and Ney 2004, Deng and Byrne 2005, inter alia). A log linear formulation (Och and Ney, 2004) was trained to directly optimize evaluation metrics like BLEU in a method known as Minimum Error Rate Training, or MERT (Och, 2003), also drawing from speech recognition models (Chou et al., 1993). Popular toolkits were developed like Moses (Koehn et al. 2006, Zens and Ney 2007).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21세기에 접어들 무렵, 구 쌍(phrase-pairs)에 대한 번역을 유도하는 방식에 기반한 구 기반 번역(phrase-based translation)이라는 확장된 접근 방식이 개발되었습니다(Och 1998, Marcu and Wong 2002, Koehn et al. (2003), Och and Ney 2004, Deng and Byrne 2005 등). 로그 선형 공식(Och and Ney, 2004)은 음성 인식 모델(Chou et al., 1993)에서도 차용된 최소 오류율 학습(Minimum Error Rate Training, 또는 MERT)(Och, 2003)이라는 기법을 통해 BLEU와 같은 평가 지표를 직접 최적화하도록 학습되었습니다. Moses(Koehn et al. 2006, Zens and Ney 2007)와 같은 대중적인 툴킷들도 이때 개발되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구 단위 SMT 기술과 MERT 기법을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>transduction grammar
+  inversion transduction grammar</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>변환 문법(transduction grammar)
+  역 변환 문법(inversion transduction grammar)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구문 기반 SMT에서 사용되는 문법들입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There were also approaches around the turn of the century that were based on syntactic structure (Chapter 12). Models based on transduction grammars (also called synchronous grammars) assign a parallel syntactic tree structure to a pair of sentences in different languages, with the goal of translating the sentences by applying reordering operations on the trees. From a generative perspective, we can view a transduction grammar as generating pairs of aligned sentences in two languages. Some of the most widely used models included the inversion transduction grammar (Wu, 1996) and synchronous context-free grammars (Chiang, 2005).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21세기 초에는 구문 구조(12장)에 기반한 접근 방식들도 존재했습니다. 변환 문법(transduction grammars, 또는 동기 문법(synchronous grammars)이라고도 함)에 기반한 모델들은 서로 다른 언어의 문장 쌍에 병렬 구문 트리 구조를 할당하며, 트리 상에서 재배열 연산을 적용하여 문장을 번역하는 것을 목표로 합니다. 생성적 관점에서 우리는 변환 문법을 두 언어의 정렬된 문장 쌍을 생성하는 것으로 볼 수 있습니다. 가장 널리 사용된 모델 중에는 역 변환 문법(inversion transduction grammar)(Wu, 1996)과 동기 문맥 자유 문법(synchronous context-free grammars)(Chiang, 2005) 등이 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구문론적 트리 변환 기반의 MT 연구들을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Neural Machine Translation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신경망 기계 번역</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>신경망 기계 번역 관련 역사적 배경 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern neural encoder-decoder approaches were proposed in various models around 2013–2014, including RNN-based and CNN-based encoder-decoders (Kalchbrenner and Blunsom, 2013), (Cho et al., 2014), (Sutskever et al., 2014), as well as the attention mechanism (Bahdanau et al., 2015; Luong et al., 2015).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현대적인 신경망 기반 인코더-디코더 접근 방식은 2013~2014년경 RNN 및 CNN 기반 인코더-디코더(Kalchbrenner and Blunsom, 2013; Cho et al., 2014; Sutskever et al., 2014), 그리고 어텐션 메커니즘(Bahdanau et al., 2015; Luong et al., 2015)을 포함한 다양한 모델에서 제안되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 및 어텐션 모델의 기틀을 마련한 주요 연구들을 정리합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>uniform information density</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>균등 정보 밀도(uniform information density)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치와 관련된 인지적 속성입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Beam-search has an interesting relationship with human language processing; (Meister et al., 2020) show that beam search enforces the cognitive property of uniform information density in text. Uniform information density is the hypothesis that human language processors tend to prefer to distribute information equally across the sentence (Jaeger and Levy, 2007).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>빔 서치는 인간의 언어 처리 과정과 흥미로운 관계를 맺고 있습니다. Meister et al. (2020)은 빔 서치가 텍스트 내에서 균등 정보 밀도(uniform information density)라는 인지적 속성을 강화한다는 것을 보여주었습니다. 균등 정보 밀도란 인간의 언어 처리자가 문장 전체에 걸쳐 정보를 균등하게 분산시키는 경향이 있다는 가설입니다(Jaeger and Levy, 2007).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빔 서치와 균등 정보 밀도 가설의 관계를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>cloze task
+  Shannon task
+  ALPAC report
+  fidelity
+  intelligibility</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>클로즈 태스크(cloze task)
+  샤논 태스크(Shannon task)
+  ALPAC 보고서
+  충실성(fidelity)
+  이해도(intelligibility)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역 평가에서 사용되는 초기 개념들입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Research on evaluation of machine translation began quite early. Miller and Beebe-Center (1958) proposed a number of methods drawing on work in psycholinguistics. These included the use of cloze and Shannon tasks to measure intelligibility as well as a metric of edit distance from a human translation, the intuition that underlies all modern automatic evaluation metrics like BLEU. The ALPAC report included an early evaluation study conducted by John Carroll that was extremely influential (Pierce et al., 1966, Appendix 10). Carroll proposed distinct measures for fidelity and intelligibility, and had raters score them subjectively on 9-point scales.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기계 번역 평가에 관한 연구는 상당히 일찍 시작되었습니다. Miller와 Beebe-Center (1958)는 심리언어학 연구를 차용하여 여러 방법들을 제안했습니다. 여기에는 이해도를 측정하기 위한 '클로즈(cloze)' 태스크와 '샤논 태스크(Shannon tasks)'뿐만 아니라, BLEU와 같은 모든 현대적 자동 평가 지표의 바탕이 되는 직관인 인간 번역과의 편집 거리(edit distance) 지표도 포함되어 있었습니다. ALPAC 보고서에는 극도로 영향력이 컸던 John Carroll의 초기 평가 연구도 포함되었습니다(Pierce et al., 1966, 부록 10). Carroll은 충실성(fidelity)과 이해도(intelligibility)라는 별개의 척도를 제안했으며, 평가자들이 이를 9점 척도로 주관적으로 채점하게 했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>초기 MT 평가 기법들과 ALPAC 시절의 평가 척도들을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-28">
+<header class="page-header">
+<h2>Page 28</h2>
+<div class="page-subtitle">연습 문제</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>28 CHAPTER 11 • MACHINE TRANSLATION AND ENCODER-DECODER MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>28 제11장 • 기계 번역 및 인코더-디코더 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 영역입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More recent work on evaluation has focused on coming up with automatic metrics, include the work on BLEU discussed in Section 11.8.2 (Papineni et al., 2002), as well as related measures like NIST (Doddington, 2002), TER (Translation Error Rate) (Snover et al., 2006), Precision and Recall (Turian et al., 2003), and METEOR (Banerjee and Lavie, 2005).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최근의 평가 연구는 자동 지표 개발에 초점을 맞추어 왔습니다. 여기에는 11.8.2절에서 다룬 BLEU 연구(Papineni et al., 2002)를 비롯하여 NIST (Doddington, 2002), TER (Translation Error Rate) (Snover et al., 2006), Precision and Recall (Turian et al., 2003), 그리고 METEOR (Banerjee and Lavie, 2005)와 같은 관련 척도들이 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 기계 번역 평가에서 사용되는 대표적인 자동 기술 지표들입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Good surveys of the early history of MT are Hutchins (1986) and (1997). Nirenburg et al. (2002) is a collection of early readings in MT. See Croft (1990) or Comrie (1989) for introductions to typology.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MT 초기 역사에 대한 훌륭한 개론서는 Hutchins (1986) 및 (1997)입니다. Nirenburg et al. (2002)은 MT 초기 주요 읽을거리 모음집입니다. 언어 유형론에 대한 입문으로는 Croft (1990)나 Comrie (1989)를 참고하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추가 학습을 위한 기계 번역 역사 및 유형론 참고 문헌입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>연습 문제 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

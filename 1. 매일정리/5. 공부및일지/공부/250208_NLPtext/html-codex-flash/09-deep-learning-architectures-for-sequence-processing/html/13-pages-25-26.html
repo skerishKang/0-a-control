@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 25-26 | Deep Learning Architectures for Sequence Processing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">09 Deep Learning Architectures</div>
+<h1>Deep Learning Architectures for Sequence Processing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-25">Page 25</a>
+<a class="chip" href="#page-26">Page 26</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 25-26 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>9. Deep Learning Architectures for Sequence Processing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-25">
+<header class="page-header">
+<h2>Page 25</h2>
+<div class="page-subtitle">언어 모델 및 요약</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.8 • TRANSFORMERS AS LANGUAGE MODELS 25</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.8 • 언어 모델로서의 트랜스포머 25</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>9.8 섹션의 시작과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>position 5 than it is to position 17. A combination of sine and cosine functions with differing frequencies was used in the original transformer work. Developing better position representations is an ongoing research topic.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...17번 위치보다는 5번 위치에 더 가깝다는 사실을 포착합니다. 각기 다른 주파수를 가진 사인과 코사인 함수의 조합이 원래의 트랜스포머 논문에서 사용되었습니다. 더 나은 위치 표현을 개발하는 것은 현재 진행 중인 연구 주제입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머의 원형에서 사용된 사인/코사인 기반의 '사인파 위치 인코딩(Sinusoidal Positional Encoding)'에 대해 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.8 Transformers as Language Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.8 언어 모델로서의 트랜스포머</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습된 트랜스포머 블록들을 결합하여 언어 모델로 활용하는 방법을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now that we've seen all the major components of transformers, let's examine how to deploy them as language models via semi-supervised learning. To do this, we'll proceed just as we did with the RNN-based approach: given a training corpus of plain text we'll train a model to predict the next word in a sequence using teacher forcing. Fig. 9.21 illustrates the general approach. At each step, given all the preceding words, the final transformer layer produces an output distribution over the entire vocabulary. During training, the probability assigned to the correct word is used to calculate the cross-entropy loss for each item in the sequence. As with RNNs, the loss for a training sequence is the average cross-entropy loss over the entire sequence.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 트랜스포머의 모든 주요 구성 요소들을 살펴보았으니, 준지도 학습(semi-supervised learning)을 통해 이들을 언어 모델로 배치하는 방법을 알아봅시다. 이를 위해 우리는 RNN 기반 접근 방식에서 했던 것과 똑같은 절차를 따를 것입니다. 즉, 일반 텍스트로 된 학습 코퍼스가 주어지면 티처 포싱(teacher forcing)을 사용하여 시퀀스의 다음 단어를 예측하도록 모델을 학습시킵니다. 그림 9.21은 일반적인 접근 방식을 보여줍니다. 매 단계에서 모든 이전 단어들이 주어졌을 때, 마지막 트랜스포머 층은 전체 어휘 집합에 대한 출력 분포를 생성합니다. 학습 중에 정답 단어에 할당된 확률은 시퀀스의 각 항목에 대한 교차 엔트로피 손실을 계산하는 데 사용됩니다. RNN과 마찬가지로, 학습 시퀀스에 대한 손실은 전체 시퀀스에 대한 평균 교차 엔트로피 손실입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>RNN 언어 모델과 동일한 학습 데이터 구조 및 손실 함수를 사용하되, 모델 아키텍처만 트랜스포머로 바뀐 형태임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Next word: long, and, thanks, for, all
+Loss: -log y_a, -log y_hole, -log y_in, ... = 1/T ∑ L_CE
+Softmax over Vocabulary
+Linear Layer
+Transformer Block (stacked)
+Input Embeddings: So, long, and, thanks, for</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>다음 단어: long, and, thanks, for, all
+손실(Loss): -log y_a, -log y_hole, -log y_in, ... = 1/T ∑ L_CE
+어휘 평면(Vocabulary)에 대한 소프트맥스
+선형 층(Linear Layer)
+트랜스포머 블록 (겹쳐 쌓임)
+입력 임베딩: So, long, and, thanks, for</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머 언어 모델의 학습 도식입니다. 시퀀스 전체에 대해 병렬적으로 다음 단어를 예측하고, 각 시점의 손실을 평균내어 학습함을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.21 Training a transformer as a language model.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.21 언어 모델로서 트랜스포머 학습시키기.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.21에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note the key difference between this figure and the earlier RNN-based version shown in Fig. 9.6. There the calculation of the outputs and the losses at each step was inherently serial given the recurrence in the calculation of the hidden states. With transformers, each training item can be processed in parallel since the output for each element in the sequence is computed separately. Once trained, we can compute the perplexity of the resulting model, or autoregressively generate novel text just as with RNN-based models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 그림과 그림 9.6에서 보았던 이전의 RNN 기반 버전 사이의 핵심적인 차이점에 주목하십시오. RNN에서는 은닉 상태 계산의 순환성 때문에 각 단계의 출력과 손실 계산이 본질적으로 직렬적이었습니다. 반면 트랜스포머를 사용하면 시퀀스의 각 요소에 대한 출력이 개별적으로 계산되기 때문에 각 학습 항목을 병렬로 처리할 수 있습니다. 한 번 학습이 완료되면, 결과 모델의 퍼플렉서티(perplexity)를 계산하거나 RNN 기반 모델과 마찬가지로 새로운 텍스트를 자기 회귀적으로 생성할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 단계에서 트랜스포머가 갖는 결정적 이점인 '병렬화 처리'를 다시 한번 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.9 Contextual Generation and Summarization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.9 문맥 기반 생성 및 요약</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 다음 단어 예측을 넘어, 입력된 문맥에 최적화된 텍스트를 생성하는 응용 분야를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A simple variation on autoregressive generation that underlies a number of practical applications uses a prior context to prime the autoregressive generation process. Fig. 9.22 illustrates this with the task of text completion. Here a standard language</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>수많은 실용적인 애플리케이션의 근간이 되는 자기 회귀 생성의 간단한 변형은, 자기 회귀 생성 프로세스를 시작하기 위해 이전 문맥(prior context)을 미리 주입(prime)하는 것입니다. 그림 9.22는 텍스트 완성 과제를 통해 이를 보여줍니다. 여기서 표준 언어... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조건부 생성(Conditional Generation)의 일종인 텍스트 완성(Completion) 사례를 도입합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-26">
+<header class="page-header">
+<h2>Page 26</h2>
+<div class="page-subtitle">요약 및 전이 학습</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26 CHAPTER 9 • DEEP LEARNING ARCHITECTURES FOR SEQUENCE PROCESSING</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26 제9장 • 시퀀스 처리를 위한 딥러닝 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>model is given the prefix to some text and is asked to generate a possible completion to it. Note that as the generation process proceeds, the model has direct access to the priming context as well as to all of its own subsequently generated outputs. This ability to incorporate the entirety of the earlier context and generated outputs at each time step is the key to the power of these models.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] ...모델은 어떤 텍스트의 앞부분(prefix)을 건네받고 그에 대한 가능한 완성을 생성하도록 요청받습니다. 생성 프로세스가 진행됨에 따라 모델은 주입된 문맥뿐만 아니라 이후에 스스로 생성한 모든 출력에도 직접 접근할 수 있다는 점에 주목하십시오. 매 시간 단계에서 이전 문맥 전체와 생성된 출력물들을 결합하는 이러한 능력은 이 모델들이 가진 강력함의 핵심입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머가 매 시점마다 전체 과거 문맥(입력 + 생성된 텍스트)을 참조하며 일관성 있게 텍스트를 생성해내는 메커니즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Prefix Text: So long and thanks
+Completion Text: for all the
+Sample from Softmax
+linear layer
+Transformer Blocks
+Input Embeddings: So, long, and, thanks, for, all, the</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>앞부분 텍스트(Prefix Text): So long and thanks
+완성 텍스트(Completion Text): for all the
+소프트맥스에서 샘플링
+선형 층
+트랜스포머 블록들
+입력 임베딩: So, long, and, thanks, for, all, the</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머를 이용한 자기 회귀적 텍스트 완성 과정입니다. "So long and thanks"라는 문맥 뒤에 "for", "all", "the"를 차례로 생성해 나가는 과정을 시각화합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 9.22 Autoregressive text completion with transformers.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 9.22 트랜스포머스를 이용한 자기 회귀적 텍스트 완성.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 9.22에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Text summarization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트 요약(Text summarization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>긴 본문을 읽고 핵심 내용을 짧게 간추리는 NLP 작업입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Text summarization is a practical application of context-based autoregressive generation. The task is to take a full-length article and produce an effective summary of it. To train a transformer-based autoregressive model to perform this task, we start with a corpus consisting of full-length articles accompanied by their corresponding summaries. Fig. 9.23 shows an example of this kind of data from a widely used summarization corpus consisting of CNN and Daily Mirror news articles.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>텍스트 요약은 문맥 기반 자기 회귀 생성의 실용적인 응용 사례입니다. 이 과제는 전체 길이의 기사를 가져와 효과적인 요약본을 만들어내는 것입니다. 이 과제를 수행하도록 트랜스포머 기반 자기 회귀 모델을 학습시키기 위해, 우리는 기사 전문과 그에 상응하는 요약본으로 구성된 코퍼스에서 시작합니다. 그림 9.23은 CNN과 Daily Mirror 뉴스 기사로 구성되어 널리 사용되는 요약 코퍼스의 데이터 예시를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머를 이용한 요약 작업의 정의와 데이터셋 구성(기사-요약 쌍)을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A simple but surprisingly effective approach to applying transformers to summarization is to append a summary to each full-length article in a corpus, with a unique marker separating the two. More formally, each article-summary pair (x_1, ..., x_m), (y_1, ..., y_n) in a training corpus is converted into a single training instance (x_1, ..., x_m, δ, y_1, ..., y_n) with an overall length of n + m + 1. These training instances are treated as long sentences and then used to train an autoregressive language model using teacher forcing, exactly as we did earlier.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>요약에 트랜스포머를 적용하는 간단하지만 놀랍도록 효과적인 접근 방식은, 코퍼스의 각 기사 전문 뒤에 요약본을 덧붙이고 둘 사이에 고유한 마커를 두는 것입니다. 더 공식적으로는, 학습 코퍼스 내의 각 기사-요약 쌍 $(x_1, \dots, x_m), (y_1, \dots, y_n)$이 총 길이 $n+m+1$인 단일 학습 인스턴스 $(x_1, \dots, x_m, \delta, y_1, \dots, y_n)$로 변환됩니다. 이러한 학습 인스턴스들은 하나의 긴 문장으로 취급되며, 앞서 했던 것과 정확히 똑같은 방식으로 티처 포싱을 사용하여 자기 회귀 언어 모델을 학습시키는 데 사용됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더와 같은 복잡한 구조 없이, 단순히 본문과 요약문을 일렬로 이어 붙여 학습시키는 '단일 시퀀스 방식'의 요약 모델링 기법을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Once trained, full articles ending with the special marker are used as the context to prime the generation process to produce a summary as illustrated in Fig. 9.24. Note that, in contrast to RNNs, the model has access to the original article as well as to the newly generated text throughout the process.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일단 학습이 완료되면, 그림 9.24에 묘사된 것처럼 특수 마커로 끝나는 기사 전문이 요약본을 생성하는 프로세스를 위한 문맥으로 사용됩니다. RNN과 대조적으로, 모델은 프로세스 전반에 걸쳐 원본 기사와 새로 생성된 텍스트 모두에 접근할 수 있다는 점에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>추론 단계에서 본문 전체를 지속적으로 참조하며 요약문을 생성하는 트랜스포머의 강점을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>9.9.1 Applying Transformers to other NLP tasks</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>9.9.1 다른 NLP 작업에 트랜스포머 적용하기</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>생성 외에 분류나 레이블링 등 다른 NLP 작업에 트랜스포머를 적용하는 방식을 다루기 시작합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Transformers can also be used for sequence labeling tasks (like part-of-speech tagging or named entity tagging) and sequence classification tasks (like sentiment classification), as we'll see in detail in Chapter 11. Just to give a preview, however, we don't directly train a raw transformer on these tasks. Instead, we use a technique</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>트랜스포머는 (품사 태깅이나 개체명 태깅 같은) 시퀀스 레이블링 작업과 (감성 분류 같은) 시퀀스 분류 작업에도 사용될 수 있으며, 이에 대해서는 11장에서 자세히 다룰 것입니다. 하지만 미리 맛보기로 말씀드리자면, 우리는 이러한 작업들에 생(raw) 트랜스포머를 직접 학습시키지 않습니다. 대신 우리는... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>트랜스포머를 전이 학습(Transfer Learning) 관점에서 활용하는 현대적 방식(예: BERT)을 암시하며 내용을 맺습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

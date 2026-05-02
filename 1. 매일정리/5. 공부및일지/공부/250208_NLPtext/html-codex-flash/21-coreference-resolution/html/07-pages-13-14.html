@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-13">Page 13</a><a class="chip" href="#page-14">Page 14</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-13">
+<header class="page-header"><h2>Page 13</h2><div class="page-subtitle">B-cubed 지표</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">subsection_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.6.2 B-cubed</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.6.2 B-cubed</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>MUC의 한계를 보완하기 위해 각 언급(mention) 수준에서 정밀도와 재현율을 계산하는 B-cubed 지표를 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The B-cubed metric calculates precision and recall for each mention and then averages across all mentions in the text.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B-cubed 지표는 각 언급에 대해 정밀도와 재현율을 계산한 다음, 텍스트 내의 모든 언급들에 대해 평균을 냅니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언급별 정밀도(Precision)와 재현율(Recall)을 산출하여 평균을 내는 B-cubed의 기초 계산 원리입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>mention-based evaluation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>언급 기반 평가(mention-based evaluation)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클러스터 내 각 언급의 정답 포함 여부를 판단하여 평가의 정밀도를 높이는 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>B-cubed addresses some of the limitations of MUC by penalizing over-clustering and under-clustering, making it a more robust evaluation metric.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B-cubed는 과도한 클러스터링(over-clustering)과 미흡한 클러스터링(under-clustering)을 모두 처벌함으로써 MUC의 일부 한계점을 해결하며, 더 견고한 평가 지표가 됩니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>B-cubed가 MUC보다 성능 평가에 있어 더 공정하게 작동하는 이유를 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-14">
+<header class="page-header"><h2>Page 14</h2><div class="page-subtitle">CEAF 지표</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">subsection_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.6.3 CEAF (Constrained Entity Aligned F-measure)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.6.3 CEAF (제약된 개체 정렬 F-measure)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예측된 클러스터와 골드 클러스터 사이의 1대1 매핑을 통해 유사도를 측정하는 CEAF 지표를 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The CEAF metric uses an alignment approach between the gold clusters and the predicted clusters. It finds the best one-to-one mapping between them based on their similarity.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CEAF 지표는 골드 클러스터와 예측된 클러스터 사이의 정렬(alignment) 방식을 사용합니다. 유사도에 기반하여 두 분류 사이의 최적의 일대일 매핑을 찾습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>클러스터 간의 일대일 대응(Matching)을 통해 평가의 엄밀성을 확보하는 방식을 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>cluster-based evaluation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>클러스터 기반 평가(cluster-based evaluation)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개별 링크나 언급이 아닌, 클러스터 덩어리 자체의 일치 정도를 평가하는 방식입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 5</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CEAF provides a more global view of the coreference clusters but can be more computationally expensive to evaluate than MUC or B-cubed.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CEAF는 상호 참조 클러스터에 대해 더 전역적인 관점을 제공하지만, MUC나 B-cubed보다 평가를 위한 계산 비용이 더 많이 들 수 있습니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CEAF 지표의 전역적 정확성과 계산 복잡도라는 트레이드오프를 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

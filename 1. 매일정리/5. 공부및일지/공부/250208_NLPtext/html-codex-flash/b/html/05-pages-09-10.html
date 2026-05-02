@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Appendix B: Spelling Correction</title>
+<style>
+
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix B: Spelling Correction and the Noisy Channel</div>
+<h1>Spelling Correction and the Noisy Channel</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-9">Page 9</a>
+<a class="chip" href="#page-10">Page 10</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 9-10 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>Appendix B.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-9">
+<header class="page-header">
+<h2>Page 9</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If the context continues with people, we would need to multiply in probabilities such as P(people|of the), P(people|of thew), and P(people|of threw), and so on.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문맥이 people로 이어진다면 P(people|of the), P(people|of thew), P(people|of threw) 같은 확률도 함께 곱해주어야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>real-word correction에서는 문제 단어만이 아니라 뒤따르는 단어까지 포함한 문맥 확률이 중요합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Following Norvig (2009), we assume that the probability of a word being a typo in this task is .05, meaning that α = P(w|w) is .95. Fig. B.6 shows the computation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Norvig(2009)를 따라 이 과제에서 단어가 오타일 확률을 .05로 가정하면 α = P(w|w)는 .95가 됩니다. 그림 B.6은 이 계산을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오타 확률 가정 하나가 모델의 보수성에 직접 영향을 줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    x    | w     | x|w   | P(x|w)   | P(w|w_{i-2}, w_{i-1}) | score
+    thew | the   | ew|e  | 0.000007 | 0.48                  | 333
+    thew | thew  | —     | α=0.95   | 9.95 x 10^-8          | 9.45
+    thew | thaw  | e|a   | 0.001    | 2.1 x 10^-7           | 0.0209
+    thew | threw | h|hr  | 0.000008 | 8.9 x 10^-7           | 0.000713
+    thew | thwe  | ew|we | 0.000003 | 5.2 x 10^-9           | 0.00000156</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    x    | w     | x|w   | P(x|w)   | P(w|w_{i-2}, w_{i-1}) | score
+    thew | the   | ew|e  | 0.000007 | 0.48                  | 333
+    thew | thew  | —     | α=0.95   | 9.95 x 10^-8          | 9.45
+    thew | thaw  | e|a   | 0.001    | 2.1 x 10^-7           | 0.0209
+    thew | threw | h|hr  | 0.000008 | 8.9 x 10^-7           | 0.000713
+    thew | thwe  | ew|we | 0.000003 | 5.2 x 10^-9           | 0.00000156</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>thew에 대한 후보들 중 the가 가장 높은 점수를 받아 최종 교정으로 선택되는 계산입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure B.6 The noisy channel model on 5 possible candidates for thew, with a Stupid Backoff trigram language model computed from the Google n-gram corpus and the error model from Norvig (2009).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 B.6 Google n-gram 말뭉치로 계산한 Stupid Backoff trigram 언어 모델과 Norvig(2009)의 오류 모델을 사용한, thew에 대한 다섯 후보의 noisy channel 계산.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델과 오류 모델을 함께 사용한 real-word correction 예시의 캡션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For the error phrase two of thew, the model correctly picks the as the correction. But note that a lower error rate might change things; if α is very high, the model might instead decide that the word thew was what the writer intended.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오류 구문 two of thew에 대해 모델은 올바르게 the를 교정어로 선택합니다. 그러나 오류율이 더 낮으면 결과가 달라질 수 있습니다. α가 아주 높다면 모델은 thew 자체가 작성자의 의도였다고 판단할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교정 여부는 문맥뿐 아니라 오류율 가정에도 민감합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>B.3 Noisy Channel Model: The State of the Art</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B.3 노이즈 채널 모델: 최신 기술 현황</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 철자 교정 시스템이 기본 noisy channel 모델에 추가하는 확장들을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>State of the art implementations of noisy channel spelling correction make a number of extensions to the simple models presented above. Rather than assuming only a single error in the sentence, modern systems process the input one word at a time. But naive use of the basic model tends to overcorrect, replacing correct but rare words with more frequent ones.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최신 noisy channel 철자 교정 시스템은 위의 단순 모델에 여러 확장을 더합니다. 문장에 하나의 오류만 있다고 가정하는 대신, 현대 시스템은 입력을 한 번에 한 단어씩 처리합니다. 하지만 기본 모델을 단순 적용하면 올바르지만 드문 단어를 더 빈번한 단어로 바꾸는 과교정이 발생하기 쉽습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 시스템의 핵심 문제는 오류를 더 많이 잡는 것보다 과교정을 줄이는 데 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>log P(w|x) - log P(x|x) > θ</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>log P(w|x) - log P(x|x) > θ</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>후보 교정어와 원 단어의 로그 확률 차이가 임계값 θ를 넘어야만 실제 교정을 수행합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Depending on the application, spell-checkers may autocorrect or merely flag the error and offer suggestions. This decision is often made by another classifier using features like the difference in log probabilities between the candidates.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>응용에 따라 철자 교정기는 자동으로 수정할 수도 있고, 단지 오류를 표시하고 제안만 제공할 수도 있습니다. 이 결정은 후보들 간 로그 확률 차이 같은 특징을 사용하는 별도의 분류기가 담당하는 경우가 많습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교정 시스템은 탐지와 실제 치환을 분리해 운영하는 경우가 많습니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-10">
+<header class="page-header">
+<h2>Page 10</h2>
+<div class="page-subtitle"></div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ahmad and Kondrak (2005) found that a 100,000-word UNIX dictionary contained only 73% of the word types in their corpus of web queries, missing words like pics, multiplayer, google, xbox, clipart, and mallorca. For this reason modern systems often use much larger dictionaries derived from web-scale unigram lists.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ahmad와 Kondrak(2005)는 10만 단어 규모의 UNIX 사전이 웹 질의 말뭉치의 단어 유형 중 73%만 포함하며 pics, multiplayer, google, xbox, clipart, mallorca 같은 단어는 빠진다는 점을 보였습니다. 이런 이유로 현대 시스템은 웹 규모 unigram 목록에서 얻은 훨씬 큰 사전을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 철자 교정기는 웹 규모 어휘를 전제로 해야 실사용 데이터에 대응할 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can also improve the performance of the noisy channel model by changing how the prior and the likelihood are combined. In the standard model they are multiplied together, but these probabilities are not always commensurate. Therefore we use a weighted combination by raising one of the factors to a power λ.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>prior와 likelihood를 결합하는 방식을 바꾸는 것으로 noisy channel 모델의 성능을 향상시킬 수도 있습니다. 표준 모델에서는 두 확률을 단순히 곱하지만, 이 값들의 범위가 항상 잘 맞는 것은 아닙니다. 그래서 한 요인에 λ라는 지수를 주는 가중 결합을 사용합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 모델과 채널 모델의 균형을 맞추기 위해 가중치를 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>W = argmax_{w in V} P(x|w) P(w)^λ  (B.9)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>W = argmax_{w in V} P(x|w) P(w)^λ  (B.9)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>prior 쪽에 λ 가중치를 부여한 결합식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>W = argmax_{w in V} log P(x|w) + λ log P(w)  (B.10)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>W = argmax_{w in V} log P(x|w) + λ log P(w)  (B.10)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>로그 공간에서 같은 아이디어를 더 안정적으로 계산하는 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We then tune the parameter λ on a development test set. Finally, if our goal is to do real-word spelling correction only for specific confusion sets like peace/piece, affect/effect, weather/whether, or grammar correction examples like among/between, we can train supervised classifiers that draw on many contextual features.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그런 다음 개발용 테스트 세트에서 λ 값을 조정합니다. 또한 목표가 peace/piece, affect/effect, weather/whether 같은 특정 confusion set에 대한 real-word correction이라면, 풍부한 문맥 특징을 사용하는 지도학습 분류기를 훈련할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>범용 교정과 특정 confusion set 전용 교정은 모델링 방식이 다를 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>B.3.1 Improved Edit Models: Partitions and Pronunciation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>B.3.1 개선된 편집 모델: 분할과 발음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Brill and Moore식 다중 문자 편집과 발음 기반 채널 모델을 소개하는 부분입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Brill and Moore (2000) propose a channel model that models an error as being generated by a typist first choosing a word, then choosing a partition of the letters of that word, and then typing each partition, possibly erroneously. For example, the word physical might be partitioned as ph y s i c al, and a misspelled form like fisikle can be explained by edits such as p(f|ph) and p(le|al).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Brill과 Moore(2000)는 입력자가 먼저 단어를 고르고, 그 단어의 글자들을 여러 부분으로 나눈 다음, 각 부분을 때로는 틀리게 입력한다고 보는 채널 모델을 제안합니다. 예를 들어 physical을 ph y s i c al처럼 분할하고, fisikle 같은 오타를 p(f|ph), p(le|al)과 같은 다중 문자 편집으로 설명할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 문자 편집만으로는 설명하기 어려운 실제 오타를 다중 문자 변환으로 포착하려는 접근입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+
+</script>
+</body>
+</html>

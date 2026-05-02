@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 5-6 | Sequence Labeling for Parts of Speech and Named Entities</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">08 Sequence Labeling for Parts of Speech</div>
+<h1>Sequence Labeling for Parts of Speech and Named Entities</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 5-6 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>8. Sequence Labeling for Parts of Speech and Named Entities.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">품사 태깅 정확도 및 중의성</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.2 • PART-OF-SPEECH TAGGING 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.2 • 품사 태깅 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>8.2 섹션의 제목과 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(Visual: y_1=NOUN, y_2=AUX, y_3=VERB, y_4=DET, y_5=NOUN)
+(Words: x_1=Janet, x_2=will, x_3=back, x_4=the, x_5=bill)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(시각 자료: y_1=명사, y_2=조동사, y_3=동사, y_4=한정사, y_5=명사)
+(단어: x_1=Janet, x_2=will, x_3=back, x_4=the, x_5=bill)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 단어 시퀀스가 품사 태거(Part of Speech Tagger)를 거쳐 각 단어에 대응하는 품사 태그 시퀀스로 변환되는 과정을 시각화한 것입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.3 The task of part-of-speech tagging: mapping from input words x_1, x_2, ..., x_n to output POS tags y_1, y_2, ..., y_n .</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.3 품사 태깅 작업: 입력 단어 $x_1, x_2, \dots, x_n$에서 출력 품사 태그 $y_1, y_2, \dots, y_n$으로의 매핑.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.3에 대한 캡션입니다. 품사 태깅이 일대일 대응 매핑 작업임을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>ambiguity resolution</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>중의성 해소(ambiguity resolution)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 의미나 기능을 가진 단어의 정확한 문맥적 의미를 결정하는 과정입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>thought that your flight was earlier). The goal of POS-tagging is to resolve these ambiguities, choosing the proper tag for the context.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 비행기가 더 일찍이었다고 생각했다(thought that your flight was earlier)). 품사 태깅의 목표는 문맥에 맞는 적절한 태그를 선택하여 이러한 중의성을 해소하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞 페이지에서 이어진 보문자 'that'의 예시를 마무리하며 품사 태깅의 궁극적인 목적을 다시 한번 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>accuracy</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정확도(accuracy)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모델의 예측이 실제 정답과 일치하는 비율입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The accuracy of part-of-speech tagging algorithms (the percentage of test set tags that match human gold labels) is extremely high. One study found accuracies over 97% across 15 languages from the Universal Dependency (UD) treebank (Wu and Dredze, 2019). Accuracies on various English treebanks are also 97% (no matter the algorithm; HMMs, CRFs, BERT perform similarly). This 97% number is also about the human performance on this task, at least for English (Manning, 2011).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사 태깅 알고리즘의 정확도(테스트 세트 태그가 인간이 작성한 정답 레이블과 일치하는 비율)는 매우 높습니다. 한 연구에 따르면 Universal Dependency(UD) 트리뱅크의 15개 언어에 걸쳐 97% 이상의 정확도를 보였습니다(Wu and Dredze, 2019). 다양한 영어 트리뱅크에서의 정확도 역시 (HMM, CRF, BERT 등 알고리즘에 관계없이 유사하게) 97% 수준입니다. 이 97%라는 수치는 적어도 영어에 있어서는 이 작업에 대한 인간의 수행 능력과 거의 비슷한 수준입니다(Manning, 2011).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 품사 태깅 모델들이 달성한 높은 정확도를 언급하며, 이것이 인간 전문가의 일치도와 거의 대등한 수준임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Types: | WSJ | Brown |
+| :--- | :--- | :--- |
+| Unambiguous (1 tag) | 44,432 (**86%**) | 45,799 (**85%**) |
+| Ambiguous (2+ tags) | 7,025 (**14%**) | 8,050 (**15%**) |
+| **Tokens:** | | |
+| Unambiguous (1 tag) | 577,421 (**45%**) | 384,349 (**33%**) |
+| Ambiguous (2+ tags) | 711,780 (**55%**) | 786,646 (**67%**) |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 유형: | WSJ | Brown |
+| :--- | :--- | :--- |
+| 비중의적 (태그 1개) | 44,432 (**86%**) | 45,799 (**85%**) |
+| 중의적 (태그 2개 이상) | 7,025 (**14%**) | 8,050 (**15%**) |
+| **토큰:** | | |
+| 비중의적 (태그 1개) | 577,421 (**45%**) | 384,349 (**33%**) |
+| 중의적 (태그 2개 이상) | 711,780 (**55%**) | 786,646 (**67%**) |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>WSJ(월스트리트 저널)와 Brown 말뭉치에서의 단어 유형(Types)과 실제 텍스트상의 토큰(Tokens) 기준 중의성 비율을 보여 주는 표입니다. 단어 종류 자체는 비중의적인 것이 많지만, 실제 문장에서 쓰이는 토큰 기준으로는 중의적인 단어들이 훨씬 더 자주 나타남을 알 수 있습니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.4 Tag ambiguity in the Brown and WSJ corpora (Treebank-3 45-tag tagset).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.4 Brown 및 WSJ 말뭉치에서의 태그 중의성(Treebank-3 45-태그 태그셋 기준).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.4에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We'll introduce algorithms for the task in the next few sections, but first let's explore the task. Exactly how hard is it? Fig. 8.4 shows that most word types (85-86%) are unambiguous (Janet is always NNP, hesitantly is always RB). But the ambiguous words, though accounting for only 14-15% of the vocabulary, are very common, and 55-67% of word tokens in running text are ambiguous. Particularly ambiguous common words include that, back, down, put and set; here are some examples of the 6 different parts of speech for the word back:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다음 몇 개의 섹션에서 이 작업을 위한 알고리즘들을 소개하겠지만, 먼저 작업 자체를 살펴봅시다. 이 작업은 정확히 얼마나 어려울까요? 그림 8.4는 대부분의 단어 유형(85-86%)이 비중의적임을 보여 줍니다('Janet'은 항상 NNP이고, 'hesitantly'는 항상 RB인 식입니다). 그러나 중의적인 단어들은 전체 어휘의 14-15%만을 차지함에도 불구하고 매우 빈번하게 사용되며, 실제 텍스트에 나타나는 단어 토큰의 55-67%가 중의적입니다. 특히 중의성이 높은 흔한 단어로는 'that', 'back', 'down', 'put', 'set' 등이 있습니다. 다음은 'back'이라는 단어가 6가지 서로 다른 품사로 쓰이는 예시들입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 태깅이 어려운 이유를 데이터 수치로 설명합니다. 자주 쓰이는 단어일수록 품사가 여러 개인 경우가 많아 실제 작업 시에는 중의성 해소가 매우 중요합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>earnings growth took a **back/JJ** seat
+a small building in the **back/NN**
+a clear majority of senators **back/VBP** the bill
+Dave began to **back/VB** toward the door
+enable the country to buy **back/RP** debt
+I was twenty-one **back/RB** then</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>수익 성장이 뒷(JJ, 형용사) 자리를 차지했다 (뒷전으로 밀려났다)
+뒤편(NN, 명사)에 있는 작은 건물
+상원 의원 대다수가 그 법안을 지지한다(VBP, 동사 현재형)
+Dave는 문 쪽으로 뒷걸음질 치기(VB, 동사 원형) 시작했다
+국가가 부채를 다시 사들일(RP, 불변화사) 수 있게 하다
+当时(back then) 나는 21살이었다(RB, 부사)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'back'이라는 하나의 단어가 문맥에 따라 형용사, 명사, 동사, 불변화사, 부사 등 얼마나 다양하게 쓰일 수 있는지 보여 주는 핵심 사례입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Nonetheless, many words are easy to disambiguate, because their different tags aren't equally likely. For example, a can be a determiner or the letter a, but the determiner sense is much more likely.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그럼에도 불구하고 많은 단어들은 중의성 해소가 어렵지 않습니다. 왜냐하면 서로 다른 태그들이 나타날 확률이 동일하지 않기 때문입니다. 예를 들어 'a'는 한정사일 수도 있고 알파벳 글자 'a'일 수도 있지만, 한정사로 쓰일 확률이 훨씬 높습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 각 품사별 출현 빈도가 다르다는 점이 중의성 해소의 중요한 실마리가 됨을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This idea suggests a useful baseline: given an ambiguous word, choose the tag which is most frequent in the training corpus. This is a key concept:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 아이디어는 유용한 기준 모델(baseline)을 제시합니다. 즉, 중의적인 단어가 주어졌을 때 학습 말뭉치에서 가장 빈번하게 나타난 태그를 선택하는 것입니다. 이것은 핵심적인 개념입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 단순하지만 강력한 기준점인 '최빈 태그 선택' 전략을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>**Most Frequent Class Baseline:** Always compare a classifier against a baseline at least as good as the most frequent class baseline (assigning each token to the class it occurred in most often in the training set).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>**최빈 부류 기준 모델 (Most Frequent Class Baseline):** 분류기를 평가할 때는 항상 '각 토큰을 학습 세트에서 가장 자주 나타난 부류에 할당하는' 방식의 최빈 부류 기준 모델보다 성능이 좋은지 비교해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어떤 복잡한 모델을 만들더라도 최소한 가장 빈도가 높은 클래스를 찍는 것보다는 성능이 좋아야 한다는 머신러닝의 기본 원칙을 강조합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">최빈 기준 모델 및 개체명 인식 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6 CHAPTER 8 • SEQUENCE LABELING FOR PARTS OF SPEECH AND NAMED ENTITIES</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6 제8장 • 품사 태깅과 개체명 인식을 위한 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The most-frequent-tag baseline has an accuracy of about 92%¹. The baseline thus differs from the state-of-the-art and human ceiling (97%) by only 5%.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최빈 태그 기준 모델의 정확도는 약 92%에 달합니다. 따라서 이 기준 모델은 최신 기술 및 인간 전문가의 수준(97%)과 단 5%의 차이만을 보입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 빈도 기반 모델이 이미 상당히 높은 성능을 보여 준다는 점을 강조하며, 나머지 5%를 개선하는 것이 얼마나 세밀한 작업인지를 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>¹ In English, on the WSJ corpus, tested on sections 22-24.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>¹ 영어의 경우, WSJ 말뭉치의 22~24번 섹션에서 테스트된 결과입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 언급된 92% 정확도의 실험 환경에 대한 각주입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.3 Named Entities and Named Entity Tagging</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.3 개체명과 개체명 태깅</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 태깅에 이어 또 다른 시퀀스 레이블링 작업인 개체명 인식을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Part of speech tagging can tell us that words like Janet, Stanford University, and Colorado are all proper nouns; being a proper noun is a grammatical property of these words. But viewed from a semantic perspective, these proper nouns refer to different kinds of entities: Janet is a person, Stanford University is an organization, and Colorado is a location.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사 태깅은 'Janet', 'Stanford University', 'Colorado'와 같은 단어들이 모두 고유 명사라는 것을 알려 줄 수 있습니다. 고유 명사라는 것은 이 단어들의 문법적 속성입니다. 하지만 의미론적 관점에서 보면, 이 고유 명사들은 서로 다른 종류의 개체를 가리킵니다. 'Janet'은 사람이고, 'Stanford University'는 기관이며, 'Colorado'는 장소입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 태깅(문법 중심)과 개체명 인식(의미 중심)의 차이점을 명확하게 구분하여 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>named entity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명(named entity)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현실 세계의 구속력 있는 대상을 가리키는 고유 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A named entity is, roughly speaking, anything that can be referred to with a proper name: a person, a location, an organization. The task of named entity recognition (NER) is to find spans of text that constitute proper names and tag the type of the entity. Four entity tags are most common: PER (person), LOC (location), ORG (organization), or GPE (geo-political entity). However, the term named entity is commonly extended to include things that aren't entities per se, including dates, times, and other kinds of temporal expressions, and even numerical expressions like prices. Here's an example of the output of an NER tagger:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명(named entity)은 대략적으로 사람, 장소, 기관과 같이 고유 명사로 가리킬 수 있는 모든 것을 의미합니다. 개체명 인식(NER) 작업은 고유 명사를 구성하는 텍스트 구간(spans)을 찾아내고 해당 개체의 유형을 태깅하는 것입니다. 가장 흔히 쓰이는 네 가지 개체 태그는 PER(인명), LOC(지명), ORG(기관명), GPE(지정학적 실체)입니다. 하지만 개체명이라는 용어는 날짜, 시간과 같은 시간 표현이나 가격과 같은 수치 표현처럼 본질적으로 '개체'가 아닌 것들까지 포함하도록 흔히 확장되어 사용됩니다. 다음은 NER 태거의 출력 예시입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER의 정의와 주된 태그 종류, 그리고 개체명이 수치나 시간 표현까지 확장될 수 있다는 범위를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>named entity recognition</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명 인식(named entity recognition)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트에서 개체명을 찾아내고 그 종류를 분류하는 기술입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>NER</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NER</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Named Entity Recognition의 약자입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Citing high fuel prices, [ORG United Airlines] said [TIME Friday] it has increased fares by [MONEY $6] per round trip on flights to some cities also served by lower-cost carriers. [ORG American Airlines], a unit of [ORG AMR Corp.], immediately matched the move, spokesman [PER Tim Wagner] said. [ORG United], a unit of [ORG UAL Corp.], said the increase took effect [TIME Thursday] and applies to most routes where it competes against discount carriers, such as [LOC Chicago] to [LOC Dallas] and [LOC Denver] to [LOC San Francisco].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>높은 연료 가격을 언급하며, [ORG United Airlines]는 [TIME 금요일]에 저가 항공사가 운항하는 일부 도시 노선의 왕복 항공 요금을 [MONEY 6달러] 인상했다고 발표했습니다. [ORG AMR Corp.] 산하의 [ORG American Airlines]도 즉시 이 조치에 동참했다고 대변인 [PER Tim Wagner]가 밝혔습니다. [ORG UAL Corp.] 산하의 [ORG United]는 이번 인상이 [TIME 목요일]부터 발효되었으며, [LOC 시카고]발 [LOC 댈러스]행이나 [LOC 덴버]발 [LOC 샌프란시스코]행과 같이 저가 항공사와 경쟁하는 대부분의 노선에 적용된다고 말했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 텍스트에서 기관(ORG), 시간(TIME), 금액(MONEY), 인명(PER), 장소(LOC)가 어떻게 NER 태그로 식별되는지 보여 주는 상세 예시입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The text contains 13 mentions of named entities including 5 organizations, 4 locations, 2 times, 1 person, and 1 mention of money. Figure 8.5 shows typical generic named entity types. Many applications will also need to use specific entity types like proteins, genes, commercial products, or works of art.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위 텍스트에는 5개의 기관, 4개의 장소, 2개의 시간, 1명의 인물, 1개의 금액 언급을 포함하여 총 13개의 개체명이 포함되어 있습니다. 그림 8.5는 전형적인 일반 개체명 유형들을 보여 줍니다. 많은 응용 분야에서는 단백질, 유전자, 상업 제품, 예술 작품과 같은 특수한 개체명 유형을 사용할 필요도 있을 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 개체명 외에도 도메인(예: 생물학, 예술)에 따라 매우 다양한 전용 개체명 태그가 사용될 수 있음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Type | Tag | Sample Categories | Example sentences |
+| :--- | :--- | :--- | :--- |
+| People | PER | people, characters | **Turing** is a giant of computer science. |
+| Organization | ORG | companies, sports teams | The **IPCC** warned about the cyclone. |
+| Location | LOC | regions, mountains, seas | **Mt. Sanitas** is in **Sunshine Canyon**. |
+| Geo-Political Entity | GPE | countries, states | **Palo Alto** is raising the fees for parking. |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 유형 | 태그 | 예시 범주 | 예문 |
+| :--- | :--- | :--- | :--- |
+| 인물 | PER | 사람들, 캐릭터들 | **Turing**은 컴퓨터 과학의 거인이다. |
+| 기관 | ORG | 회사들, 스포츠 팀들 | **IPCC**는 사이클론에 대해 경고했다. |
+| 장소 | LOC | 지역들, 산들, 바다들 | **Mt. Sanitas**는 **Sunshine Canyon**에 있다. |
+| 지정학적 실체 | GPE | 국가들, 주들 | **Palo Alto**는 주차 요금을 인상하고 있다. |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 널리 사용되는 범용 개체명 유형과 태그, 그리고 실제 문장 내 사용 사례를 정리한 표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.5 A list of generic named entity types with the kinds of entities they refer to.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.5 일반적인 개체명 유형과 각 유형이 가리키는 대상 목록.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.5에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Named entity tagging is a useful first step in lots of natural language processing tasks. In sentiment analysis we might want to know a consumer's sentiment toward a particular entity. Entities are a useful first stage in question answering, or for linking text to information in structured knowledge sources like Wikipedia. And named entity tagging is also central to tasks involving building semantic representations, like extracting events and the relationship between participants.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명 태깅은 많은 자연어 처리 작업에서 유용한 첫 번째 단계가 됩니다. 감성 분석에서는 특정 개체에 대한 소비자의 감성을 알고자 할 수 있습니다. 질의응답 작업이나 텍스트를 위키백과와 같은 구조화된 지식 정보원과 연결(linking)하는 데 있어서도 개체명은 유용한 초기 단계 정보를 제공합니다. 또한 개체명 태깅은 사건 추출이나 참가자 간의 관계 파악과 같이 의미 표현을 구축하는 작업에서도 핵심적인 역할을 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>NER 정보가 감성 분석, 질의응답, 지식 연결, 의미 분석 등 다양한 상위 NLP 작업에서 어떻게 활용되는지 그 가치를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Unlike part-of-speech tagging, where there is no segmentation problem since each word gets one tag, the task of named entity recognition is to find and label spans of text, and is difficult partly because of the ambiguity of segmentation; we</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 단어에 하나의 태그가 할당되어 분절(segmentation) 문제가 존재하지 않는 품사 태깅과 달리, 개체명 인식 작업은 특정 텍스트 구간(spans)을 찾아 레이블을 붙여야 합니다. 이 작업이 어려운 이유 중 하나는 부분적으로 분절의 중의성 때문입니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>POS 태깅과 NER의 가장 큰 차이점인 '구간 식별(segmentation)'의 문제를 지적하기 시작합니다. 단어 하나가 아니라 여러 단어의 뭉치를 하나의 개체로 묶어야 한다는 점이 기술적 난제입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

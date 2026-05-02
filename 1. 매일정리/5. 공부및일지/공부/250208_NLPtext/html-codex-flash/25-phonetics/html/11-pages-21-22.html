@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-21">Page 21</a>
+<a class="chip" href="#page-22">Page 22</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>11 Pages 21 22</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-21">
+<header class="page-header">
+<h2>Page 21</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Alphabet or IPA. The most common computational system for transcription of English is the ARPAbet, which conveniently uses ASCII symbols.
+- Phonescanbedescribedbyhowtheyareproducedarticulatorily bythevocal organs; consonants are defined in terms of their place and manner of articu- lation and voicing; vowels by their height, backness, and roundness.
+- Speech sounds can also be described acoustically. Sound waves can be de- scribedintermsoffrequency,amplitude,ortheirperceptualcorrelates,pitch and loudness.
+- Thespectrum ofasounddescribesitsdifferentfrequencycomponents. While some phonetic properties are recognizable from the waveform, both humans and machines rely on spectral analysis for phone detection.
+- A spectrogram is a plot of a spectrum over time. Vowels are described by characteristic harmonics called formants.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>알파벳 또는 IPA. 영어 전사를 위한 가장 일반적인 컴퓨터 시스템은 ASCII 기호를 편리하게 사용하는 ARPAbet입니다.
+- 음소(Phones)는 성대 기관에 의해 조음되는 방식에 의해 설명될 수 있습니다. 자음은 조음 위치와 방식, 발성 여부에 따라 정의되며, 모음은 높낮이, 전후설성, 원순성에 의해 정의됩니다.
+- 음성 신호는 음향적으로도 설명될 수 있습니다. 음파는 주파수, 진폭 또는 그 지각적 상관관계인 피치(pitch)와 음량(loudness)으로 설명될 수 있습니다.
+- 소리의 스펙트럼은 서로 다른 주파수 성분을 설명합니다. 일부 음성 특성은 파형에서 인식 가능하지만, 인간과 기계 모두 음소 탐지를 위해 스펙트럼 분석에 의존합니다.
+- 스펙트로그램은 시간에 따른 스펙트럼의 도표입니다. 모음은 포먼트(formants)라고 불리는 특징적인 배음(harmonics)으로 설명됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성학의 핵심 요약으로, 전사 시스템(ARPAbet), 조음적 특성(자음/모음 분류), 음향적 특성(주파수, 진폭), 그리고 분석 도구(스펙트럼, 스펙트로그램)를 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>참고문헌 및 역사적 주석</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성학 연구의 역사적 배경과 주요 문헌을 소개하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The major insights of articulatory phonetics date to the linguists of 800–150 B.C. India. They invented the concepts of place and manner of articulation, worked out the glottal mechanism of voicing, and understood the concept of assimilation. European science did not catch up with the Indian phoneticians until over 2000 years later, in the late 19th century. The Greeks did have some rudimentary phonetic knowledge; by the time of Plato’s Theaetetus and Cratylus, for example, they distinguished vowels from consonants, and stop consonants from continuants. The Stoics developed the idea of the syllable and were aware of phonotactic constraints on possible words. An unknown Icelandic scholar of the 12th century exploited the concept of the phoneme and proposed a phonemic writing system for Icelandic, including diacritics for length and nasality. But his text remained unpublished until 1818 and even then was largely unknown outside Scandinavia (Robins, 1967). The modern era of phonetics is usually said to have begun with Sweet, who proposed what is essentially the phoneme in his Handbook of Phonetics 1877. He also devised an alphabet for transcription and distinguished between broad and narrow transcription, proposing many ideas that were eventually incorporated into the IPA. Sweet was considered the best practicing phonetician of his time; he made the first scientific recordings of languages for phonetic purposes and advanced the state of the art of articulatory description. He was also infamously difficult to get along with, a trait that is well captured in Henry Higgins, the stage character that George Bernard Shaw modeled after him. The phoneme was first named by the Polish scholar Baudouin de Courtenay, who published his theories in 1894.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>조음 음성학의 주요 통찰은 기원전 800-150년경 인도의 언어학자들로 거슬러 올라갑니다. 그들은 조음 위치와 방식의 개념을 발명했고, 유성음화의 성대 메커니즘을 규명했으며, 동화(assimilation)의 개념을 이해했습니다. 유럽 과학은 2000년이 지난 19세기 후반에야 인도 음성학자들을 따라잡았습니다. 그리스인들도 기초적인 음성학적 지식을 가지고 있었습니다. 예를 들어 플라톤의 '테아이테토스'와 '크라튈로스' 시대에 그들은 모음과 자음, 파열음과 지속음을 구분했습니다. 스토아 학파는 음절의 개념을 발전시켰고 가능한 단어에 대한 음소 배열 제약을 인식했습니다. 12세기의 이름 모를 아이슬란드 학자는 음소의 개념을 활용하여 길이와 비음화를 위한 분음 기호를 포함한 아이슬란드어 음소 표기 시스템을 제안했습니다. 그러나 그의 텍스트는 1818년까지 출판되지 않았으며 그 후에도 스칸디나비아 이외의 지역에서는 거의 알려지지 않았습니다 (Robins, 1967). 현대 음성학 시대는 대개 1877년 'Handbook of Phonetics'에서 본질적으로 음소를 제안한 스위트(Sweet)와 함께 시작되었다고 합니다. 그는 또한 전사를 위한 알파벳을 고안하고 광범위 전사와 정밀 전사를 구분했으며, 나중에 IPA에 통합된 많은 아이디어를 제안했습니다. 스위트는 당대 최고의 실무 음성학자로 여겨졌습니다. 그는 음성학적 목적을 위해 언어의 첫 번째 과학적 녹음을 수행했으며 조음 묘사 기술을 발전시켰습니다. 그는 또한 함께 지내기 악명 높게 어려웠던 것으로 알려져 있는데, 이 특성은 조지 버나드 쇼가 그를 모델로 삼은 무대 캐릭터 헨리 히긴스에 잘 담겨 있습니다. 음소(phoneme)라는 명칭은 1894년 자신의 이론을 발표한 폴란드 학자 보두앵 드 쿠르트네(Baudouin de Courtenay)에 의해 처음 명명되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성학의 기원이 고대 인도(조음 위치/방식, 성대 메커니즘 등)에 있으며, 19세기에 이르러서야 서구 과학이 이를 재발견하고 현대적 음소 개념과 IPA의 기초를 마련했음을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Introductory phonetics textbooks include Ladefoged (1993) and Clark and Yallop (1995). Wells (1982) is the definitive three-volume source on dialects of English. Many of the classic insights in acoustic phonetics had been developed by the late 1950s or early 1960s; just a few highlights include techniques like the sound spectrograph (Koenig et al., 1946), theoretical insights like the working out of the source-filter theory and other issues in the mapping between articulation and acoustics ((Fant, 1960), Stevens et al. 1953, Stevens and House 1955, Heinz and Stevens 1961, Stevens and House 1961) the F1xF2 space of vowel formants (Peterson and Barney, 1952), the understanding of the phonetic nature of stress and the use of duration and intensity as cues (Fry, 1955), and a basic understanding of issues in phone perception (Miller and Nicely 1955, Liberman et al. 1952). Lehiste (1967) is a collection of classic papers on acoustic phonetics. Many of the seminal papers of Gunnar Fant have been collected in Fant (2004).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입문용 음성학 교재로는 Ladefoged (1993)와 Clark and Yallop (1995)이 있습니다. Wells (1982)는 영어 방언에 관한 결정적인 3권 분량의 자료입니다. 음향 음성학의 고전적 통찰 중 많은 부분이 1950년대 후반이나 1960년대 초반에 개발되었습니다. 몇 가지 주요 성과로는 사운드 스펙트로그래프(Koenig et al., 1946)와 같은 기술, 소스-필터 이론(source-filter theory)의 정립 및 조음과 음향 사이의 매핑에 관한 이론적 통찰((Fant, 1960), Stevens et al. 1953, Stevens and House 1955, Heinz and Stevens 1961, Stevens and House 1961), 모음 포먼트의 F1xF2 공간(Peterson and Barney, 1952), 강세의 음성학적 본질에 대한 이해 및 단서로서의 지속 시간과 강도의 사용(Fry, 1955), 그리고 음소 지각 문제에 대한 기초적인 이해(Miller and Nicely 1955, Liberman et al. 1952) 등이 있습니다. Lehiste (1967)는 음향 음성학에 관한 고전 논문 모음집입니다. 군나르 판트(Gunnar Fant)의 많은 중요한 논문들이 Fant (2004)에 수집되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음향 음성학의 발전을 이끈 주요 인물들과 연구 성과(소스-필터 이론, 포먼트 공간, 강세 분석 등)를 나열합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Excellent textbooks on acoustic phonetics include Johnson (2003) and Ladefoged (1996). Coleman (2005) includes an introduction to computational processing of acoustics and speech from a linguistic perspective. Stevens (1998) lays out an influential theory of speech sound production. There are a number of software packages for acoustic phonetic analysis. Probably the most widely used one is Praat (Boersma and Weenink, 2005).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음향 음성학에 관한 훌륭한 교재로는 Johnson (2003)과 Ladefoged (1996)가 있습니다. Coleman (2005)은 언어학적 관점에서 본 음향 및 음성의 컴퓨터 처리 입문을 포함하고 있습니다. Stevens (1998)는 음성 생성에 관한 영향력 있는 이론을 제시합니다. 음향 음성 분석을 위한 많은 소프트웨어 패키지가 있습니다. 아마도 가장 널리 사용되는 것은 Praat (Boersma and Weenink, 2005)일 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음향 음성학 및 계산 음성학의 최신 교재와 가장 널리 쓰이는 분석 도구인 Praat을 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-22">
+<header class="page-header">
+<h2>Page 22</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Baayen, R. H., R. Piepenbrock, and L. Gulikers. 1995. The CELEX Lexical Database (Release 2) [CD-ROM]. Linguistic Data Consortium, University of Pennsylvania [Distributor].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Baayen, R. H., R. Piepenbrock, and L. Gulikers. 1995. CELEX 어휘 데이터베이스 (릴리스 2) [CD-ROM]. 언어 데이터 컨소시엄, 펜실베니아 대학교 [배포처].</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>대규모 어휘 데이터베이스인 CELEX에 대한 참조입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Beckman, M. E. and G. M. Ayers. 1997. Guidelines for ToBI labelling. Unpublished manuscript, Ohio State University, http://www.ling.ohio-state.edu/research/phonetics/E_ToBI/.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Beckman, M. E. and G. M. Ayers. 1997. ToBI 레이블링 가이드라인. 미발표 원고, 오하이오 주립 대학교.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어 억양 표기 표준인 ToBI 시스템의 가이드라인입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Boersma, P. and D. Weenink. 2005. Praat: doing phonetics by computer (version 4.3.14). [Computer program]. Retrieved May 26, 2005, from http://www.praat.org/.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Boersma, P. and D. Weenink. 2005. Praat: 컴퓨터를 이용한 음성학 (버전 4.3.14). [컴퓨터 프로그램].</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 널리 사용되는 음성 분석 소프트웨어 Praat에 대한 참조입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fant, G. M. 1960. Acoustic Theory of Speech Production. Mouton.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Fant, G. M. 1960. 음성 생성의 음향 이론. Mouton.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소스-필터 이론을 정립한 음성학의 고전적인 저서입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Ladefoged, P. 1993. A Course in Phonetics. Harcourt Brace Jovanovich. (3rd ed.).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Ladefoged, P. 1993. 음성학 강의. Harcourt Brace Jovanovich. (제3판).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성학 분야에서 가장 널리 읽히는 입문용 교과서 중 하나입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>NIST. 1990. TIMIT Acoustic-Phonetic Continuous Speech Corpus. National Institute of Standards and Technology Speech Disc 1-1.1. NIST Order No. PB91-505065.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>NIST. 1990. TIMIT 음향-음성 연속 음성 코퍼스. 국립표준기술연구소.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식 및 음성 분석 연구에 널리 사용되는 표준 데이터셋인 TIMIT에 대한 참조입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">reference</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Stevens, K. N. 1998. Acoustic Phonetics. MIT Press.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Stevens, K. N. 1998. 음향 음성학. MIT Press.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음향 음성학 분야의 심도 있는 전문서적입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

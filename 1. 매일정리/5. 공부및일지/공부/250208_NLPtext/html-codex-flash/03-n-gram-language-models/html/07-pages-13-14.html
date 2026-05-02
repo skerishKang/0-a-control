@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | N-gram Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+table th, table td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+table th { background: var(--source-bg); font-weight: 700; }
+table tr:nth-child(even) { background: var(--translation-bg); }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">03 PDF / HTML Sample</div>
+<h1>N-gram Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>3. N-gram Language Models</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">미등록 단어 처리와 스무딩의 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5 • SMOOTHING 13</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5 • 스무딩(Smoothing) 13</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>only contain words from this lexicon, and there will be no unknown words. This is a reasonable assumption in some domains, such as speech recognition or machine translation, where we have a pronunciation dictionary or a phrase table that are fixed in advance, and so the language model can only use the words in that dictionary or phrase table.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 이 어휘 목록에 포함된 단어들만 포함할 것이며, 미등록 단어는 존재하지 않을 것입니다. 이는 음성 인식이나 기계 번역과 같이 미리 고정된 발음 사전이나 구문 표(phrase table)를 사용하는 분야에서는 상당히 합리적인 가정입니다. 이러한 시스템에서 언어 모델은 해당 사전이나 표에 등재된 단어들만 사용할 수 있기 때문입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>폐쇄 어휘 시스템의 특성과 그것이 합리적으로 적용될 수 있는 특정 도메인의 예시를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In other cases we have to deal with words we haven't seen before, which we'll call unknown words, or out of vocabulary (OOV) words. The percentage of OOV words that appear in the test set is called the OOV rate. An open vocabulary system is one in which we model these potential unknown words in the test set by adding a pseudo-word called <UNK>.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>반면, 그 외의 경우에는 우리가 전에 본 적 없는 단어들을 처리해야 합니다. 이를 미등록 단어(unknown words) 또는 어휘 외 단어(out of vocabulary, OOV)라고 부릅니다. 테스트 세트에 나타나는 OOV 단어의 비율을 OOV율(OOV rate)이라고 합니다. 개방 어휘(open vocabulary) 시스템은 테스트 세트에 나타날 수 있는 이러한 잠재적 미등록 단어들을 위해 `<UNK>`라는 가상 단어를 추가하여 모델링하는 시스템을 말합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>OOV의 정의와 개방 어휘 시스템에서 `<UNK>` 토큰을 사용하여 미등록 단어를 처리하는 방식을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>OOV / open vocabulary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘 외 단어(OOV) / 개방 어휘(open vocabulary)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미등록 단어 및 이를 허용하는 시스템을 일컫는 핵심 용어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>There are two common ways to train the probabilities of the unknown word model <UNK>. The first one is to turn the problem back into a closed vocabulary one by choosing a fixed vocabulary in advance:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>미등록 단어 모델인 `<UNK>`의 확률을 학습시키는 데는 주로 두 가지 방법이 쓰입니다. 첫 번째 방법은 미리 고정된 어휘 집합을 선택함으로써 문제를 다시 폐쇄 어휘 시스템으로 전환하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>`<UNK>` 확률 학습을 위해 문제를 폐쇄 어휘 시스템으로 환원하는 전략을 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. Choose a vocabulary (word list) that is fixed in advance.
+2. Convert in the training set any word that is not in this set (any OOV word) to the unknown word token <UNK> in a text normalization step.
+3. Estimate the probabilities for <UNK> from its counts just like any other regular word in the training set.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 미리 고정된 어휘 집합(단어 목록)을 선택합니다.
+2. 텍스트 정규화 단계에서, 학습 세트에 포함된 단어 중 이 집합에 없는 모든 단어(즉, OOV 단어)를 미등록 단어 토큰인 `<UNK>`로 변환합니다.
+3. 학습 세트 내의 다른 일반 단어들과 마찬가지로, `<UNK>`의 빈도를 바탕으로 그 확률을 추정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>`<UNK>` 토큰 처리를 위한 단계별 절차입니다. OOV를 `<UNK>`로 치환하여 통계적 계산이 가능하게 만듭니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The second alternative, in situations where we don't have a prior vocabulary in advance, is to create such a vocabulary implicitly, replacing words in the training data by <UNK> based on their frequency. For example we can replace by <UNK> all words that occur fewer than n times in the training set, where n is some small number, or equivalently select a vocabulary size V in advance (say 50,000) and choose the top V words by frequency and replace the rest by UNK. In either case we then proceed to train the language model as before, treating <UNK> like a regular word.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 번째 대안은 미리 정해진 어휘 집합이 없는 상황에서, 빈도수를 기준으로 학습 데이터의 단어들을 `<UNK>`로 교체하여 어휘 집합을 암묵적으로 생성하는 것입니다. 예를 들어, 학습 세트에서 $n$번 미만으로 등장하는 모든 단어를 `<UNK>`로 바꿀 수 있습니다 (여기서 $n$은 작은 정수). 또는 어휘 집합의 크기 $V$를 미리 정해두고 (예: 50,000개), 빈도순으로 상위 $V$개의 단어만 남기고 나머지는 모두 `<UNK>`로 교체할 수도 있습니다. 어떤 경우든, 그 이후에는 `<UNK>`를 일반 단어처럼 취급하여 이전과 동일하게 언어 모델을 학습시키면 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도 기반으로 `<UNK>`를 처리하는 두 번째 전략을 설명합니다. 이는 데이터의 특성에 맞춰 동적으로 어휘 집합을 구성하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The exact choice of <UNK> model does have an effect on metrics like perplexity. A language model can achieve low perplexity by choosing a small vocabulary and assigning the unknown word a high probability. For this reason, perplexities should only be compared across language models with the same vocabularies (Buck et al., 2014).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어떤 `<UNK>` 모델을 선택하느냐는 펄플렉서티와 같은 성능 지표에 영향을 미칩니다. 어휘 집합을 작게 잡고 미등록 단어에 높은 확률을 부여하면 인위적으로 낮은 펄플렉서티를 얻을 수 있습니다. 이러한 이유로, 펄플렉서티는 반드시 동일한 어휘 집합을 사용하는 언어 모델들 사이에서만 비교되어야 합니다(Buck et al., 2014).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 집합의 크기와 `<UNK>` 처리 방식이 펄플렉서티 수치를 왜곡할 수 있음을 경고하며, 비교 실험의 엄격한 조건을 재강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5 Smoothing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5 스무딩(Smoothing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>제로 확률 문제를 해결하기 위해 확률 분포를 완만하게 조정하는 기법들을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>What do we do with words that are in our vocabulary (they are not unknown words) but appear in a test set in an unseen context (for example they appear after a word they never appeared after in training)? To keep a language model from assigning zero probability to these unseen events, we'll have to shave off a bit of probability mass from some more frequent events and give it to the events we've never seen.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리의 어휘 집합에는 포함되어 있지만(즉, 미등록 단어가 아님), 테스트 세트에서 본 적 없는 문맥으로 등장하는 단어들(예를 들어 학습 시에는 한 번도 뒤에 온 적 없던 단어 다음에 등장하는 경우)은 어떻게 처리해야 할까요? 언어 모델이 이러한 미관측 사건(unseen events)에 0의 확률을 부여하는 것을 방지하기 위해, 우리는 빈도가 높은 사건으로부터 아주 약간의 확률 질량(probability mass)을 떼어내어 한 번도 보지 못한 사건들에 나누어 주어야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩의 필요성과 핵심 원리인 '확률 질량 재지정'을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>smoothing / discounting</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스무딩(smoothing) / 디스카운팅(discounting)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률 분포를 평활화하는 기술과 빈도를 깎아내는 기술을 일컫는 용어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This modification is called smoothing or discounting. In this section and the following ones we'll introduce a variety of ways to do smoothing: Laplace (add-one) smoothing, add-k smoothing, stupid backoff, and Kneser-Ney smoothing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 수정을 스무딩(smoothing) 또는 디스카운팅(discounting)이라고 부릅니다. 이 섹션과 이어지는 섹션들에서 라플라스(1 더하기; add-one) 스무딩, $k$ 더하기(add-k) 스무딩, 스튜피드 백오프(stupid backoff), 그리고 크네저-네이(Kneser-Ney) 스무딩 등 다양한 스무딩 방법들을 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞으로 다룰 주요 스무딩 알고리즘의 목록을 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5.1 Laplace Smoothing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5.1 라플라스 스무딩(Laplace Smoothing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>가장 기본적이고 고전적인 스무딩 기법인 라플라스 스무딩에 대해 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The simplest way to do smoothing is to add one to all the n-gram counts, before we normalize them into probabilities. All the counts that used to be zero will now have a count of 1, the counts of 1 will be 2, and so on. This algorithm is called Laplace smoothing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스무딩을 수행하는 가장 간단한 방법은 확률로 정규화하기 전에 모든 N-그램 빈도에 1을 더하는 것입니다. 이렇게 하면 0이었던 모든 빈도는 1이 되고, 1이었던 빈도는 2가 되는 식입니다. 이 알고리즘을 라플라스 스무딩이라고 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 기본 아이디어인 '모든 빈도에 1을 더하기'를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Laplace smoothing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>라플라스 스무딩(Laplace smoothing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률의 제로 문제를 해결하기 위한 가장 직관적인 기법입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Laplace smoothing does not perform well enough to be used</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>라플라스 스무딩은 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 한계를 지적하려는 도입부입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">라플라스 스무딩 상세 공식</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 3 • N-GRAM LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제3장 • N-그램 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>in modern n-gram models, but it usefully introduces many of the concepts that we see in other smoothing algorithms, gives a useful baseline, and is also a practical smoothing algorithm for other tasks like text classification (Chapter 4).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 현대적인 N-그램 모델에서 사용하기에 성능이 충분히 좋지는 않지만, 다른 스무딩 알고리즘에서 쓰이는 여러 핵심 개념들을 잘 보여주며 유용한 기준점(baseline)이 되어 줍니다. 또한 텍스트 분류(제4장)와 같은 다른 과제들에서는 실용적인 스무딩 알고리즘으로 활용되기도 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 의의와 한계, 그리고 타 분야에서의 활용성을 정리합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's start with the application of Laplace smoothing to unigram probabilities. Recall that the unsmoothed maximum likelihood estimate of the unigram probability of the word wi is its count ci normalized by the total number of word tokens N:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우선 유니그램 확률에 라플라스 스무딩을 적용해 봅시다. 단어 $w_i$에 대한 일반적인(스무딩되지 않은) 최대 우도 추정(MLE) 유니그램 확률은 해당 단어의 빈도 $c_i$를 전체 단어 토큰 수 $N$으로 나눈 값임을 상기해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩 전의 기본 유니그램 확률 공식을 상기시킵니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(wi) = ci / N (3.20)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P(wi) = ci / N (3.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.20). 유니그램의 최대 우도 추정 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Laplace smoothing merely adds one to each count (hence its alternate name add-one smoothing). Since there are V words in the vocabulary and each one was increased, we also need to adjust the denominator to take into account the extra V observations. (What happens to our P values if we don't increase the denominator?)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>라플라스 스무딩은 단순히 각 빈도에 1을 더합니다 (그래서 '1 더하기 스무딩'이라고도 불립니다). 어휘 집합에 총 $V$개의 단어가 있고 각 단어의 빈도가 1씩 증가했으므로, 추가된 $V$개의 관측치를 반영하기 위해 분모 역시 조정해야 합니다. (만약 분모를 늘리지 않는다면 확률값 $P$들이 어떻게 될지 생각해 보십시오.)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도 증가에 따른 분모 조정의 필요성을 수학적으로 설명합니다. 확률의 합이 1이 되도록 정규화하는 과정입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>add-one</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기(add-one)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 또 다른 명칭입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_{Laplace}(wi) = (ci + 1) / (N + V) (3.20)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_{Laplace}(wi) = (ci + 1) / (N + V) (3.20)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.20). 라플라스 스무딩이 적용된 유니그램 확률 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Instead of changing both the numerator and denominator, it is convenient to describe how a smoothing algorithm affects the numerator, by defining an adjusted count c*. This adjusted count is easier to compare directly with the MLE counts and can be turned into a probability like an MLE count by normalizing by N. To define this count, since we are only changing the numerator in addition to adding 1 we'll also need to multiply by a normalization factor N / (N + V):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분자와 분모를 모두 바꾸는 대신, 스무딩 알고리즘이 분자에 어떤 영향을 미치는지 '조정된 빈도(adjusted count)' $c^*$를 정의하여 설명하는 것이 편리할 때가 많습니다. 이 조정된 빈도는 MLE 빈도와 직접 비교하기 쉬우며, 단순히 $N$으로 나누어주는 것만으로 MLE 확률처럼 변환될 수 있습니다. 1을 더하는 것 외에 분자 수준에서만 변화를 정의하기 위해, 정규화 계수 $N / (N + V)$를 곱하여 다음과 같이 정의합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩 효과를 직관적으로 파악하기 위해 '조정된 빈도'라는 개념을 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>ci* = (ci + 1) * N / (N + V) (3.21)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>ci* = (ci + 1) * N / (N + V) (3.21)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.21). 라플라스 스무딩에 의한 조정된 빈도 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We can now turn ci* into a probability Pi* by normalizing by N.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이제 $c_i^*$를 $N$으로 나누어 정규화함으로써 확률 $P_i^*$로 변환할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조정된 빈도를 이용한 확률 산출 방식을 기술합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A related way to view smoothing is as discounting (lowering) some non-zero counts in order to get the probability mass that will be assigned to the zero counts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스무딩을 바라보는 연관된 관점은, 빈도가 0인 항목들에 할당할 확률 질량을 확보하기 위해 0이 아닌 빈도들을 '디스카운팅(discounting, 삭감)'하는 것으로 보는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩을 '확률의 재분배' 관점에서 재정의합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>discounting</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>디스카운팅(discounting)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기존 확률을 깎아내어 새로운 곳에 할당하는 행위를 의미합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus, instead of referring to the discounted counts c*, we might describe a smoothing algorithm in terms of a relative discount dc, the ratio of the discounted counts to the original counts:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 조정된 빈도 $c^*$를 직접 언급하는 대신, 원래 빈도에 대한 조정된 빈도의 비율인 '상대적 디스카운트(relative discount)' $d_c$를 사용하여 스무딩 알고리즘을 설명할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>상대적 디스카운트 개념을 도입하여 스무딩의 강도를 측정하는 방법을 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>discount</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>디스카운트(discount)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도의 감소 비율을 나타내는 지표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>dc = c* / c</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>dc = c* / c</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>디스카운트 비율의 정의식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Now that we have the intuition for the unigram case, let's smooth our Berkeley Restaurant Project bigrams. Figure 3.6 shows the add-one smoothed counts for the bigrams in Fig. 3.1.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유니그램 사례를 통해 직관을 얻었으니, 이제 버클리 레스토랑 프로젝트(Berkeley Restaurant Project)의 바이그램에 스무딩을 적용해 봅시다. 그림 3.6은 그림 3.1에 제시된 바이그램 빈도에 1 더하기 스무딩을 적용한 결과입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식당 예약 예제에 스무딩을 적용하는 실전 단계로 넘어갑니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 3.7 shows the add-one smoothed probabilities for the bigrams in Fig. 3.2. Recall that normal bigram probabilities are computed by normalizing each row of counts by the unigram count:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.7은 그림 3.2의 바이그램 확률에 1 더하기 스무딩을 적용한 결과입니다. 일반적인 바이그램 확률은 각 행의 빈도를 해당 유니그램의 빈도로 나누어 정규화함으로써 계산된다는 점을 상기해 봅시다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>바이그램 확률 계산 방식을 복습하며 스무딩 적용을 예고합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(wn|wn−1) = C(wn−1wn) / C(wn−1) (3.22)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P(wn|wn−1) = C(wn−1wn) / C(wn−1) (3.22)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.22). 일반적인 바이그램 조건부 확률 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For add-one smoothed bigram counts, we need to augment the unigram count by the number of total word types in the vocabulary V:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩이 적용된 바이그램 빈도의 경우, 분모가 되는 유니그램 빈도에 전체 어휘 집합의 단어 유형 수 $V$를 더해 보정해 주어야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>바이그램 수준에서의 라플라스 스무딩 시 분모 보정 방식을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 20</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_{Laplace}*(wn|wn−1) = (C(wn−1wn) + 1) / (Sum_w (C(wn−1w) + 1)) = (C(wn−1wn) + 1) / (C(wn−1) + V) (3.23)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_{Laplace}*(wn|wn−1) = (C(wn−1wn) + 1) / (Sum_w (C(wn−1w) + 1)) = (C(wn−1wn) + 1) / (C(wn−1) + V) (3.23)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.23). 라플라스 스무딩이 적용된 바이그램 조건부 확률 최종 공식입니다. 모든 가능한 후속 단어 $w$에 대해 1씩 더해지므로 분모에 $V$가 추가됩니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) { const panel = toggle.nextElementSibling; toggle.setAttribute("aria-expanded", expanded ? "true" : "false"); toggle.textContent = expanded ? "study_note 접기" : "study_note 보기"; panel.hidden = !expanded; }
+toggles.forEach((toggle) => { setPanelState(toggle, false); toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; setPanelState(toggle, !expanded); }); });
+document.querySelector("[data-expand-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, true)); });
+document.querySelector("[data-collapse-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, false)); });
+</script>
+</body>
+</html>

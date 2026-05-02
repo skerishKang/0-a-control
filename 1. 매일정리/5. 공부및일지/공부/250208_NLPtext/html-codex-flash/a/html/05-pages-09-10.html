@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 9-10 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-9">Page 9</a><a class="chip" href="#page-10">Page 10</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 9-10 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-9">
+<header class="page-header"><h2>Page 9</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that we represent the most probable path by taking the maximum over all possible previous state sequences max. Like other dynamic programming algorithms, Viterbi fills each cell recursively. Given that we had already computed the probability of being in every state at time t-1, we compute the Viterbi probability by taking the most probable of the extensions of the paths that lead to the current cell.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모든 가능한 이전 상태 시퀀스 중 최대값을 취함으로써 가장 확률이 높은 경로를 표현한다는 점에 유의하십시오. 다른 동적 프로그래밍 알고리즘과 마찬가지로, 비터비는 각 셀을 재귀적으로 채웁니다. 시간 t-1에서 모든 상태에 있을 확률을 이미 계산했다고 가정하면, 현재 셀로 이어지는 경로 확장 중 가장 확률이 높은 것을 선택하여 비터비 확률을 계산합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Viterbi algorithm uses dynamic programming to efficiently find the most likely sequence of hidden states.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>vt(j) = max P(q1...qt-1; o1,o2...ot; qt = j | λ) (A.13)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>vt(j) = max P(q1...qt-1; o1,o2...ot; qt = j | λ) (A.13)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Formal definition of the Viterbi probability for state j at time t.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For a given state qj at time t, the value vt(j) is computed as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시간 t에서 주어진 상태 qj에 대해, vt(j) 값은 다음과 같이 계산됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to the recursive step formula.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>vt(j) = max_{i=1}^{N} vt-1(i) aij bj(ot) (A.14)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>vt(j) = max_{i=1}^{N} vt-1(i) aij bj(ot) (A.14)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The core recursive formula for updating Viterbi probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The three factors that are multiplied in Eq. A.14 for extending the previous paths to compute the Viterbi probability at time t are: vt-1(i) the previous Viterbi path probability from the previous time step; aij the transition probability from previous state qi to current state qj; bj(ot) the state observation likelihood of the observation symbol ot given the current state j.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시간 t에서 비터비 확률을 계산하기 위해 이전 경로를 확장할 때 식 A.14에서 곱해지는 세 가지 요소는 다음과 같습니다: vt-1(i)는 이전 시간 단계에서의 이전 비터비 경로 확률; aij는 이전 상태 qi에서 현재 상태 qj로의 전이 확률; bj(ot)는 현재 상태 j가 주어졌을 때 관측 기호 ot가 나타날 상태 관측 우도입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Breakdown of the components in the Viterbi update equation.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    function VITERBI(observations of len T, state-graph of len N) returns best-path, path-prob
+      create a path probability matrix viterbi[N,T]
+      for each state s from 1 to N do ; initialization step
+        viterbi[s,1] <- pi_s * bs(o1)
+        backpointer[s,1] <- 0
+      for each time step t from 2 to T do ; recursion step
+        for each state s from 1 to N do
+          viterbi[s,t] <- max_{s'=1}^{N} viterbi[s',t-1] * as',s * bs(ot)
+          backpointer[s,t] <- argmax_{s'=1}^{N} viterbi[s',t-1] * as',s * bs(ot)
+      bestpathprob <- max_{s=1}^{N} viterbi[s,T] ; termination step
+      bestpathpointer <- argmax_{s=1}^{N} viterbi[s,T] ; termination step
+      bestpath <- the path starting at state bestpathpointer, that follows backpointer[] to states back in time
+      return bestpath, bestpathprob</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    function VITERBI(길이 T의 관측치, 길이 N의 상태 그래프) returns 최적 경로, 경로 확률
+      경로 확률 행렬 viterbi[N,T] 생성
+      각 상태 s (1부터 N까지)에 대해 ; 초기화 단계
+        viterbi[s,1] <- pi_s * bs(o1)
+        backpointer[s,1] <- 0
+      각 시간 단계 t (2부터 T까지)에 대해 ; 재귀 단계
+        각 상태 s (1부터 N까지)에 대해
+          viterbi[s,t] <- max_{s'=1}^{N} viterbi[s',t-1] * as',s * bs(ot)
+          backpointer[s,t] <- argmax_{s'=1}^{N} viterbi[s',t-1] * as',s * bs(ot)
+      bestpathprob <- max_{s=1}^{N} viterbi[s,T] ; 종료 단계
+      bestpathpointer <- argmax_{s=1}^{N} viterbi[s,T] ; 종료 단계
+      bestpath <- bestpathpointer 상태에서 시작하여 backpointer[]를 따라 시간을 거슬러 올라가는 경로
+      return 최적 경로, 경로 확률</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Pseudocode for the complete Viterbi algorithm.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.9 shows pseudocode for the Viterbi algorithm. Note that the Viterbi algorithm is identical to the forward algorithm except that it takes the max over the previous path probabilities whereas the forward algorithm takes the sum.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.9는 비터비 알고리즘의 의사코드를 보여줍니다. 비터비 알고리즘은 전방 알고리즘(forward algorithm)이 이전 경로 확률들의 합을 구하는 것과 달리 최대값을 취한다는 점을 제외하면 전방 알고리즘과 동일하다는 점에 유의하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Key difference between Viterbi (decoding) and Forward (likelihood) algorithms.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-10">
+<header class="page-header"><h2>Page 10</h2>
+<div class="page-subtitle">A.5 HMM Training: The Forward-Backward Algorithm</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note also that the Viterbi algorithm has one component that the forward algorithm doesn’t have: backpointers. The reason is that while the forward algorithm needs to produce an observation likelihood, the Viterbi algorithm must produce a probability and also the most likely state sequence. We compute this best state sequence by keeping track of the path of hidden states that led to each state, and then at the end backtracing the best path to the beginning (the Viterbi backtrace).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>또한 비터비 알고리즘에는 전방 알고리즘에 없는 한 가지 구성 요소인 역추적 포인터(backpointers)가 있습니다. 그 이유는 전방 알고리즘은 관측 우도를 생성해야 하는 반면, 비터비 알고리즘은 확률과 함께 가장 가능성 있는 상태 시퀀스를 생성해야 하기 때문입니다. 우리는 각 상태로 이어진 은닉 상태의 경로를 추적하고, 마지막에 시작 부분까지 최적 경로를 역추적(비터비 역추적)함으로써 이 최적 상태 시퀀스를 계산합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Explanation of why backpointers are necessary for decoding.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.10 The Viterbi backtrace: we keep a backpointer (shown with broken lines) to the best path that led us to this state.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.10 비터비 역추적: 이 상태로 이어진 최적 경로에 대한 역추적 포인터(점선으로 표시됨)를 유지합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Visualizing how the best path is recovered.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>|
+    Finally, we can give a formal definition of the Viterbi recursion as follows:
+    1. Initialization:
+       v1(j) = pi_j * bj(o1)  1 <= j <= N
+       bt1(j) = 0             1 <= j <= N</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    마지막으로, 비터비 재귀의 공식적인 정의는 다음과 같습니다:
+    1. 초기화:
+       v1(j) = pi_j * bj(o1)  1 <= j <= N
+       bt1(j) = 0             1 <= j <= N</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Formal mathematical definition of the Viterbi algorithm steps.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    2. Recursion
+       vt(j) = max_{i=1}^{N} vt-1(i) aij bj(ot);  1 <= j <= N; 1 < t <= T
+       btt(j) = argmax_{i=1}^{N} vt-1(i) aij bj(ot);  1 <= j <= N; 1 < t <= T</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    2. 재귀
+       vt(j) = max_{i=1}^{N} vt-1(i) aij bj(ot);  1 <= j <= N; 1 < t <= T
+       btt(j) = argmax_{i=1}^{N} vt-1(i) aij bj(ot);  1 <= j <= N; 1 < t <= T</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>The recursive step including the argmax for backpointers.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    3. Termination:
+       The best score: P* = max_{i=1}^{N} vT(i)
+       The start of backtrace: qT* = argmax_{i=1}^{N} vT(i)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    3. 종료:
+       최적 점수: P* = max_{i=1}^{N} vT(i)
+       역추적 시작점: qT* = argmax_{i=1}^{N} vT(i)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Final steps to get the probability and start the backtrace.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A.5 HMM Training: The Forward-Backward Algorithm</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>A.5 HMM 훈련: 전방-후방 알고리즘</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to HMM parameter learning.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We turn to the third problem for HMMs: learning the parameters of an HMM, that is, the A and B matrices. Formally, Learning: Given an observation sequence O and the set of possible states in the HMM, learn the HMM parameters A and B.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM의 세 번째 문제인 HMM 매개변수(즉, A 및 B 행렬) 학습으로 넘어갑니다. 공식적으로 학습이란: 관측 시퀀스 O와 HMM의 가능한 상태 집합이 주어졌을 때, HMM 매개변수 A와 B를 학습하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of the learning task in HMMs.</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

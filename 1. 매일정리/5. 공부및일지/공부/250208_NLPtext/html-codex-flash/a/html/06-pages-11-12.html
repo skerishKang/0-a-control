@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 11-12 | Appendix A: Hidden Markov Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix A: Hidden Markov Models</div>
+<h1>Appendix A: Hidden Markov Models</h1>
+</div>
+<div class="quick-nav"><a class="chip" href="#page-11">Page 11</a><a class="chip" href="#page-12">Page 12</a></div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 11-12 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>A.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-11">
+<header class="page-header"><h2>Page 11</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The input to such a learning algorithm would be an unlabeled sequence of observations O and a vocabulary of potential hidden states Q. Thus, for the ice cream task, we would start with a sequence of observations O= {1,3,2,...} and the set of hidden states H and C.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 학습 알고리즘의 입력은 라벨이 지정되지 않은 관측 시퀀스 O와 잠재적인 은닉 상태의 어휘 집합 Q입니다. 따라서 아이스크림 과제의 경우, 관측 시퀀스 O={1,3,2,...}와 은닉 상태 집합 H 및 C로 시작하게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Unsupervised learning setup for HMMs.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The standard algorithm for HMM training is the forward-backward, or Baum-Welch algorithm (Baum, 1972), a special case of the Expectation-Maximization or EM algorithm (Dempster et al., 1977). The algorithm will let us train both the transition probabilities A and the emission probabilities B of the HMM. EM is an iterative algorithm, computing an initial estimate for the probabilities, then using those estimates to compute a better estimate, and so on, iteratively improving the probabilities that it learns.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HMM 훈련을 위한 표준 알고리즘은 전방-후방 알고리즘 또는 바움-웰치(Baum-Welch) 알고리즘(Baum, 1972)으로, 이는 기대-최대화(Expectation-Maximization) 또는 EM 알고리즘(Dempster et al., 1977)의 특수한 경우입니다. 이 알고리즘을 통해 HMM의 전이 확률 A와 방출 확률 B를 모두 훈련할 수 있습니다. EM은 반복 알고리즘으로, 확률에 대한 초기 추정치를 계산한 다음, 그 추정치를 사용하여 더 나은 추정치를 계산하는 방식으로 학습하는 확률을 반복적으로 개선합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Introduction to Baum-Welch and EM algorithm.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let us begin by considering the much simpler case of training a fully visible Markov model, where we know both the temperature and the ice cream count for every day. That is, imagine we see the following set of input observations and magically knew the aligned hidden state sequences: 3 3 2 1 1 2 1 2 3 (observations), hot hot cold cold cold cold cold hot hot (states).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>훨씬 더 간단한 경우인 '완전 가시적 마르코프 모델(fully visible Markov model)' 훈련부터 살펴보겠습니다. 이 모델에서는 매일의 온도와 아이스크림 개수를 모두 알고 있습니다. 즉, 다음과 같은 입력 관측치 세트를 보고 마법처럼 정렬된 은닉 상태 시퀀스를 알고 있다고 가정해 봅시다: 3 3 2 1 1 2 1 2 3 (관측치), hot hot cold cold cold cold cold hot hot (상태).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Supervised case (fully visible) as a precursor to unsupervised learning.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    ph = 1/3, pc = 2/3 (initial probabilities)
+    p(hot|hot) = 2/3, p(cold|hot) = 1/3, p(cold|cold) = 2/3, p(hot|cold) = 1/3 (A matrix)
+    P(1|hot) = 0/4 = 0, P(2|hot) = 1/4 = .25, P(3|hot) = 3/4 = .75 (B matrix for hot)
+    p(1|cold) = 3/5 = .6, p(2|cold) = 2/5 = .4, p(3|cold) = 0 (B matrix for cold)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    ph = 1/3, pc = 2/3 (초기 확률)
+    p(hot|hot) = 2/3, p(cold|hot) = 1/3, p(cold|cold) = 2/3, p(hot|cold) = 1/3 (A 행렬)
+    P(1|hot) = 0/4 = 0, P(2|hot) = 1/4 = .25, P(3|hot) = 3/4 = .75 (hot에 대한 B 행렬)
+    p(1|cold) = 3/5 = .6, p(2|cold) = 2/5 = .4, p(3|cold) = 0 (cold에 대한 B 행렬)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Maximum Likelihood Estimation (MLE) of HMM parameters when states are visible.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>For a real HMM, we cannot compute these counts directly from an observation sequence since we don’t know which path of states was taken through the machine for a given input. For example, suppose I didn’t tell you the temperature on day 2, and you had to guess it, but you (magically) had the above probabilities, and the temperatures on the other days. You could do some Bayesian arithmetic with all the other probabilities to get estimates of the likely temperature on that missing day, and use those to get expected counts for the temperatures for day 2.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>실제 HMM에서는 주어진 입력에 대해 어떤 상태 경로를 거쳤는지 알 수 없기 때문에 관측 시퀀스에서 이러한 빈도를 직접 계산할 수 없습니다. 예를 들어, 2일차의 온도를 알려주지 않고 추측해야 하는데, (마법처럼) 위의 확률들을 가지고 있고 다른 날들의 온도를 알고 있다고 가정해 봅시다. 다른 모든 확률들을 사용하여 베이지안 연산을 수행함으로써 누락된 날의 예상 온도를 추정하고, 이를 통해 2일차 온도의 기대 빈도를 얻을 수 있을 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Transitioning from direct counting to expected counts.</pre></section>
+</div>
+</article>
+
+</div>
+</section><section class="page" id="page-12">
+<header class="page-header"><h2>Page 12</h2>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But the real problem is even harder: we don’t know the counts of being in any of the hidden states!! The Baum-Welch algorithm solves this by iteratively estimating the counts. We will start with an estimate for the transition and observation probabilities and then use these estimated probabilities to derive better and better probabilities. And we’re going to do this by computing the forward probability for an observation and then dividing that probability mass among all the different paths that contributed to this forward probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 실제 문제는 훨씬 더 어렵습니다. 우리는 어떤 은닉 상태에 있을 빈도조차 알지 못합니다!! 바움-웰치 알고리즘은 빈도를 반복적으로 추정함으로써 이 문제를 해결합니다. 전이 확률과 관측 확률에 대한 추정치로 시작하여, 이 추정된 확률들을 사용해 점점 더 나은 확률을 도출해 나갈 것입니다. 구체적으로 관측치에 대한 전방 확률을 계산한 다음, 그 확률 질량을 전방 확률에 기여한 모든 서로 다른 경로들에 나누어 할당하는 방식을 취합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Core intuition of the Baum-Welch (EM) algorithm.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To understand the algorithm, we need to define a useful probability related to the forward probability and called the backward probability. The backward probability beta is the probability of seeing the observations from time t+1 to the end, given that we are in state i at time t (and given the automaton lambda):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 알고리즘을 이해하기 위해서는 전방 확률과 관련이 있고 '후방 확률(backward probability)'이라 불리는 유용한 확률을 정의해야 합니다. 후방 확률 beta는 시간 t에서 상태 i에 있고 (오토마톤 lambda가 주어졌을 때), 시간 t+1부터 끝까지의 관측치를 볼 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Definition of the Backward Probability (beta).</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>βt(i) = P(ot+1, ot+2...oT | qt = i, λ) (A.15)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>βt(i) = P(ot+1, ot+2...oT | qt = i, λ) (A.15)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Mathematical expression for the backward probability.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    1. Initialization:
+       βT(i) = 1; 1 <= i <= N</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    1. 초기화:
+       βT(i) = 1; 1 <= i <= N</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Initialization of the backward algorithm.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    2. Recursion
+       βt(i) = Σ_{j=1}^{N} aij bj(ot+1) βt+1(j); 1 <= i <= N; 1 <= t < T</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    2. 재귀
+       βt(i) = Σ_{j=1}^{N} aij bj(ot+1) βt+1(j); 1 <= i <= N; 1 <= t < T</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Recursive step for calculating backward probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>|
+    3. Termination:
+       P(O|λ) = Σ_{j=1}^{N} pi_j bj(o1) β1(j)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>|
+    3. 종료:
+       P(O|λ) = Σ_{j=1}^{N} pi_j bj(o1) β1(j)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Calculating total likelihood using backward probabilities.</pre></section>
+</div>
+</article>
+
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure A.11 The computation of βt(i) by summing all the successive values βt+1(j) weighted by their transition probabilities aij and their observation probabilities bj(ot+1).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 A.11 전이 확률 aij와 관측 확률 bj(ot+1)에 의해 가중치가 부여된 모든 연속적인 값 βt+1(j)을 합산하여 βt(i)를 계산하는 과정.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Visual explanation of the backward recursion step.</pre></section>
+</div>
+</article>
+
+</div>
+</section></main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

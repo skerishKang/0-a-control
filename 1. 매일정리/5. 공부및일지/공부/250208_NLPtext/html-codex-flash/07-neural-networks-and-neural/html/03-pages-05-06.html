@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 5-6 | Neural Networks and Neural Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">07 Neural Networks and Neural Language Models</div>
+<h1>Neural Networks and Neural Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 5-6 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>7. Neural Networks and Neural Language Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">퍼셉트론의 한계와 XOR 해결책</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.2 • THE XOR PROBLEM 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.2 • XOR 문제 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It's very easy to build a perceptron that can compute the logical AND and OR functions of its binary inputs; Fig. 7.4 shows the necessary weights.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이진 입력을 사용하여 논리적 AND와 OR 함수를 계산하는 퍼셉트론을 구축하는 것은 매우 쉽습니다. 그림 7.4는 이를 위한 가중치들을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>퍼셉트론으로 기본 논리 게이트를 구현할 수 있음을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.4 The weights w and bias b for perceptrons for computing logical functions. The inputs are shown as x1 and x2 and the bias as a special node with value +1 which is multiplied with the bias weight b. (a) logical AND, showing weights w1 = 1 and w2 = 1 and bias weight b = -1. (b) logical OR, showing weights w1 = 1 and w2 = 1 and bias weight b = 0. These weights/biases are just one from an infinite number of possible sets of weights and biases that would implement the functions.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.4 논리 함수를 계산하기 위한 퍼셉트론의 가중치 $w$와 바이어스 $b$. 입력은 $x_1$과 $x_2$로 표시되며, 바이어스는 바이어스 가중치 $b$와 곱해지는 값이 +1인 특별한 노드로 표시됩니다. (a) 논리 AND: 가중치 $w_1 = 1, w_2 = 1$, 바이어스 가중치 $b = -1$. (b) 논리 OR: 가중치 $w_1 = 1, w_2 = 1$, 바이어스 가중치 $b = 0$. 이 가중치/바이어스 값들은 해당 함수들을 구현할 수 있는 무수히 많은 조합 중 하나일 뿐입니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.4. AND와 OR 게이트를 구현한 각 가중치 모델입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.4 The weights w and bias b for perceptrons for computing logical functions. The inputs are shown as x1 and x2 and the bias as a special node with value +1 which is multiplied with the bias weight b. (a) logical AND, showing weights w1 = 1 and w2 = 1 and bias weight b = -1. (b) logical OR, showing weights w1 = 1 and w2 = 1 and bias weight b = 0. These weights/biases are just one from an infinite number of possible sets of weights and biases that would implement the functions.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.4 논리 함수를 계산하기 위한 퍼셉트론의 가중치 $w$와 바이어스 $b$. 입력은 $x_1$과 $x_2$로 표시되며, 바이어스는 바이어스 가중치 $b$와 곱해지는 값이 +1인 특별한 노드로 표시됩니다. (a) 논리 AND: 가중치 $w_1 = 1, w_2 = 1$, 바이어스 가중치 $b = -1$. (b) 논리 OR: 가중치 $w_1 = 1, w_2 = 1$, 바이어스 가중치 $b = 0$. 이 가중치/바이어스 값들은 해당 함수들을 구현할 수 있는 무수히 많은 조합 중 하나일 뿐입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.4 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It turns out, however, that it's not possible to build a perceptron to compute logical XOR! (It's worth spending a moment to give it a try!)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 논리적 XOR를 계산하는 퍼셉트론을 구축하는 것은 불가능하다는 것이 밝혀졌습니다! (잠시 시간을 내어 직접 시도해 볼 만한 가치가 있습니다!)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>퍼셉트론의 한계점인 XOR 문제를 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The intuition behind this important result relies on understanding that a perceptron is a linear classifier. For a two-dimensional input x_1 and x_2, the perception equation, w_1 x_1 + w_2 x_2 + b = 0 is the equation of a line. (We can see this by putting it in the standard linear format: x_2 = (-w_1/w_2)x_1 + (-b/w_2).) This line acts as a decision boundary in two-dimensional space in which the output 0 is assigned to all inputs lying on one side of the line, and the output 1 to all input points lying on the other side of the line. If we had more than 2 inputs, the decision boundary becomes a hyperplane instead of a line, but the idea is the same, separating the space into two categories.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 중요한 결과 이면의 직관은 퍼셉트론이 '선형 분류기(linear classifier)'라는 점을 이해하는 데 있습니다. 2차원 입력 $x_1, x_2$에 대해, 퍼셉트론 방정식 $w_1 x_1 + w_2 x_2 + b = 0$은 직선의 방정식입니다. (이를 표준 직선 형태인 $x_2 = (-w_1/w_2)x_1 + (-b/w_2)$로 변환해 보면 알 수 있습니다.) 이 직선은 2차원 공간에서 '결정 경계(decision boundary)' 역할을 합니다. 직선의 한쪽에 놓인 모든 입력에는 출력 0이 할당되고, 다른 한쪽에 놓인 모든 입력 포인트에는 출력 1이 할당됩니다. 만약 입력이 2개보다 많다면 결정 경계는 직선 대신 초평면(hyperplane)이 되지만, 공간을 두 개의 범주로 나누는 원리는 동일합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>퍼셉트론의 결정 경계가 직선(또는 초평면) 형태의 선형성을 가진다는 핵심 원리를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>decision boundary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>결정 경계(decision boundary)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 클래스를 구분 짓는 가상의 경계선입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 7.5 shows the possible logical inputs (00, 01, 10, and 11) and the line drawn by one possible set of parameters for an AND and an OR classifier. Notice that there is simply no way to draw a line that separates the positive cases of XOR (01 and 10) from the negative cases (00 and 11). We say that XOR is not a linearly separable function. Of course we could draw a boundary with a curve, or some other function, but not a single line.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.5는 가능한 논리 입력들(00, 01, 10, 11)과 AND 및 OR 분류기를 위한 일련의 파라미터들로 그려진 직선을 보여줍니다. XOR의 긍정적인 사례(01과 10)를 부정적인 사례(00과 11)로부터 분리하는 직선을 긋는 방법은 전혀 없다는 점에 주목하십시오. 우리는 XOR를 '선형적으로 분리 가능한(linearly separable)' 함수가 아니라고 말합니다. 물론 곡선이나 다른 함수를 이용해 경계를 그릴 수는 있겠지만, 단일 직선으로는 불가능합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>XOR가 왜 선형적으로 분리 불가능한지 기하학적 관점에서 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>linearly separable</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>선형적으로 분리 가능한(linearly separable)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하나의 직선이나 평면으로 데이터를 완벽히 구분할 수 있는 상태를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>7.2.1 The solution: neural networks</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>7.2.1 해결책: 신경망</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단층 퍼셉트론의 한계를 극복하는 다층 신경망(Multi-layer Neural Networks)에 대해 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While the XOR function cannot be calculated by a single perceptron, it can be calculated by a layered network of units. Let's see an example of how to do this from Goodfellow et al. (2016) that computes XOR using two layers of ReLU-based units. Fig. 7.6 shows a figure with the input being processed by two layers of neural units. The middle layer (called h) has two units, and the output layer (called y) has one unit. A set of weights and biases are shown for each ReLU that correctly computes the XOR function.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>XOR 함수는 단일 퍼셉트론으로는 계산할 수 없지만, 유닛들이 계층을 이룬 네트워크로는 계산할 수 있습니다. Goodfellow 등(2016)의 연구에서 제시한, ReLU 기반 유닛의 두 개 층을 사용하여 XOR를 계산하는 사례를 살펴봅시다. 그림 7.6은 입력이 두 개의 신경망 유닛 층에 의해 처리되는 모습을 보여줍니다. 중간층(은닉층 $h$)은 2개의 유닛을 가지고 있고, 출력층($y$)은 1개의 유닛을 가집니다. 각 ReLU 유닛에 대해 XOR 함수를 올바르게 계산할 수 있는 가중치와 바이어스 세트가 표시되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다층 구조(은닉층 도입)를 통해 XOR 문제를 해결할 수 있음을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Let's walk through what happens with the input x = [0, 0]. If we multiply each input value by the appropriate weight, sum, and then add the bias b, we get the vector [0, -1], and we then apply the rectified linear transformation to give the output of the h layer as [0, 0]. Now we once again multiply by the weights, sum, and add the bias (0 in this case) resulting in the value 0. The reader should work through the computation of the remaining 3 possible input pairs to see that the resulting y values are 1 for the inputs [0, 1] and [1, 0] and 0 for [0, 0] and [1, 1].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력 $\mathbf{x} = [0, 0]$인 경우 어떤 일이 일어나는지 살펴봅시다. 각 입력값에 적절한 가중치를 곱하고 합한 뒤 바이어스 $b$를 더하면 벡터 $[0, -1]$을 얻게 되며, 여기에 정류 선형 변환(ReLU)을 적용하면 $h$층의 출력으로 $[0, 0]$이 나옵니다. 이제 다시 한번 가중치를 곱하고 합한 뒤 바이어스(이 경우는 0)를 더하면 결과값 0이 산출됩니다. 독자 여러분은 나머지 3가지 가능한 입력 쌍에 대해 계산을 수행하여, 결과 $y$값이 입력 $[0, 1]$과 $[1, 0]$에 대해서는 1이 되고, $[0, 0]$과 $[1, 1]$에 대해서는 0이 되는지 확인해 보시기 바랍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 다층 신경망(XOR 모델)의 수치 계산 과정을 단계별로 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">XOR 도식 및 표현 학습</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6 CHAPTER 7 • NEURAL NETWORKS AND NEURAL LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6 제7장 • 신경망과 신경망 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.5 The functions AND, OR, and XOR, represented with input x1 on the x-axis and input x2 on the y axis. Filled circles represent perceptron outputs of 1, and white circles perceptron outputs of 0. There is no way to draw a line that correctly separates the two categories for XOR. Figure styled after Russell and Norvig (2002).]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.5 입력 $x_1$을 x축으로, 입력 $x_2$를 y축으로 나타낸 AND, OR, XOR 함수. 채워진 원은 퍼셉트론 출력 1을, 빈 원은 퍼셉트론 출력 0을 나타냅니다. XOR의 경우 두 범주를 올바르게 분리하는 직선을 그릴 방법이 없습니다. Russell과 Norvig(2002)의 도식 스타일을 따름.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.5. 논리 게이트들의 선형 분리 가능 여부를 시각적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.5 The functions AND, OR, and XOR, represented with input x1 on the x-axis and input x2 on the y axis. Filled circles represent perceptron outputs of 1, and white circles perceptron outputs of 0. There is no way to draw a line that correctly separates the two categories for XOR. Figure styled after Russell and Norvig (2002).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.5 입력 $x_1$을 x축으로, 입력 $x_2$를 y축으로 나타낸 AND, OR, XOR 함수. 채워진 원은 퍼셉트론 출력 1을, 빈 원은 퍼셉트론 출력 0을 나타냅니다. XOR의 경우 두 범주를 올바르게 분리하는 직선을 그릴 방법이 없습니다. Russell과 Norvig(2002)의 도식 스타일을 따름.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.5 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">image</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 7.6 XOR solution after Goodfellow et al. (2016). There are three ReLU units, in two layers; we've called them h1, h2 (h for "hidden layer") and y1. As before, the numbers on the arrows represent the weights w for each unit, and we represent the bias b as a weight on a unit clamped to +1, with the bias weights/units in gray.]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 7.6 Goodfellow 등(2016)에 따른 XOR 해결책. 두 개 층에 걸쳐 3개의 ReLU 유닛이 있습니다. 이들을 $h_1, h_2$($h$는 은닉층을 의미)와 $y_1$으로 불렀습니다. 이전과 마찬가지로 화살표 위의 숫자들은 각 유닛의 가중치 $w$를 나타내며, 바이어스 $b$는 +1로 고정된 유닛의 가중치로 표시했습니다. 바이어스 가중치와 유닛은 회색으로 처리되었습니다.]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.6. XOR 문제를 해결하는 MLP(Multi-Layer Perceptron) 구조도입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 7.6 XOR solution after Goodfellow et al. (2016). There are three ReLU units, in two layers; we've called them h1, h2 (h for "hidden layer") and y1. As before, the numbers on the arrows represent the weights w for each unit, and we represent the bias b as a weight on a unit clamped to +1, with the bias weights/units in gray.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 7.6 Goodfellow 등(2016)에 따른 XOR 해결책. 두 개 층에 걸쳐 3개의 ReLU 유닛이 있습니다. 이들을 $h_1, h_2$($h$는 은닉층을 의미)와 $y_1$으로 불렀습니다. 이전과 마찬가지로 화살표 위의 숫자들은 각 유닛의 가중치 $w$를 나타내며, 바이어스 $b$는 +1로 고정된 유닛의 가중치로 표시했습니다. 바이어스 가중치와 유닛은 회색으로 처리되었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 7.6 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It's also instructive to look at the intermediate results, the outputs of the two hidden nodes h_1 and h_2. We showed in the previous paragraph that the h vector for the inputs x = [0, 0] was [0, 0]. Fig. 7.7b shows the values of the h layer for all 4 inputs. Notice that hidden representations of the two input points x = [0, 1] and x = [1, 0] (the two cases with XOR output = 1) are merged to the single point h = [1, 0]. The merger makes it easy to linearly separate the positive and negative cases of XOR. In other words, we can view the hidden layer of the network as forming a representation for the input.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 개의 은닉 노드 $h_1$과 $h_2$의 출력인 중간 결과를 살펴보는 것도 매우 유익합니다. 앞 단락에서 입력 $\mathbf{x} = [0, 0]$에 대한 $\mathbf{h}$ 벡터가 $[0, 0]$임을 보였습니다. 그림 7.7b는 모든 4가지 입력에 대한 $\mathbf{h}$층의 값들을 보여줍니다. (XOR 출력이 1인 두 사례인) 두 입력 포인트 $\mathbf{x} = [0, 1]$과 $\mathbf{x} = [1, 0]$의 은닉 표현이 단일 포인트 $\mathbf{h} = [1, 0]$으로 병합된다는 점에 주목하십시오. 이 병합 덕분에 XOR의 긍정 사례와 부정 사례를 선형적으로 분리하기가 용이해집니다. 다시 말해, 우리는 네트워크의 은닉층이 입력에 대한 '표현(representation)'을 형성하는 것으로 볼 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>은닉층이 데이터를 비선형 공간으로 변환하여 선형 분리가 가능하도록 만드는 '표현 학습'의 핵심 메커니즘을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this example we just stipulated the weights in Fig. 7.6. But for real examples the weights for neural networks are learned automatically using the error backpropagation algorithm to be introduced in Section 7.6. That means the hidden layers will learn to form useful representations. This intuition, that neural networks can automatically learn useful representations of the input, is one of their key advantages, and one that we will return to again and again in later chapters.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 예제에서는 그림 7.6의 가중치들을 단순히 규정했습니다. 하지만 실제 사례에서 신경망의 가중치들은 7.6절에서 소개할 오차 역전파(error backpropagation) 알고리즘을 사용하여 자동으로 학습됩니다. 즉, 은닉층이 유용한 표현을 형성하도록 스스로 학습한다는 것을 의미합니다. 신경망이 데이터의 유용한 표현을 자동으로 학습할 수 있다는 이러한 직관은 신경망의 핵심적인 장점 중 하나이며, 이후의 장들에서 계속해서 반복적으로 다루게 될 주제입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>역전파 알고리즘을 통한 표현의 자동 학습이라는 신경망의 최대 강점을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that the solution to the XOR problem requires a network of units with nonlinear activation functions. A network made up of simple linear (perceptron) units cannot solve the XOR problem. This is because a network formed by many layers of purely linear units can always be reduced (i.e., shown to be computationally identical to) a single layer of linear units with appropriate weights, and we've already shown</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>XOR 문제의 해결에는 비선형 활성화 함수를 가진 유닛들의 네트워크가 필수적이라는 점에 유의하십시오. 단순한 선형(퍼셉트론) 유닛만으로 구성된 네트워크는 XOR 문제를 해결할 수 없습니다. 이는 순수하게 선형적인 유닛들로 여러 개의 층을 구성하더라도, 항상 적절한 가중치를 가진 단일 층의 선형 유닛으로 축소(즉, 계산적으로 동일함이 증명됨)될 수 있기 때문입니다. 그리고 우리는 이미 [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>층을 깊게 쌓는 것뿐만 아니라 '비선형 활성화 함수'가 반드시 필요함을 수학적 관점에서 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

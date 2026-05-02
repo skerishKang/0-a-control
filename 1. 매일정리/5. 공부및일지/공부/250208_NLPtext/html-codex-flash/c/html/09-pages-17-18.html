@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 17-18 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-17">Page 17</a>
+<a class="chip" href="#page-18">Page 18</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 17-18 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>C. Statistical Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Draft</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-17">
+<header class="page-header">
+<h2>Page 17</h2>
+<div class="page-subtitle">Summary</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>More generally, if H is a head with head word hw and head tag ht, lw/lt and rw/rt are the word/tag on the left and right respectively, and P is the parent, then the probability of an entire rule can be expressed as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>더 일반적으로, 만약 H가 핵심어 hw와 헤드 태그 ht를 가진 헤드이고, lw/lt와 rw/rt가 각각 왼쪽과 오른쪽에 있는 단어/태그이며, P가 부모 노드라면, 전체 규칙의 확률은 다음과 같이 표현될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘화된 규칙 확률을 일반화된 기호(hw, ht, lw, lt 등)로 공식화하기 위한 전제 조건.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>1. Generate the head of the phrase H(hw, ht) with probability: PH(H(hw, ht)|P, hw, ht) 2. Generate modifiers to the left of the head with total probability 3. Generate modifiers to the right of the head with total probability</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1. 다음 확률로 구의 헤드 H(hw, ht)를 생성: PH(H(hw, ht)|P, hw, ht) 2. 전체 확률로 헤드의 왼쪽 수식어들을 생성 3. 전체 확률로 헤드의 오른쪽 수식어들을 생성</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전체 규칙 생성을 헤드 생성과 좌우 수식어 생성 단계로 일반화함.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>PH(H(hw, ht)|P, hw, ht)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>PH(H(hw, ht)|P, hw, ht)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부모와 헤드 정보를 기반으로 한 헤드 생성 확률 식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\prod_{i=1}^{n+1} PL(Li(lwi, lti)|P, H, hw, ht)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\prod_{i=1}^{n+1} PL(Li(lwi, lti)|P, H, hw, ht)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>왼쪽 의존어(수식어)들이 생성될 총 확률을 나타내는 곱 연산식. STOP 기호를 포함하여 n+1까지 계산.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>\prod_{i=1}^{n+1} PR(Ri(rwi, rti)|P, H, hw, ht)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>\prod_{i=1}^{n+1} PR(Ri(rwi, rti)|P, H, hw, ht)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오른쪽 의존어(수식어)들이 생성될 총 확률을 나타내는 곱 연산식.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The parsing algorithm for the Collins model is an extension of probabilistic CKY. Extending the CKY algorithm to handle basic lexicalized probabilities is left as Exercises 14.5 and 14.6 for the reader.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Collins 모델을 위한 파싱 알고리즘은 확률적 CKY의 확장입니다. 기본적인 어휘화 확률을 처리하도록 CKY 알고리즘을 확장하는 것은 독자를 위한 연습 문제 14.5와 14.6으로 남겨둡니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Collins 파서의 구현 기반이 CKY 알고리즘임을 밝힘.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.7 Summary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.7 요약</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>부록 C의 주요 내용을 정리하는 섹션.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This chapter has sketched the basics of probabilistic parsing, concentrating on probabilistic context-free grammars.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 확률적 문맥 자유 문법(PCFG)에 집중하여 확률적 파싱의 기초를 대략적으로 설명했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장의 전반적인 주제(확률적 파싱 및 PCFG) 요약.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>* Probabilistic grammars assign a probability to a sentence or string of words while attempting to capture sophisticated grammatical information. * A probabilistic context-free grammar (PCFG) is a context-free grammar in which every rule is annotated with the probability of that rule being chosen. Each PCFG rule is treated as if it were conditionally independent; thus, the probability of a sentence is computed by multiplying the probabilities of each rule in the parse of the sentence. * The probabilistic CKY (Cocke-Kasami-Younger) algorithm is a probabilistic version of the CKY parsing algorithm. * PCFG probabilities can be learned by counting in a parsed corpus or by parsing a corpus. The inside-outside algorithm is a way of dealing with the fact that the sentences being parsed are ambiguous. * Raw PCFGs suffer from poor independence assumptions among rules and lack of sensitivity to lexical dependencies. * One way to deal with this problem is to split and merge non-terminals (automatically or by hand).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>* 확률 문법은 정교한 문법 정보를 포착하려고 시도하는 동시에 문장이나 단어열에 확률을 할당합니다. * 확률적 문맥 자유 문법(PCFG)은 모든 규칙에 해당 규칙이 선택될 확률이 주석으로 달려 있는 문맥 자유 문법입니다. 각 PCFG 규칙은 조건부 독립인 것처럼 취급됩니다. 따라서 문장의 확률은 문장의 파스 트리에 있는 각 규칙 확률을 곱하여 계산됩니다. * 확률적 CKY 알고리즘은 CKY 파싱 알고리즘의 확률 버전입니다. * PCFG 확률은 파싱된 말뭉치에서 빈도를 세거나 말뭉치를 파싱함으로써 학습될 수 있습니다. 인사이드-아웃사이드 알고리즘은 파싱되는 문장들이 모호하다는 사실을 처리하는 방법입니다. * 원시 PCFG는 규칙들 사이의 부실한 독립성 가정과 어휘 의존성에 대한 민감도 부족으로 인해 어려움을 겪습니다. * 이 문제를 해결하는 한 가지 방법은 비단말 기호를 (자동으로 또는 수동으로) 분할 및 병합하는 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG의 정의, 확률 계산법, 알고리즘(CKY, Inside-Outside), 그리고 한계점과 해결책 요약.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-18">
+<header class="page-header">
+<h2>Page 18</h2>
+<div class="page-subtitle">Bibliographical Notes and Exercises</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>* Probabilistic lexicalized CFGs are another solution to this problem in which the basic PCFG model is augmented with a lexical head for each rule. The probability of a rule can then be conditioned on the lexical head or nearby heads. * Parsers for lexicalized PCFGs (like the Collins parser) are based on extensions to probabilistic CKY parsing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>* 확률적 어휘화 CFG는 이 문제에 대한 또 다른 해결책으로, 기본 PCFG 모델의 각 규칙에 어휘 핵심어를 추가하여 확장한 것입니다. 그러면 규칙의 확률은 어휘 핵심어나 인접한 핵심어들에 조건부로 결정될 수 있습니다. * 어휘화된 PCFG를 위한 파서(Collins 파서와 같은)는 확률적 CKY 파싱의 확장을 기반으로 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘화된 문법의 개념과 파서의 특징 요약.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bibliographical and Historical Notes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>문헌 및 역사적 노트</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관련 연구의 역사적 배경과 참고 문헌 소개.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Many of the formal properties of probabilistic context-free grammars were first worked out by Booth (1969) and Salomaa (1969). Baker (1979) proposed the inside-outside algorithm for unsupervised training of PCFG probabilities, and used a CKY-style parsing algorithm to compute inside probabilities. Jelinek and Lafferty (1991) extended the CKY algorithm to compute probabilities for prefixes. Stolcke (1995) adapted the Earley algorithm to use with PCFGs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>확률적 문맥 자유 문법의 많은 형식적 속성들은 Booth(1969)와 Salomaa(1969)에 의해 처음 연구되었습니다. Baker(1979)는 PCFG 확률의 비지도 학습을 위한 인사이드-아웃사이드 알고리즘을 제안했으며, 인사이드 확률을 계산하기 위해 CKY 방식의 파싱 알고리즘을 사용했습니다. Jelinek과 Lafferty(1991)는 접두사 확률을 계산하도록 CKY 알고리즘을 확장했습니다. Stolcke(1995)는 Earley 알고리즘을 PCFG에 사용할 수 있도록 조정했습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>PCFG 및 관련 알고리즘의 초기 연구자들과 성과 언급.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A number of researchers starting in the early 1990s worked on adding lexical dependencies to PCFGs and on making PCFG rule probabilities more sensitive to surrounding syntactic structure. For example, Schabes et al. (1988) and Schabes (1990) presented early work on the use of heads. Many papers on the use of lexical dependencies were first presented at the DARPA Speech and Natural Language Workshop in June 1990. A paper by Hindle and Rooth (1990) applied lexical dependencies to the problem of attaching prepositional phrases; in the question session to a later paper, Ken Church suggested applying this method to full parsing (Marcus, 1990). Early work on such probabilistic CFG parsing augmented with probabilistic dependency information includes Magerman and Marcus (1991), Black et al. (1992), Bod (1993), and Jelinek et al. (1994), in addition to Collins (1996), Charniak (1997), and Collins (1999) discussed above. Other recent PCFG parsing models include Klein and Manning (2003a) and Petrov et al. (2006).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1990년대 초부터 많은 연구자들이 PCFG에 어휘 의존성을 추가하고 PCFG 규칙 확률이 주변 구문 구조에 더 민감하게 반응하도록 만드는 연구를 수행했습니다. 예를 들어, Schabes 등(1988)과 Schabes(1990)는 헤드 사용에 관한 초기 연구를 발표했습니다. 어휘 의존성 사용에 관한 많은 논문들이 1990년 6월 DARPA 음성 및 자연어 워크숍에서 처음 발표되었습니다. Hindle과 Rooth(1990)의 논문은 어휘 의존성을 전치사구 부착 문제에 적용했습니다. 이후 논문의 질의응답 세션에서 Ken Church는 이 방법을 전체 파싱에 적용할 것을 제안했습니다(Marcus, 1990). 확률적 의존성 정보로 보강된 이러한 확률적 CFG 파싱에 대한 초기 연구에는 위에서 논의된 Collins(1996), Charniak(1997), Collins(1999) 외에도 Magerman과 Marcus(1991), Black 등(1992), Bod(1993), Jelinek 등(1994)이 포함됩니다. 다른 최근의 PCFG 파싱 모델로는 Klein과 Manning(2003a) 및 Petrov 등(2006)이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 의존성을 도입한 파싱 기술의 발전 과정과 주요 논문 나열.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This early lexical probabilistic work led initially to work focused on solving specific parsing problems like preposition-phrase attachment by using methods including transformation-based learning (TBL) (Brill and Resnik, 1994), maximum entropy (Ratnaparkhi et al., 1994), memory-based learning (Zavrel and Daelemans, 1997), log-linear models (Franz, 1997), decision trees that used semantic distance between heads (computed from WordNet) (Stetina and Nagao, 1997), and boosting (Abney et al., 1999). Another direction extended the lexical probabilistic parsing work to build probabilistic formulations of grammars other than PCFGs, such as probabilistic TAG grammar (Resnik 1992, Schabes 1992), based on the TAG grammars discussed in Chapter 12, probabilistic LR parsing (Briscoe and Carroll, 1993), and probabilistic link grammar (Lafferty et al., 1992). The supertagging approach we saw for CCG was developed for TAG grammars (Bangalore and Joshi 1999, Joshi and Srinivas 1994), based on the lexicalized TAG grammars of Schabes et al. (1988).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 초기 어휘 확률 연구는 처음에는 변환 기반 학습(TBL)(Brill 및 Resnik, 1994), 최대 엔트로피(Ratnaparkhi 등, 1994), 메모리 기반 학습(Zavrel 및 Daelemans, 1997), 로그 선형 모델(Franz, 1997), (WordNet에서 계산된) 헤드 사이의 의미적 거리를 사용하는 의사결정 트리(Stetina 및 Nagao, 1997), 그리고 부스팅(Abney 등, 1999)을 포함한 방법들을 사용하여 전치사구 부착과 같은 특정 파싱 문제를 해결하는 데 집중되었습니다. 또 다른 방향은 어휘 확률 파싱 연구를 확장하여 12장에서 논의된 TAG 문법을 기반으로 한 확률적 TAG 문법(Resnik 1992, Schabes 1992), 확률적 LR 파싱(Briscoe 및 Carroll, 1993), 확률적 링크 문법(Lafferty 등, 1992)과 같이 PCFG 이외의 문법에 대한 확률적 정식화를 구축하는 것이었습니다. CCG에서 보았던 슈퍼태깅 접근법은 Schabes 등(1988)의 어휘화된 TAG 문법을 기반으로 TAG 문법을 위해 개발되었습니다(Bangalore 및 Joshi 1999, Joshi 및 Srinivas 1994).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 파싱 문제 해결을 위한 다양한 기법들의 적용과 TAG, LR 등 다른 문법 체계로의 확률 모델 확장 사례.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>학습 내용을 확인하기 위한 실습 문제 섹션.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.1 Implement the CKY algorithm.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.1 CKY 알고리즘을 구현하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>첫 번째 연습 문제로 알고리즘 구현을 요구함.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Sequence Labeling for Parts of Speech and Named Entities</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">08 Sequence Labeling for Parts of Speech</div>
+<h1>Sequence Labeling for Parts of Speech and Named Entities</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>8. Sequence Labeling for Parts of Speech and Named Entities.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+<div class="page-subtitle">품사 분류의 역사 도입</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Speech and Language Processing. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. Draft of September 21, 2021.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성 및 언어 처리. Daniel Jurafsky & James H. Martin. Copyright © 2021. All rights reserved. 2021년 9월 21일자 초안.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>교재의 서지 정보와 판본을 나타내는 헤더입니다. 2021년 초안 버전을 기준으로 작업하고 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">chapter_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 8 Sequence Labeling for Parts of Speech and Named Entities</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제8장 품사 태깅과 개체명 인식을 위한 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장에서는 문장의 각 단어에 품사나 개체명 범주를 부여하는 시퀀스 레이블링(sequence labeling) 기술을 다룹니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To each word a warbling note
+A Midsummer Night's Dream, V.I</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어 하나하나에 지저귀는 음표를
+한여름 밤의 꿈, 5막 1장</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>셰익스피어의 작품에서 인용한 문구로, 문장의 단어 하나하나에 의미 있는 표시(태그)를 부여하는 본문의 내용을 비유적으로 표현합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Dionysius Thrax of Alexandria (c. 100 B.C.), or perhaps someone else (it was a long time ago), wrote a grammatical sketch of Greek (a "technē") that summarized the linguistic knowledge of his day. This work is the source of an astonishing proportion of modern linguistic vocabulary, including the words syntax, diphthong, clitic, and analogy. Also included are a description of eight parts of speech: noun, verb, pronoun, preposition, adverb, conjunction, participle, and article. Although earlier scholars (including Aristotle as well as the Stoics) had their own lists of parts of speech, it was Thrax's set of eight that became the basis for descriptions of European languages for the next 2000 years. (All the way to the Schoolhouse Rock educational television shows of our childhood, which had songs about 8 parts of speech, like the late great Bob Dorough's Conjunction Junction.) The durability of parts of speech through two millennia speaks to their centrality in models of human language.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>알렉산드리아의 디오니시오스 트락스(기원전 100년경) 또는 그 시대의 누군가는 당시의 언어학적 지식을 요약한 그리스어 문법 초안("테크네(technē)")을 작성했습니다. 이 저술은 구문론(syntax), 이중 모음(diphthong), 전접어(clitic), 유추(analogy) 등 현대 언어학 어휘의 놀라운 비중을 차지하는 용어들의 근원입니다. 또한 여기에는 명사, 동사, 대명사, 전치사, 부사, 접속사, 분사, 관사 등 8가지 품사(parts of speech)에 대한 설명이 포함되어 있습니다. 아리스토텔레스와 스토아학파를 포함한 이전 학자들도 각자 품사 목록을 가지고 있었지만, 이후 2000년 동안 유럽 언어 기술의 기초가 된 것은 바로 트락스의 8품사 체계였습니다. (어린 시절 'Schoolhouse Rock' 교육용 TV 프로그램에서 밥 도로의 'Conjunction Junction'처럼 8품사에 관한 노래를 들었던 것까지 이어집니다.) 2000년이라는 세월 동안 품사 개념이 지속되었다는 점은 인간 언어 모델에서 품사가 얼마나 핵심적인 위치를 차지하는지를 잘 보여 줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 분류의 역사적 기원과 언어학에서의 중요성을 설명하는 도입부입니다. 트락스의 8품사 체계가 현대까지도 큰 영향을 미치고 있음을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>parts of speech</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사(parts of speech)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어를 문법적 기능, 형태, 의미에 따라 나눈 부류입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Proper names are another important and anciently studied linguistic category. While parts of speech are generally assigned to individual words or morphemes, a proper name is often an entire multiword phrase, like the name "Marie Curie", the location "New York City", or the organization "Stanford University". We'll use the term named entity for, roughly speaking, anything that can be referred to with a proper name: a person, a location, an organization, although as we'll see the term is commonly extended to include things that aren't entities per se.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>고유 명사는 고대부터 연구되어 온 또 다른 중요한 언어적 범주입니다. 품사가 일반적으로 개별 단어나 형태소에 할당되는 반면, 고유 명사는 "Marie Curie"(사람 이름), "New York City"(지명), "Stanford University"(기관명)처럼 흔히 여러 단어로 이루어진 구 전체인 경우가 많습니다. 우리는 고유 명사로 가리킬 수 있는 사람, 장소, 기관 등을 통칭하여 개체명(named entity)이라는 용어를 사용할 것입니다. 비록 이 용어가 나중에는 본질적으로 '개체'가 아닌 것들까지 포함하도록 확장되어 사용되기도 하지만 말입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사와 대비되는 고유 명사 및 개체명의 특성을 설명합니다. 개체명은 여러 단어의 조합일 수 있다는 점이 특징입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>named entity</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개체명(named entity)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인명, 지명, 기관명과 같이 특정 범주로 분류될 수 있는 고유 명칭입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>POS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>POS</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Part-Of-Speech의 약자로 품사를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Parts of speech (also known as POS) and named entities are useful clues to sentence structure and meaning. Knowing whether a word is a noun or a verb tells us about likely neighboring words (nouns in English are preceded by determiners and adjectives, verbs by nouns) and syntactic structure (verbs have dependency links to nouns), making part-of-speech tagging a key aspect of parsing. Knowing if a named entity like Washington is a name of a person, a place, or a university is important to many natural language processing tasks like question answering, stance detection, or information extraction.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사(POS라고도 함)와 개체명은 문장 구조와 의미를 파악하는 데 유용한 단서가 됩니다. 특정 단어가 명사인지 동사인지 아는 것은 주변에 어떤 단어가 올지(영어에서 명사 앞에는 한정사나 형용사가 오고, 동사 앞에는 명사가 오는 등)와 구문 구조(동사는 명사와 의존 관계를 가짐)에 대한 정보를 제공하므로, 품사 태깅(part-of-speech tagging)은 구문 분석(parsing)의 핵심적인 요소가 됩니다. 또한 'Washington' 같은 개체명이 사람 이름인지, 지명인지, 혹은 대학교 이름인지 판별하는 것은 질의응답, 입장 탐지(stance detection), 정보 추출과 같은 많은 자연어 처리 작업에서 중요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사 태깅과 개체명 인식이 자연어 처리의 다운스트림 작업(구문 분석, 질의응답 등)에서 어떤 실질적인 도움을 주는지 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this chapter we'll introduce the task of part-of-speech tagging, taking a sequence of words and assigning each word a part of speech like NOUN or VERB, and the task of named entity recognition (NER), assigning words or phrases tags like PERSON, LOCATION, or ORGANIZATION.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 단어 시퀀스를 입력받아 각 단어에 '명사(NOUN)'나 '동사(VERB)'와 같은 품사를 할당하는 작업인 품사 태깅과, 단어 혹은 구에 '인명(PERSON)', '지명(LOCATION)', '기관명(ORGANIZATION)'과 같은 태그를 할당하는 작업인 개체명 인식(NER)을 소개하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이 장에서 다룰 두 가지 핵심 태스킹인 품사 태깅과 개체명 인식의 정의를 명확히 합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Such tasks in which we assign, to each word x_i in an input word sequence, a label y_i, so that the output sequence Y has the same length as the input sequence X are called sequence labeling tasks. We'll introduce classic sequence labeling algorithms, one generative—the Hidden Markov Model (HMM)—and one discriminative—the Conditional Random Field (CRF). In following chapters we'll introduce modern sequence labelers based on RNNs and Transformers.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>입력 단어 시퀀스의 각 단어 $x_i$에 대해 레이블 $y_i$를 할당하여 출력 시퀀스 $Y$가 입력 시퀀스 $X$와 동일한 길이를 갖도록 하는 작업을 시퀀스 레이블링(sequence labeling) 작업이라고 부릅니다. 여기서는 고전적인 시퀀스 레이블링 알고리즘인 생성 모델 '은닉 마르코프 모델(HMM)'과 판별 모델 '조건부 확률장(CRF)'을 소개할 것입니다. 이어지는 장들에서는 RNN과 트랜스포머에 기반한 현대적인 시퀀스 레이블러들도 다룰 예정입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스 레이블링의 정의를 수학적으로 설명하고, 이를 해결하기 위한 전통적 방법론(HMM, CRF)과 향후 다룰 딥러닝 기반 방법론을 예고합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>sequence labeling</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>시퀀스 레이블링(sequence labeling)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시퀀스의 각 요소에 레이블을 붙여나가는 작업 방식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+<div class="page-subtitle">영어 단어 부류 및 품사表</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 8 • SEQUENCE LABELING FOR PARTS OF SPEECH AND NAMED ENTITIES</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제8장 • 품사 태깅과 개체명 인식을 위한 시퀀스 레이블링</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다. 품사와 개체명 인식을 위한 시퀀스 레이블링 기술을 다루는 장임을 명시합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8.1 (Mostly) English Word Classes</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8.1 (대부분의) 영어 단어 부류</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사의 또 다른 표현인 단어 부류(word classes)를 중심으로 영어의 품사 체계를 설명하는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Until now we have been using part-of-speech terms like noun and verb rather freely. In this section we give more complete definitions. While word classes do have semantic tendencies—adjectives, for example, often describe properties and nouns people—parts of speech are defined instead based on their grammatical relationship with neighboring words or the morphological properties about their affixes.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>지금까지는 명사와 동사 같은 품사 용어들을 꽤 자유롭게 사용해 왔습니다. 이 섹션에서는 보다 완전한 정의를 내리고자 합니다. 단어 부류가 특정한 의미적 경향성(예를 들어 형용사는 성질을, 명사는 사람을 묘사하는 등)을 갖기도 하지만, 품사는 본질적으로 주변 단어와의 문법적 관계나 접사가 보여 주는 형태론적 속성에 기초하여 정의됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>품사를 정의하는 기준이 단순히 '의미'가 아니라 '문법적 관계'와 '형태론적 특성'에 있음을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>| Tag | Description | Example |
+| :--- | :--- | :--- |
+| **Open Class** | | |
+| ADJ | Adjective: noun modifiers describing properties | red, young, awesome |
+| ADV | Adverb: verb modifiers of time, place, manner | very, slowly, home, yesterday |
+| NOUN | words for persons, places, things, etc. | algorithm, cat, mango, beauty |
+| VERB | words for actions and processes | draw, provide, go |
+| PROPN | Proper noun: name of a person, organization, place, etc.. | Regina, IBM, Colorado |
+| INTJ | Interjection: exclamation, greeting, yes/no response, etc. | oh, um, yes, hello |
+| **Closed Class Words** | | |
+| ADP | Adposition (Preposition/Postposition): marks a noun's spacial, temporal, or other relation | in, on, by under |
+| AUX | Auxiliary: helping verb marking tense, aspect, mood, etc., | can, may, should, are |
+| CCONJ | Coordinating Conjunction: joins two phrases/clauses | and, or, but |
+| DET | Determiner: marks noun phrase properties | a, an, the, this |
+| NUM | Numeral | one, two, first, second |
+| PART | Particle: a preposition-like form used together with a verb | up, down, on, off, in, out, at, by |
+| PRON | Pronoun: a shorthand for referring to an entity or event | she, who, I, others |
+| SCONJ | Subordinating Conjunction: joins a main clause with a subordinate clause such as a sentential complement | that, which |
+| **Other** | | |
+| PUNCT | Punctuation | . , ( ) |
+| SYM | Symbols like $ or emoji | $, % |
+| X | Other | asdf, qwfg |</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>| 태그 | 설명 | 예시 |
+| :--- | :--- | :--- |
+| **개방 부류** | | |
+| ADJ | 형용사: 성질을 묘사하는 명사 수식어 | red, young, awesome |
+| ADV | 부사: 시간, 장소, 양식을 나타내는 동사 수식어 | very, slowly, home, yesterday |
+| NOUN | 인물, 장소, 사물 등을 나타내는 단어 | algorithm, cat, mango, beauty |
+| VERB | 동작과 과정을 나타내는 단어 | draw, provide, go |
+| PROPN | 고유 명사: 사람, 단체, 장소 등의 이름 | Regina, IBM, Colorado |
+| INTJ | 감탄사: 감탄, 인사, 긍정/부정 응답 등 | oh, um, yes, hello |
+| **폐쇄 부류 단어** | | |
+| ADP | 접치사(전치사/후치사): 명사의 공간적, 시간적 혹은 기타 관계를 표시함 | in, on, by under |
+| AUX | 조동사: 시제, 상, 서법 등을 표시하여 동사를 도움 | can, may, should, are |
+| CCONJ | 등위 접속사: 두 구나 절을 연결함 | and, or, but |
+| DET | 한정사: 명사구의 속성을 표시함 | a, an, the, this |
+| NUM | 수사 | one, two, first, second |
+| PART | 불변화사: 동사와 함께 쓰이는 전치사와 유사한 형태 | up, down, on, off, in, out, at, by |
+| PRON | 대명사: 개체나 사건을 가리키는 약칭 | she, who, I, others |
+| SCONJ | 종속 접속사: 주절과 종속절(문장 보충어 등)을 연결함 | that, which |
+| **기타** | | |
+| PUNCT | 문장 부호 | . , ( ) |
+| SYM | $나 이모지 같은 기호 | $, % |
+| X | 기타 | asdf, qwfg |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Universal Dependencies(UD) 태그셋의 17가지 품사를 분류한 표입니다. 개방 부류와 폐쇄 부류로 나누어 각 품사의 기능과 예시를 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 8.1 The 17 parts of speech in the Universal Dependencies tagset (Nivre et al., 2016a). Features can be added to make finer-grained distinctions (with properties like number, case, definiteness, and so on).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 8.1 Universal Dependencies 태그셋의 17가지 품사(Nivre 등, 2016a). 수, 격, 한정성 등과 같은 속성들을 추가하여 더 미세한 구분을 할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>그림 8.1에 대한 캡션입니다. UD 태그셋이 품사뿐만 아니라 형태론적 특징(feature)을 추가할 수 있는 유연한 구조임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Parts of speech fall into two broad categories: closed class and open class. Closed classes are those with relatively fixed membership, such as prepositions—new prepositions are rarely coined. By contrast, nouns and verbs are open classes—new nouns and verbs like iPhone or to fax are continually being created or borrowed. Closed class words are generally function words like of, it, and, or you, which tend to be very short, occur frequently, and often have structuring uses in grammar.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>품사는 크게 두 가지 범주로 나뉩니다. 바로 폐쇄 부류(closed class)와 개방 부류(open class)입니다. 폐쇄 부류는 전치사와 같이 구성원이 비교적 고정된 것들을 말합니다. 새로운 전치사가 만들어지는 일은 거의 없습니다. 반면 명사와 동사는 개방 부류입니다. iPhone이나 'to fax'(팩스를 보내다)처럼 새로운 명사와 동사는 끊임없이 생성되거나 외래어에서 차용됩니다. 폐쇄 부류 단어들은 대개 'of', 'it', 'and', 'you'와 같이 기능어(function words)인 경우가 많으며, 보통 길이가 매우 짧고 빈번하게 등장하며 문법에서 구조적인 역할을 담당하는 경향이 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>개방 부류와 폐쇄 부류의 차이점을 정의하고, 폐쇄 부류 단어들이 갖는 기능어로서의 특징을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>closed class</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>폐쇄 부류(closed class)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>새로운 단어가 잘 추가되지 않는 고정된 단어 집단입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>open class</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>개방 부류(open class)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시대의 변화에 따라 새로운 단어가 활발하게 추가되는 단어 집단입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>function word</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기능어(function word)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실질적 의미보다는 문법적 관계를 나타내는 역할을 하는 단어입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Four major open classes occur in the languages of the world: nouns (including proper nouns), verbs, adjectives, and adverbs, as well as the smaller open class of interjections. English has all five, although not every language does.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>세계의 여러 언어에는 네 가지 주요 개방 부류가 존재합니다. 명사(고유 명사 포함), 동사, 형용사, 부사가 그것이며, 규모가 더 작은 개방 부류인 감탄사도 있습니다. 모든 언어가 이 다섯 가지를 다 가진 것은 아니지만, 영어는 다섯 가지를 모두 가지고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주요 개방 부류 품사들을 나열합니다. 언어마다 품사 체계가 다를 수 있음을 시사합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Nouns are words for people, places, or things, but include others as well. Common nouns include concrete terms like cat and mango, abstractions like algorithm and beauty, and verb-like terms like pacing as in His pacing to and fro became quite annoying. Nouns in English can occur with determiners (a goat, its bandwidth) take possessives (IBM's annual revenue), and may occur in the plural (goats, abaci). Many languages, including English, divide common nouns into count nouns and mass nouns. Count nouns can occur in the singular and plural (goat/goats, relationship/relationships) and can be counted (one goat, two goats). Mass nouns are used when something is conceptualized as a homogeneous group. So snow, salt, and communism are not counted (i.e., *two snows or *two communisms). Proper nouns, like Regina, Colorado, and IBM, are names of specific persons or entities.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명사는 사람, 장소, 사물을 지칭하는 단어이지만 그 외의 것들도 포함합니다. 일반 명사(Common nouns)에는 고양이나 망고 같은 구체적인 용어, 알고리즘이나 아름다움 같은 추상적인 개념, 그리고 "그가 이리저리 서성이는 것(pacing)이 꽤 짜증스러워졌다"라는 문장에서의 'pacing'처럼 동사 같은 용어도 포함됩니다. 영어에서 명사는 한정사와 함께 쓰이거나(a goat, its bandwidth), 소유격을 취하거나(IBM's annual revenue), 복수형(goats, abaci)으로 나타날 수 있습니다. 영어를 포함한 많은 언어에서 일반 명사는 가산 명사(count nouns)와 불가산 명사(mass nouns)로 구분됩니다. 가산 명사는 단수와 복수로 나타날 수 있고(goat/goats), 숫자를 세는 것이 가능합니다(one goat, two goats). 불가산 명사는 어떤 대상을 동질적인 집단으로 개념화할 때 사용됩니다. 따라서 'snow'(눈), 'salt'(소금), 'communism'(공산주의) 등은 숫자를 세지 않습니다(즉, *two snows나 *two communisms라고 하지 않습니다). Regina, Colorado, IBM과 같은 고유 명사(Proper nouns)는 특정 개인이나 실체의 이름입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>명사의 세부 분류인 일반 명사, 고유 명사, 가산 명사, 불가산 명사의 정의와 영어에서의 문법적 특징을 상세히 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>noun</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>명사(noun)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이름이나 개념을 나타내는 품사입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>common noun</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일반 명사(common noun)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 대상을 가리키는 고유 명사가 아닌 명사입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>count noun</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가산 명사(count noun)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하나하나 셀 수 있는 명사입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>mass noun</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>불가산 명사(mass noun)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>형태가 고정되어 있지 않아 셀 수 없는 것으로 간주되는 명사입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>proper noun</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>고유 명사(proper noun)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정한 개체에 부여된 고유한 이름입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

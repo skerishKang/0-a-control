@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | N-gram Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+table th, table td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+table th { background: var(--source-bg); font-weight: 700; }
+table tr:nth-child(even) { background: var(--translation-bg); }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">03 PDF / HTML Sample</div>
+<h1>N-gram Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>3. N-gram Language Models</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">크네저-네이 스무딩 공식과 거대 언어 모델</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.6 • KNESER-NEY SMOOTHING 19</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.6 • 크네저-네이 스무딩(Kneser-Ney Smoothing) 19</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>more common, since Hong Kong is a very frequent word. A standard unigram model will assign Kong a higher probability than glasses. We would like to capture the intuition that although Kong is frequent, it is mainly only frequent in the phrase Hong Kong, that is, after the word Hong. The word glasses has a much wider distribution.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 'Hong Kong'이 매우 빈번하게 사용되는 단어이기 때문에 'Kong'이 더 흔하게 나타날 것입니다. 표준적인 유니그램 모델은 'Kong'에 'glasses'보다 더 높은 확률을 부여할 것입니다. 하지만 우리는 'Kong'이 비록 빈번하더라도, 주로 'Hong Kong이라는 어구, 즉 'Hong이라는 단어 뒤에서만 주로 나타난다는 직관을 포착하고 싶습니다. 반면 'glasses라는 단어는 훨씬 더 넓은 분포(다양한 문맥)를 가집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 빈도 기반 유니그램의 한계를 지적하며, 특정 단어가 얼마나 다양한 문맥에서 나타나는지를 고려해야 한다는 크네저-네이의 핵심 통찰을 예시로 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In other words, instead of P(w), which answers the question "How likely is w?", we'd like to create a unigram model that we might call P_CONTINUATION, which answers the question "How likely is w to appear as a novel continuation?". How can we estimate this probability of seeing the word w as a novel continuation, in a new unseen context? The Kneser-Ney intuition is to base our estimate of P_CONTINUATION on the number of different contexts word w has appeared in, that is, the number of bigram types it completes. Every bigram type was a novel continuation the first time it was seen. We hypothesize that words that have appeared in more contexts in the past are more likely to appear in some new context as well. The number of times a word w appears as a novel continuation can be expressed as:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다시 말해, "단어 $w$가 얼마나 나타날 것인가?"라는 질문에 답하는 $P(w)$ 대신, "단어 $w$가 '새로운 후속 단어'로서 나타날 확률이 얼마나 되는가?"라는 질문에 답하는 유니그램 모델인 $P_{CONTINUATION}$을 만들고자 합니다. 한 번도 보지 못한 새로운 문맥에서 단어 $w$가 새로운 후속 단어로서 등장할 확률을 어떻게 추정할 수 있을까요? 크네저-네이의 직관은 $P_{CONTINUATION}$의 추정 근거를 단어 $w$가 나타난 '서로 다른 문맥의 수', 즉 해당 단어가 완성하는 '바이그램 유형(type)의 수'에 두는 것입니다. 모든 바이그램 유형은 처음 관측되었을 때 시스템 입장에서 하나의 새로운 후속 사례였기 때문입니다. 우리는 과거에 더 많은 문맥에서 나타났던 단어일수록, 새로운 문맥에서도 나타날 가능성이 더 높다는 가설을 세웁니다. 단어 $w$가 새로운 후속 단어로 나타나는 횟수는 다음과 같이 표현할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어의 출현 유형(type) 수를 기반으로 '새로운 문맥에서도 나타날 잠재력'을 측정하는 $P_{CONTINUATION}$의 개념적 정의를 기술합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_CONTINUATION(w) ∝ |{v : C(vw) > 0}| (3.31)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_CONTINUATION(w) ∝ |{v : C(vw) > 0}| (3.31)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.31). 후속 출현 확률이 해당 단어 앞에 올 수 있는 고유한 단어 $v$의 집합 크기(즉, 선행 단어의 다양성)에 비례함을 보여주는 수식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To turn this count into a probability, we normalize by the total number of word bigram types. In summary:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 수치를 확률로 변환하기 위해, 전체 단어 바이그램 유형의 총수로 나누어 정규화합니다. 요약하자면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>빈도를 확률 분포로 만들기 위한 정규화 과정을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_CONTINUATION(w) = |{v : C(vw) > 0}| / |{(u', w') : C(u'w') > 0}| (3.32)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_CONTINUATION(w) = |{v : C(vw) > 0}| / |{(u', w') : C(u'w') > 0}| (3.32)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.32). 모든 바이그램 유형 수 대비 특정 단어 $w$를 뒤따르는 바이그램 유형 수의 비율로 후속 출현 확률을 정의합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>An equivalent formulation based on a different metaphor is to use the number of word types seen to precede w (Eq. 3.31 repeated):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다른 메타포를 기반으로 한 동일한 정식화는 단어 $w$ 앞에 나타난 것으로 관측된 단어 유형의 수를 사용하는 것입니다 (식 3.31의 반복).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>동일한 수식을 '$w$ 앞에 오는 단어들의 유형 수라는 관점에서 재해석합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_CONTINUATION(w) ∝ |{v : C(vw) > 0}| (3.33)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_CONTINUATION(w) ∝ |{v : C(vw) > 0}| (3.33)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.33). 식 3.31과 동일합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>normalized by the number of words preceding all words, as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이를 모든 단어 앞에 오는 단어들의 수로 정규화하면 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>분모를 모든 단어에 대한 선행 단어 유형 수의 합으로 표현하는 방식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_CONTINUATION(w) = |{v : C(vw) > 0}| / Sum_w' |{v : C(vw') > 0}| (3.34)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_CONTINUATION(w) = |{v : C(vw) > 0}| / Sum_{w'} |{v : C(vw') > 0}| (3.34)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.34). 모든 단어들이 가지는 선행 문맥 다양성의 총합을 분모로 사용하는 정규화 식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A frequent word (Kong) occurring in only one context (Hong) will have a low continuation probability.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오직 하나의 문맥('Hong')에서만 발생하는 빈번한 단어('Kong')는 낮은 후속 출현 확률을 갖게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>'Kong' 예시를 통해 $P_{CONTINUATION}$이 어떻게 단순 빈도의 왜곡을 바로잡는지 요약합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Interpolated Kneser-Ney</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>보간형 크네저-네이(Interpolated Kneser-Ney)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>디스카운트된 확률과 후속 출현 확률을 결합한 최종 형태의 알고리즘입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The final equation for Interpolated Kneser-Ney smoothing for bigrams is then:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>바이그램에 대한 보간형 크네저-네이 스무딩의 최종 공식은 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>바이그램 수준에서의 최종 결합 공식을 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_KN(wi|wi−1) = max(C(wi−1wi) − d, 0) / C(wi−1) + λ(wi−1)P_CONTINUATION(wi) (3.35)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_KN(wi|wi−1) = max(C(wi−1wi) − d, 0) / C(wi−1) + λ(wi−1)P_CONTINUATION(wi) (3.35)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.35). 앞선 단어의 빈도로 정규화된 절대 디스카운팅 항과, 보간 계수 $\lambda$가 곱해진 후속 출현 확률 항의 합으로 구성됩니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The λ is a normalizing constant that is used to distribute the probability mass we've discounted:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 $\lambda$는 우리가 디스카운트(삭감)한 확률 질량을 배분하기 위해 사용되는 정규화 상수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보간 계수 $\lambda$의 역할이 삭감된 확률량을 하위 단계로 넘겨주는 것임을 명시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>λ(wi−1) = (d / Sum_v C(wi−1v)) * |{w : C(wi−1w) > 0}| (3.36)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>λ(wi−1) = (d / Sum_v C(wi−1v)) * |{w : C(wi−1w) > 0}| (3.36)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.36). $\lambda$ 값을 계산하는 공식입니다. 디스카운트된 총량($d \times$ 고유 후속 단어 수)을 이전 단어의 총 빈도로 나눈 값입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The first term, d / Sum_v C(wi−1v), is the normalized discount. The second term, |{w : C(wi−1w) > 0}|, is the number of word types that can follow wi−1 or, equivalently, the number of word types that we discounted; in other words, the number of times we applied the normalized discount.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>첫 번째 항 $d / \sum_v C(w_{i-1}v)$는 정규화된 디스카운트값입니다. 두 번째 항 $|{w : C(w_{i-1}w) > 0}|$은 단어 $w_{i-1}$ 뒤에 올 수 있는 단어 유형의 수이며, 이는 동일하게 우리가 디스카운트(삭감)한 단어 유형의 수이기도 합니다. 즉, 정규화된 디스카운트를 적용한 횟수를 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>$\lambda$ 공식의 각 구성 요소가 갖는 통계적 의미를 풀어서 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 18</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The general recursive formulation is as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>일반적인 재귀적 정식화(recursive formulation)는 다음과 같습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>임의의 차수 $N$에 대해 적용 가능한 일반화된 크네저-네이 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 19</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_KN(wi|wi−n+1:i−1) = max(c_KN(wi−n+1:i) − d, 0) / Sum_v c_KN(wi−n+1:i−1 v) + λ(wi−n+1:i−1) P_KN(wi|wi−n+2:i−1) (3.37)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_KN(wi|wi−n+1:i−1) = max(c_KN(wi−n+1:i) − d, 0) / Sum_v c_KN(wi−n+1:i−1 v) + λ(wi−n+1:i−1) P_KN(wi|wi−n+2:i−1) (3.37)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.37). 고차 N-그램에서 저차 N-그램으로 재귀적으로 물러나며 확률을 결합하는 크네저-네이의 일반식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">크네저-네이 일반화 공식과 거대 N-그램 코퍼스</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>20 CHAPTER 3 • N-GRAM LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>20 제3장 • N-그램 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더 및 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>where the definition of the count c_KN depends on whether we are counting the highest-order n-gram being interpolated (for example trigram if we are interpolating trigram, bigram, and unigram) or one of the lower-order n-grams (bigram or unigram if we are interpolating trigram, bigram, and unigram):</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 빈도 $c_{KN}$의 정의는 우리가 보간하고자 하는 대상이 최상위 차수 N-그램(예를 들어 트라이그램, 바이그램, 유니그램을 보간할 때의 트라이그램)인지, 아니면 하위 차수 N-그램 중 하나(앞의 예시에서 바이그램 혹은 유니그램)인지에 따라 달라집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>재귀적 계산 시 차수에 따라 빈도($count$)를 취급하는 방식이 달라짐을 예고합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>c_KN(·) = { count(·), for the highest order continuationcount(·), for lower orders } (3.38)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>c_KN(·) = { count(·), 최상위 차수의 경우 continuationcount(·), 하위 차수의 경우 } (3.38)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.38). 최상위 차수는 실제 관측 빈도를 사용하지만, 하위 차수는 앞서 정의한 '후속 출현 빈도(문맥 다양성)'를 빈도값으로 사용함을 명시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The continuation count is the number of unique single word contexts for ·.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서 후속 출현 빈도(continuation count)는 해당 항목 앞에 올 수 있는 고유한 단일 단어 문맥의 수입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하위 차수에서 사용하는 '빈도'의 실체를 재확인합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>At the termination of the recursion, unigrams are interpolated with the uniform distribution, where the parameter ε is the empty string:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>재귀 과정의 종료 시점에서, 유니그램은 균등 분포(uniform distribution)와 보간됩니다. 여기서 파라미터 $\epsilon$은 빈 문자열을 의미합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>재귀의 기저 사례(base case)로서 유니그램과 균등 분포의 결합 방식을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P_KN(w) = max(c_KN(w) − d, 0) / Sum_{w'} c_KN(w') + λ(ε) * 1/V (3.39)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P_KN(w) = max(c_KN(w) − d, 0) / Sum_{w'} c_KN(w') + λ(ε) * 1/V (3.39)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.39). 유니그램 크네저-네이 확률 공식입니다. 마지막 보간 항에서 전체 어휘 크기 $V$의 역수인 $1/V$가 사용됩니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>If we want to include an unknown word <UNK>, it's just included as a regular vocabulary entry with count zero, and hence its probability will be a lambda-weighted uniform distribution λ(ε) * 1/V.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>만약 미등록 단어 `<UNK>`를 포함시키고 싶다면, 빈도가 0인 일반적인 어휘 항목으로 취급하여 포함시킵니다. 따라서 그 확률은 $\lambda(\epsilon) \times 1/V$라는 가중치 기반 균등 분포 값이 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>`<UNK>` 토큰이 크네저-네이 시스템 내에서 어떻게 수학적으로 처리되는지 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>modified Kneser-Ney</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>변형된 크네저-네이(modified Kneser-Ney)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단일 디스카운트 값 $d$ 대신 빈도에 따라 여러 디스카운트 값을 사용하는 개량 버전입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The best performing version of Kneser-Ney smoothing is called modified Kneser-Ney smoothing, and is due to Chen and Goodman (1998). Rather than use a single fixed discount d, modified Kneser-Ney uses three different discounts d1, d2, and d3+ for n-grams with counts of 1, 2 and three or more, respectively. See Chen and Goodman (1998, p. 19) or Heafield et al. (2013) for the details.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>크네저-네이 스무딩의 가장 뛰어난 성능을 보이는 버전은 변형된 크네저-네이(modified Kneser-Ney) 스무딩이라 불리며, Chen과 Goodman(1998)에 의해 제안되었습니다. 변형된 크네저-네이는 단일한 고정 디스카운트 $d$를 사용하는 대신, 빈도가 1, 2, 그리고 3 이상인 N-그램에 대해 각각 서로 다른 세 가지 디스카운트 $d_1, d_2, d_{3+}$를 사용합니다. 자세한 내용은 Chen과 Goodman(1998, p.19) 또는 Heafield 등(2013)의 자료를 참고하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실무에서 가장 강력하다고 평가받는 변형된 크네저-네이 기법의 핵심 차별화 요소(빈도별 차등 디스카운트)를 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.7 Huge Language Models and Stupid Backoff</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.7 거대 언어 모델과 스튜피드 백오프(Stupid Backoff)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>데이터 규모가 극단적으로 커졌을 때 실용적으로 사용되는 단순하지만 효율적인 백오프 기법을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>By using text from the web or other enormous collections, it is possible to build extremely large language models. The Web 1 Trillion 5-gram corpus released by Google includes various large sets of n-grams, including 1-grams through 5-grams from all the five-word sequences that appear in at least 40 distinct books from 1,024,908,267,229 words of text from publicly accessible Web pages in English (Franz and Brants, 2006). Google has also released Google Books Ngrams corpora with n-grams drawn from their book collections, including another 800 billion tokens of n-grams from Chinese, English, French, German, Hebrew, Italian, Russian, and Spanish (Lin et al., 2012). Smaller but more carefully curated n-gram corpora for English include the million most frequent n-grams drawn from the COCA (Corpus of Contemporary American English) 1 billion word corpus of American English (Davies, 2020). COCA is a balanced corpora, meaning that it has roughly equal numbers of words from different genres: web, newspapers, spoken conversation transcripts, fiction, and so on, drawn from the period 1990-2019, and has the context of each n-gram as well as labels for genre and provenance).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>웹이나 다른 거대한 컬렉션의 텍스트를 사용하여 극도로 거대한 언어 모델을 구축하는 것이 가능해졌습니다. Google에서 공개한 'Web 1 Trillion 5-gram' 코퍼스는 공개적으로 접근 가능한 영어 웹 페이지의 1조 249억 8,267,229여 개 단어로부터 추출된, 최소 40권 이상의 서로 다른 책에서 나타나는 모든 5단어 시퀀스를 포함한 1-그램부터 5-그램까지의 대규모 데이터셋을 포함하고 있습니다(Franz and Brants, 2006). Google은 또한 자사의 도서 컬렉션에서 추출한 'Google Books Ngrams' 코퍼스도 출시했는데, 여기에는 중국어, 영어, 프랑스어, 독일어, 히브리어, 이탈리아어, 러시아어, 스페인어 등에서 추출된 또 다른 8,000억 개의 N-그램 토큰이 포함되어 있습니다(Lin et al., 2012). 규모는 더 작지만 정교하게 큐레이션된 영어용 N-그램 코퍼스로는 미국식 영어 10억 단어 규모의 코퍼스인 COCA(Corpus of Contemporary American English)에서 추출된 100만 개의 최빈출 N-그램 데이터셋이 있습니다(Davies, 2020). COCA는 '균형 잡힌 코퍼스(balanced corpora)'로, 웹, 신문, 구어 대화 전사본, 소설 등 다양한 장르에서 온 단어들이 대략 비등한 비율로 포함되어 있습니다. 이 데이터는 1990~2019년 기간 동안 수집되었으며, 각 N-그램의 맥락뿐만 아니라 장르와 출처에 대한 레이블도 포함하고 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구글 웹 코퍼스, 구글 북스, COCA 등 현대 자연어 처리 연구의 기반이 되는 거대 규모 및 고품질 코퍼스들의 사례와 특징을 상술합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Some example 4-grams from the Google Web corpus:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Google 웹 코퍼스에서 추출된 몇 가지 4-그램 예시입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 데이터의 형태를 보여주기 위한 도입부입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>| 4-gram | Count |
+|:---|:---:|
+| serve as the incoming | 92 |
+| serve as the incubator | 99 |
+| serve as the independent | 794 |
+| serve as the index | 223 |
+| serve as the indication | 72 |
+| serve as the indicator | 120 |
+| serve as the indicators | 45 |</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>| 4-그램(4-gram) | 빈도(Count) |
+|:---|:---:|
+| serve as the incoming | 92 |
+| serve as the incubator | 99 |
+| serve as the independent | 794 |
+| serve as the index | 223 |
+| serve as the indication | 72 |
+| serve as the indicator | 120 |
+| serve as the indicators | 45 |</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 맥락('serve as the') 뒤에 오는 다양한 4-그램 조합들과 그 빈도를 보여줍니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) { const panel = toggle.nextElementSibling; toggle.setAttribute("aria-expanded", expanded ? "true" : "false"); toggle.textContent = expanded ? "study_note 접기" : "study_note 보기"; panel.hidden = !expanded; }
+toggles.forEach((toggle) => { setPanelState(toggle, false); toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; setPanelState(toggle, !expanded); }); });
+document.querySelector("[data-expand-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, true)); });
+document.querySelector("[data-collapse-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, false)); });
+</script>
+</body>
+</html>

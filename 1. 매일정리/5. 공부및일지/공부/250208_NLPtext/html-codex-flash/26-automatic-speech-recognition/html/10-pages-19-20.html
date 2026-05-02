@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 19-20 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-19">Page 19</a>
+<a class="chip" href="#page-20">Page 20</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 19-20 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-19">
+<header class="page-header">
+<h2>Page 19</h2>
+<div class="page-subtitle">26.6.2 TTS: 스펙트로그램 예측</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>semiotic class examples verbalization
+abbreviations gov’t, N.Y., mph government
+acronyms read as letters GPU, D.C., PC, UN, IBM G P U
+cardinal numbers 12, 45, 1/2, 0.6 twelve
+ordinal numbers May 7, 3rd, Bill Gates III seventh
+numbers read as digits Room 101 one oh one
+times 3.20, 11:45 eleven forty five
+dates 28/02 (or in US, 2/28) February twenty eighth
+years 1999, 80s, 1900s, 2045 nineteen ninety nine
+money $3.45, e250, $200K three dollars forty five
+money in tr/m/billions $3.45 billion three point four five billion dollars
+percentage 75% 3.4% seventy five percent</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>기호 클래스, 예시, 발음
+약어, gov’t, N.Y., mph, government
+글자 그대로 읽는 두문자어, GPU, D.C., PC, UN, IBM, G P U
+기수, 12, 45, 1/2, 0.6, twelve
+서수, May 7, 3rd, Bill Gates III, seventh
+숫자로 읽는 숫자, Room 101, one oh one
+시간, 3.20, 11:45, eleven forty five
+날짜, 28/02 (또는 미국에서는 2/28), February twenty eighth
+연도, 1999, 80s, 1900s, 2045, nineteen ninety nine
+돈, $3.45, e250, $200K, three dollars forty five
+조/백만/십억 단위 돈, $3.45 billion, three point four five billion dollars
+백분율, 75% 3.4%, seventy five percent</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>텍스트 정규화 시 자주 등장하는 비표준 단어의 유형과 그 발음 예시를 정리한 표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.13 Some types of non-standard words in text normalization; see Sproat et al. (2001) and (van Esch and Sproat, 2018) for many more.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.13 텍스트 정규화에서의 몇 가지 유형의 비표준 단어들; 더 많은 예시는 Sproat 등(2001)과 van Esch 및 Sproat(2018)를 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>위의 표에 대한 캡션으로, 비표준 단어의 정규화에 대한 추가 문헌을 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Modern end-to-end TTS systems can learn to do some normalization themselves, but TTS systems are only trained on a limited amount of data (like the 220,000 words we mentioned above for the LJ corpus (Ito and Johnson, 2017)), and so a separate normalization step is important.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>최신의 종단간(end-to-end) TTS 시스템은 일부 정규화를 스스로 수행하는 방법을 배울 수 있지만, TTS 시스템은 (위에서 언급한 LJ 코퍼스의 220,000 단어와 같이) 제한된 양의 데이터로만 훈련되기 때문에 별도의 정규화 단계가 중요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>최신 TTS 모델이 자체적으로 정규화를 하기도 하지만, 훈련 데이터의 한계로 인해 별도의 정규화 과정이 필수적임을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Normalization can be done by rule or by an encoder-decoder model. Rule-based normalization is done in two stages: tokenization and verbalization. In the tokenization stage we hand-write write rules to detect non-standard words. These can be regular expressions, like the following for detecting years:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정규화는 규칙이나 인코더-디코더 모델에 의해 수행될 수 있습니다. 규칙 기반 정규화는 토큰화와 발음화라는 두 단계로 이루어집니다. 토큰화 단계에서는 비표준 단어를 감지하기 위해 규칙을 직접 작성합니다. 이는 연도를 감지하기 위한 다음과 같은 정규 표현식일 수 있습니다:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 정규화의 두 단계인 토큰화와 발음화를 소개하고 그 방법을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">code</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>/(1[89][0-9][0-9])|(20[0-9][0-9]/</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>/(1[89][0-9][0-9])|(20[0-9][0-9]/</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1800년대부터 2000년대까지의 연도를 찾는 정규 표현식의 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A second pass of rules express how to verbalize each semiotic class. Larger TTS systems instead use more complex rule-systems, like the Kestral system of (Ebden and Sproat, 2015), which first classifies and parses each input into a normal form and then produces text using a verbalization grammar. Rules have the advantage that they don’t require training data, and they can be designed for high precision, but can be brittle, and require expert rule-writers so are hard to maintain.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>두 번째 규칙 패스는 각 기호 클래스를 어떻게 발음할지를 표현합니다. 더 큰 TTS 시스템은 (Ebden and Sproat, 2015)의 Kestral 시스템과 같은 더 복잡한 규칙 시스템을 사용하는데, 이 시스템은 먼저 각 입력을 정규 형태로 분류 및 구문 분석한 다음 발음 문법을 사용하여 텍스트 생성합니다. 규칙은 훈련 데이터가 필요하지 않고 높은 정밀도로 설계할 수 있다는 장점이 있지만, 불안정할 수 있고 유지 관리가 어렵기 때문에 전문 규칙 작성자가 필요합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>발음화를 위한 두 번째 규칙 패스와 대규모 시스템에서 사용되는 복잡한 규칙 시스템의 장단점을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The alternative model is to use encoder-decoder models, which have been shown to work better than rules for such transduction tasks, but do require expert-labeled training sets in which non-standard words have been replaced with the appropriate verbalization; such training sets for some languages are available (Sproat and Gorman 2018, Zhang et al. 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>대안 모델은 인코더-디코더 모델을 사용하는 것으로, 이러한 변환 작업에서 규칙보다 더 잘 작동하는 것으로 나타났지만 비표준 단어가 적절한 발음으로 대체된 전문가가 레이블을 지정한 훈련 세트가 필요합니다. 일부 언어의 경우 이러한 훈련 세트를 사용할 수 있습니다(Sproat and Gorman 2018, Zhang et al. 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 기반 방법의 대안으로 인코더-디코더 모델을 소개하며 데이터 요구 사항에 대해 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the simplest encoder-decoder setting, we simply treat the problem like machine translation, training a system to map from:
+They live at 224 Mission St.
+to
+They live at two twenty four Mission Street</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>가장 단순한 인코더-디코더 설정에서는 이 문제를 기계 번역처럼 취급하여 다음에서:
+They live at 224 Mission St.
+다음으로 매핑하도록 시스템을 훈련시킵니다:
+They live at two twenty four Mission Street</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더를 활용하여 정규화 문제를 기계 번역과 유사하게 처리하는 예를 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>While encoder-decoder algorithms are highly accurate, they occasionally produce errors that are egregious; for example normalizing 45 minutes as forty five millimeters. To address this, more complex systems use mechanisms like lightweight covering grammars, which enumerate a large set of possible verbalizations but don’t try to disambiguate, to constrain the decoding to avoid such outputs (Zhang et al., 2019).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더 알고리즘은 매우 정확하지만, 때때로 45 minutes를 45 millimeters로 정규화하는 것과 같은 터무니없는 오류를 생성하기도 합니다. 이를 해결하기 위해, 더 복잡한 시스템은 가능한 넓은 범위의 발음을 나열하되 명확성을 부여하지는 않는 경량 커버링 문법과 같은 메커니즘을 사용하여 이러한 출력을 피하도록 디코딩을 제한합니다(Zhang et al., 2019).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 모델의 오류 유형과 이를 보완하기 위한 커버링 문법의 도입을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.6.2 TTS: Spectrogram prediction</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.6.2 TTS: 스펙트로그램 예측</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 합성의 스펙트로그램 예측 기술을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The exact same architecture we described for ASR—the encoder-decoder with attention—can be used for the first component of TTS. Here we’ll give a simplified overview</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ASR에 대해 설명했던 것과 정확히 동일한 아키텍처인 어텐션(attention)을 가진 인코더-디코더를 TTS의 첫 번째 구성 요소에 사용할 수 있습니다. 여기서는 간단한 개요를 제공하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>ASR과 TTS가 동일한 인코더-디코더 구조를 공유할 수 있음을 소개합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-20">
+<header class="page-header">
+<h2>Page 20</h2>
+<div class="page-subtitle">26.6.3 TTS: 보코딩</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>of the Tacotron 2 architecture (Shen et al., 2018), which extends the earlier Tacotron (Wang et al., 2017) architecture and the Wavenet vocoder (van den Oord et al., 2016). Fig. 26.14 sketches out the entire architecture.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>초기 Tacotron(Wang et al., 2017) 아키텍처와 Wavenet 보코더(van den Oord et al., 2016)를 확장한 Tacotron 2 아키텍처(Shen et al., 2018)에 대한 내용입니다. 그림 26.14는 전체 아키텍처를 간략하게 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Tacotron 2 아키텍처와 이전 기술의 연관성 및 전체 구조를 안내합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The encoder’s job is to take a sequence of letters and produce a hidden representation representing the letter sequence, which is then used by the attention mechanism in the decoder. The Tacotron 2 encoder first maps every input grapheme to a 512-dimensional character embedding. These are then passed through a stack of 3 convolutional layers, each containing 512 filters with shape 5 × 1, i.e. each filter spanning 5 characters, to model the larger letter context. The output of the final convolutional layer is passed through a biLSTM to produce the final encoding. It’s common to use a slightly higher quality (but slower) version of attention called location-based attention, in which the computation of the α values (Eq. ?? in Chapter 10) makes use of the α values from the prior time-state.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더의 역할은 일련의 글자들을 입력받아 해당 글자 시퀀스를 나타내는 은닉 표현을 생성하는 것이며, 이는 디코더의 어텐션 메커니즘에서 사용됩니다. Tacotron 2 인코더는 먼저 모든 입력 문자소를 512차원의 문자 임베딩으로 매핑합니다. 그런 다음 더 큰 글자 문맥을 모델링하기 위해, 각각 모양이 5 × 1인(즉, 각 필터가 5개의 문자에 걸쳐 있는) 512개의 필터를 포함하는 3개의 합성곱 계층 스택을 통과합니다. 마지막 합성곱 계층의 출력은 양방향 LSTM(biLSTM)을 통과하여 최종 인코딩을 생성합니다. 이전 시간 상태의 α 값을 사용하여 (10장의 식 ??) α 값을 계산하는 위치 기반 어텐션이라는 약간 더 높고 품질이 좋은(그러나 느린) 버전의 어텐션을 사용하는 것이 일반적입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Tacotron 2의 인코더 부분 작동 원리와 위치 기반 어텐션의 개념을 상세히 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the decoder, the predicted mel spectrum from the prior time slot is passed through a small pre-net as a bottleneck. This prior output is then concatenated with the encoder’s attention vector context and passed through 2 LSTM layers. The output of this LSTM is used in two ways. First, it is passed through a linear layer, and some output processing, to autoregressively predict one 80-dimensional log-mel filterbank vector frame (50 ms, with a 12.5 ms stride) at each step. Second, it is passed through another linear layer to a sigmoid to make a ‘stop token prediction’</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>디코더에서는 이전 시간 슬롯에서 예측된 멜 스펙트럼이 병목 현상을 방지하기 위해 작은 프리넷(pre-net)을 통과합니다. 그런 다음 이 이전 출력은 인코더의 어텐션 벡터 문맥과 연결되어 2개의 LSTM 계층을 통과합니다. 이 LSTM의 출력은 두 가지 방식으로 사용됩니다. 첫째, 선형 계층과 일부 출력 처리를 거쳐 각 단계에서 하나의 80차원 로그 멜 필터뱅크 벡터 프레임(50ms, 12.5ms 스트라이드)을 자기회귀적으로 예측합니다. 둘째, 다른 선형 계층을 거쳐 시그모이드로 전달되어 '정지 토큰 예측'을 수행합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>디코더의 구성 및 예측된 멜 스펙트럼과 어텐션 문맥을 결합하여 다음 프레임 및 멈춤 토큰을 예측하는 방식을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.6.3 TTS: Vocoding</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.6.3 TTS: 보코딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>TTS의 두 번째 주요 컴포넌트인 보코딩에 관한 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The vocoder for Tacotron 2 is an adaptation of the WaveNet vocoder (van den Oord et al., 2016). Here we’ll give a somewhat simplified description of vocoding using WaveNet.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Tacotron 2의 보코더는 WaveNet 보코더(van den Oord et al., 2016)를 적용한 것입니다. 여기서는 WaveNet을 사용한 보코딩에 대한 다소 단순화된 설명을 제공하겠습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>Tacotron 2에서 사용되는 WaveNet 기반 보코더에 대해 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Recall that the goal of the vocoding process here will be to invert a log mel spectrum representations back into a time-domain waveform representation. WaveNet is an autoregressive network, like the language models we introduced in Chapter 9. It</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기에서 보코딩 프로세스의 목표는 로그 멜 스펙트럼 표현을 다시 시간 영역의 파형 표현으로 반전시키는 것임을 기억하십시오. WaveNet은 우리가 9장에서 소개한 언어 모델과 같은 자기회귀 네트워크입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보코딩의 주요 목적이 멜 스펙트럼을 시간 영역 파형으로 변환하는 것임을 상기시킵니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

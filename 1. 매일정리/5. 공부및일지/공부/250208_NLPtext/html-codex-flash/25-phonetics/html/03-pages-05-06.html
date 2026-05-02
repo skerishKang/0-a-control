@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phonetics</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">25 Phonetics</div>
+<h1>Phonetics</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-5">Page 5</a>
+<a class="chip" href="#page-6">Page 6</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>03 Pages 05 06</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>25. Phonetics.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-5">
+<header class="page-header">
+<h2>Page 5</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>25.2 • ARTICULATORY PHONETICS 5</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>25.2 • 조음 음성학 5</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>has voiced stops like [b], [d], and [g] as well as unvoiced stops like [p], [t], [k]. Stops are also called plosives.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[b], [d], [g]와 같은 유성 파열음과 [p], [t], [k]와 같은 무성 파열음이 있습니다. 파열음은 폐쇄음(plosives)이라고도 불립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>파열음의 유무성 구분과 다른 명칭(plosives)을 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The nasal sounds [n], [m], and [ng] are made by lowering the velum and allowing air to pass into the nasal cavity.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비음 [n], [m], [ng]는 연구개를 낮추어 공기가 비강으로 통과하게 함으로써 만들어집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비음의 구체적인 조음 메커니즘인 연구개의 하강을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>nasal</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>비음(nasal)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>코를 통해 공기가 나가는 소리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In fricatives, airflow is constricted but not cut off completely. The turbulent airflow that results from the constriction produces a characteristic “hissing” sound. The English labiodental fricatives [f] and [v] are produced by pressing the lower lip against the upper teeth, allowing a restricted airflow between the upper teeth. The dental fricatives [th] and [dh] allow air to flow around the tongue between the teeth. The alveolar fricatives [s] and [z] are produced with the tongue against the alveolar ridge, forcing air over the edge of the teeth. In the palato-alveolar fricatives [sh] and [zh], the tongue is at the back of the alveolar ridge, forcing air through a groove formed in the tongue. The higher-pitched fricatives (in English [s], [z], [sh] and [zh]) are called sibilants. Stops that are followed immediately by fricatives are called affricates; these include English [ch] (chicken) and [jh] (giraffe).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마찰음(fricatives)에서는 공기 흐름이 제약되지만 완전히 차단되지는 않습니다. 제약으로 인해 발생하는 난류는 특유의 "쉿" 하는 소리를 만들어냅니다. 영어의 순치 마찰음 [f]와 [v]는 아랫입술을 윗니에 대고 윗니 사이로 제한된 공기 흐름을 만들어냄으로써 생성됩니다. 치마찰음 [th]와 [dh]는 치아 사이에서 혀 주변으로 공기가 흐르게 합니다. 치경 마찰음 [s]와 [z]는 혀를 치경에 대고 치아 끝부분 위로 공기를 밀어내어 만듭니다. 치경경구개 마찰음 [sh]와 [zh]는 혀가 치경 뒤쪽에 위치하며 혀에 형성된 홈을 통해 공기를 밀어내어 만듭니다. 높은 음조의 마찰음(영어의 [s], [z], [sh], [zh])을 치찰음(sibilants)이라고 합니다. 파열음 뒤에 바로 마찰음이 이어지는 소리를 파찰음(affricates)이라고 하며, 여기에는 영어의 [ch] (chicken)와 [jh] (giraffe)가 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>마찰음, 치찰음, 파찰음의 정의와 각각의 조음 방식을 상세히 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>fricatives, sibilants</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마찰음, 치찰음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>공기 흐름의 제약으로 인해 발생하는 마찰을 이용한 소리들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In approximants, the two articulators are close together but not close enough to cause turbulent airflow. In English [y] (yellow), the tongue moves close to the roof of the mouth but not close enough to cause the turbulence that would characterize a fricative. In English [w] (wood), the back of the tongue comes close to the velum. American [r] can be formed in at least two ways; with just the tip of the tongue extended and close to the palate or with the whole tongue bunched up near the palate. [l] is formed with the tip of the tongue up against the alveolar ridge or the teeth, with one or both sides of the tongue lowered to allow air to flow over it. [l] is called a lateral sound because of the drop in the sides of the tongue.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유음(approximants)에서는 두 조음 기관이 서로 가깝지만 난류를 일으킬 정도로 가깝지는 않습니다. 영어 [y] (yellow)에서 혀는 입천장 가까이 움직이지만 마찰음의 특징인 난류를 일으킬 만큼 가깝지는 않습니다. 영어 [w] (wood)에서 혀의 뒷부분은 연구개 가까이 다가갑니다. 미국식 [r]은 적어도 두 가지 방식으로 형성될 수 있는데, 혀끝만 펴서 구개 가까이 대거나 혀 전체를 구개 근처에 뭉쳐서 만듭니다. [l]은 혀끝을 치경이나 치아에 대고 혀의 한쪽 또는 양쪽 면을 낮추어 공기가 그 위로 흐르게 함으로써 형성됩니다. [l]은 혀의 측면이 내려가기 때문에 측면음(lateral sound)이라고 불립니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>유음의 특징과 [y], [w], [r], [l]의 조음 방식을 설명합니다. 특히 [l]이 왜 측면음인지 밝힙니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>approximant</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>유음(approximant)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>조음 기관이 가까워지지만 마찰이 생기지 않는 소리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A tap or flap [dx] is a quick motion of the tongue against the alveolar ridge. The consonant in the middle of the word lotus ([l ow dx ax s]) is a tap in most dialects of American English; speakers of many U.K. dialects would use a [t] instead.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>탄설음(tap 또는 flap) [dx]는 혀가 치경을 빠르게 치는 동작입니다. 단어 lotus ([l ow dx ax s]) 중간의 자음은 대부분의 미국 영어 방언에서 탄설음으로 발음됩니다. 반면 많은 영국 영어 방언 화자들은 대신 [t]를 사용할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>미국 영어의 특징적인 발음인 탄설음을 설명하며 지역적 차이를 언급합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>tap</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>탄설음(tap)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>혀끝으로 조음 위치를 가볍고 빠르게 튕기는 소리입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Vowels</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자음에 이어 모음의 조음 특성을 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Like consonants, vowels can be characterized by the position of the articulators as they are made. The three most relevant parameters for vowels are what is called vowel height, which correlates roughly with the height of the highest part of the tongue, vowel frontness or backness, indicating whether this high point is toward the front or back of the oral tract and whether the shape of the lips is rounded or not. Figure 25.4 shows the position of the tongue for different vowels.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음과 마찬가지로 모음도 형성될 때의 조음 기관 위치에 의해 특징지어질 수 있습니다. 모음의 가장 중요한 세 가지 파라미터는 혀의 가장 높은 부분의 높이와 대략 일치하는 모음 높이(height), 이 높은 지점이 성도의 앞쪽에 있는지 뒤쪽에 있는지를 나타내는 모음의 전후설성(frontness/backness), 그리고 입술 모양의 원순성(roundedness) 여부입니다. 그림 25.4는 서로 다른 모음들에 대한 혀의 위치를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음을 분류하는 세 가지 핵심 기준(높이, 전후설성, 원순성)을 소개합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.4 Tongue positions for English high front [iy], low front [ae] and high back [uw]. Left: beet [iy], Center: bat [ae], Right: boot [uw]]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.4 영어 고전설 모음 [iy], 저전설 모음 [ae], 고후설 모음 [uw]에 대한 혀의 위치. 왼쪽: beet [iy], 중앙: bat [ae], 오른쪽: boot [uw]]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>혀의 위치에 따른 모음의 차이를 시각적으로 보여줍니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.4 Tongue positions for English high front [iy], low front [ae] and high back [uw].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.4 영어 고전설 모음 [iy], 저전설 모음 [ae], 고후설 모음 [uw]에 대한 혀의 위치.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 제시된 모음 조음 위치 도표에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the vowel [iy], for example, the highest point of the tongue is toward the front of the mouth. In the vowel [uw], by contrast, the high-point of the tongue is located toward the back of the mouth. Vowels in which the tongue is raised toward the front are called front vowels; those in which the tongue is raised toward the</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>예를 들어 모음 [iy]에서는 혀의 가장 높은 지점이 입의 앞쪽을 향합니다. 반대로 모음 [uw]에서는 혀의 높은 지점이 입의 뒤쪽에 위치합니다. 혀가 앞쪽으로 올라가는 모음을 전설 모음(front vowels)이라 하고, 혀가... [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>전설 모음과 후설 모음의 차이를 구체적인 예([iy], [uw])를 통해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Front vowel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>전설 모음(Front vowel)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>혀의 최고점이 앞쪽에 위치하는 모음입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-6">
+<header class="page-header">
+<h2>Page 6</h2>
+<div class="page-subtitle">Phonetics</div>
+</header>
+<div class="blocks">
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>6 CHAPTER 25 • PHONETICS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>6 제25장 • 음성학</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>back are called back vowels. Note that while both [ih] and [eh] are front vowels, the tongue is higher for [ih] than for [eh]. Vowels in which the highest point of the tongue is comparatively high are called high vowels; vowels with mid or low values of maximum tongue height are called mid vowels or low vowels, respectively.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>뒤쪽으로 올라가는 모음을 후설 모음(back vowels)이라고 합니다. [ih]와 [eh]는 둘 다 전설 모음이지만, [ih]가 [eh]보다 혀의 위치가 더 높다는 점에 유의하십시오. 혀의 가장 높은 지점이 상대적으로 높은 모음을 고모음(high vowels)이라 하고, 최대 혀 높이가 중간이거나 낮은 모음을 각각 중모음(mid vowels) 또는 저모음(low vowels)이라고 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음의 높낮이에 따른 분류(고, 중, 저모음)를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>back vowel, high vowel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>후설 모음, 고모음</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음 분류의 기준이 되는 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure 25.5 The schematic “vowel space” for English vowels chart showing front/back and high/low axes with points for iy, y, uw, ih, uh, ey, oy, ax, ow, eh, aw, ao, ay, ah, ae, aa]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 25.5 영어 모음에 대한 도식적 '모음 사각형(vowel space)'. 전/후설 및 고/저축을 보여주며 iy, y, uw, ih, uh, ey, oy, ax, ow, eh, aw, ao, ay, ah, ae, aa의 위치를 표시함]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어 모음의 상대적 위치를 한눈에 볼 수 있는 모음 사각형 도표입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.5 The schematic “vowel space” for English vowels.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.5 영어 모음에 대한 도식적 '모음 사각형'.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>앞서 제시된 모음 사각형 도표에 대한 캡션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 25.5 shows a schematic characterization of the height of different vowels. It is schematic because the abstract property height correlates only roughly with actual tongue positions; it is, in fact, a more accurate reflection of acoustic facts. Note that the chart has two kinds of vowels: those in which tongue height is represented as a point and those in which it is represented as a path. A vowel in which the tongue position changes markedly during the production of the vowel is a diphthong. English is particularly rich in diphthongs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 25.5는 서로 다른 모음의 높이에 대한 도식적인 특징을 보여줍니다. 실제 혀의 위치와 높이라는 추상적 속성이 대략적으로만 일치하기 때문에 이것은 도식적입니다. 사실 이는 음향적 사실을 더 정확하게 반영한 것입니다. 이 도표에는 두 종류의 모음이 있음에 유의하십시오. 즉, 혀의 높이가 점으로 표현되는 모음과 경로로 표현되는 모음입니다. 모음을 생성하는 동안 혀의 위치가 현저하게 변하는 모음을 이중 모음(diphthong)이라고 합니다. 영어는 특히 이중 모음이 풍부합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>모음 도표의 도식적 성격과 이중 모음의 정의를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>diphthong</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이중 모음(diphthong)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>하나의 음절 안에서 소리의 성질이 변하는 모음입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The second important articulatory dimension for vowels is the shape of the lips. Certain vowels are pronounced with the lips rounded (the same lip shape used for whistling). These rounded vowels include [uw], [ao], and [ow].</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>모음의 두 번째 중요한 조음 차원은 입술의 모양입니다. 어떤 모음들은 입술을 둥글게 하여(휘파람을 불 때와 같은 입술 모양) 발음됩니다. 이러한 원순 모음(rounded vowels)에는 [uw], [ao], [ow]가 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>원순 모음의 정의와 영어의 예시를 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>rounded vowel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>원순 모음(rounded vowel)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입술을 둥글게 모아서 내는 모음입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Syllables</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음절</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자음과 모음이 결합하여 형성되는 더 큰 단위인 '음절'에 대한 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Consonants and vowels combine to make a syllable. A syllable is a vowel-like (or sonorant) sound together with some of the surrounding consonants that are most closely associated with it. The word dog has one syllable, [d aa g] (in our dialect); the word catnip has two syllables, [k ae t] and [n ih p]. We call the vowel at the core of a syllable the nucleus. Initial consonants, if any, are called the onset. Onsets with more than one consonant (as in strike [s t r ay k]), are called complex onsets. The coda is the optional consonant or sequence of consonants following the nucleus. Thus [d] is the onset of dog, and [g] is the coda. The rime, or rhyme, is the nucleus plus coda. Figure 25.6 shows some sample syllable structures.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>자음과 모음이 결합하여 음절(syllable)을 형성합니다. 음절은 모음과 같은(또는 공명적인) 소리와 그와 가장 밀접하게 연관된 주변의 일부 자음들로 구성됩니다. 단어 dog은 한 음절 [d aa g]로 이루어져 있고(우리 방언에서), catnip은 [k ae t]와 [n ih p]의 두 음절로 이루어져 있습니다. 음절의 핵심이 되는 모음을 핵(nucleus)이라고 합니다. 앞에 오는 자음(있는 경우)을 두음(onset)이라 하고, strike [s t r ay k]에서처럼 자음이 두 개 이상인 두음을 복합 두음(complex onsets)이라고 합니다. 종성(coda)은 핵 뒤에 오는 선택적인 자음 또는 자음의 나열입니다. 따라서 [d]는 dog의 두음이고, [g]는 종성입니다. 핵과 종성을 합쳐 운(rime 또는 rhyme)이라고 합니다. 그림 25.6은 몇 가지 샘플 음절 구조를 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음절의 내부 구조(두음, 핵, 종성, 운)를 상세히 정의하고 예시를 통해 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>syllable, nucleus, onset, coda, rime</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음절, 핵, 두음, 종성, 운</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음절 구조를 분석하는 데 사용되는 핵심 용어들입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The task of automatically breaking up a word into syllables is called syllabification. Syllable structure is also closely related to the phonotactics of a language. The term phonotactics means the constraints on which phones can follow each other in a language. For example, English has strong constraints on what kinds of consonants can appear together in an onset; the sequence [zdr], for example, cannot be a legal English syllable onset. Phonotactics can be represented by a language model or finite-state model of phone sequences.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단어를 자동으로 음절로 나누는 작업을 음절 분해(syllabification)라고 합니다. 음절 구조는 해당 언어의 배열론(phonotactics)과도 밀접한 관련이 있습니다. 배열론이란 언어 내에서 어떤 폰들이 서로 뒤따를 수 있는지에 대한 제약을 의미합니다. 예를 들어 영어는 두음에 어떤 종류의 자음들이 함께 나타날 수 있는지에 대해 강한 제약을 가집니다. 예를 들어 [zdr] 같은 순서는 정식 영어 음절 두음이 될 수 없습니다. 배열론은 언어 모델이나 폰 시퀀스의 유한 상태 모델로 표현될 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음절 분해와 배열론의 개념을 설명하며, 언어별로 허용되는 소리의 조합이 다름을 강조합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>syllabification, phonotactics</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음절 분해, 배열론(phonotactics)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>소리의 조합 규칙과 관련된 개념들입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

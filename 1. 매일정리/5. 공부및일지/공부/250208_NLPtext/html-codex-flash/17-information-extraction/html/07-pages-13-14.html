@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Information Extraction</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">17 Information Extraction</div>
+<h1>Information Extraction</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">템플릿 채우기</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>13 CHAPTER 17 • INFORMATION EXTRACTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>13 제17장 • 정보 추출</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>17.8 Template Filling</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>17.8 템플릿 채우기(Template Filling)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>여러 문장이나 문서 전체에 걸쳐 있는 정보들을 취합하여, 사전 정의된 정형 슬롯(빈칸)들을 채워 완결된 형태의 정보 구조를 구축하는 태스크를 다릅니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The ultimate goal for many information extraction tasks is template filling. A template is a fixed set of slots, each corresponding to a specific piece of information (e.g., a corporate acquisition template might have slots for Buyer, Seller, Price, and Date).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>수많은 정보 추출 모델들이 향하는 최종 목적지는 바로 템플릿 채우기(template filling)입니다. 여기서 템플릿이란 특정한 정보 단위들을 각각 매핑하고 있는 일련의 고정된 슬롯 집합을 의미합니다(예를 들어, 기업 인수 템플릿은 구매자, 판매자, 거래 금액, 그리고 날짜 등을 위한 슬롯을 가질 수 있습니다).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 도메인에서의 목표나 활용도를 구체적으로 설정하고, 문서를 온전히 이해해야만 풀 수 있는 상위 수준 정보 추출 태스크임을 설명합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>template / slots</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>템플릿(template) / 슬롯(slots)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 도메인(재난, 금융, 의료 등)에 대한 스키마(schema) 혹은 규격을 나타내는 틀(템플릿)과, 그 안에 들어갈 속성들의 위치(슬롯)를 의미합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Template filling requires coreference resolution to link different mentions of the same entity across a text, and relation/event extraction to understand how those entities fill the template slots.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이런 템플릿 채우기 작업이 성공하려면, 텍스트 전반에 걸쳐 기재된 동일 개체의 다른 언급 지점들을 이어주는 상호 참조 해결(coreference resolution)이 요구되며, 나아가 이런 개체들이 템플릿 내 슬롯들을 어떤 양상으로 채우는지 파악할 수 있는 관계/사건 추출 기능이 동반되어야만 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>템플릿 채우기가 NER, 상호 참조, 관계 추출 등을 모두 통합적으로 활용해야 하는 파이프라인의 종착역임을 강조합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">요약</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>14 CHAPTER 17 • INFORMATION EXTRACTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>14 제17장 • 정보 추출</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>17.9 Summary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>17.9 요약</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>17장의 전체 내용을 갈무리하는 요약 섹션입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This chapter introduced the core tasks of information extraction. We explored how to move from unstructured text to structured knowledge representations, focusing on entities, relations, and events.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이번 장은 정보 추출 분야의 핵심 과제들을 소개했습니다. 우리는 비정형 텍스트 처리에서 시작하여, 구조화된 지식 표현물로 나아가는 과정에 대해 집중 탐구했으며, 주로 개체들, 관계들, 그리고 사건들에 초점을 맞추었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>17장의 전체적인 학습 목표(비정형 -> 정형 구조 변환)와 세 가지 중심 주제를 재확인합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">list</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>- Named Entity Recognition (NER): Finding and classifying entities, often using BIO tagging.
+- Relation Extraction: Finding binary semantic relations between entities, using rule-based (Hearst patterns), supervised, semi-supervised (bootstrapping), or distant supervision methods.
+- Event Extraction: Identifying event triggers and their arguments with specific multi-stage semantic roles.
+- Template Filling: Populating predefined slots in a template with extracted entities and events, relying on an integration of various NLP systems.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>- 개체명 인식(NER): 주로 BIO 태깅을 사용하여 텍스트 상 개체들을 찾고 분류함.
+- 관계 추출(Relation Extraction): 규칙 기반(허스트 패턴), 지도 모델, 반지도(부트스트래핑), 혹은 원거리 지도 등 방법을 활용해 개체들 간의 이항 의미 관계들을 탐색함.
+- 사건 추출(Event Extraction): 사건 트리거(촉발어) 및 특정적 다층 구조의 의미 역할을 지니고 있는 그들의 논항(arguments)들을 함께 식별해냄.
+- 템플릿 채우기(Template Filling): 다양하게 개별 구성된 NLP 시스템들과의 통합 의존을 토대로, 추출된 개체나 사건을 템플릿 내부의 사전에 구비된 빈 슬롯들에 채움.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>17장에서 학습한 4가지 정보 추출 핵심 작업들을 묶어 요약 정리합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

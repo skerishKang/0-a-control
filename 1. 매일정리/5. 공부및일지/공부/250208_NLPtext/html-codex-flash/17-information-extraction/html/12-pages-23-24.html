@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 23-24 | Information Extraction</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">17 Information Extraction</div>
+<h1>Information Extraction</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-23">Page 23</a>
+<a class="chip" href="#page-24">Page 24</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="page" id="page-23">
+<header class="page-header">
+<h2>Page 23</h2>
+<div class="page-subtitle">연습 문제와 참고 문헌</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>23 CHAPTER 17 • INFORMATION EXTRACTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>23 제17장 • 정보 추출</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>of 2000-2007 on named entity recognition, relation extraction, and temporal expressions; the KBP (Knowledge Base Population) evaluations (Ji et al. 2010, Surdeanu 2013) of relation extraction tasks like slot filling (extracting attributes (‘slots’) like age, birthplace, and spouse for a given entity) and a series of SemEval workshops (Hendrickx et al., 2009).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2000년부터 2007년 사이의 개체명 인식, 관계 추출, 시간 표현 과제들, 지식 베이스 구축(Knowledge Base Population) 평가(Ji et al. 2010, Surdeanu 2013), 슬롯 채우기(slot filling)와 같은 관계 추출 과제들(주어진 개체에 대해 나이, 출생지, 배우자 같은 속성 ‘슬롯’을 추출하는 작업), 그리고 일련의 SemEval 워크숍(Hendrickx et al., 2009)에 대한 언급입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장 말미 참고 문헌의 마지막 부분으로, IE 평가와 shared task 흐름을 요약합니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Semisupervised relation extraction was first proposed by Hearst (1992b), and extended by systems like AutoSlog-TS (Riloff, 1996), DIPRE (Brin, 1998), SNOWBALL (Agichtein and Gravano, 2000), and Jones et al. (1999). The distant supervision algorithm we describe was drawn from Mintz et al. (2009), who coined the term ‘distant supervision’, but similar ideas had occurred in earlier systems like Craven and Kumlien (1999) and Morgan et al. (2004) under the name weakly labeled data, as well as in Snow et al. (2005) and Wu and Weld (2007). Among the many extensions are Wu and Weld (2010), Riedel et al. (2010), and Ritter et al. (2013). Open IE systems include KNOWITALL (Etzioni et al., 2005), TextRunner (Banko et al., 2007), and REVERB (Fader et al., 2011). See Riedel et al. (2013) for a universal schema that combines the advantages of distant supervision and Open IE.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>반지도 관계 추출은 Hearst(1992b)에서 처음 제안되었고, 이후 AutoSlog-TS(Riloff, 1996), DIPRE(Brin, 1998), SNOWBALL(Agichtein and Gravano, 2000), Jones et al.(1999) 같은 시스템들로 확장되었습니다. 여기서 설명한 distant supervision 알고리즘은 Mintz et al.(2009)에서 가져온 것으로, 이들은 ‘distant supervision’이라는 용어를 만들었습니다. 하지만 유사한 아이디어는 이미 Craven and Kumlien(1999), Morgan et al.(2004)의 weakly labeled data, Snow et al.(2005), Wu and Weld(2007) 등에서 나타난 바 있습니다. 이후 Wu and Weld(2010), Riedel et al.(2010), Ritter et al.(2013) 등이 이를 확장했습니다. Open IE 시스템으로는 KNOWITALL(Etzioni et al., 2005), TextRunner(Banko et al., 2007), REVERB(Fader et al., 2011)가 있습니다. distant supervision과 Open IE의 장점을 결합한 universal schema는 Riedel et al.(2013)을 참조하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>반지도 관계 추출, distant supervision, Open IE 계열 연구를 묶어 정리한 참고 문헌 부분입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>HeidelTime (Strötgen and Gertz, 2013) and SUTime (Chang and Manning, 2012) are downloadable temporal extraction and normalization systems. The 2013 TempEval challenge is described in UzZaman et al. (2013); Chambers (2013) and Bethard (2013) give typical approaches.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>HeidelTime(Strötgen and Gertz, 2013)과 SUTime(Chang and Manning, 2012)은 내려받아 사용할 수 있는 시간 표현 추출 및 정규화 시스템입니다. 2013 TempEval 챌린지는 UzZaman et al.(2013)에 설명되어 있으며, Chambers(2013)와 Bethard(2013)는 전형적인 접근법을 제시합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시간 표현 추출 및 정규화 관련 시스템과 shared task 참고 문헌입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Exercises</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>연습 문제</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장 말미 연습 문제 섹션의 시작입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>17.1 Acronym expansion, the process of associating a phrase with an acronym, can be accomplished by a simple form of relational analysis. Develop a system based on the relation analysis approaches described in this chapter to populate a database of acronym expansions. If you focus on English Three Letter Acronyms (TLAs) you can evaluate your system’s performance by comparing it to Wikipedia’s TLA page.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>17.1 약어 확장(acronym expansion), 즉 어떤 구를 약어와 연결하는 과정은 관계 분석의 단순한 형태로 수행될 수 있습니다. 이 장에서 설명한 관계 분석 접근법에 기반하여 약어 확장 데이터베이스를 구축하는 시스템을 개발하십시오. 영어의 세 글자 약어(Three Letter Acronyms, TLAs)에 초점을 맞춘다면, 위키피디아의 TLA 페이지와 비교하여 시스템 성능을 평가할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>약어 확장을 관계 분석 문제로 다루는 연습 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>17.2 A useful functionality in newer email and calendar applications is the ability to associate temporal expressions connected with events in email (doctor’s appointments, meeting planning, party invitations, etc.) with specific calendar entries. Collect a corpus of email containing temporal expressions related to event planning. How do these expressions compare to the kinds of expressions commonly found in news text that we’ve been discussing in this chapter?</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>17.2 최신 이메일 및 일정 관리 응용의 유용한 기능 중 하나는 이메일 속 사건 관련 시간 표현(병원 예약, 회의 일정, 파티 초대 등)을 특정 일정 항목과 연결하는 능력입니다. 이벤트 계획과 관련된 시간 표현을 포함한 이메일 코퍼스를 수집하십시오. 이러한 표현은 이 장에서 논의한 뉴스 텍스트의 시간 표현과 어떻게 비교됩니까?</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이메일 도메인의 시간 표현을 뉴스 텍스트와 비교하는 문제입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>17.3 Acquire the CMU seminar corpus and develop a template-filling system by using any of the techniques mentioned in Section 17.5. Analyze how well your system performs as compared with state-of-the-art results on this corpus.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>17.3 CMU seminar corpus를 구해 Section 17.5에서 언급한 어떤 기법이든 사용하여 template-filling 시스템을 개발하십시오. 이 코퍼스에서 최신(state-of-the-art) 결과와 비교했을 때 시스템이 얼마나 잘 작동하는지 분석하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>CMU seminar corpus를 이용한 template filling 실습 문제입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-24">
+<header class="page-header">
+<h2>Page 24</h2>
+<div class="page-subtitle">참고 문헌</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>24 CHAPTER 17 • INFORMATION EXTRACTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>24 제17장 • 정보 추출</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 하단 헤더입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Agichtein, E. and L. Gravano. 2000. Snowball: Extracting relations from large plain-text collections. Proceedings of the 5th ACM International Conference on Digital Libraries.
+
+Allen, J. 1984. Towards a general theory of action and time. Artificial Intelligence, 23(2):123-154.
+
+Banko, M., M. Cafarella, S. Soderland, M. Broadhead, and O. Etzioni. 2007. Open information extraction for the web. IJCAI.
+
+Bethard, S. 2013. CleafTK-TimeML: A minimalist approach to TempEval 2013. SemEval-13.
+
+Bikel, D. M., S. Miller, R. Schwartz, and R. Weischedel. 1997. Nymble: A high-performance learning name-finder. ANLP.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Agichtein, E. and L. Gravano. 2000. Snowball: 대규모 평문 컬렉션으로부터 관계 추출. Proceedings of the 5th ACM International Conference on Digital Libraries.
+
+Allen, J. 1984. 행동과 시간의 일반 이론을 향하여. Artificial Intelligence, 23(2):123-154.
+
+Banko, M., M. Cafarella, S. Soderland, M. Broadhead, and O. Etzioni. 2007. 웹을 위한 개방형 정보 추출. IJCAI.
+
+Bethard, S. 2013. CleafTK-TimeML: TempEval 2013을 위한 최소주의 접근. SemEval-13.
+
+Bikel, D. M., S. Miller, R. Schwartz, and R. Weischedel. 1997. Nymble: 고성능 학습형 이름 탐지기. ANLP.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 24는 장 말미 참고문헌 페이지입니다.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Bizer, C., J. Lehmann, G. Kobilarov, S. Auer, C. Becker, R. Cyganiak and S. Hellmann. 2009. DBpedia—A crystallization point for the Web of Data. Web Semantics, 7(3):154-165.
+
+Bollacker, K., C. Evans, P. Paritosh, T. Sturge, and J. Taylor. 2008. Freebase: a collaboratively created graph database for structuring human knowledge. SIGMOD 2008.
+
+Brin, S. 1998. Extracting patterns and relations from the World Wide Web. In WebDB Workshop, World Wide Web and Databases, pages 172-183. Springer.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>Bizer, C., J. Lehmann, G. Kobilarov, S. Auer, C. Becker, R. Cyganiak and S. Hellmann. 2009. DBpedia—웹 오브 데이터의 결정화 지점. Web Semantics, 7(3):154-165.
+
+Bollacker, K., C. Evans, P. Paritosh, T. Sturge, and J. Taylor. 2008. Freebase: 인간 지식을 구조화하기 위한 협업형 그래프 데이터베이스. SIGMOD 2008.
+
+Brin, S. 1998. 월드 와이드 웹에서 패턴과 관계 추출. In WebDB Workshop, World Wide Web and Databases, pages 172-183. Springer.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>참고문헌 목록의 다음 항목들입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 1-2 | Machine Translation and Encoder-Decoder Models</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">11 Machine Translation and Encoder-Decoder Models</div>
+<h1>Machine Translation and Encoder-Decoder Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-1">Page 1</a>
+<a class="chip" href="#page-2">Page 2</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 1-2 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>11. Machine Translation and Encoder-Decoder Models.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-1">
+<header class="page-header">
+<h2>Page 1</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CHAPTER 11 Machine Translation and Encoder-Decoder Models</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>제11장 기계 번역 및 인코더-디코더 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>11장의 대제목입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>“I want to talk the dialect of your people. It’s no use of talking unless people understand what you say.” Zora Neale Hurston, Moses, Man of the Mountain 1939, p. 121</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>“나는 당신네 사람들의 방언으로 말하고 싶습니다. 사람들이 당신이 하는 말을 이해하지 못한다면 말하는 것은 소용이 없으니까요.” 조라 닐 허스턴(Zora Neale Hurston), 『산 위의 사람 모세』(Moses, Man of the Mountain), 1939년, 121쪽.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>장의 시작 부분에 인용된 격언입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>machine translation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기계 번역(machine translation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>컴퓨터를 사용하여 한 언어를 다른 언어로 번역하는 작업의 명칭입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>MT</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MT</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역의 약어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>This chapter introduces machine translation (MT), the use of computers to translate from one language to another.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 장에서는 한 언어를 다른 언어로 번역하기 위해 컴퓨터를 사용하는 것인 기계 번역(MT)을 소개합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역의 정의입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Of course translation, in its full generality, such as the translation of literature, or poetry, is a difficult, fascinating, and intensely human endeavor, as rich as any other area of human creativity.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>물론 문학이나 시의 번역과 같이 온전한 일반성을 갖춘 번역은, 인간의 다른 어떤 창의적 영역만큼이나 풍부하고 어렵고 매혹적이며 강렬한 인간적 노력입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>번역이 갖는 예술적, 인간적 측면을 언급합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>information access</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>정보 접근(information access)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역의 주요 실용적 목적 중 하나입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Machine translation in its present form therefore focuses on a number of very practical tasks. Perhaps the most common current use of machine translation is for information access. We might want to translate some instructions on the web, perhaps the recipe for a favorite dish, or the steps for putting together some furniture. Or we might want to read an article in a newspaper, or get information from an online resource like Wikipedia or a government webpage in a foreign language. MT for information access is probably one of the most common uses of NLP technology, and Google Translate alone (shown above) translates hundreds of billions of words a day between over 100 languages.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 현재 형태의 기계 번역은 여러 가지 매우 실용적인 과제에 집중합니다. 아마도 현재 기계 번역의 가장 흔한 용도는 정보 접근일 것입니다. 우리는 웹상의 어떤 설명서, 좋아하는 요리의 레시피, 또는 가구를 조립하는 단계들을 번역하고 싶을 수 있습니다. 또는 신문 기사를 읽고 싶거나 위키백과와 같은 온라인 자원 혹은 외국어로 된 정부 웹페이지에서 정보를 얻고 싶을 수도 있습니다. 정보 접근을 위한 MT는 아마도 NLP 기술의 가장 흔한 용도 중 하나일 것이며, 구글 번역(위 그림 참조) 하나만으로도 100개 이상의 언어 사이에서 하루에 수천억 개의 단어를 번역합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실용적인 정보 획득을 위한 기계 번역의 대중적 활용 사례를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">figure</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Image of Google Translate showing Spanish to English translation: "En un recipiente hondo, mezclar el jugo de naranja con el azucar, jengibre, y nuez moscada." -&gt; "In a deep bowl, mix the orange juice with the sugar, ginger, and nutmeg."]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[스페인어에서 영어로의 번역을 보여주는 구글 번역 이미지: "En un recipiente hondo, mezclar el jugo de naranja con el azucar, jengibre, y nuez moscada." -&gt; "깊은 그릇에 오렌지 주스와 설탕, 생강, 정제되지 않은 육두구(nutmeg)를 섞으세요."]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>구글 번역의 인터페이스 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>post-editing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>사후 편집(post-editing)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역된 초안을 인간이 수정하는 과정을 의미합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>CAT</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>CAT</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>컴퓨터 보조 번역(Computer-Aided Translation)의 약어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>localization</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>현지화(localization)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>콘텐츠를 특정 언어 공동체나 지역에 맞게 조정하는 작업입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Another common use of machine translation is to aid human translators. MT systems are routinely used to produce a draft translation that is fixed up in a post-editing phase by a human translator. This task is often called computer-aided translation or CAT. CAT is commonly used as part of localization: the task of adapting content or a product to a particular language community.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기계 번역의 또 다른 흔한 용도는 인간 번역가를 돕는 것입니다. MT 시스템은 일상적으로 초안 번역을 생성하는 데 사용되며, 이는 인간 번역가에 의해 사후 편집 단계에서 수정됩니다. 이 작업은 종종 컴퓨터 보조 번역 또는 CAT라고 불립니다. CAT는 대개 현지화의 일부로 사용되는데, 이는 콘텐츠나 제품을 특정 언어 공동체에 맞게 조정하는 작업입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>번역 전문가를 보조하는 도구로서의 MT와 현지화 작업에서의 역할을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, a more recent application of MT is to in-the-moment human communication needs. This includes incremental translation, translating speech on-the-fly before the entire sentence is complete, as is commonly used in simultaneous interpretation. Image-centric translation can be used for example to use OCR of the text on a phone camera image as input to an MT system to translate menus or street signs.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 더 최근의 MT 응용 분야는 즉각적인 인간 의사소통 요구입니다. 여기에는 동시통역에서 흔히 사용되는 것처럼 전체 문장이 완성되기 전에 음성을 즉석에서 번역하는 점진적 번역이 포함됩니다. 이미지 중심 번역은 예를 들어 메뉴판이나 거리 표지판을 번역하기 위해 휴대폰 카메라 이미지의 텍스트를 OCR로 읽어 MT 시스템의 입력으로 사용할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실시간 의사소통 및 이미지 기반 번역과 같은 최신 응용 사례를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>encoder-decoder</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더(encoder-decoder)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 기계 번역의 표준 알고리즘 구조입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The standard algorithm for MT is the encoder-decoder network, also called the sequence to sequence network, an architecture that can be implemented with RNNs or with Transformers. We’ve seen in prior chapters that RNN or Transformer architecture can be used to do classification (for example to map a sentence to a positive or negative sentiment tag for sentiment analysis), or can be used to do sequence labeling (for example to assign each word in an input sentence with a part-of-speech, or with a named entity tag).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>MT의 표준 알고리즘은 인코더-디코더 네트워크로, 시퀀스 투 시퀀스(sequence to sequence) 네트워크라고도 불립니다. 이 아키텍처는 RNN이나 트랜스포머로 구현될 수 있습니다. 이전 장에서 우리는 RNN이나 트랜스포머 아키텍처가 분류(예: 감성 분석을 위해 문장을 긍정 또는 부정 감성 태그에 매핑) 작업을 수행하는 데 사용되거나, 시퀀스 레이블링(예: 입력 문장의 각 단어에 품사나 개체명 태그를 할당)을 수행하는 데 사용될 수 있음을 보았습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>기계 번역을 위한 핵심 아키텍처인 인코더-디코더의 개념과 이전 장에서 다룬 분류/레이블링 과제와의 연관성을 설명합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-2">
+<header class="page-header">
+<h2>Page 2</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>2 CHAPTER 11 • MACHINE TRANSLATION AND ENCODER-DECODER MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>2 제11장 • 기계 번역 및 인코더-디코더 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Encoder-decoder or sequence-to-sequence models are used for a different kind of sequence modeling in which the output sequence is a complex function of the entire input sequence; we must map from a sequence of input words or tokens to a sequence of tags that are not merely direct mappings from individual words.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더 또는 시퀀스 투 시퀀스 모델은 출력 시퀀스가 전체 입력 시퀀스의 복잡한 함수인 다른 종류의 시퀀스 모델링에 사용됩니다. 우리는 입력 단어나 토큰의 시퀀스로부터 개별 단어의 단순한 직접 매핑이 아닌 태그(또는 단어)의 시퀀스로 매핑해야 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 1대1 매핑을 넘어서는 시퀀스 투 시퀀스 모델링의 특성을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Machine translation is exactly such a task: the words of the target language don’t necessarily agree with the words of the source language in number or order. Consider translating the following made-up English sentence into Japanese.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>기계 번역이 바로 그러한 과제입니다. 대상 언어의 단어들이 원본 언어의 단어들과 수나 순서 면에서 반드시 일치하지는 않습니다. 다음과 같은 가상의 영어 문장을 일본어로 번역하는 경우를 생각해보십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>언어 간 어순 및 수의 불일치로 인해 발생하는 번역의 복잡성을 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(11.1) English: He wrote a letter to a friend
+Japanese: tomodachi ni tegami-o kaita
+friend to letter wrote</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(11.1) 영어: He wrote a letter to a friend
+일본어: tomodachi ni tegami-o kaita
+친구에게 편지를 썼다</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>영어와 일본어의 어순 차이를 보여주는 예시입니다. (SVO vs SOV)</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that the elements of the sentences are in very different places in the different languages. In English, the verb is in the middle of the sentence, while in Japanese, the verb kaita comes at the end. The Japanese sentence doesn’t require the pronoun he, while English does.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>각 문장의 요소들이 두 언어에서 매우 다른 위치에 있음에 주목하십시오. 영어에서 동사는 문장의 중간에 오지만, 일본어에서 동사 kaita는 끝에 옵니다. 또한 일본어 문장은 대명사 'he'를 필요로 하지 않지만, 영어는 이를 필요로 합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>예시 11.1을 통해 어순 및 언어별 생략 규칙(대명사 등)의 차이를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Such differences between languages can be quite complex. In the following actual sentence from the United Nations, notice the many changes between the Chinese sentence (we’ve given in in red a word-by-word gloss of the Chinese characters) and its English equivalent.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 언어 간의 차이는 꽤 복잡할 수 있습니다. 다음은 유엔에서 발췌한 실제 문장으로, 중국어 문장(중국어 글자 하나하나에 대응하는 의미를 빨간색으로 표기함)과 그에 상응하는 영어 문장 사이의 수많은 변화에 주목하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어와 영어 사이의 복잡한 구조적 차이를 보여주기 위한 실제 사례를 도입합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>(11.2) 大会/General Assembly 在/on 1982年/1982 12月/December 10日/10 会过/adopted 第37号/37th 决议/resolution , 核准了/approved 第二次/second 探索/exploration 及/and 二平/peaceful 利用/using 外层空间/outer space 会议/conference 的/of 各项/various 建议/suggestions 。
+On 10 December 1982 , the General Assembly adopted resolution 37 in which it endorsed the recommendations of the Second United Nations Conference on the Exploration and Peaceful Uses of Outer Space .</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>(11.2) [중국어 예문 및 빨간색 영문 직역]
+1982년 12월 10일, 총회는 제2차 유엔 외층권 탐색 및 평화적 이용에 관한 회의(UNISPACE II)의 여러 권고안을 승인한 결의 제37호를 채택하였다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어와 영어의 복잡한 문장 구조 차이를 보여주는 유엔 결의안 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note the many ways the English and Chinese differ. For example the order-ing differs in major ways; the Chinese order of the noun phrase is “peaceful using outer space conference of suggestions” while the English has “suggestions of the ... conference on peaceful use of outer space”). And the order differs in minor ways (the date is ordered differently). English requires the in many places that Chinese doesn’t, and adds some details (like “in which” and “it”) that aren’t necessary in Chinese. Chinese doesn’t grammatically mark plurality on nouns (unlike English, which has the “-s” in “recommendations”), and so the Chinese must use the modifier 各项/various to make it clear that there is not just one recommendation. English capitalizes some words but not others.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>영어와 중국어가 얼마나 다양한 방식으로 다른지에 주목하십시오. 예를 들어 어순이 크게 다릅니다. 중국어 명사구의 순서는 "평화로운 이용 외층권 회의의 권고안"인 반면, 영어는 "외층권의 평화로운 이용에 관한... 회의의 권고안"입니다. 또한 세부적인 순서도 다릅니다(날짜 표기 방식이 다름). 영어는 중국어가 필요로 하지 않는 많은 곳에 정관사 'the'를 필요로 하며, "in which"나 "it"과 같이 중국어에서는 불필요한 세부 사항을 추가합니다. 중국어는 명사에 복수형을 문법적으로 표시하지 않지만(영어의 "recommendations"에 있는 "-s"와 달리), 대신 '각항(各项/various)'이라는 수식어를 사용하여 가중치가 하나 이상의 권고안임을 명확히 해야 합니다. 영어는 일부 단어를 대문자로 표기하지만 다른 단어는 그렇지 않습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>중국어와 영어의 주요 차이점(어순, 관사, 복수형 표기, 대문자 사용 등)을 상세히 분석합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Encoder-decoder networks are very successful at handling these sorts of complicated cases of sequence mappings. Indeed, the encoder-decoder algorithm is not just for MT; it’s the state of the art for many other tasks where complex mappings between two sequences are involved. These include summarization (where we map from a long text to its summary, like a title or an abstract), dialogue (where we map from what the user said to what our dialogue system should respond), semantic parsing (where we map from a string of words to a semantic representation like logic or SQL), and many others.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>인코더-디코더 네트워크는 이러한 종류의 복잡한 시퀀스 매핑 사례를 처리하는 데 매우 성공적입니다. 실제로 인코더-디코더 알고리즘은 MT만을 위한 것이 아닙니다. 이는 두 시퀀스 간의 복잡한 매핑이 수반되는 다른 많은 작업을 위한 최첨단(state of the art) 기술입니다. 여기에는 요약(긴 본문을 제목이나 초록 같은 요약으로 매핑), 대화(사용자의 발화를 대화 시스템의 응답으로 매핑), 의미 파싱(문자열을 논리 기호나 SQL 같은 의미 표현으로 매핑) 및 그 외 많은 작업이 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인코더-디코더 구조가 기계 번역을 넘어 요약, 대화, 의미 파싱 등 전반적인 시퀀스 변환 과제에서 갖는 범용성을 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We’ll introduce the algorithm in sections Section 11.2, and in following sections give important components of the model like beam search decoding, and we’ll discuss how MT is evaluated, introducing the popular BLEU metric.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 11.2절에서 관련 알고리즘을 소개하고, 이어지는 절에서 빔 서치 디코딩(beam search decoding)과 같은 모델의 중요한 구성 요소들을 다룰 것입니다. 또한 MT가 어떻게 평가되는지 논의하며 대중적인 BLEU 메트릭을 소개할 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>11장에서 다룰 핵심 주제들(알고리즘, 빔 서치, BLEU 평가)을 예고합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>But first, in the next section, we begin by summarizing the linguistic background to MT: key differences among languages that are important to consider when considering the task of translation.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>하지만 그전에, 다음 절에서는 MT의 언어학적 배경인 언어 간의 주요 차이점들을 요약하는 것으로 시작하겠습니다. 이는 번역 과제를 고려할 때 중요하게 생각해야 할 요소들입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>다음 절에서 다룰 언어학적 배경 지식의 중요성을 언급하며 마무리합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

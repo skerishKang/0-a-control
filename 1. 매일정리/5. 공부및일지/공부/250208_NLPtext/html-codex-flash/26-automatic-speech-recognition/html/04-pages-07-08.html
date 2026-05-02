@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 7-8 | Automatic Speech Recognition and Text-to-Speech</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">26 Automatic Speech Recognition and Text-to-Speech</div>
+<h1>Automatic Speech Recognition and Text-to-Speech</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-7">Page 7</a>
+<a class="chip" href="#page-8">Page 8</a>
+
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 7-8 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>26. Automatic Speech Recognition.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-7">
+<header class="page-header">
+<h2>Page 7</h2>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.2 • FEATURE EXTRACTION FOR ASR: LOG MEL SPECTRUM 7</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.2 • ASR을 위한 특징 추출: 로그 멜 스펙트럼 7</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The input to the DFT is a windowed signal x[n]...x[m], and the output, for each of N discrete frequency bands, is a complex number X[k] representing the magnitude and phase of that frequency component in the original signal. If we plot the magnitude against the frequency, we can visualize the spectrum that we introduced in Chapter 25. For example, Fig. 26.4 shows a 25 ms Hamming-windowed portion of a signal and its spectrum as computed by a DFT (with some additional smoothing).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>DFT의 입력은 윈도잉된 신호 x[n]...x[m]이며, 출력은 N개의 각 이산 주파수 대역에 대해 원래 신호에서 해당 주파수 성분의 크기(magnitude)와 위상(phase)을 나타내는 복소수 X[k]입니다. 주파수에 따른 크기를 그래프로 그리면, 25장에서 도입했던 스펙트럼(spectrum)을 시각화할 수 있습니다. 예를 들어, 그림 26.4는 25ms 해밍 윈도잉된 신호의 일부와 DFT로 계산된(일부 추가적인 평활화(smoothing) 포함) 스펙트럼을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DFT의 입출력 관계와 스펙트럼 시각화의 개념을 설명합니다. 시간 영역의 신호가 주파수 영역의 크기와 위상 정보로 변환됨을 알 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.4 (a) A 25 ms Hamming-windowed portion of a signal from the vowel [iy] and (b) its spectrum computed by a DFT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.4 (a) 모음 [iy] 신호에서 25ms 해밍 윈도잉된 부분과 (b) DFT로 계산된 스펙트럼.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 모음 신호와 그에 해당하는 주파수 스펙트럼의 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We do not introduce the mathematical details of the DFT here, except to note that Fourier analysis relies on Euler’s formula, with j as the imaginary unit:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>여기서는 DFT의 수학적 세부 사항을 다루지 않지만, 푸리에 분석이 j를 허수 단위로 하는 오일러 공식(Euler's formula)에 의존한다는 점만 언급하겠습니다:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>푸리에 변환의 수학적 기초인 오일러 공식을 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Euler’s formula</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>오일러 공식</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>지수 함수와 삼각 함수 사이의 관계를 나타내는 수학 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>e^(j theta) = cos theta + j sin theta (26.4)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>e^(j theta) = cos theta + j sin theta (26.4)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>오일러 공식의 표현식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>As a brief reminder for those students who have already studied signal processing, the DFT is defined as follows:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>신호 처리를 이미 공부한 학생들을 위해 짧게 상기시키자면, DFT는 다음과 같이 정의됩니다:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DFT의 수학적 정의를 제시합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>X[k] = sum_{n=0}^{N-1} x[n] e^{-j 2pi/N kn} (26.5)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>X[k] = sum_{n=0}^{N-1} x[n] e^{-j 2pi/N kn} (26.5)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>이산 신호 x[n]을 이산 주파수 성분 X[k]로 변환하는 DFT 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A commonly used algorithm for computing the DFT is the fast Fourier transform or FFT. This implementation of the DFT is very efficient but only works for values of N that are powers of 2.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>DFT를 계산하기 위해 흔히 사용되는 알고리즘은 고속 푸리에 변환(Fast Fourier Transform, FFT)입니다. 이 DFT 구현 방식은 매우 효율적이지만 N의 값이 2의 거듭제곱인 경우에만 작동합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DFT를 효율적으로 구현한 FFT 알고리즘의 특징과 제약 사항을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+  fast Fourier transform
+  FFT</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+  고속 푸리에 변환
+  FFT</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>DFT 연산량을 획기적으로 줄인 알고리즘입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.2.4 Mel Filter Bank and Log</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.2.4 멜 필터뱅크 및 로그(Log)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 청각 특성을 반영하여 주파수 성분을 재조정하는 과정을 다룹니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The results of the FFT tell us the energy at each frequency band. Human hearing, however, is not equally sensitive at all frequency bands; it is less sensitive at higher frequencies. This bias toward low frequencies helps human recognition, since information in low frequencies like formants is crucial for distinguishing values or nasals, while information in high frequencies like stop bursts or fricative noise is less crucial for successful recognition. Modeling this human perceptual property improves speech recognition performance in the same way.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>FFT의 결과는 각 주파수 대역의 에너지를 알려줍니다. 그러나 인간의 청각은 모든 주파수 대역에서 동일하게 민감하지 않으며, 고주파수 대역에서는 민감도가 떨어집니다. 이러한 저주파수 편향은 인간의 인식을 돕는데, 포먼트와 같은 저주파수 정보는 모음이나 비음을 구분하는 데 결정적인 반면, 파열음의 파열(stop bursts)이나 마찰음의 노이즈와 같은 고주파수 정보는 성공적인 인식에 덜 결정적이기 때문입니다. 이러한 인간의 지각적 특성을 모델링하는 것은 음성 인식 성능을 향상시킵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 청각이 저주파수에 더 민감하다는 특성을 설명하고, 이를 모델링하는 것이 ASR 성능 향상에 중요함을 강조합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We implement this intuition by collecting energies, not equally at each frequency band, but according to the mel scale, an auditory frequency scale (Chapter 25). A mel (Stevens et al. 1937, Stevens and Volkmann 1940) is a unit of pitch. Pairs of sounds that are perceptually equidistant in pitch are separated by an equal number of mels. The mel frequency m can be computed from the raw acoustic frequency f by a log transformation:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 이러한 직관을 반영하여 각 주파수 대역에서 동일하게 에너지를 수집하는 것이 아니라, 청각적 주파수 척도인 멜 스케일(mel scale, 25장)에 따라 수집함으로써 이를 구현합니다. 멜(mel)은 음고(pitch)의 단위입니다(Stevens et al. 1937, Stevens and Volkmann 1940). 지각적으로 음고의 간격이 동일한 소리 쌍은 동일한 멜 수치 차이를 가집니다. 멜 주파수 m은 로그 변환을 통해 가공되지 않은 음향 주파수 f로부터 다음과 같이 계산될 수 있습니다:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간의 음고 지각 단위를 반영한 멜 스케일의 개념과 물리적 주파수와의 관계를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>mel</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>멜(mel)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인간이 느끼는 음의 높낮이를 반영한 주파수 척도 단위입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>mel(f) = 1127 ln(1 + f/700) (26.6)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>mel(f) = 1127 ln(1 + f/700) (26.6)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>물리적 주파수(Hz)를 멜 스케일로 변환하는 공식입니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-8">
+<header class="page-header">
+<h2>Page 8</h2>
+<div class="page-subtitle">26.3 음성 인식 아키텍처</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>8 CHAPTER 26 • AUTOMATIC SPEECH RECOGNITION AND TEXT-TO-SPEECH</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>8 제26장 • 자동 음성 인식 및 텍스트 음성 변환</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We implement this intuition by creating a bank of filters that collect energy from each frequency band, spread logarithmically so that we have very fine resolution at low frequencies, and less resolution at high frequencies. Figure 26.5 shows a sample bank of triangular filters that implement this idea, that can be multiplied by the spectrum to get a mel spectrum.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 저주파수에서는 매우 세밀한 해상도를 갖고 고주파수에서는 낮은 해상도를 갖도록 로그 간격으로 배치된, 각 주파수 대역의 에너지를 수집하는 필터뱅크(bank of filters)를 만듦으로써 이러한 직관을 구현합니다. 그림 26.5는 이 아이디어를 구현한 삼각형 필터뱅크의 예시를 보여주며, 이를 스펙트럼과 곱하여 멜 스펙트럼(mel spectrum)을 얻을 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>저주파수는 촘촘하게, 고주파수는 넓게 에너지를 수집하는 필터뱅크의 작동 원리를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 26.5 The mel filter bank (Davis and Mermelstein, 1980). Each triangular filter, spaced logarithmically along the mel scale, collects energy from a given frequency range.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.5 멜 필터뱅크 (Davis and Mermelstein, 1980). 멜 스케일을 따라 로그 간격으로 배치된 각 삼각형 필터는 주어진 주파수 범위에서 에너지를 수집합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>멜 필터뱅크의 시각적 형태를 보여줍니다. 삼각형 필터들이 뒤로 갈수록 넓어지는 것을 확인할 수 있습니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Finally, we take the log of each of the mel spectrum values. The human response to signal level is logarithmic (like the human response to frequency). Humans are less sensitive to slight differences in amplitude at high amplitudes than at low amplitudes. In addition, using a log makes the feature estimates less sensitive to variations in input such as power variations due to the speaker’s mouth moving closer or further from the microphone.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>마지막으로, 우리는 각 멜 스펙트럼 값의 로그(log)를 취합니다. 신호 레벨에 대한 인간의 반응은 (주파수에 대한 반응과 마찬가지로) 로그 함수적입니다. 인간은 낮은 진폭보다 높은 진폭에서 진폭의 미세한 차이에 덜 민감합니다. 또한, 로그를 사용하면 화자의 입이 마이크에 가까워지거나 멀어짐에 따른 전력 변화와 같은 입력 신호의 변동에 특징값 추정치가 덜 민감해집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>주파수뿐만 아니라 진폭에 대해서도 로그 스케일을 적용하는 이유를 설명합니다. 이는 인간의 지각 특성 반영과 동시에 신호의 변동에 대한 강건성을 높여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>26.3 Speech Recognition Architecture</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>26.3 음성 인식 아키텍처</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 인식 시스템의 전반적인 구조를 다루는 섹션입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The basic architecture for ASR is the encoder-decoder (implemented with either RNNs or Transformers), exactly the same architecture introduced for MT in Chapter 10. Generally we start from the log mel spectral features described in the previous section, and map to letters, although it’s also possible to map to induced morpheme-like chunks like wordpieces or BPE.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>ASR의 기본 아키텍처는 인코더-디코더(RNN 또는 트랜스포머로 구현됨)이며, 이는 10장에서 기계 번역(MT)을 위해 도입된 것과 정확히 동일한 아키텍처입니다. 일반적으로 이전 섹션에서 설명한 로그 멜 스펙트럼 특징에서 시작하여 문자로 매핑하지만, 워드피스(wordpieces)나 BPE와 같이 유도된 형태소 형태의 덩어리로 매핑할 수도 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>현대 ASR이 기계 번역과 유사한 인코더-디코더 구조를 사용함을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Fig. 26.6 sketches the standard encoder-decoder architecture, which is commonly referred to as the attention-based encoder decoder or AED, or listen attend and spell (LAS) after the two papers which first applied it to speech (Chorowski et al. 2014, Chan et al. 2016). The input is a sequence of t acoustic feature vectors F = f1, f2, ..., ft, one vector per 10 ms frame. The output can be letters or wordpieces; we’ll assume letters here. Thus the output sequence Y = (<SOS>, y1, ..., ym, <EOS>), assuming special start of sequence and end of sequence tokens <sos> and <eos>, and each yi is a character; for English we might choose the set:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 26.6은 표준 인코더-디코더 아키텍처를 묘사하며, 이를 음성에 처음 적용한 두 논문(Chorowski et al. 2014, Chan et al. 2016)을 따서 어텐션 기반 인코더-디코더(attention-based encoder decoder, AED) 또는 LAS(Listen, Attend and Spell)라고 흔히 부릅니다. 입력은 10ms 프레임당 하나의 벡터인 t개의 음향 특징 벡터 시퀀스 F = f1, f2, ..., ft입니다. 출력은 문자나 워드피스일 수 있으며, 여기서는 문자로 가정하겠습니다. 따라서 출력 시퀀스는 Y = (<SOS>, y1, ..., ym, <EOS>)가 되며, 여기서 <sos>와 <eos>는 특수 시작 및 종료 토큰이고, 각 yi는 문자입니다. 영어의 경우 다음과 같은 집합을 선택할 수 있습니다:</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>AED 또는 LAS로 불리는 음성 인식 아키텍처의 입력과 출력을 정의합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>
+  AED
+  listen attend and spell</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>
+  AED
+  LAS (Listen, Attend and Spell)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어텐션 메커니즘을 사용하는 음성 인식 모델의 대표적인 명칭들입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>yi \in {a, b, c, ..., z, 0, ..., 9, <space>, <comma>, <period>, <apostrophe>, <unk>}</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>yi \in {a, b, c, ..., z, 0, ..., 9, <공백>, <쉼표>, <마침표>, <어포스트로피>, <unk>}</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>출력 레이블로 사용될 수 있는 문자 집합의 예시입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Of course the encoder-decoder architecture is particularly appropriate when input and output sequences have stark length differences, as they do for speech, with very long acoustic feature sequences mapping to much shorter sequences of letters or words. A single word might be 5 letters long but, supposing it lasts about 2 seconds, would take 200 acoustic frames (of 10ms each).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>물론 인코더-디코더 아키텍처는 음성에서와 같이 입력과 출력 시퀀스의 길이 차이가 매우 클 때 특히 적합합니다. 매우 긴 음향 특징 시퀀스가 훨씬 짧은 문자나 단어 시퀀스로 매핑되기 때문입니다. 단 한 단어가 5개의 문자로 이루어져 있더라도, 그것이 약 2초 동안 지속된다면 200개의 음향 프레임(각 10ms)을 차지하게 될 것입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>음성 신호(프레임 시퀀스)와 텍스트(문자/단어 시퀀스) 사이의 극심한 길이 차이를 인코더-디코더가 어떻게 해결하는지 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Because this length difference is so extreme for speech, encoder-decoder architectures for speech need to have a special compression stage that shortens the acoustic feature sequence before the encoder stage. (Alternatively, we can use a loss</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>음성의 경우 이러한 길이 차이가 매우 극심하기 때문에, 음성을 위한 인코더-디코더 아키텍처는 인코더 단계 이전에 음향 특징 시퀀스를 단축하는 특별한 압축 단계(compression stage)를 가져야 합니다. (또는, 손실 함수를 사용할 수 있습니다... [다음 페이지에서 계속])</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>입력 데이터의 길이를 줄이기 위한 압축 단계의 필요성을 언급합니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

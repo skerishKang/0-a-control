@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 13-14 | Statistical Constituency Parsing</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">Appendix C Statistical Constituency Parsing</div>
+<h1>Statistical Constituency Parsing</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-13">Page 13</a>
+<a class="chip" href="#page-14">Page 14</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 13-14 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>C. Statistical Constituency Parsing.pdf</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Draft</dd>
+</dl>
+</div>
+</section>
+
+<section class="page" id="page-13">
+<header class="page-header">
+<h2>Page 13</h2>
+<div class="page-subtitle">Probabilistic Lexicalized CFGs</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>annotation (subordinating conjunctions occur under S, prepositions under PP), while others require splitting the pre-terminal nodes. Figure C.9 shows an example from Klein and Manning (2003b) in which even a parent-annotated grammar incorrectly parses works as a noun in to see if advertising works. Splitting pre-terminals to allow if to prefer a sentential complement results in the correct verbal parse.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>주석(종속 접속사는 S 아래에, 전치사는 PP 아래에 발생함)을 다루는 반면, 다른 것들은 사전 터미널 노드의 분할을 요구합니다. 그림 C.9는 Klein과 Manning(2003b)의 예를 보여주는데, 여기서 부모 주석이 달린 문법조차도 "to see if advertising works"에서 "works"를 명사로 잘못 분석합니다. "if"가 문장 보어를 선호하도록 사전 터미널을 분할하면 올바른 동사 구문 분석 결과가 나옵니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>사전 터미널 노드 분할의 중요성을 설명하며, 특정 단어(예: works)의 품사 중의성을 해결하는 사례를 제시함.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>split and merge</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>분할 및 병합</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문법의 복잡도와 정확도 사이의 균형을 맞추기 위한 알고리즘적 기법.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">section_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>C.6 Probabilistic Lexicalized CFGs</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>C.6 확률적 어휘화 CFG</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>확률적 문맥 자유 문법(PCFG)에 어휘 정보를 결합한 모델에 대한 섹션 시작.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The previous section showed that a simple probabilistic CKY algorithm for parsing raw PCFGs can achieve extremely high parsing accuracy if the grammar rule symbols are redesigned by automatic splits and merges.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이전 섹션에서는 문법 규칙 기호가 자동 분할 및 병합에 의해 재설계될 경우, 원시 PCFG를 파싱하기 위한 단순한 확률적 CKY 알고리즘이 매우 높은 파싱 정확도를 달성할 수 있음을 보여주었습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>자동화된 규칙 최적화(분할/병합)가 파싱 성능에 미치는 긍정적 영향 요약.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In this section, we discuss an alternative family of models in which instead of modifying the grammar rules, we modify the probabilistic model of the parser to allow for lexicalized rules. The resulting family of lexicalized parsers includes the Collins parser (Collins, 1999) and the Charniak parser (Charniak, 1997).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이 섹션에서는 문법 규칙을 수정하는 대신, 파서의 확률 모델을 수정하여 어휘화된 규칙을 허용하는 대안적인 모델 군에 대해 논의합니다. 결과적으로 생성된 어휘화 파서 군에는 Collins 파서(Collins, 1999)와 Charniak 파서(Charniak, 1997)가 포함됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙 수정이 아닌 확률 모델 수정을 통한 어휘화 접근법 소개 및 대표적 파서 언급.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>lexicalized grammar</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘화된 문법</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>비단말 기호에 어휘적 핵심어(head) 정보를 포함시킨 문법 체계.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We saw in Section ?? that syntactic constituents could be associated with a lexical head, and we defined a lexicalized grammar in which each non-terminal in the tree is annotated with its lexical head, where a rule like VP → VBD NP PP would be extended as</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>우리는 섹션 ??에서 구문 구성 성분이 어휘적 핵심어(head)와 연관될 수 있음을 보았고, 트리의 각 비단말 노드에 어휘적 핵심어가 주석으로 달린 어휘화된 문법을 정의했습니다. 여기서 VP → VBD NP PP와 같은 규칙은 다음과 같이 확장됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>일반적인 CFG 규칙이 어휘 정보를 포함하여 어떻게 구체화되는지 설명.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>VP(dumped) → VBD(dumped) NP(sacks) PP(into)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>VP(dumped) → VBD(dumped) NP(sacks) PP(into)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>VP의 핵심어 'dumped'가 규칙에 명시된 어휘화된 규칙의 예시 (C.20).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure C.9 shows two parse trees: one incorrect with parent annotation, one correct with split pre-terminals]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 C.9는 두 개의 구문 분석 트리를 보여줌: 하나는 부모 주석이 있어도 틀린 트리, 다른 하나는 사전 터미널 분할을 통해 올바르게 분석된 트리]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>"if advertising works" 문장에 대한 구조적 차이 시각화.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.9 An incorrect parse even with a parent-annotated parse (left). The correct parse (right), was produced by a grammar in which the pre-terminal nodes have been split, allowing the probabilistic grammar to capture the fact that if prefers sentential complements. Adapted from Klein and Manning (2003b).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.9 부모 주석이 달린 구문 분석임에도 불구하고 잘못된 분석(왼쪽). 올바른 분석(오른쪽)은 사전 터미널 노드가 분할된 문법에 의해 생성되었으며, 이를 통해 확률 문법이 "if"가 문장 보어를 선호한다는 사실을 포착할 수 있게 되었습니다. Klein과 Manning(2003b)에서 각색됨.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>특정 어휘적 특성(보어 선호도)을 반영하기 위한 문법 세분화의 효과 설명.</pre></section>
+</div>
+</article>
+</div>
+</section>
+
+<section class="page" id="page-14">
+<header class="page-header">
+<h2>Page 14</h2>
+<div class="page-subtitle">Head Tags and Lexical Rules</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In the standard type of lexicalized grammar, we actually make a further extension, which is to associate the head tag, the part-of-speech tags of the headwords, with the non-terminal symbols as well. Each rule is thus lexicalized by both the headword and the head tag of each constituent resulting in a format for lexicalized rules like</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>표준적인 유형의 어휘화된 문법에서는 사실 한 단계 더 나아간 확장을 수행하는데, 이는 핵심어의 품사 태그인 '헤드 태그'를 비단말 기호와도 연관시키는 것입니다. 따라서 각 규칙은 각 구성 성분의 핵심어와 헤드 태그 모두에 의해 어휘화되어, 다음과 같은 어휘화 규칙 형식을 갖게 됩니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 정보뿐만 아니라 품사 정보(태그)까지 규칙에 포함시키는 방식 설명.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>head tag</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>헤드 태그</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>핵심어의 품사 정보를 의미함.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>VP(dumped, VBD) → VBD(dumped, VBD) NP(sacks, NNS) PP(into, P)</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>VP(dumped, VBD) → VBD(dumped, VBD) NP(sacks, NNS) PP(into, P)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단어와 품사 태그가 함께 표시된 어휘화 규칙의 예 (C.21).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>We show a lexicalized parse tree with head tags in Fig. C.10, extended from Fig. ??.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 ??에서 확장된, 헤드 태그가 포함된 어휘화된 구문 분석 트리를 그림 C.10에 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>시각적 예시인 그림 C.10에 대한 안내.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[Figure C.10 showing a full lexicalized parse tree and two tables: Internal Rules and Lexical Rules]</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[그림 C.10은 전체 어휘화된 구문 분석 트리와 두 개의 표(내부 규칙 및 어휘 규칙)를 보여줌]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>"workers dumped sacks into a bin" 문장에 대한 어휘화된 트리 구조와 규칙 분리.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure C.10 A lexicalized tree, including head tags, for a WSJ sentence, adapted from Collins (1999). Below we show the PCFG rules needed for this parse tree, internal rules on the left, and lexical rules on the right.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.10 Collins(1999)에서 인용된, 헤드 태그를 포함한 WSJ 문장의 어휘화된 트리. 아래에는 이 분석 트리에 필요한 PCFG 규칙들을 보여주며, 왼쪽은 내부 규칙, 오른쪽은 어휘 규칙입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>실제 말뭉치(WSJ) 데이터를 활용한 어휘화 트리의 구조적 분석.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>To generate such a lexicalized tree, each PCFG rule must be augmented to identify one right-hand constituent to be the head daughter. The headword for a node is then set to the headword of its head daughter, and the head tag to the part-of-speech tag of the headword. Recall that we gave in Fig. ?? a set of handwritten rules for identifying the heads of particular constituents.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>이러한 어휘화된 트리를 생성하려면, 각 PCFG 규칙은 오른쪽 구성 성분 중 하나를 '헤드 딸(head daughter)'로 식별하도록 확장되어야 합니다. 그런 다음 노드의 핵심어는 헤드 딸의 핵심어로 설정되고, 헤드 태그는 그 핵심어의 품사 태그로 설정됩니다. 특정 구성 성분의 헤드를 식별하기 위한 일련의 수작업 규칙들을 그림 ??에서 제시했던 것을 상기하십시오.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘화 트리를 생성하는 알고리즘적 절차(헤드 식별 및 전파) 설명.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>A natural way to think of a lexicalized grammar is as a parent annotation, that is, as a simple context-free grammar with many copies of each rule, one copy for each possible headword/head tag for each constituent. Thinking of a probabilistic lexicalized CFG in this way would lead to the set of simple PCFG rules shown below the tree in Fig. C.10.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘화된 문법을 생각하는 자연스러운 방법은 이를 부모 주석으로 간주하는 것입니다. 즉, 각 구성 성분에 대해 가능한 모든 핵심어/헤드 태그 조합마다 하나의 복사본을 갖는, 수많은 복사본으로 이루어진 단순한 문맥 자유 문법으로 보는 것입니다. 확률적 어휘화 CFG를 이런 방식으로 생각하면 그림 C.10의 트리 아래에 표시된 단순 PCFG 규칙 집합으로 이어집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘화된 문법을 기존 CFG의 확장(복사본 생성) 관점에서 해석.</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>lexical rules, internal rules</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>어휘 규칙, 내부 규칙</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>규칙의 성격에 따른 분류(단어 생성 vs 구조 생성).</pre></section>
+</div>
+</article>
+
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that Fig. C.10 shows two kinds of rules: lexical rules, which express the expansion of a pre-terminal to a word, and internal rules, which express the other rule expansions. We need to distinguish these kinds of rules in a lexicalized grammar because they are associated with very different kinds of probabilities. The lexical rules are deterministic, that is, they have probability 1.0 since a lexicalized pre-</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 C.10이 두 가지 종류의 규칙을 보여줌에 유의하십시오. 하나는 사전 터미널을 단어로 확장하는 '어휘 규칙'이고, 다른 하나는 그 외의 규칙 확장을 나타내는 '내부 규칙'입니다. 어휘화된 문법에서 이러한 규칙들을 구분해야 하는 이유는 이들이 매우 다른 성격의 확률과 연관되어 있기 때문입니다. 어휘 규칙은 결정론적입니다. 즉, 어휘화된 사전 터미널이...</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>어휘 규칙과 내부 규칙의 확률 모델링 차이점에 대한 설명 시작.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+
+function setPanelState(toggle, expanded) {
+const panel = toggle.nextElementSibling;
+toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+toggle.textContent = expanded ? "study_note 접기" : "study_note 보기";
+panel.hidden = !expanded;
+}
+
+toggles.forEach((toggle) => {
+setPanelState(toggle, false);
+toggle.addEventListener("click", () => {
+const expanded = toggle.getAttribute("aria-expanded") === "true";
+setPanelState(toggle, !expanded);
+});
+});
+
+document.querySelector("[data-expand-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, true));
+});
+
+document.querySelector("[data-collapse-all]").addEventListener("click", () => {
+toggles.forEach((toggle) => setPanelState(toggle, false));
+});
+</script>
+</body>
+</html>

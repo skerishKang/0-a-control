@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | Coreference Resolution</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta"><div class="eyebrow">21 Coreference Resolution</div><h1>Coreference Resolution</h1></div>
+<div class="quick-nav"><a class="chip" href="#page-15">Page 15</a><a class="chip" href="#page-16">Page 16</a></div>
+<div class="actions"><button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button><button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button></div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid"><dl class="meta-card"><dt>Source</dt><dd>21. Coreference Resolution</dd></dl><dl class="meta-card"><dt>Workflow</dt><dd>html-codex-flash</dd></dl><dl class="meta-card"><dt>Status</dt><dd>Accepted</dd></dl></div>
+</section>
+<section class="page" id="page-15">
+<header class="page-header"><h2>Page 15</h2><div class="page-subtitle">위노그라드 스키마 챌린지</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.7 Winograd Schema Challenge</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.7 위노그라드 스키마 챌린지(Winograd Schema Challenge)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순한 통사적 규칙이 아닌, 세계 지식(World Knowledge)과 상식적 추론이 있어야만 풀 수 있는 상호 참조 해소의 난제를 다릅니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">margin_note</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Winograd Schema</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위노그라드 스키마(Winograd Schema)</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>두 개의 문장이 한 단어만 다르고, 그 차이가 대명사의 지칭 대상을 완전히 바꾸는 문장 쌍을 말합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The Winograd Schema Challenge (WSC) was designed as a more rigorous alternative to the Turing Test. It consists of pairs of sentences that differ by only one or two words and contain an ambiguous pronoun.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위노그라드 스키마 챌린지(WSC)는 튜링 테스트를 대체할 더 엄격한 대안으로 설계되었습니다. 이는 단 한두 단어만 다르고 모호한 대명사를 포함하는 문장 쌍들로 구성됩니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>인공지능의 진정한 이해 능력을 평가하기 위한 WSC의 취지를 설명합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>"The trophy doesn't fit into the brown suitcase because it is too [large / small]. What is too [large / small]?"</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>"트로피가 갈색 여행 가방에 들어가지 않는다. 왜냐하면 그것이 너무 [크기 / 작기] 때문이다. 무엇이 너무 [큰가 / 작은가]?"</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>WSC의 대표적인 예시입니다. 'large'일 때는 트로피를, 'small'일 때는 가방을 가리킨다는 것을 상식적으로 판단해야 합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+<section class="page" id="page-16">
+<header class="page-header"><h2>Page 16</h2><div class="page-subtitle">요약</div></header>
+<div class="blocks">
+<article class="block"><div class="block-head"><div class="block-title">Block 1</div><div class="block-type">other</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 21 • COREFERENCE RESOLUTION</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제21장 • 상호 참조 해소</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 2</div><div class="block-type">paragraph</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Solving Winograd schemas requires deep semantic understanding and reasoning about the world. Traditional models based on surface features often fail on these tasks.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>위노그라드 스키마를 해결하려면 깊은 의미론적 이해와 세상에 대한 추론이 필요합니다. 표층적인 자질에 기반한 전통적인 모델들은 종종 이러한 과업에서 실패합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>단순 통계나 근접성만으로는 해결할 수 없는 상식 추론의 중요성을 강조합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 3</div><div class="block-type">section_title</div></div><div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>21.8 Summary</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>21.8 요약</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>21장의 핵심 내용을 갈무리하는 요약 섹션입니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+<article class="block"><div class="block-head"><div class="block-title">Block 4</div><div class="block-type">list</div></div><div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>    - Coreference resolution identifies expressions (mentions) in a text that refer to the same entity.
+    - Mentions can be proper nouns, definite NPs, or pronouns.
+    - Two main subtasks are mention detection and clustering.
+    - Primary evaluation metrics include MUC (link-based), B-cubed (mention-based), and CEAF (cluster-based).
+    - Modern neural systems provide end-to-end coreference resolution, often using large-scale pre-trained models like BERT or SpanBERT.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>    - 상호 참조 해소는 텍스트 내에서 동일한 개체를 가리키는 표현(언급)들을 식별합니다.
+    - 언급은 고유 명사, 한정 명사구, 또는 대명사일 수 있습니다.
+    - 두 가지 주요 하위 과업은 언급 탐지와 클러스터링입니다.
+    - 주요 평가 지표에는 MUC(링크 기반), B-cubed(언급 기반), 그리고 CEAF(클러스터 기반)가 있습니다.
+    - 현대의 신경망 시스템은 BERT나 SpanBERT와 같은 대규모 사전 학습 모델을 사용하여 엔드투엔드 상호 참조 해소를 제공합니다.</pre></section>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>21장의 4가지 핵심 요소를 정리합니다.</pre></section>
+<button class="note-toggle" type="button">📝 Study Note</button>
+</div></article>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.note-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const note = btn.previousElementSibling;
+    if (note.hidden) { note.hidden = false; btn.textContent = '✏️ Study Note'; }
+    else { note.hidden = true; btn.textContent = '📝 Study Note'; }
+  });
+});
+document.querySelector('[data-expand-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = false);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '✏️ Study Note');
+});
+document.querySelector('[data-collapse-all]').addEventListener('click', () => {
+  document.querySelectorAll('.note-panel').forEach(p => p.hidden = true);
+  document.querySelectorAll('.note-toggle').forEach(b => b.textContent = '📝 Study Note');
+});
+</script>
+</body>
+</html>

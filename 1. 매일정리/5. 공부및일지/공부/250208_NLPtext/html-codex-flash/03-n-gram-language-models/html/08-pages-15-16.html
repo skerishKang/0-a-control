@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages 15-16 | N-gram Language Models</title>
+<style>
+:root { --bg: #f6f1e8; --paper: #fffdf8; --ink: #1f1b16; --muted: #6f675d; --line: #ddd2c2; --accent: #8c5a2b; --accent-soft: #f1e2cf; --note-bg: #faf4ea; --source-bg: #f5f3ef; --translation-bg: #fff8ea; --shadow: 0 10px 30px rgba(53, 40, 24, 0.08); --radius: 18px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(circle at top left, rgba(140, 90, 43, 0.1), transparent 28%), linear-gradient(180deg, #f9f4ec 0%, var(--bg) 100%); color: var(--ink); font: 16px/1.7 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+.shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(246, 241, 232, 0.88); border-bottom: 1px solid rgba(221, 210, 194, 0.85); margin-bottom: 24px; }
+.topbar-inner { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 14px 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.doc-meta { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.15; font-weight: 800; }
+.quick-nav, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip, .action-btn { border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; transition: transform 0.15s ease, background 0.15s ease; }
+.chip:hover, .action-btn:hover { transform: translateY(-1px); background: #fff; }
+.hero { background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+.hero p { margin: 10px 0 0; color: var(--muted); }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+.meta-card { padding: 14px 16px; border-radius: 14px; background: #fcf7f0; border: 1px solid var(--line); }
+.meta-card dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.meta-card dd { margin: 0; font-weight: 700; }
+.page { margin-bottom: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); box-shadow: var(--shadow); overflow: hidden; }
+.page-header { padding: 20px 24px; background: linear-gradient(135deg, #fff8eb, #f5ead8); border-bottom: 1px solid var(--line); }
+.page-header h2 { margin: 0; font-size: 28px; line-height: 1.15; }
+.page-subtitle { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.blocks { padding: 18px; display: grid; gap: 16px; }
+.block { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fffdfa; }
+.block-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.block-title { font-weight: 800; }
+.block-type { color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.block-body { padding: 16px; display: grid; gap: 14px; }
+.label { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.source, .translation, .note-panel { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+.source { background: var(--source-bg); }
+.translation { background: var(--translation-bg); }
+.note-panel { background: var(--note-bg); }
+.source pre, .translation pre, .note-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.mono pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 14px; line-height: 1.6; }
+.note-toggle { align-self: start; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.note-panel[hidden] { display: none; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+table th, table td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+table th { background: var(--source-bg); font-weight: 700; }
+table tr:nth-child(even) { background: var(--translation-bg); }
+@media (max-width: 720px) { .shell { width: min(100% - 20px, 100%); } .topbar-inner { width: min(100% - 20px, 100%); } .hero, .page-header, .blocks, .block-head, .block-body { padding-left: 14px; padding-right: 14px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-inner">
+<div class="doc-meta">
+<div class="eyebrow">03 PDF / HTML Sample</div>
+<h1>N-gram Language Models</h1>
+</div>
+<div class="quick-nav">
+<a class="chip" href="#page-15">Page 15</a>
+<a class="chip" href="#page-16">Page 16</a>
+</div>
+<div class="actions">
+<button class="action-btn" type="button" data-expand-all>모든 주석 펼치기</button>
+<button class="action-btn" type="button" data-collapse-all>모든 주석 접기</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Study Edition</div>
+<h2>Pages 15-16 Annotated Page</h2>
+<p>본문은 바로 읽고, `study_note`만 접어서 여는 형태로 구성했습니다.</p>
+<div class="hero-grid">
+<dl class="meta-card">
+<dt>Source</dt>
+<dd>3. N-gram Language Models</dd>
+</dl>
+<dl class="meta-card">
+<dt>Workflow</dt>
+<dd>html-codex-flash</dd>
+</dl>
+<dl class="meta-card">
+<dt>Status</dt>
+<dd>Accepted</dd>
+</dl>
+</div>
+</section>
+<section class="page" id="page-15">
+<header class="page-header">
+<h2>Page 15</h2>
+<div class="page-subtitle">스무딩 테이블 예시 및 라플라스 스무딩 한계</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5 • SMOOTHING 15</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5 • 스무딩(Smoothing) 15</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: i | want | to | eat | chinese | food | lunch | spend
+row 2: i | 6 | 828 | 1 | 10 | 1 | 1 | 1 | 3
+row 3: want | 3 | 1 | 609 | 2 | 7 | 7 | 6 | 2
+row 4: to | 3 | 1 | 5 | 687 | 3 | 1 | 7 | 212
+row 5: eat | 1 | 1 | 3 | 1 | 17 | 3 | 43 | 1
+row 6: chinese | 2 | 1 | 1 | 1 | 1 | 83 | 2 | 1
+row 7: food | 16 | 1 | 16 | 1 | 2 | 5 | 1 | 1
+row 8: lunch | 3 | 1 | 1 | 1 | 1 | 2 | 1 | 1
+row 9: spend | 2 | 1 | 2 | 1 | 1 | 1 | 1 | 1</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: i | want | to | eat | chinese | food | lunch | spend
+행 2: i | 6 | 828 | 1 | 10 | 1 | 1 | 1 | 3
+행 3: want | 3 | 1 | 609 | 2 | 7 | 7 | 6 | 2
+행 4: to | 3 | 1 | 5 | 687 | 3 | 1 | 7 | 212
+행 5: eat | 1 | 1 | 3 | 1 | 17 | 3 | 43 | 1
+행 6: chinese | 2 | 1 | 1 | 1 | 1 | 83 | 2 | 1
+행 7: food | 16 | 1 | 16 | 1 | 2 | 5 | 1 | 1
+행 8: lunch | 3 | 1 | 1 | 1 | 1 | 2 | 1 | 1
+행 9: spend | 2 | 1 | 2 | 1 | 1 | 1 | 1 | 1</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>버클리 레스토랑 프로젝트 코퍼스의 일부 어휘에 대해 1 더하기 스무딩을 적용한 바이그램 빈도표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 3.6 Add-one smoothed bigram counts for eight of the words (out of V = 1446) in the Berkeley Restaurant Project corpus of 9332 sentences. Previously-zero counts are in gray.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.6 버클리 레스토랑 프로젝트 코퍼스(9332문장)에 등장하는 8개 단어(전체 어휘 수 V = 1446 중)에 대한 1 더하기 스무딩 적용 바이그램 빈도. 이전에 0이었던 빈도는 회색으로 표시되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>0이던 빈도에 모두 1을 더한 결과를 보여주는 표 설명입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Thus, each of the unigram counts given in the previous section will need to be augmented by V = 1446. The result is the smoothed bigram probabilities in Fig. 3.7.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>따라서 앞 절에서 제시된 각 유니그램 빈도에는 V = 1446을 더해 보정해야 합니다. 그 결과가 그림 3.7의 스무딩된 바이그램 확률입니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1 더하기 스무딩에서는 분모도 어휘 크기만큼 커져야 함을 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: i | want | to | eat | chinese | food | lunch | spend
+row 2: i | 0.0015 | 0.21 | 0.00025 | 0.0025 | 0.00025 | 0.00025 | 0.00025 | 0.00075
+row 3: want | 0.0013 | 0.00042 | 0.26 | 0.00084 | 0.0029 | 0.0029 | 0.0025 | 0.00084
+row 4: to | 0.00078 | 0.00026 | 0.0013 | 0.18 | 0.00078 | 0.00026 | 0.0018 | 0.055
+row 5: eat | 0.00046 | 0.00046 | 0.0014 | 0.00046 | 0.0078 | 0.0014 | 0.02 | 0.00046
+row 6: chinese | 0.0012 | 0.00062 | 0.00062 | 0.00062 | 0.00062 | 0.052 | 0.0012 | 0.00062
+row 7: food | 0.0063 | 0.00039 | 0.0063 | 0.00039 | 0.00079 | 0.002 | 0.00039 | 0.00039
+row 8: lunch | 0.0017 | 0.00056 | 0.00056 | 0.00056 | 0.00056 | 0.0011 | 0.00056 | 0.00056
+row 9: spend | 0.0012 | 0.00058 | 0.0012 | 0.00058 | 0.00058 | 0.00058 | 0.00058 | 0.00058</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: i | want | to | eat | chinese | food | lunch | spend
+행 2: i | 0.0015 | 0.21 | 0.00025 | 0.0025 | 0.00025 | 0.00025 | 0.00025 | 0.00075
+행 3: want | 0.0013 | 0.00042 | 0.26 | 0.00084 | 0.0029 | 0.0029 | 0.0025 | 0.00084
+행 4: to | 0.00078 | 0.00026 | 0.0013 | 0.18 | 0.00078 | 0.00026 | 0.0018 | 0.055
+행 5: eat | 0.00046 | 0.00046 | 0.0014 | 0.00046 | 0.0078 | 0.0014 | 0.02 | 0.00046
+행 6: chinese | 0.0012 | 0.00062 | 0.00062 | 0.00062 | 0.00062 | 0.052 | 0.0012 | 0.00062
+행 7: food | 0.0063 | 0.00039 | 0.0063 | 0.00039 | 0.00079 | 0.002 | 0.00039 | 0.00039
+행 8: lunch | 0.0017 | 0.00056 | 0.00056 | 0.00056 | 0.00056 | 0.0011 | 0.00056 | 0.00056
+행 9: spend | 0.0012 | 0.00058 | 0.0012 | 0.00058 | 0.00058 | 0.00058 | 0.00058 | 0.00058</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1 더하기 스무딩으로 계산된 바이그램 확률표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 3.7 Add-one smoothed bigram probabilities for eight of the words (out of V = 1446) in the BeRP corpus of 9332 sentences. Previously-zero probabilities are in gray.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.7 BeRP 코퍼스(9332문장)에 등장하는 8개 단어(전체 어휘 수 V = 1446 중)에 대한 1 더하기 스무딩 적용 바이그램 확률. 이전에 0이었던 확률은 회색으로 표시되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩 후 확률 질량이 0이던 항목들에도 분배된 모습을 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>It is often convenient to reconstruct the count matrix so we can see how much a smoothing algorithm has changed the original counts. These adjusted counts can be computed by Eq. 3.24. Figure 3.8 shows the reconstructed counts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>스무딩 알고리즘이 원래의 빈도를 얼마나 변화시켰는지 보기 위해 빈도 행렬을 다시 구성하는 것이 종종 편리합니다. 이러한 조정된 빈도는 식 3.24로 계산할 수 있습니다. 그림 3.8은 그렇게 복원한 빈도들을 보여줍니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩의 영향을 확률이 아니라 빈도 스케일에서 다시 해석하는 단계입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>c*(w_{n-1}w_n) = [C(w_{n-1}w_n) + 1] × C(w_{n-1}) / [C(w_{n-1}) + V] (3.24)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>c*(w_{n-1}w_n) = [C(w_{n-1}w_n) + 1] × C(w_{n-1}) / [C(w_{n-1}) + V] (3.24)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.24). 스무딩된 확률로부터 조정된 빈도를 다시 계산하는 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">table</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>[table]
+row 1: i | want | to | eat | chinese | food | lunch | spend
+row 2: i | 3.8 | 527 | 0.64 | 6.4 | 0.64 | 0.64 | 0.64 | 1.9
+row 3: want | 1.2 | 0.39 | 238 | 0.78 | 2.7 | 2.7 | 2.3 | 0.78
+row 4: to | 1.9 | 0.63 | 3.1 | 430 | 1.9 | 0.63 | 4.4 | 133
+row 5: eat | 0.34 | 0.34 | 1 | 0.34 | 5.8 | 1 | 15 | 0.34
+row 6: chinese | 0.2 | 0.098 | 0.098 | 0.098 | 0.098 | 8.2 | 0.2 | 0.098
+row 7: food | 6.9 | 0.43 | 6.9 | 0.43 | 0.86 | 2.2 | 0.43 | 0.43
+row 8: lunch | 0.57 | 0.19 | 0.19 | 0.19 | 0.19 | 0.38 | 0.19 | 0.19
+row 9: spend | 0.32 | 0.16 | 0.32 | 0.16 | 0.16 | 0.16 | 0.16 | 0.16</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[table]
+행 1: i | want | to | eat | chinese | food | lunch | spend
+행 2: i | 3.8 | 527 | 0.64 | 6.4 | 0.64 | 0.64 | 0.64 | 1.9
+행 3: want | 1.2 | 0.39 | 238 | 0.78 | 2.7 | 2.7 | 2.3 | 0.78
+행 4: to | 1.9 | 0.63 | 3.1 | 430 | 1.9 | 0.63 | 4.4 | 133
+행 5: eat | 0.34 | 0.34 | 1 | 0.34 | 5.8 | 1 | 15 | 0.34
+행 6: chinese | 0.2 | 0.098 | 0.098 | 0.098 | 0.098 | 8.2 | 0.2 | 0.098
+행 7: food | 6.9 | 0.43 | 6.9 | 0.43 | 0.86 | 2.2 | 0.43 | 0.43
+행 8: lunch | 0.57 | 0.19 | 0.19 | 0.19 | 0.19 | 0.38 | 0.19 | 0.19
+행 9: spend | 0.32 | 0.16 | 0.32 | 0.16 | 0.16 | 0.16 | 0.16 | 0.16</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩 이후 다시 복원한 조정 빈도 표입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">figure_caption</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Figure 3.8 Add-one reconstituted counts for eight words (of V = 1446) in the BeRP corpus of 9332 sentences. Previously-zero counts are in gray.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>그림 3.8 BeRP 코퍼스(9332문장, V = 1446)의 8개 단어에 대한 1 더하기 복원 빈도. 이전에 0이었던 빈도는 회색으로 표시되어 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1 더하기 스무딩이 실제 빈도를 얼마나 왜곡하는지 보여주는 표 설명입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Note that add-one smoothing has made a very big change to the counts. C(want to) changed from 609 to 238! We can see this in probability space as well: P(to|want) decreases from .66 in the unsmoothed case to .26 in the smoothed case. Looking at the discount d (the ratio between new and old counts) shows us how strikingly the</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩이 빈도에 매우 큰 변화를 가져왔다는 점에 주목하십시오. C(want to)는 609에서 238로 바뀌었습니다. 이는 확률 공간에서도 확인할 수 있는데, P(to|want)는 스무딩 전 0.66에서 스무딩 후 0.26으로 감소합니다. 새로운 빈도와 기존 빈도의 비율인 디스카운트 d를 살펴보면, 이 변화가 얼마나 극적인지 알 수 있습니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩이 자주 관측된 사건의 확률을 지나치게 깎는 문제를 보여줍니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+<section class="page" id="page-16">
+<header class="page-header">
+<h2>Page 16</h2>
+<div class="page-subtitle">k 더하기 스무딩, 백오프와 보간</div>
+</header>
+<div class="blocks">
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 1</div>
+<div class="block-type">other</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>16 CHAPTER 3 • N-GRAM LANGUAGE MODELS</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>16 제3장 • N-그램 언어 모델</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>페이지 상단 헤더와 페이지 번호입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 2</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>counts for each prefix word have been reduced; the discount for the bigram want to is .39, while the discount for Chinese food is .10, a factor of 10!</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>[이전 페이지에서 계속] 각 접두 단어(prefix word)에 대한 빈도가 얼마나 줄어들었는지 알 수 있습니다. 바이그램 want to의 디스카운트는 0.39인 반면, Chinese food의 디스카운트는 0.10으로 그 차이가 무려 10배에 이릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>스무딩이 고빈도 항목마다 균일하게 작동하지 않고 심하게 왜곡될 수 있음을 보여줍니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 3</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The sharp change in counts and probabilities occurs because too much probability mass is moved to all the zeros.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>빈도와 확률의 급격한 변화는 너무 많은 확률 질량이 모든 0 빈도 항목으로 이동했기 때문에 발생합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 핵심 한계를 요약하는 문장입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 4</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5.2 Add-k smoothing</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5.2 k 더하기(Add-k) 스무딩</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>1 대신 더 작은 값을 더해 스무딩 강도를 조절하는 방법입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 5</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>add-k</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>k 더하기(add-k)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>각 빈도에 1이 아닌 작은 k값을 더하는 스무딩 기법입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 6</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>One alternative to add-one smoothing is to move a bit less of the probability mass from the seen to the unseen events. Instead of adding 1 to each count, we add a fractional count k (.5? .05? .01?). This algorithm is therefore called add-k smoothing.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>1 더하기 스무딩의 대안 중 하나는 관측된 사건에서 미관측 사건으로 이동하는 확률 질량을 조금 덜 옮기는 것입니다. 각 빈도에 1을 더하는 대신, 소수 형태의 빈도 k(.5, .05, .01 등)를 더합니다. 이 알고리즘을 k 더하기 스무딩이라고 부릅니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>라플라스 스무딩의 과도한 보정을 완화하려는 단순한 대안입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 7</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P^*_{Add-k}(w_n|w_{n-1}) = [C(w_{n-1}w_n) + k] / [C(w_{n-1}) + kV] (3.25)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P^*_{Add-k}(w_n|w_{n-1}) = [C(w_{n-1}w_n) + k] / [C(w_{n-1}) + kV] (3.25)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.25). k 더하기 스무딩이 적용된 바이그램 조건부 확률입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 8</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>Add-k smoothing requires that we have a method for choosing k; this can be done, for example, by optimizing on a devset. Although add-k is useful for some tasks (including text classification), it turns out that it still doesn't work well for language modeling, generating counts with poor variances and often inappropriate discounts (Gale and Church, 1994).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>k 더하기 스무딩을 사용하려면 적절한 k 값을 고르는 방법이 필요합니다. 예를 들어 개발 세트(devset)에서 최적화하는 식으로 k를 정할 수 있습니다. add-k는 텍스트 분류를 포함한 일부 작업에는 유용하지만, 언어 모델링에서는 여전히 잘 작동하지 않으며 분산이 좋지 않은 빈도와 부적절한 디스카운트를 자주 만들어냅니다(Gale and Church, 1994).</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>add-k도 언어 모델링의 근본 해결책은 아니라는 점을 분명히 합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 9</div>
+<div class="block-type">subsection_title</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>3.5.3 Backoff and Interpolation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>3.5.3 백오프(Backoff)와 보간(Interpolation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>고차 N-그램과 저차 N-그램을 결합하는 스무딩 계열 기법을 다루는 절입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 10</div>
+<div class="block-type">margin_note</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>backoff / interpolation</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>백오프(backoff) / 보간(interpolation)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥이 부족할 때 차수를 낮추는 방식과, 여러 차수의 확률을 섞는 방식을 가리키는 핵심 용어입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 11</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The discounting we have been discussing so far can help solve the problem of zero frequency n-grams. But there is an additional source of knowledge we can draw on. If we are trying to compute P(w_n|w_{n-2}w_{n-1}) but we have no examples of a particular trigram w_{n-2}w_{n-1}w_n, we can instead estimate its probability by using the bigram probability P(w_n|w_{n-1}). Similarly, if we don't have counts to compute P(w_n|w_{n-1}), we can look to the unigram P(w_n).</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>지금까지 논의한 디스카운팅은 0 빈도 N-그램 문제를 해결하는 데 도움이 됩니다. 하지만 우리가 활용할 수 있는 지식의 원천이 하나 더 있습니다. 만약 P(w_n|w_{n-2}w_{n-1})를 계산하려고 하는데 특정 트라이그램 w_{n-2}w_{n-1}w_n의 예가 전혀 없다면, 대신 바이그램 확률 P(w_n|w_{n-1})를 사용해 그 확률을 추정할 수 있습니다. 마찬가지로 P(w_n|w_{n-1})를 계산할 빈도가 없다면 유니그램 P(w_n)을 참고할 수 있습니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>관측이 없는 고차 문맥 대신 더 짧은 문맥을 활용하는 아이디어를 소개합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 12</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In other words, sometimes using less context is a good thing, helping to generalize more for contexts that the model hasn't learned much about. There are two ways to use this n-gram "hierarchy". In backoff, we use the trigram if the evidence is sufficient, otherwise we use the bigram, otherwise the unigram. In other words, we only "back off" to a lower-order n-gram if we have zero evidence for a higher-order n-gram. By contrast, in interpolation, we always mix the probability estimates from all the n-gram estimators, weighing and combining the trigram, bigram, and unigram counts.</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>다시 말해, 때로는 더 적은 문맥을 사용하는 것이 더 좋은 선택일 수 있으며, 이는 모델이 충분히 배우지 못한 문맥들에 대해 더 잘 일반화하도록 도와줍니다. 이 N-그램 '계층 구조'를 활용하는 방법은 두 가지입니다. 백오프에서는 증거가 충분하면 트라이그램을, 그렇지 않으면 바이그램을, 그것도 없으면 유니그램을 사용합니다. 즉, 고차 N-그램에 대한 증거가 전혀 없을 때만 하위 차수 N-그램으로 '물러나는(back off)' 것입니다. 반면 보간에서는 트라이그램, 바이그램, 유니그램의 확률 추정치를 항상 함께 섞어 가중 평균합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>백오프와 보간의 차이를 개념적으로 요약합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 13</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In simple linear interpolation, we combine different order n-grams by linearly interpolating them. Thus, we estimate the trigram probability P(w_n|w_{n-2}w_{n-1}) by mixing together the unigram, bigram, and trigram probabilities, each weighted by a λ:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>단순 선형 보간에서는 서로 다른 차수의 N-그램을 선형적으로 결합합니다. 따라서 트라이그램 확률 P(w_n|w_{n-2}w_{n-1})는 유니그램, 바이그램, 트라이그램 확률을 각각 λ 가중치로 섞어 추정합니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>선형 보간의 기본 형태를 설명합니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 14</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>P(w_n|w_{n-2}w_{n-1}) = λ_1 P(w_n) + λ_2 P(w_n|w_{n-1}) + λ_3 P(w_n|w_{n-2}w_{n-1}) (3.26)</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>P(w_n|w_{n-2}w_{n-1}) = λ_1 P(w_n) + λ_2 P(w_n|w_{n-1}) + λ_3 P(w_n|w_{n-2}w_{n-1}) (3.26)</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.26). 서로 다른 차수의 확률을 가중합으로 결합하는 선형 보간 공식입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 15</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>The λs must sum to 1, making Eq. 3.26 equivalent to a weighted average:</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>λ 값들의 합은 1이어야 하며, 따라서 식 3.26은 가중 평균과 동일해집니다.</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>보간 계수가 확률적 의미를 유지하려면 합이 1이어야 함을 밝힙니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 16</div>
+<div class="block-type">formula</div>
+</div>
+<div class="block-body">
+<section class="source mono"><div class="label">Source Text</div><pre>Σ λ_i = 1 (3.27)
+i</pre></section>
+<section class="translation mono"><div class="label">Korean Translation</div><pre>Σ λ_i = 1 (3.27)
+i</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>식 (3.27). 보간 계수 제약 조건입니다.</pre></section>
+</div>
+</article>
+<article class="block">
+<div class="block-head">
+<div class="block-title">Block 17</div>
+<div class="block-type">paragraph</div>
+</div>
+<div class="block-body">
+<section class="source"><div class="label">Source Text</div><pre>In a slightly more sophisticated version of linear interpolation, each λ weight is computed by conditioning on the context. This way, if we have particularly accurate</pre></section>
+<section class="translation"><div class="label">Korean Translation</div><pre>선형 보간의 조금 더 정교한 버전에서는 각 λ 가중치를 문맥에 조건부로 계산합니다. 이렇게 하면 특정 문맥에서 특히 더 정확한 추정치를 가지고 있을 때 그 정보를 더 잘 활용할 수 있습니다. [다음 페이지에서 계속]</pre></section>
+<button class="note-toggle" type="button" aria-expanded="false">study_note 보기</button>
+<section class="note-panel" hidden><div class="label">Study Note</div><pre>문맥에 따라 보간 가중치를 바꾸는 방식으로 다음 페이지 설명이 이어집니다.</pre></section>
+</div>
+</article>
+</div>
+</section>
+</main>
+<script>
+const toggles = Array.from(document.querySelectorAll(".note-toggle"));
+function setPanelState(toggle, expanded) { const panel = toggle.nextElementSibling; toggle.setAttribute("aria-expanded", expanded ? "true" : "false"); toggle.textContent = expanded ? "study_note 접기" : "study_note 보기"; panel.hidden = !expanded; }
+toggles.forEach((toggle) => { setPanelState(toggle, false); toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; setPanelState(toggle, !expanded); }); });
+document.querySelector("[data-expand-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, true)); });
+document.querySelector("[data-collapse-all]").addEventListener("click", () => { toggles.forEach((toggle) => setPanelState(toggle, false)); });
+</script>
+</body>
+</html>
