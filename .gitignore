@@ -26,8 +26,6 @@ data/runtime/
 data/control_tower.db
 data/control_tower.db*.bak
 data/control_tower*.db.bak
-
-# 파일 기반 파이프라인 산출물
 data/queue/reports/*.json
 data/queue/verdicts/*.json
 data/queue/processed/**/*.json
@@ -54,7 +52,6 @@ _FOSSIL_-journal
 # 로컬 임시 파일
 *.txt
 *.png
-*.pdf
 *.hwp
 *.hwpx
 *.zip

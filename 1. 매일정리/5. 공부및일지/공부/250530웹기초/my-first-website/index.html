@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 첫 웹사이트</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 헤더 섹션 -->
+    <header class="header">
+        <h1>안녕하세요! 저는 [당신의 이름]입니다</h1>
+        <p>웹 개발을 배우고 있어요!</p>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 자기소개 카드 -->
+        <section class="card">
+            <h2>자기소개</h2>
+            <p>안녕하세요! 저는 웹 개발을 시작한 초보자입니다.</p>
+            <p>HTML, CSS, JavaScript를 차근차근 배워나가고 있어요.</p>
+        </section>
+
+        <!-- 취미 섹션 -->
+        <section class="card">
+            <h2>취미</h2>
+            <ul class="hobby-list">
+                <li>영화 보기</li>
+                <li>음악 듣기</li>
+                <li>코딩 공부</li>
+                <li>운동하기</li>
+            </ul>
+        </section>
+
+        <!-- 간단한 계산기 -->
+        <section class="card">
+            <h2>간단한 계산기</h2>
+            <div class="calculator">
+                <input type="number" id="num1" placeholder="첫 번째 숫자">
+                <input type="number" id="num2" placeholder="두 번째 숫자">
+                <button onclick="calculate()" class="btn">계산하기</button>
+                <div id="result" class="result"></div>
+            </div>
+        </section>
+
+        <!-- 색상 변경 버튼 -->
+        <section class="card">
+            <h2>재미있는 기능</h2>
+            <button onclick="changeColor()" class="btn btn-colorful">배경색 바꾸기</button>
+            <button onclick="addMessage()" class="btn btn-success">메시지 추가</button>
+            <div id="messages"></div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사과 품질 예측 AI 서비스 개발 심화 계획서</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --secondary-color: #34495e;
+            --bg-color: #f8f9fa;
+            --section-bg: #ffffff;
+            --text-color: #333333;
+            --table-header: #ecf0f1;
+            --border-color: #dde1e3;
+            --code-bg: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 50px;
+            background-color: var(--section-bg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-left: 6px solid var(--accent-color);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 5px;
+        }
+
+        /* Box Styles */
+        .info-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header);
+            color: var(--primary-color);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td.center {
+            text-align: center;
+        }
+
+        td.right {
+            text-align: right;
+        }
+
+        .budget-total {
+            background-color: #fcf8e3;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Code Block */
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+        }
+
+        /* Diagram/Flow */
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .flow-num {
+            background: var(--primary-color);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Print Button */
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 40px auto 0;
+            padding: 12px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .print-btn:hover {
+            background-color: #34495e;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+
+            body,
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            h2 {
+                page-break-before: always;
+                margin-top: 30px;
+            }
+
+            h2:first-of-type {
+                page-break-before: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>사과 품질 예측 AI 서비스 개발 계획서</h1>
+            <div class="subtitle">RTX 5080 기반 로컬 추론 및 보안 터널링 시스템</div>
+            <div style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                작성일: 2025. 12. 15<br>
+                버전: 2.1 (상세 설계 포함)
+            </div>
+        </header>
+
+        <section>
+            <h2>1. 프로젝트 개요</h2>
+            <p>
+                본 프로젝트는 사과의 <strong>RGB(가시광선)</strong> 및 <strong>NIR(근적외선)</strong> 이미지를 활용하여
+                비파괴적으로 당도, 산도, 경도를 예측하는 AI 시스템을 구축합니다.
+                RTX 5080 GPU를 탑재한 로컬 서버를 기반으로,
+                <strong>Cloudflare Tunnel</strong>을 통해 외부(웹/모바일)에서 안전하게 접속 가능한 서비스를 구현합니다.
+            </p>
+        </section>
+
+        <section>
+            <h2>2. 상세 시스템 아키텍처</h2>
+
+            <h3>2.1 기술 스택 (Tech Stack)</h3>
+            <div class="info-box">
+                <ul>
+                    <li><strong>Frontend:</strong> Next.js (React) + NextAuth (Google Login) + Netlify 배포</li>
+                    <li><strong>Backend:</strong> FastAPI (Python) + Docker Container</li>
+                    <li><strong>Infrastructure:</strong> Local Workstation (RTX 5080) + Local SSD/HDD</li>
+                    <li><strong>Network:</strong> Cloudflare Tunnel (Inbound 포트 개방 없는 안전한 외부 연결)</li>
+                    <li><strong>Database:</strong> SQLite (초기) &rarr; PostgreSQL (확장 고려)</li>
+                </ul>
+            </div>
+
+            <h3>2.2 데이터 파이프라인 흐름</h3>
+            <div class="flow-step">
+                <div class="flow-num">1</div>
+                <div><strong>촬영/업로드:</strong> 사용자가 웹/모바일에서 Google 로그인 후 사과 사진(RGB/NIR) 업로드</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">2</div>
+                <div><strong>보안 터널링:</strong> Cloudflare Edge가 'api.domain.com' 요청을 암호화하여 로컬 서버로 전달</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">3</div>
+                <div><strong>전처리 & 추론:</strong> FastAPI가 이미지 검증(100MB 제한) &rarr; 전처리 &rarr; RTX 5080 추론</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">4</div>
+                <div><strong>저장 & 반환:</strong> 원본 이미지(Local Disk) 및 예측 결과(DB) 저장 후 클라이언트에 응답</div>
+            </div>
+
+            <h3>2.3 보안 및 운영 정책</h3>
+            <ul>
+                <li><strong>업로드 제한:</strong> Cloudflare 프록시 안정성을 위해 파일당 <strong>100MB</strong>로 soft-limit 설정 (추후 분할 업로드
+                    고려).</li>
+                <li><strong>권한 관리 (RBAC):</strong> Google 계정 기반 3단계 권한 시스템 적용 (OPERATOR / REVIEWER / USER).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. 데이터 구축 및 DB 설계</h2>
+
+            <h3>3.1 데이터 입력 요구사항</h3>
+            <p>학습 및 추론의 정확도를 위해 아래 기준을 준수합니다.</p>
+            <ul>
+                <li><strong>RGB 이미지:</strong> 스마트폰 또는 일반 카메라 (JPG/PNG), 사과 전체가 나오도록 촬영.</li>
+                <li><strong>NIR 이미지:</strong> 전용 장비 측정 불가시 RGB 전용 모델(Single-mode)로 대응, 장비 가용 시 Dual-mode 지원.</li>
+                <li><strong>데이터 Split:</strong> 동일 사과의 여러 각도 사진은 반드시 학습/검증/테스트 중 <strong>하나의 세트</strong>로만 분류 (Data
+                    Leakage 방지).</li>
+            </ul>
+
+            <h3>3.2 데이터베이스 스키마 (설계안)</h3>
+            <p>효율적인 메타데이터 관리와 감사 로그(Audit)를 위한 테이블 구조입니다.</p>
+
+            <h4>(1) 요청 및 결과 테이블 (requests)</h4>
+            <table>
+                <tr>
+                    <th width="20%">컬럼명</th>
+                    <th width="20%">타입</th>
+                    <th>설명</th>
+                </tr>
+                <tr>
+                    <td>request_id</td>
+                    <td>UUID</td>
+                    <td>요청 고유 식별자 (PK)</td>
+                </tr>
+                <tr>
+                    <td>files</td>
+                    <td>JSON</td>
+                    <td>원본 이미지 저장 경로 (RGB, NIR)</td>
+                </tr>
+                <tr>
+                    <td>brix</td>
+                    <td>FLOAT</td>
+                    <td>예측 당도 (Brix)</td>
+                </tr>
+                <tr>
+                    <td>acidity</td>
+                    <td>FLOAT</td>
+                    <td>예측 산도 (%)</td>
+                </tr>
+                <tr>
+                    <td>firmness</td>
+                    <td>FLOAT</td>
+                    <td>예측 경도 (kg/cm²)</td>
+                </tr>
+                <tr>
+                    <td>strength</td>
+                    <td>FLOAT</td>
+                    <td>강도 (선택적 지표, Nullable)</td>
+                </tr>
+                <tr>
+                    <td>status</td>
+                    <td>VARCHAR</td>
+                    <td>검수 상태 (PENDING, APPROVED, RETAKE)</td>
+                </tr>
+            </table>
+
+            <h4>(2) 사용자 및 권한 테이블 (users)</h4>
+            <code>id (PK), google_sub (Unique), email, role (ENUM: OPERATOR, REVIEWER, USER), created_at</code>
+
+            <h4>(3) 수정 이력 테이블 (label_audit)</h4>
+            <code>audit_id, request_id, field_name, old_value, new_value, changed_by, changed_at</code>
+            <p style="font-size:0.9rem; color:#666">* 검수자나 관리자가 라벨(정답)을 수정할 경우 반드시 이력을 남겨 데이터 신뢰성을 보장합니다.</p>
+        </section>
+
+        <section>
+            <h2>4. 관리자 기능 및 WBS</h2>
+
+            <h3>4.1 관리자 웹 (Mobile Responsive)</h3>
+            <p>별도의 앱 설치 없이 모바일 브라우저에서도 최적화된 관리자 기능을 제공합니다.</p>
+            <ul>
+                <li><strong>대시보드:</strong> 금일 요청 건수, 모델 평균 응답 속도, 에러 로그 모니터링</li>
+                <li><strong>데이터 검수:</strong> 업로드된 사진 확인 및 라벨(실측값) 입력/수정 인터페이스</li>
+                <li><strong>사용자 관리:</strong> 가입 승인 및 권한 등급(User &harr; Reviewer) 변경</li>
+                <li><strong>다운로드:</strong> 원본 데이터셋 및 CSV 형태의 결과 리포트 추출</li>
+            </ul>
+
+            <h3>4.2 주차별 상세 일정 (WBS)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">주차</th>
+                        <th width="25%">주요 목표</th>
+                        <th width="60%">상세 활동 및 산출물</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center"><strong>1주차</strong></td>
+                        <td class="center">기획 및 설계</td>
+                        <td>
+                            - 데이터 폴더 구조 분석 및 Manifest 파일 생성<br>
+                            - DB 스키마 확정 (SQLite) 및 검증 리포트 작성<br>
+                            - 100MB 업로드 정책 수립 및 API 명세서 작성
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>2주차</strong></td>
+                        <td class="center">기능 구현<br>(Back/Front)</td>
+                        <td>
+                            - FastAPI 구현 (인증, 업로드, DB연동)<br>
+                            - NextAuth 구글 로그인 연동<br>
+                            - 전처리 모듈 공용화 및 베이스라인 모델 학습
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>3주차</strong></td>
+                        <td class="center">모델 최적화 &<br>관리자 개발</td>
+                        <td>
+                            - <strong>모델 추론 최적화:</strong> RTX 5080 가속 및 워밍업 적용<br>
+                            - 듀얼 모델(RGB/NIR) 튜닝 및 성능 평가 (RMSE 등)<br>
+                            - 관리자 페이지 UI (반응형) 구현
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>4주차</strong></td>
+                        <td class="center">배포 및 시연</td>
+                        <td>
+                            - Cloudflare Tunnel 도메인 연결 및 보안 설정<br>
+                            - 통합 테스트 (모바일 촬영 &rarr; 서버 &rarr; 결과)<br>
+                            - 운영 매뉴얼 및 시연 시나리오 확정
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. 소요 예산안 (수정안)</h2>
+            <p>RTX 5080 기반 시스템 구축 및 고도화된 SW 개발을 포함한 예산입니다.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="20%">비목</th>
+                        <th width="40%">세부 내역</th>
+                        <th width="15%">단가</th>
+                        <th width="10%">수량</th>
+                        <th width="15%">금액(단위:천원)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="center">인건비</td>
+                        <td>책임 개발자 (PM, 아키텍처, AI 모델링)</td>
+                        <td class="right">6,000</td>
+                        <td class="center">1인</td>
+                        <td class="right">6,000</td>
+                    </tr>
+                    <tr>
+                        <td>보조 개발자 (Back/Front 개발, 데이터 파이프라인)</td>
+                        <td class="right">2,000</td>
+                        <td class="center">1인</td>
+                        <td class="right">2,000</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="center">재료 및<br>전산망비</td>
+                        <td>로컬 서버 장비 (RTX 5080) 및 스토리지</td>
+                        <td class="right">1,000</td>
+                        <td class="center">1식</td>
+                        <td class="right">1,000</td>
+                    </tr>
+                    <tr>
+                        <td>도메인 및 네트워크 운용비 (Cloudflare/Netlify)</td>
+                        <td class="right">500</td>
+                        <td class="center">1식</td>
+                        <td class="right">500</td>
+                    </tr>
+                    <tr>
+                        <td>현장 테스트 부자재 및 기타</td>
+                        <td class="right">500</td>
+                        <td class="center">1식</td>
+                        <td class="right">500</td>
+                    </tr>
+                    <tr class="budget-total">
+                        <td colspan="4" class="center">합 계</td>
+                        <td class="right">10,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <div class="print-btn" onclick="window.print()">문서 저장 (PDF / 인쇄)</div>
+</body>
+
+</html>

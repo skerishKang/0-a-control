@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배문자 회장 특별 초청</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8f8f8; }
+        .serif { font-family: 'Noto Serif KR', serif; }
+        .red-horse-bg {
+            background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #dc2626 100%);
+        }
+        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        
+        /* 인쇄 시 설정 */
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white; }
+            .no-print { display: none !important; }
+            .print-container { box-shadow: none; max-width: 100%; min-height: auto; overflow: visible; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <div class="print-container max-w-md mx-auto bg-white min-h-screen card-shadow overflow-hidden relative">
+        
+        <!-- 상단 이미지 영역 -->
+        <div class="red-horse-bg text-white p-8 pt-12 text-center relative">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1h2v2H1V1zm4 0h2v2H5V1zm4 0h2v2H9V1zm4 0h2v2h-2V1zm4 0h2v2h-2V1z\' fill=\'%23ffffff\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
+            
+            <p class="text-yellow-400 font-bold tracking-widest text-xs mb-2 uppercase">Special Invitation</p>
+            <h1 class="serif text-4xl font-black mb-2 leading-tight">
+                2026 병오년<br>
+                <span class="text-yellow-400">붉은 말</span>의 해
+            </h1>
+            <p class="text-white/90 text-lg font-light">CEO의 경영이 적토마처럼 달립니다</p>
+            
+            <div class="mt-8 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                <p class="font-bold text-xl mb-1">배문자 회장의</p>
+                <p class="text-yellow-300 font-black text-2xl">신년 특별 경영 선물</p>
+            </div>
+        </div>
+
+        <!-- 초대글 -->
+        <div class="p-6 bg-white relative -mt-6 rounded-t-3xl z-10">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 rounded-full mx-auto border-4 border-white shadow-lg -mt-16 mb-4 bg-red-800 flex items-center justify-center text-white text-2xl font-bold">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">존경하는 대표님들께</h2>
+                <div class="w-10 h-1 bg-red-600 mx-auto rounded-full"></div>
+            </div>
+
+            <div class="prose text-gray-600 leading-relaxed text-lg mb-8 text-left">
+                <p class="mb-4">
+                    안녕하십니까, 광주기업회 회장 <span class="text-gray-900 font-bold">배문자</span>입니다.
+                </p>
+                <p class="mb-4">
+                    2026년 붉은 말의 해를 맞아, 우리 회원사 대표님들을 위해 제가 조금 특별한 선물을 준비했습니다.
+                </p>
+                <p class="mb-4">
+                    국내 최고의 <span class="text-red-700 font-bold">AI 전문기업 파디엠(PADIEM)</span>을 직접 섭외하여, <span class="bg-yellow-100 text-gray-900 font-bold px-1">광주대학교 국비 예산</span>을 어렵게 확보해왔습니다.
+                </p>
+                <div class="bg-red-50 border-l-4 border-red-500 p-3 text-sm rounded-r-lg">
+                    <p class="font-bold text-red-800 mb-1"><i class="fas fa-mouse-pointer mr-1"></i> 컴퓨터 기초 환영합니다!</p>
+                    <p>타자가 느려도, AI를 몰라도 괜찮습니다.<br><strong>구글 메일, 텔레그램 가입부터</strong> 친절하게 알려드립니다.</p>
+                </div>
+            </div>
+
+            <!-- 핵심 결과물 및 혜택 -->
+            <div class="mb-10">
+                <div class="text-center mb-6">
+                    <span class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">중소기업융합 광주전남연합회 회원사 전용</span>
+                    <h3 class="serif text-2xl font-bold text-gray-900 mt-2 leading-tight">
+                        이틀 뒤, 대표님 손에<br>쥐어드리는 <span class="text-red-600">6대 특전</span>
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 text-left">
+                    
+                    <!-- 혜택 1 & 2 -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                            <span class="block text-red-600 font-bold text-lg mb-1">혜택 1</span>
+                            <span class="text-sm font-bold text-gray-800">교육비 전액<br>무료 지원</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
+                            <span class="block text-blue-600 font-bold text-lg mb-1">혜택 2</span>
+                            <span class="text-sm font-bold text-gray-800">파디엠<br>기술 지원</span>
+                        </div>
+                    </div>
+
+                    <!-- 혜택 3: AI 비서 (가장 중요) -->
+                    <div class="flex items-center bg-white border-2 border-red-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-bl-lg">혜택 3</div>
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 text-xl mr-4 shrink-0">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-900">내 손안의 AI 비서</h4>
+                            <p class="text-sm text-gray-500">타자 없이 말로 업무 시키기 (기초)</p>
+                        </div>
+                    </div>
+
+                    <!-- 혜택 4: 홍보 영상 -->
+                    <div class="flex items-center bg-white border border-gray-200 p-4 rounded-xl shadow-sm relative">
+                        <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-bl-lg">혜택 4</div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl mr-4 shrink-0">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-900">회사 홍보 영상</h4>
+                            <p class="text-sm text-gray-500">나노바나나 기술로 1분 완성</p>
+                        </div>
+                    </div>
+
+                    <!-- 혜택 5: 로고송 -->
+                    <div class="flex items-center bg-white border border-gray-200 p-4 rounded-xl shadow-sm relative">
+                        <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-bl-lg">혜택 5</div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl mr-4 shrink-0">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-900">회사 로고송 (주제가)</h4>
+                            <p class="text-sm text-gray-500">AI 작곡 세상 유일한 노래</p>
+                        </div>
+                    </div>
+
+                    <!-- 혜택 6: 새해 카드 -->
+                    <div class="flex items-center bg-white border border-gray-200 p-4 rounded-xl shadow-sm relative">
+                        <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-bl-lg">혜택 6</div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl mr-4 shrink-0">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-900">적토마 새해 카드</h4>
+                            <p class="text-sm text-gray-500">2026년 신년 인사용 모바일 명함</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 교육 안내 섹션 -->
+            <div class="bg-gray-800 text-white rounded-2xl p-6 text-center mb-8">
+                <p class="text-yellow-400 font-bold mb-2">선착순 20분 한정</p>
+                <div class="inline-block bg-white/20 px-3 py-1 rounded-full text-xs mb-4">
+                    📢 한 회사에서 여러 명 신청 환영
+                </div>
+                
+                <h3 class="text-2xl font-bold mb-4">교육 안내</h3>
+                <div class="space-y-3 text-sm md:text-base opacity-90 text-left px-4">
+                    <p class="flex items-start"><i class="far fa-calendar-check mt-1 mr-3 text-yellow-400"></i><span>1월 24일(토) ~ 25일(일)</span></p>
+                    <p class="flex items-start"><i class="far fa-clock mt-1 mr-3 text-yellow-400"></i><span>09:00 ~ 18:00 (2일간)</span></p>
+                    <p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 text-yellow-400"></i><span>광주대학교 강의실 (주차 지원)</span></p>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-600 text-xs text-gray-300">
+                    <p class="mb-1">* 바쁘신 일정 고려, <strong>부분 참여(중도 귀가) 가능</strong>합니다.</p>
+                    <p class="mb-1">* 참가자 전원 <strong>광주대학교 총장 명의 수료증</strong> 증정</p>
+                    <p>* 향후 파디엠 교육과정 우선 참여 혜택 제공</p>
+                </div>
+            </div>
+
+            <!-- Footer Message -->
+            <div class="text-center text-gray-500 text-sm mb-8 leading-relaxed">
+                "이 기회 놓치지 마시고,<br>
+                2026년에는 우리 모두 <strong class="text-red-700">디지털 경영</strong> 합시다!"
+            </div>
+
+            <!-- CTA Button -->
+            <a href="#" class="no-print block w-full bg-red-700 text-white text-center font-bold text-xl py-4 rounded-xl shadow-lg hover:bg-red-800 transition transform hover:scale-105">
+                지금 바로 신청하기
+            </a>
+            <p class="text-center text-xs text-gray-400 mt-2">
+                신청 방법: 배문자 회장님께 카톡/문자 회신
+            </p>
+            <div class="text-center text-xs text-gray-400 mt-6 pb-8 border-t border-gray-300 pt-4">
+                <p class="font-bold mb-1">[주관]</p>
+                <p>광주대학교 | 중소벤처기업진흥공단 | (주)파디엠</p>
+                <p class="mt-2 font-bold mb-1">[특별 초청]</p>
+                <p>광주기업회 배문자 회장</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

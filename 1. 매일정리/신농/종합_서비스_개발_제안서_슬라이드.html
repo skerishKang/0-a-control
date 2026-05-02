@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로컬 GPU 활용 사과 품질 예측 AI 서비스 구축 제안서</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #333;
+            --bg-color: #fff;
+            --slide-width: 297mm;
+            --slide-height: 210mm;
+            --slide-padding: 20mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #555;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slide {
+            width: var(--slide-width);
+            height: var(--slide-height);
+            background: white;
+            padding: var(--slide-padding);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Slide Layouts */
+        .slide-header {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .slide-title {
+            font-size: 28pt;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .slide-number {
+            font-size: 12pt;
+            color: #888;
+        }
+
+        .slide-content {
+            flex: 1;
+            font-size: 14pt;
+            line-height: 1.6;
+        }
+
+        /* Typography & Components */
+        h2 {
+            font-size: 20pt;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        h3 {
+            font-size: 16pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 700;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 11pt;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f2f5;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        /* Cover Slide */
+        .cover {
+            background-color: var(--primary-color);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover .main-title {
+            font-size: 42pt;
+            font-weight: 900;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .cover .sub-title {
+            font-size: 20pt;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 60px;
+        }
+
+        .cover .meta {
+            font-size: 14pt;
+            opacity: 0.7;
+        }
+
+        /* Boxes */
+        .box {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        /* 2-Column Layout */
+        .cols-2 {
+            display: flex;
+            gap: 30px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .diagram {
+            text-align: center;
+            background: #f4f6f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 10pt;
+            white-space: pre;
+            border: 1px dashed #ccc;
+        }
+
+        /* Architecture Flow */
+        .arch-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            background: #fff;
+        }
+
+        .arch-step {
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            width: 18%;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .arch-arrow {
+            font-size: 1.5rem;
+            color: #999;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .slide {
+                margin: 0;
+                box-shadow: none;
+                width: 297mm;
+                /* A4 Landscape */
+                height: 210mm;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            .print-hidden {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Slide 1: Cover -->
+    <div class="slide cover">
+        <div class="main-title">로컬 GPU 서버를 활용한<br>사과 품질 예측 AI 서비스 구축</div>
+        <div class="sub-title">RTX 5080 기반 고성능 추론 및 보안 터널링 아키텍처</div>
+        <div class="meta">
+            2025. 12. 15<br>
+            Project Proposal
+        </div>
+    </div>
+
+    <!-- Slide 2: Executive Summary -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">1. 프로젝트 요약 (Executive Summary)</div>
+            <div class="slide-number">02</div>
+        </div>
+        <div class="slide-content">
+            <div class="box">
+                <strong>프로젝트 목표</strong><br>
+                고성능 로컬 GPU(RTX 5080) 자원을 활용하여, 웹/모바일에서 실시간으로 사과 품질(당도/산도/경도)을 예측하고 데이터를 자산화하는 <strong>End-to-End AI 서비스
+                    MVP</strong>를 1개월 내 구축
+            </div>
+
+            <h3>핵심 추진 전략</h3>
+            <ul>
+                <li><strong>고성능 로컬 추론:</strong> 클라우드 GPU 임대 대신 보유 중인 <strong>RTX 5080</strong>을 활용하여 비용 절감 및 추론 성능 극대화
+                </li>
+                <li><strong>안전한 외부 접속:</strong> 포트포워딩의 보안 취약점을 해결하기 위해 <strong>Cloudflare Tunnel</strong> 도입 (Zero Trust
+                    기반)</li>
+                <li><strong>데이터 자산화:</strong> 원본 이미지(RGB/NIR) 영구 보관 및 <strong>사과 ID 기반</strong>의 엄격한 데이터셋 관리체계 수립</li>
+                <li><strong>사용자 중심 서비스:</strong> Google 로그인 기반의 간편 인증 및 역할 기반 접근 제어(RBAC) 적용</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 3: System Architecture -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">2. 시스템 아키텍처 (System Architecture)</div>
+            <div class="slide-number">03</div>
+        </div>
+        <div class="slide-content">
+            <h3>전체 시스템 구성도</h3>
+            <div class="arch-flow">
+                <div class="arch-step" style="background:#e8f4f8;">사용자<br>(Web/Mobile)</div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-step" style="background:#fce5cd;">Next.js<br>(Netlify)</div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-step" style="background:#fff2cc;">Cloudflare<br>Tunnel</div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-step" style="background:#d9ead3;">FastAPI<br>(RTX 5080)</div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-step" style="background:#ebebeb;">저장소<br>(Disk/DB)</div>
+            </div>
+
+            <div class="cols-2">
+                <div class="col">
+                    <h3>Frontend & Network</h3>
+                    <ul>
+                        <li><strong>Next.js + Netlify:</strong> 빠른 배포 및 HTTPS 기본 적용</li>
+                        <li><strong>Cloudflare Tunnel:</strong> 인바운드 포트 개방 없는 안전한 연결</li>
+                        <li><strong>고정 도메인:</strong> api.yourdomain.com 사용</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>Backend & Infrastructure</h3>
+                    <ul>
+                        <li><strong>FastAPI (Python):</strong> 고성능 비동기 API 서버</li>
+                        <li><strong>Local Server:</strong> RTX 5080 탑재 워크스테이션</li>
+                        <li><strong>Docker:</strong> 환경 일관성 및 배포 편의성 확보</li>
+                        <li><strong>SQLite:</strong> 메타데이터 관리 (향후 Postgres 확장)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Network Security Analysis -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">3. 네트워크 구성 분석 (Network Security)</div>
+            <div class="slide-number">04</div>
+        </div>
+        <div class="slide-content">
+            <p>로컬 서버를 외부에 노출하는 3가지 방안을 분석하여 최적의 솔루션을 선정했습니다.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="20%">구분</th>
+                        <th width="25%">방안 1: 포트포워딩</th>
+                        <th width="25%">방안 2: 클라우드 이전</th>
+                        <th width="30%">방안 3: Cloudflare Tunnel (채택)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center"><strong>보안성</strong></td>
+                        <td><span style="color:red">취약</span> (포트 전면 개방)</td>
+                        <td><span style="color:blue">우수</span> (보안 도구 완비)</td>
+                        <td><span style="color:blue">우수</span> (인바운드 포트 차단)</td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>비용/자원</strong></td>
+                        <td>저비용 (로컬 활용)</td>
+                        <td><span style="color:red">고비용</span> (GPU 임대료)</td>
+                        <td><strong>저비용 (로컬 RTX 5080 활용)</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>안정성</strong></td>
+                        <td>낮음 (ISP NAT/IP변동)</td>
+                        <td>높음 (SLA 보장)</td>
+                        <td><strong>높음</strong> (고정 도메인 제공)</td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>결론</strong></td>
+                        <td>운영 부적합</td>
+                        <td>예산 초과</td>
+                        <td><strong>최적 솔루션</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="box">
+                <strong>Why Cloudflare Tunnel?</strong><br>
+                공유기 설정을 건드리지 않고, 로컬 서버가 외부로 나가는(Outbound) 터널을 뚫어 연결하므로
+                <strong>'방화벽을 열지 않고도'</strong> 안전하게 고정 도메인 서비스를 제공할 수 있습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Development Scope (MVP) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">4. MVP 개발 범위 (Scope of Work)</div>
+            <div class="slide-number">05</div>
+        </div>
+        <div class="slide-content">
+            <div class="cols-2">
+                <div class="col">
+                    <h3>(1) 사용자 기능</h3>
+                    <ul>
+                        <li><strong>인증:</strong> Google 계정 연동 (NextAuth)</li>
+                        <li><strong>입력:</strong> 이미지 업로드 및 카메라 촬영 지원</li>
+                        <li><strong>결과:</strong> 당도/산도/경도 예측값 및 등급 표시</li>
+                        <li><strong>이력:</strong> 내 요청 기록 조회 (마이페이지)</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>(2) 관리자 기능</h3>
+                    <ul>
+                        <li><strong>모니터링:</strong> 전체 요청/사용자 현황 대시보드</li>
+                        <li><strong>RBAC:</strong> 운영자/검수자/사용자 3단계 권한 관리</li>
+                        <li><strong>데이터 검수:</strong> 원본 보기 및 라벨(실측값) 수정</li>
+                        <li><strong>다운로드:</strong> 학습용 데이터셋 추출</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box" style="background:#fff3cd; border-color:#ffc107;">
+                <strong>제외 범위 (Out-of-Scope)</strong>
+                <ul>
+                    <li>NIR(근적외선) 모델 실시간 추론: 1차 MVP는 RGB-Only 모델 서빙에 집중</li>
+                    <li>고정된 등급 정책: 등급 컷오프는 설정값으로 관리하여 유동적으로 운영</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Data Strategy -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">5. 데이터 전략 및 모델링</div>
+            <div class="slide-number">06</div>
+        </div>
+        <div class="slide-content">
+            <h3>데이터 구축 계획</h3>
+            <ul>
+                <li><strong>목표량:</strong> 기존 1,600장 + 추가 촬영 8,400장 = 총 10,000장 확보</li>
+                <li><strong>촬영 전략:</strong> 다양한 조명/배경/각도 환경 반영 (일일 600장 목표)</li>
+                <li><strong>Split 원칙:</strong> <span class="highlight">'사과 ID 단위' 분할</span> (동일 사과가 Train/Test에 섞이지 않도록
+                    방지)</li>
+            </ul>
+
+            <h3>모델링 전략 (RTX 5080 활용)</h3>
+            <ul>
+                <li><strong>Model Backcbone:</strong> EfficientNet 또는 ResNet 계열 (속도/성능 균형)</li>
+                <li><strong>Input:</strong> 224x224 ~ 512x512 RGB 이미지</li>
+                <li><strong>Output:</strong> Multi-output Regression (Brix, Acidity, Firmness)</li>
+                <li><strong>Performance:</strong> 로컬 RTX 5080의 고성능을 활용하여 고해상도 배치 추론 최적화</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 7: WBS (Timeline) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">6. 4주 개발 일정 (WBS)</div>
+            <div class="slide-number">07</div>
+        </div>
+        <div class="slide-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">주차</th>
+                        <th width="30%">핵심 과업</th>
+                        <th width="55%">산출물 및 목표</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center"><strong>1주차</strong></td>
+                        <td>분석 및 설계</td>
+                        <td>
+                            - 데이터/DB 스키마 정의 (SQLite)<br>
+                            - 사과 ID 단위 Split 규칙 확정<br>
+                            - API 명세서 작성
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>2주차</strong></td>
+                        <td>핵심 기능 개발</td>
+                        <td>
+                            - FastAPI 백엔드 (인증, 업로드, DB연동)<br>
+                            - Next.js 프론트엔드 (로그인, 기본 UI)<br>
+                            - 파일 업로드 제한(100MB) 정책 적용
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>3주차</strong></td>
+                        <td>모델 연동 및 고도화</td>
+                        <td>
+                            - RTX 5080 최적화 모델 서빙<br>
+                            - 관리자 페이지(RBAC, 검수) 구현<br>
+                            - 자동화된 평가 리포트 생성
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>4주차</strong></td>
+                        <td>통합 및 배포</td>
+                        <td>
+                            - Cloudflare Tunnel 도메인 연결<br>
+                            - End-to-End 시연 시나리오 리허설<br>
+                            - 최종 운영 매뉴얼 작성
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Slide 8: Budget Plan -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">7. 소요 예산안 (1천만원)</div>
+            <div class="slide-number">08</div>
+        </div>
+        <div class="slide-content">
+            <p>로컬 RTX 5080 장비를 활용하여 클라우드 비용을 절감하는 고효율 예산 구조입니다.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="20%">항목</th>
+                        <th width="45%">세부 내용</th>
+                        <th width="15%">비고</th>
+                        <th width="20%">금액 (만원)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center" rowspan="2"><strong>인건비</strong></td>
+                        <td><strong>총괄 개발 (박사)</strong><br>모델링, 아키텍처, 백엔드, 총괄</td>
+                        <td class="center">1인</td>
+                        <td class="right"><strong>600</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>개발 (주석)</strong><br>프론트엔드, 관리자 UI, 데이터 처리</td>
+                        <td class="center">1인</td>
+                        <td class="right"><strong>200</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>인프라<br>제공비</strong></td>
+                        <td><strong>로컬 컴퓨팅 자원 제공</strong><br>- RTX 5080 서버 및 스토리지 활용<br>- Cloudflare Tunnel 네트워크 운영</td>
+                        <td class="center">1식</td>
+                        <td class="right"><strong>200</strong></td>
+                    </tr>
+                    <tr class="budget-total">
+                        <td colspan="3" class="center">합 계</td>
+                        <td class="right">1,000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="box">
+                <strong>비용 절감 효과 분석</strong><br>
+                클라우드(GCP)에서 RTX 5080급 성능(V100 등)을 300시간 임차 시 약 120만원 이상 소요 예상.<br>
+                본 과제는 보유 장비(RTX 5080)를 현물 제공 성격으로 활용하여 예산을 대폭 절감함.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Deliverables & Conclusion -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-title">8. 산출물 및 기대효과</div>
+            <div class="slide-number">09</div>
+        </div>
+        <div class="slide-content">
+            <div class="cols-2">
+                <div class="col">
+                    <h3>최종 산출물</h3>
+                    <ul>
+                        <li><strong>소스코드:</strong> FE(Next.js), BE(FastAPI), AI(PyTorch)</li>
+                        <li><strong>데이터:</strong> 정제된 이미지셋 및 Manifest</li>
+                        <li><strong>모델:</strong> 학습된 가중치 파일 (.pth)</li>
+                        <li><strong>문서:</strong> 설치 가이드, API 명세, 운영 매뉴얼</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>기대 효과</h3>
+                    <ul>
+                        <li><strong>즉시 시연 가능:</strong> 1개월 내 작동하는 실서비스 확보</li>
+                        <li><strong>데이터 자산화:</strong> 체계적인 라벨링/검수 시스템 구축</li>
+                        <li><strong>운영 내재화:</strong> 사내 서버 활용 기술 및 운영 노하우 확보</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center; border-top: 1px solid #ddd; padding-top: 30px;">
+                <h2 style="color:var(--primary-color);">성공적인 시스템 구축을 약속드립니다.</h2>
+                <p class="center">RTX 5080 기반의 강력한 성능과 Cloudflare Tunnel의 안전함을 결합한<br>최적의 솔루션을 제공하겠습니다.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

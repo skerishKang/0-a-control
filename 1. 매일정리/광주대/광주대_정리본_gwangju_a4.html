@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>광주대학교 AI 발전 제안서 - A4 Print</title>
+    <link rel="stylesheet" href="styles/gwangju_a4.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>광주대학교 AI 발전 제안서</h1>
+            <p class="subtitle">AI 역량 판단 기준 및 생활밀착형 AI 활용 제안</p>
+        </header>
+        <div class="intro">방송 보니깐 광주대가 중요한 위상을 가지고 있고 좋은 계획들이 많아서 내가 말할게 있나 싶은데 그냥 AI쪽 현업에 있으니 평소에 생각하고 있던거 정리해볼게 ㅎㅎ
+        </div>
+
+        <div class="part">
+            <h2 class="part-title">Part 1. AI 역량 판단 기준</h2>
+
+            <div class="section">
+                <h3><span class="num">1</span>기본 LLM 모델들을 다 다루고 있는가</h3>
+                <h4>1) 4대 주요 모델</h4>
+                <p>ChatGPT, Claude, Gemini, Grok의 4대 모델들의 기능들을 다 알고 있고</p>
+                <h4>2) 오픈소스 및 글로벌 모델</h4>
+                <p>Kimi, Qwen, ERNIE, GLM, DeepSeek, MiniMax 등 중국모델들하고 Mistral같은 유럽모델도 어느정도 사용하고 있으면서 선도모델들의 흐름을 파악하는게
+                    중요</p>
+                <h4>3) 모델 체험 방법</h4>
+                <p>Hugging Face에서 모델들을 시험해보거나 LMArena 같은 곳에 체험해보는 것</p>
+                <h4>4) 벤치마크 이해</h4>
+                <p>양자화/증류 파생모델까지 합하면 300개가 넘는데 벤치마크로 분야별 두각을 알아보는 것도 필요</p>
+                <h4>5) 최신 트렌드 파악</h4>
+                <p>Gemini 3.0, GPT-5.1, Claude Opus 4.5 등 최신 모델들의 흐름을 알고 있는게 좋음</p>
+                <blockquote>실제로는 1), 2) 단계정도만 해도 그나마 AI를 하는 거라 판단해볼 수 있는 편</blockquote>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">2</span>LLM 모델로 파생되는 서비스들</h3>
+                <table>
+                    <tr>
+                        <th>용도</th>
+                        <th>추천 서비스</th>
+                    </tr>
+                    <tr>
+                        <td>PPT 제작</td>
+                        <td>Gamma, Canva</td>
+                    </tr>
+                    <tr>
+                        <td>도표/그래프</td>
+                        <td>Napkin</td>
+                    </tr>
+                    <tr>
+                        <td>유튜브/문서 요약</td>
+                        <td>Lilys AI, NotebookLM</td>
+                    </tr>
+                    <tr>
+                        <td>검색 특화</td>
+                        <td>Perplexity</td>
+                    </tr>
+                </table>
+                <p><strong>에이전트 통합 서비스:</strong> Skywork, Genspark가 유명. 중국쪽 Manus, ERNIE, Kimi도 에이전트쪽 개발 중</p>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">3</span>AI 서비스 생태계 규모</h3>
+                <p>현재 AI 서비스들을 합하면 <strong class="accent">8천개가 넘어감</strong>. 그중에 1%만 알아도 최상위급</p>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">4</span>자동화 툴과 에이전트</h3>
+                <table>
+                    <tr>
+                        <th>서비스</th>
+                        <th>특징</th>
+                    </tr>
+                    <tr>
+                        <td>Zapier</td>
+                        <td>미국회사, 7~8천개 앱 연동, 유료(비쌈), LLM 협업 우수</td>
+                    </tr>
+                    <tr>
+                        <td>Make</td>
+                        <td>직관적인 UI, 중간 가격대</td>
+                    </tr>
+                    <tr>
+                        <td>n8n</td>
+                        <td>유럽회사, 무료 사용 가능, 개발자 친화적</td>
+                    </tr>
+                </table>
+                <div class="highlight">
+                    <h4>💡 블루오션</h4>
+                    <p>자동화/에이전트는 최근 중소기업·일반인들도 사용량 증가 → <strong>블루오션</strong></p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">5</span>코딩 AI - 가장 광범위하고 딥한 영역</h3>
+                <table>
+                    <tr>
+                        <th>회사</th>
+                        <th>코딩 에이전트</th>
+                    </tr>
+                    <tr>
+                        <td>OpenAI (ChatGPT)</td>
+                        <td>Codex</td>
+                    </tr>
+                    <tr>
+                        <td>Anthropic (Claude)</td>
+                        <td>Claude Code</td>
+                    </tr>
+                    <tr>
+                        <td>Google (Gemini)</td>
+                        <td>Gemini CLI, Antigravity</td>
+                    </tr>
+                    <tr>
+                        <td>독립 IDE</td>
+                        <td>Cursor, Windsurf 등</td>
+                    </tr>
+                </table>
+                <blockquote>AI 수준을 알아본다면 코딩쪽에서 대부분 평가. 모델, 코딩 에이전트 사용면만 봐도 금방 판단됨</blockquote>
+            </div>
+        </div>
+
+        <div class="part">
+            <h2 class="part-title">Part 2. 광주대에 대한 제안 - 생활밀착형 AI 활용</h2>
+            <div class="intro"><strong class="accent">대기업/최상위 AI 기업들 따라하지 말고 오히려 생활밀착형으로 AI를 활용</strong>하는게 좋겠다는 생각
+            </div>
+
+            <div class="section">
+                <h3><span class="num">1</span>대학생들의 AI 지침 가이드라인</h3>
+                <h4>핵심 질문</h4>
+                <ul>
+                    <li>레포트나 과제, 시험 등에서 어떻게 활용하는 것이 좋은가?</li>
+                    <li>교수들은 학생들의 AI 사용을 어떻게 받아들일 것인가?</li>
+                </ul>
+                <h4>내 의견</h4>
+                <p>레포트, 과제, 시험 등에서 <strong class="success">전면 허용 혹은 적극적 사용을 권장</strong>하는게 좋다고 봄</p>
+                <ol>
+                    <li><strong>정보를 검색하고 취합하는 과정</strong>을 가르치는 것</li>
+                    <li><strong>그 정보들이 맞는지를 검증하는 것</strong>을 가르쳐야 함</li>
+                </ol>
+                <div class="highlight">
+                    <p><strong>광주대에서 먼저 선언하고 흐름을 만들어보면</strong> 어떨까</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">2</span>교수 및 교직원의 AI 활용</h3>
+                <p>교수들도 채점, 학생 상담, 교재준비까지 적극 활용 가능. 교직원 문서작성/자료정리에도 AI 도입 권장</p>
+                <h4>데이터 전환 3단계</h4>
+                <ol>
+                    <li>기존 데이터를 AI 활용 가능한 데이터로 <strong>전환</strong></li>
+                    <li>새로운 데이터를 AI 활용 가능한 데이터로 <strong>입력</strong></li>
+                    <li>이러한 데이터를 <strong>체계화</strong>시키고 <strong>구조화</strong></li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">3</span>광주형 로컬 AI 모델 구축 (과감한 제안)</h3>
+                <p>광주대학이나 기업/기관들과 연계해서 <strong class="accent">데이터센터에 모델을 하나 만들어서 서비스</strong>하는 것도 좋음</p>
+                <h4>두 가지 접근법</h4>
+                <ul>
+                    <li><strong>소규모</strong>: 광주대 자체 서버에 작은 모델을 시험삼아 가동</li>
+                    <li><strong>대규모</strong>: 광주 전체 사업으로 로컬모델을 만들어보기</li>
+                </ul>
+                <blockquote>해놓으면 AI쪽 체계화나 보안쪽에서 뚜렷한 성과, 나름의 표준이 될 수 있음</blockquote>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">4</span>추가로 생각해볼 것들</h3>
+                <ol>
+                    <li><strong>AI 뉴스레터/교양 강의</strong>: 정보성 뉴스나 교양 강의 수준의 지속적인 전달</li>
+                    <li><strong>AI 사용현황 조사</strong>: 학생/교수/교직원 사용현황 조사 및 독려 프로그램</li>
+                    <li><strong>학생 AI 서비스 플랫폼</strong>: 학생들이 만든 AI 서비스들을 사용할 수 있는 플랫폼</li>
+                    <li><strong>창업 연계</strong>: AI 서비스 상용화 → 창업이나 대학서비스로 연결</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="part">
+            <h2 class="part-title">Part 3. 추가 제안 (RISE 사업 연계)</h2>
+            <div class="intro" style="border-left-color:var(--warning)">💡 광주대 RISE 사업과 연계해서 생각해볼 수 있는 추가 아이디어</div>
+
+            <div class="section">
+                <h3><span class="num">1</span>AI 메이커스 강좌 확장</h3>
+                <p>현재 신입생 대상 아마존 연계 기초 교양으로 운영 중 → <strong class="accent">LLM 모델 비교 체험</strong>이나 <strong
+                        class="accent">LMArena</strong> 같은 플랫폼 활용 추가하면 학생들이 AI 흐름을 더 잘 파악 가능</p>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">2</span>하이라이트(Hi-Light) 챗봇 고도화</h3>
+                <p>현재 AI 학사 지원 챗봇 운영 중 → <strong class="accent">광주형 로컬 모델</strong>로 전환하면 보안 강화 + 광주대만의 차별점</p>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">3</span>AX 실증교육센터와 n8n 연계</h3>
+                <p>지역 제조 기업의 DX 컨설팅에 <strong class="accent">n8n 같은 자동화 툴</strong> 활용 → 기업 비용 부담 ↓, 광주대 실무 중심 교육 강점과 부합
+                </p>
+            </div>
+
+            <div class="section">
+                <h3><span class="num">4</span>리빙랩 + AI 융합</h3>
+                <p>제석산 구름다리, 빛고을 노인건강타운 같은 리빙랩 프로젝트에 <strong class="accent">AI 기반 분석</strong> 추가 → 더 임팩트 있는 결과물</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>사업내용을 내가 전부 파악한건 아니라서 혹시 틀린점 있어도 양해해주길 바람 ㅎㅎ</p>
+            <p style="margin-top:3mm;opacity:0.7">광주대학교 AI 발전 제안서 | A4 Print Version</p>
+        </footer>
+    </div>
+</body>
+
+</html>
