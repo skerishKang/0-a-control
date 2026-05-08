@@ -15,6 +15,7 @@ if __package__ in (None, ""):
     from scripts.planning_input import classify_conversation, parse_quick_input
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
+    from scripts.operations_summary import build_operations_summary
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
@@ -22,6 +23,7 @@ else:
     from .planning_input import classify_conversation, parse_quick_input
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
+    from .operations_summary import build_operations_summary
 
 import json
 import logging
@@ -424,6 +426,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             logging.warning("quest_suggestions.json is corrupted, returning empty: %s", exc)
             self.send_json({"suggestions": []})
 
+    def _get_operations_summary(self, query: dict[str, list[str]]) -> None:
+        result = build_operations_summary()
+        self.send_json(result)
+
     def handle_api_get_dispatch(self, path: str, query: dict[str, list[str]]) -> None:
         exact_routes = {
             "/api/current-state": self._get_current_state,
@@ -444,6 +450,8 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/telegram/chats": self._get_telegram_chats,
             "/api/telegram/messages": self._get_telegram_messages,
             "/api/suggestions": self._get_suggestions,
+            "/api/operations/summary": self._get_operations_summary,
+            "/api/github/summary": self._get_operations_summary,
         }
         prefix_routes = [
             ("/api/sessions/view/", self._get_sessions_view),
