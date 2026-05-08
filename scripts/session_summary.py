@@ -5,6 +5,7 @@ from typing import Any
 
 
 ANSI_ESCAPE_RE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+ANSI_OSC_RE = re.compile(r"\x1B\].*?(?:\x07|\x1B\\)")
 LITERAL_ESCAPE_RE = re.compile(r"\\x1b\[[0-9;?]*[ -/]*[@-~]", re.IGNORECASE)
 
 TRANSCRIPT_META_PATTERNS = (
@@ -13,7 +14,7 @@ TRANSCRIPT_META_PATTERNS = (
 )
 
 COMMON_NOISE_PATTERNS = (
-    re.compile(r"^\s*Conversation interrupted\b", re.IGNORECASE),
+    re.compile(r"^[\s■▪●•*-]*Conversation interrupted\b", re.IGNORECASE),
     re.compile(r"^Something went wrong", re.IGNORECASE),
     re.compile(r"^Hit `/feedback` to report\b", re.IGNORECASE),
     re.compile(r"^Tip:\s*(?:NEW|New):", re.IGNORECASE),
@@ -70,7 +71,8 @@ NEXT_PATTERNS = (
 
 
 def strip_ansi(content: str) -> str:
-    cleaned = ANSI_ESCAPE_RE.sub("", content or "")
+    cleaned = ANSI_OSC_RE.sub("", content or "")
+    cleaned = ANSI_ESCAPE_RE.sub("", cleaned)
     cleaned = LITERAL_ESCAPE_RE.sub("", cleaned)
     cleaned = cleaned.replace("\r", "\n")
     cleaned = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", cleaned)
