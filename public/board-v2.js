@@ -434,45 +434,35 @@ function renderOverridesSection(overrides) {
       const li = document.createElement("li");
       li.className = "v2-list-item";
 
-      const content = document.createElement("div");
-      content.style.display = "flex";
-      content.style.alignItems = "flex-start";
-      content.style.gap = "8px";
-
-      const textDiv = document.createElement("div");
-      textDiv.style.flex = "1";
+      const contentDiv = document.createElement("div");
+      contentDiv.style.display = "flex";
+      contentDiv.style.alignItems = "flex-start";
+      contentDiv.style.gap = "0";
 
       const titleSpan = document.createElement("span");
       titleSpan.className = "v2-item-title";
-      titleSpan.style.fontSize = "14px";
+      titleSpan.style.flex = "1";
       titleSpan.textContent = ov.title || "제목 없음";
 
       const active = ov.active !== false;
       const statusBadge = document.createElement("span");
       statusBadge.className = active ? "v2-status-badge -auto" : "v2-status-badge";
-      statusBadge.style.fontSize = "10px";
-      statusBadge.style.marginLeft = "8px";
-      statusBadge.style.opacity = active ? "1" : "0.5";
       statusBadge.textContent = active ? "활성" : "비활성";
       titleSpan.appendChild(statusBadge);
 
-      textDiv.appendChild(titleSpan);
+      contentDiv.appendChild(titleSpan);
+      li.appendChild(contentDiv);
 
       if (ov.reason) {
         const reasonSpan = document.createElement("span");
         reasonSpan.className = "v2-item-meta";
-        reasonSpan.style.fontSize = "12px";
         reasonSpan.textContent = ov.reason;
-        textDiv.appendChild(reasonSpan);
+        li.appendChild(reasonSpan);
       }
 
-      content.appendChild(textDiv);
-      li.appendChild(content);
-
-      // Open text-only modal if descriptive content exists
+      // Click opens text-only modal if descriptive content exists
       if (ov.reason || ov.description || ov.impact_summary) {
         li.classList.add("v2-modal-clickable");
-        li.style.cursor = "pointer";
         li.addEventListener("click", (function(overrideTitle, overrideText) {
           return function() {
             window.boardV2OpenTextModal(overrideTitle, overrideText);
