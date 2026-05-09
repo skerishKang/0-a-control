@@ -541,3 +541,14 @@
   background: rgba(217, 119, 6, 0.1);
   color: var(--v2-amber);
 }
+
+/* ── Override Row Styles ── */
+.v2-override-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.v2-override-title {
+  flex: 1;
+}
