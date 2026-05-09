@@ -1,11 +1,1 @@
 /* Modularized into board-v2-layout.css, board-v2-cards.css, etc. */
-
-.v2-override-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-.v2-override-title {
-  flex: 1;
-}
