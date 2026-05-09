@@ -17,6 +17,8 @@ if __package__ in (None, ""):
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from scripts.operations_summary import build_operations_summary
+    from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
+
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
@@ -26,6 +28,13 @@ else:
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from .operations_summary import build_operations_summary
+    from .manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
+
+
+
+
+
+
 
 import json
 import logging
@@ -116,6 +125,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     server_version = "ControlTowerHTTP/0.1"
 
     def do_GET(self) -> None:
+
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
             self.handle_api_get(parsed.path, parse_qs(parsed.query))
@@ -258,6 +268,10 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         result = clear_confirmed_starting_point()
         self.send_json({**result, "current_state": get_current_state()})
 
+    def _post_ops_overrides_create(self, body: dict) -> None:
+        result = create_manual_override(body)
+        self.send_json({"ok": True, "override": result})
+
     def handle_api_post_dispatch(self, path: str, body: dict) -> None:
         exact_routes = {
             "/api/quests/evaluate": self._post_quests_evaluate,
@@ -274,6 +288,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/tomorrow-first-quest/confirm": self._post_tomorrow_first_quest_confirm,
             "/api/tomorrow-first-quest/promote": self._post_tomorrow_first_quest_promote,
             "/api/tomorrow-first-quest/clear": self._post_tomorrow_first_quest_clear,
+            "/api/ops-overrides": self._post_ops_overrides_create,
         }
         prefix_routes = [
             ("/api/current-quest/hold", self._post_current_quest_hold),
@@ -330,6 +345,36 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             logging.error(f"POST API error: {exc}", exc_info=True)
             self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
             return
+
+    def do_PATCH(self) -> None:
+        parsed = urlparse(self.path)
+        if not parsed.path.startswith("/api/ops-overrides/"):
+            self.send_error(HTTPStatus.NOT_FOUND, "Not found")
+            return
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+        except (TypeError, ValueError):
+            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        if content_length < 0:
+            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        if content_length > MAX_BODY_SIZE:
+            self.send_json({"error": "request body too large"}, status=HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
+            return
+        raw_body = self.rfile.read(content_length) if content_length else b"{}"
+        try:
+            body = json.loads(raw_body.decode("utf-8") or "{}")
+            override_id = parsed.path.rsplit("/", 1)[-1]
+            override = update_manual_override(override_id, body)
+            self.send_json({"ok": True, "override": override})
+        except json.JSONDecodeError:
+            self.send_json({"error": "invalid JSON body"}, status=HTTPStatus.BAD_REQUEST)
+        except ValueError as exc:
+            self.send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+        except Exception as exc:
+            logging.error(f"PATCH API error: {exc}", exc_info=True)
+            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def _get_current_state(self, query: dict[str, list[str]]) -> None:
         self.send_json({"current_state": get_current_state()})
@@ -437,6 +482,18 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _get_guardrails_status(self, query: dict[str, list[str]]) -> None:
         self.send_json(build_guardrails_status())
 
+    def _get_ops_overrides(self, query: dict[str, list[str]]) -> None:
+
+        include_inactive = query.get("include_inactive", ["false"])[0].lower() in {"1", "true", "yes"}
+        target_type = query.get("target_type", [None])[0]
+        target_id = query.get("target_id", [None])[0]
+        overrides = list_manual_overrides(
+            include_inactive=include_inactive,
+            target_type=target_type,
+            target_id=target_id,
+        )
+        self.send_json({"overrides": overrides})
+
     def handle_api_get_dispatch(self, path: str, query: dict[str, list[str]]) -> None:
         exact_routes = {
             "/api/current-state": self._get_current_state,
@@ -461,6 +518,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/github/summary": self._get_operations_summary,
             "/api/settings/status": self._get_settings_status,
             "/api/guardrails/status": self._get_guardrails_status,
+            "/api/ops-overrides": self._get_ops_overrides,
         }
         prefix_routes = [
             ("/api/sessions/view/", self._get_sessions_view),
