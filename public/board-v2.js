@@ -435,13 +435,10 @@ function renderOverridesSection(overrides) {
       li.className = "v2-list-item";
 
       const contentDiv = document.createElement("div");
-      contentDiv.style.display = "flex";
-      contentDiv.style.alignItems = "flex-start";
-      contentDiv.style.gap = "6px";
+      contentDiv.className = "v2-override-row";
 
       const titleSpan = document.createElement("span");
-      titleSpan.className = "v2-item-title";
-      titleSpan.style.flex = "1";
+      titleSpan.className = "v2-override-title";
       titleSpan.textContent = ov.title || "제목 없음";
 
       const active = ov.active !== false;
@@ -460,17 +457,6 @@ function renderOverridesSection(overrides) {
         li.appendChild(reasonSpan);
       }
 
-      // Click opens text-only modal if descriptive content exists
-      if (ov.reason || ov.description || ov.impact_summary) {
-        li.classList.add("v2-modal-clickable");
-        li.addEventListener("click", (function(overrideTitle, overrideText) {
-          return function() {
-            window.boardV2OpenTextModal(overrideTitle, overrideText);
-          };
-        })(ov.title || "제목 없음", ov.description || ov.reason || ov.impact_summary || ""));
-      }
-
-      // Click opens text-only modal if descriptive content exists
       if (ov.reason || ov.description || ov.impact_summary) {
         li.classList.add("v2-modal-clickable");
         li.addEventListener("click", (function(overrideTitle, overrideText) {

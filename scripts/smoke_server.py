@@ -155,7 +155,7 @@ def main() -> int:
                 log_status("FINAL", "FAIL")
                 return 1
         except Exception as exc:
-            log_status("OPS_OVERRIDES_ENDPOINT", f"FAIL — {type(exc).__name__}: {exc}")
+            log_status("OPS_OVERRIDES_ENDPOINT", "FAIL — unreachable or invalid response")
             log_status("FINAL", "FAIL")
             return 1
 
