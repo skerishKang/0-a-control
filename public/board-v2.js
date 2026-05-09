@@ -11,24 +11,7 @@ async function loadBoardV2() {
   }
 
   try {
-    const [stateResponse, briefsResponse, sessionsResponse, questsResponse, plansResponse] = await Promise.all([
-      fetch("/api/current-state"),
-      fetch("/api/briefs/latest?limit=3"),
-      fetch("/api/sessions/recent?limit=50"),
-      fetch("/api/quests"),
-      fetch("/api/plans"),
-    ]);
-
-    if (!stateResponse.ok) {
-      throw new Error(`HTTP ${stateResponse.status}`);
-    }
-
-    const payload = await stateResponse.json();
-    const state = payload.current_state || {};
-    state.__briefs = briefsResponse.ok ? ((await briefsResponse.json()).briefs || []) : [];
-    state.__sessions = sessionsResponse.ok ? ((await sessionsResponse.json()).sessions || []) : [];
-    state.__quests = questsResponse.ok ? ((await questsResponse.json()).quests || []) : [];
-    state.__plans = plansResponse.ok ? ((await plansResponse.json()).plans || []) : [];
+    const state = await boardApi.fetchFullState();
 
     _cachedState = state;
     const phase = getEffectivePhase(state);
