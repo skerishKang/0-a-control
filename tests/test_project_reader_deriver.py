@@ -7,10 +7,28 @@ import subprocess
 from pathlib import Path
 from datetime import datetime, timedelta
 import shutil
+import stat
+import time
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+
+def _remove_readonly(func, path, _exc_info):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
+def _rmtree_with_retry(path, attempts=3):
+    for attempt in range(attempts):
+        try:
+            shutil.rmtree(path, onerror=_remove_readonly)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.1)
 
 
 class TestProjectReader(unittest.TestCase):
@@ -61,10 +79,10 @@ class TestProjectReader(unittest.TestCase):
         project_reader.OUTPUT_PATH = self.output_path
 
     def tearDown(self):
-        shutil.rmtree(self.temp_dir)
         import scripts.project_reader as project_reader
         project_reader.CONFIG_PATH = self.original_config
         project_reader.OUTPUT_PATH = self.original_output
+        _rmtree_with_retry(self.temp_dir)
 
     def test_project_reader_scans_git_state(self):
         import scripts.project_reader as project_reader
@@ -122,8 +140,7 @@ class TestQuestDeriver(unittest.TestCase):
         import scripts.quest_deriver as quest_deriver
         quest_deriver.CONTEXT_PATH = self.original_context
         quest_deriver.OUTPUT_PATH = self.original_output
-        import shutil
-        shutil.rmtree(self.temp_dir)
+        _rmtree_with_retry(self.temp_dir)
 
     def test_deriver_generates_uncommitted_suggestion(self):
         self.context_path.write_text(json.dumps({
