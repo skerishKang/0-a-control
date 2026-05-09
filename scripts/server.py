@@ -17,6 +17,7 @@ if __package__ in (None, ""):
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from scripts.operations_summary import build_operations_summary
+    from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
 
 else:
     from . import db as _db
@@ -27,10 +28,13 @@ else:
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from .operations_summary import build_operations_summary
+    from .manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
 
 
 
-from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
+
+
+
 
 import json
 import logging
@@ -121,6 +125,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     server_version = "ControlTowerHTTP/0.1"
 
     def do_GET(self) -> None:
+
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
             self.handle_api_get(parsed.path, parse_qs(parsed.query))
@@ -478,7 +483,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         self.send_json(build_guardrails_status())
 
     def _get_ops_overrides(self, query: dict[str, list[str]]) -> None:
-        raise RuntimeError("TEST_EXCEPTION")
+
         include_inactive = query.get("include_inactive", ["false"])[0].lower() in {"1", "true", "yes"}
         target_type = query.get("target_type", [None])[0]
         target_id = query.get("target_id", [None])[0]
