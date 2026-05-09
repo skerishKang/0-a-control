@@ -13,6 +13,7 @@ if __package__ in (None, ""):
     from scripts.db_ops import approve_plan_candidates
     from scripts.confirmed_starting_point import confirm_starting_point, clear_confirmed_starting_point
     from scripts.planning_input import classify_conversation, parse_quick_input
+    from scripts.settings_guardrails import build_guardrails_status, build_settings_status
     from scripts.telegram_cli import get_core_sources_sync_status, run_sync_core
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from scripts.operations_summary import build_operations_summary
@@ -21,6 +22,7 @@ else:
     from .db_ops import approve_plan_candidates
     from .confirmed_starting_point import confirm_starting_point, clear_confirmed_starting_point
     from .planning_input import classify_conversation, parse_quick_input
+    from .settings_guardrails import build_guardrails_status, build_settings_status
     from .telegram_cli import get_core_sources_sync_status, run_sync_core
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from .operations_summary import build_operations_summary
@@ -429,6 +431,11 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _get_operations_summary(self, query: dict[str, list[str]]) -> None:
         result = build_operations_summary()
         self.send_json(result)
+    def _get_settings_status(self, query: dict[str, list[str]]) -> None:
+        self.send_json(build_settings_status())
+
+    def _get_guardrails_status(self, query: dict[str, list[str]]) -> None:
+        self.send_json(build_guardrails_status())
 
     def handle_api_get_dispatch(self, path: str, query: dict[str, list[str]]) -> None:
         exact_routes = {
@@ -452,6 +459,8 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             "/api/suggestions": self._get_suggestions,
             "/api/operations/summary": self._get_operations_summary,
             "/api/github/summary": self._get_operations_summary,
+            "/api/settings/status": self._get_settings_status,
+            "/api/guardrails/status": self._get_guardrails_status,
         }
         prefix_routes = [
             ("/api/sessions/view/", self._get_sessions_view),
