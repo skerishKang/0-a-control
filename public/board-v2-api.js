@@ -25,6 +25,15 @@ const boardApi = {
     return state;
   },
 
+  async fetchOverrides() {
+    const response = await fetch("/api/ops-overrides");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const payload = await response.json();
+    return payload.overrides || [];
+  },
+
   async promoteStartingPoint() {
     const response = await fetch("/api/tomorrow-first-quest/promote", {
       method: "POST",

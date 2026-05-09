@@ -13,12 +13,21 @@ async function loadBoardV2() {
   try {
     const state = await boardApi.fetchFullState();
 
-    _cachedState = state;
-    const phase = getEffectivePhase(state);
-    renderPhaseTabs(phase);
-    renderStatusLabel(state, phase);
-    dispatchRender(state, phase);
-  } catch (error) {
+    // Load manual overrides (non-fatal, quiet failure allowed)
+    try {
+      state.__overrides = await boardApi.fetchOverrides();
+    } catch (overrideErr) {
+      console.warn("Manual overrides fetch failed, continuing without:", overrideErr);
+      state.__overrides = [];
+    }
+
+     _cachedState = state;
+     const phase = getEffectivePhase(state);
+     renderPhaseTabs(phase);
+     renderStatusLabel(state, phase);
+     dispatchRender(state, phase);
+     injectOverridesSection(state.__overrides || []);
+   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
     if (!root.querySelector(".v2-layout")) {
@@ -387,3 +396,59 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.addEventListener("beforeunload", stopBoardV2Polling);
+
+// ── Manual Overrides UI (read-only) ──
+function renderOverridesSection(overrides) {
+  if (!overrides || overrides.length === 0) {
+    return `<p class="v2-empty">수동 오버라이드가 없습니다.</p>`;
+  }
+
+  const items = overrides.map((ov) => {
+    const title = escapeHtml(ov.title || "제목 없음");
+    const reason = escapeHtml(ov.reason || "");
+    const active = ov.active !== false;
+    const statusBadge = active
+      ? `<span class="v2-status-badge -auto" style="font-size:10px; margin-left:8px;">활성</span>`
+      : `<span class="v2-status-badge" style="font-size:10px; margin-left:8px; opacity:0.5;">비활성</span>`;
+    const clickable = ov.reason || ov.description || ov.impact_summary
+      ? ` class="v2-modal-clickable" onclick="window.boardV2OpenModal('${title}', '${escapeHtml(ov.description || ov.reason || ov.impact_summary || "")}')"`
+      : "";
+    return `
+      <li class="v2-list-item"${clickable} style="padding: 10px 12px;">
+        <div style="display:flex; align-items:flex-start; gap:8px;">
+          <div style="flex:1;">
+            <span class="v2-item-title" style="font-size:14px;">${title}${statusBadge}</span>
+            ${reason ? `<span class="v2-item-meta" style="font-size:12px;">${reason}</span>` : ""}
+          </div>
+        </div>
+      </li>
+    `;
+  }).join("");
+
+  return `
+    <section class="v2-rail-section">
+      <span class="v2-section-label">수동 오버라이드</span>
+      <div class="v2-rail-card" style="padding: 4px 0;">
+        <ul class="v2-list" style="margin:0;">${items}</ul>
+      </div>
+    </section>
+  `;
+}
+
+function injectOverridesSection(overrides) {
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  const layout = root.querySelector(".v2-layout");
+  if (!layout) return;
+
+  // Remove existing overrides container if present
+  const existing = document.getElementById("v2-overrides-container");
+  if (existing) existing.remove();
+
+  // Create and append
+  const container = document.createElement("div");
+  container.id = "v2-overrides-container";
+  container.innerHTML = renderOverridesSection(overrides);
+  layout.appendChild(container);
+}
