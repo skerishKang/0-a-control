@@ -437,7 +437,7 @@ function renderOverridesSection(overrides) {
       const contentDiv = document.createElement("div");
       contentDiv.style.display = "flex";
       contentDiv.style.alignItems = "flex-start";
-      contentDiv.style.gap = "0";
+      contentDiv.style.gap = "6px";
 
       const titleSpan = document.createElement("span");
       titleSpan.className = "v2-item-title";
@@ -445,12 +445,12 @@ function renderOverridesSection(overrides) {
       titleSpan.textContent = ov.title || "제목 없음";
 
       const active = ov.active !== false;
-      const statusBadge = document.createElement("span");
-      statusBadge.className = active ? "v2-status-badge -auto" : "v2-status-badge";
-      statusBadge.textContent = active ? "활성" : "비활성";
-      titleSpan.appendChild(statusBadge);
+      const badge = document.createElement("span");
+      badge.className = active ? "v2-status-badge -auto" : "v2-status-badge";
+      badge.textContent = active ? "활성" : "비활성";
 
       contentDiv.appendChild(titleSpan);
+      contentDiv.appendChild(badge);
       li.appendChild(contentDiv);
 
       if (ov.reason) {
@@ -458,6 +458,16 @@ function renderOverridesSection(overrides) {
         reasonSpan.className = "v2-item-meta";
         reasonSpan.textContent = ov.reason;
         li.appendChild(reasonSpan);
+      }
+
+      // Click opens text-only modal if descriptive content exists
+      if (ov.reason || ov.description || ov.impact_summary) {
+        li.classList.add("v2-modal-clickable");
+        li.addEventListener("click", (function(overrideTitle, overrideText) {
+          return function() {
+            window.boardV2OpenTextModal(overrideTitle, overrideText);
+          };
+        })(ov.title || "제목 없음", ov.description || ov.reason || ov.impact_summary || ""));
       }
 
       // Click opens text-only modal if descriptive content exists

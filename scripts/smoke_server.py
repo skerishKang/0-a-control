@@ -137,7 +137,7 @@ def main() -> int:
 
         log_status("BOARD_V2_REQUIRED_API_ENDPOINTS", "PASS")
 
-        # Step 5: Sanitized ops-overrides availability check (non-fatal)
+        # Step 5: Sanitized ops-overrides availability check (fatal)
         try:
             req = Request(f"{BASE_URL}{OPS_OVERRIDES_ENDPOINT}", method="GET")
             resp = urlopen(req, timeout=REQUEST_TIMEOUT)
@@ -148,11 +148,16 @@ def main() -> int:
                     log_status("OPS_OVERRIDES_ENDPOINT", "PASS")
                 else:
                     log_status("OPS_OVERRIDES_ENDPOINT", "FAIL — missing overrides key")
-                    # Non-fatal: continue
+                    log_status("FINAL", "FAIL")
+                    return 1
             else:
                 log_status("OPS_OVERRIDES_ENDPOINT", f"FAIL — HTTP {resp.status}")
-        except Exception:
-            log_status("OPS_OVERRIDES_ENDPOINT", "FAIL — unreachable or invalid")
+                log_status("FINAL", "FAIL")
+                return 1
+        except Exception as exc:
+            log_status("OPS_OVERRIDES_ENDPOINT", f"FAIL — {type(exc).__name__}: {exc}")
+            log_status("FINAL", "FAIL")
+            return 1
 
         log_status("FINAL", "PASS")
         return 0
