@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 window.addEventListener("beforeunload", stopBoardV2Polling);
 
-// ── Manual Overrides UI (read-only) ──
+// ── Manual Overrides UI (read-only + create) ──
 function renderOverridesSection(overrides) {
   const section = document.createElement("section");
   section.className = "v2-rail-section";
@@ -420,6 +420,43 @@ function renderOverridesSection(overrides) {
 
   const card = document.createElement("div");
   card.className = "v2-rail-card";
+
+  const form = document.createElement("form");
+  form.className = "v2-override-form";
+  form.innerHTML = `
+    <input type="text" class="v2-override-input" id="v2OverrideTitle" placeholder="제목" maxlength="100" />
+    <input type="text" class="v2-override-input" id="v2OverrideReason" placeholder="사유 (선택)" maxlength="200" />
+    <button type="submit" class="v2-btn v2-btn-inline">추가</button>
+  `;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const titleInput = document.getElementById("v2OverrideTitle");
+    const reasonInput = document.getElementById("v2OverrideReason");
+    const title = titleInput.value.trim();
+    const reason = reasonInput.value.trim();
+
+    if (!title) {
+      window.alert("제목을 입력해 주세요.");
+      return;
+    }
+
+    try {
+      await boardApi.createOverride({ title, reason });
+      titleInput.value = "";
+      reasonInput.value = "";
+      const root = document.getElementById("boardV2Root");
+      if (root) {
+        const state = await boardApi.fetchFullState();
+        state.__overrides = await boardApi.fetchOverrides();
+        _cachedState = state;
+        injectOverridesSection(state.__overrides);
+      }
+    } catch (err) {
+      window.alert("생성에 실패했습니다.");
+    }
+  });
+
+  card.appendChild(form);
 
   if (!overrides || overrides.length === 0) {
     const empty = document.createElement("p");

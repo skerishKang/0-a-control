@@ -34,6 +34,15 @@ const boardApi = {
     return payload.overrides || [];
   },
 
+  async createOverride(data) {
+    const response = await fetch("/api/ops-overrides", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return this._handleResponse(response, "오버라이드 생성에 실패했습니다.");
+  },
+
   async promoteStartingPoint() {
     const response = await fetch("/api/tomorrow-first-quest/promote", {
       method: "POST",
