@@ -21,13 +21,13 @@ async function loadBoardV2() {
       state.__overrides = [];
     }
 
-     _cachedState = state;
-     const phase = getEffectivePhase(state);
-     renderPhaseTabs(phase);
-     renderStatusLabel(state, phase);
-     dispatchRender(state, phase);
-     injectOverridesSection(state.__overrides || []);
-   } catch (error) {
+    _cachedState = state;
+    const phase = getEffectivePhase(state);
+    renderPhaseTabs(phase);
+    renderStatusLabel(state, phase);
+    dispatchRender(state, phase);
+    injectOverridesSection(state.__overrides);
+  } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
     if (!root.querySelector(".v2-layout")) {
@@ -312,6 +312,17 @@ window.boardV2CloseModal = function boardV2CloseModal() {
   }
 };
 
+window.boardV2OpenTextModal = function boardV2OpenTextModal(title, text) {
+  const modal = document.getElementById("v2Modal");
+  const titleEl = document.getElementById("v2ModalTitle");
+  const bodyEl = document.getElementById("v2ModalBody");
+  if (!modal || !titleEl || !bodyEl) return;
+
+  titleEl.textContent = title;
+  bodyEl.textContent = text;
+  modal.hidden = false;
+};
+
 window.boardV2Refresh = async () => {
   await loadBoardV2();
 };
@@ -399,40 +410,84 @@ window.addEventListener("beforeunload", stopBoardV2Polling);
 
 // ── Manual Overrides UI (read-only) ──
 function renderOverridesSection(overrides) {
+  const section = document.createElement("section");
+  section.className = "v2-rail-section";
+
+  const label = document.createElement("span");
+  label.className = "v2-section-label";
+  label.textContent = "수동 오버라이드";
+  section.appendChild(label);
+
+  const card = document.createElement("div");
+  card.className = "v2-rail-card";
+
   if (!overrides || overrides.length === 0) {
-    return `<p class="v2-empty">수동 오버라이드가 없습니다.</p>`;
+    const empty = document.createElement("p");
+    empty.className = "v2-empty";
+    empty.textContent = "수동 오버라이드가 없습니다.";
+    card.appendChild(empty);
+  } else {
+    const list = document.createElement("ul");
+    list.className = "v2-list";
+
+    overrides.forEach((ov) => {
+      const li = document.createElement("li");
+      li.className = "v2-list-item";
+
+      const content = document.createElement("div");
+      content.style.display = "flex";
+      content.style.alignItems = "flex-start";
+      content.style.gap = "8px";
+
+      const textDiv = document.createElement("div");
+      textDiv.style.flex = "1";
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "v2-item-title";
+      titleSpan.style.fontSize = "14px";
+      titleSpan.textContent = ov.title || "제목 없음";
+
+      const active = ov.active !== false;
+      const statusBadge = document.createElement("span");
+      statusBadge.className = active ? "v2-status-badge -auto" : "v2-status-badge";
+      statusBadge.style.fontSize = "10px";
+      statusBadge.style.marginLeft = "8px";
+      statusBadge.style.opacity = active ? "1" : "0.5";
+      statusBadge.textContent = active ? "활성" : "비활성";
+      titleSpan.appendChild(statusBadge);
+
+      textDiv.appendChild(titleSpan);
+
+      if (ov.reason) {
+        const reasonSpan = document.createElement("span");
+        reasonSpan.className = "v2-item-meta";
+        reasonSpan.style.fontSize = "12px";
+        reasonSpan.textContent = ov.reason;
+        textDiv.appendChild(reasonSpan);
+      }
+
+      content.appendChild(textDiv);
+      li.appendChild(content);
+
+      // Open text-only modal if descriptive content exists
+      if (ov.reason || ov.description || ov.impact_summary) {
+        li.classList.add("v2-modal-clickable");
+        li.style.cursor = "pointer";
+        li.addEventListener("click", (function(overrideTitle, overrideText) {
+          return function() {
+            window.boardV2OpenTextModal(overrideTitle, overrideText);
+          };
+        })(ov.title || "제목 없음", ov.description || ov.reason || ov.impact_summary || ""));
+      }
+
+      list.appendChild(li);
+    });
+
+    card.appendChild(list);
   }
 
-  const items = overrides.map((ov) => {
-    const title = escapeHtml(ov.title || "제목 없음");
-    const reason = escapeHtml(ov.reason || "");
-    const active = ov.active !== false;
-    const statusBadge = active
-      ? `<span class="v2-status-badge -auto" style="font-size:10px; margin-left:8px;">활성</span>`
-      : `<span class="v2-status-badge" style="font-size:10px; margin-left:8px; opacity:0.5;">비활성</span>`;
-    const clickable = ov.reason || ov.description || ov.impact_summary
-      ? ` class="v2-modal-clickable" onclick="window.boardV2OpenModal('${title}', '${escapeHtml(ov.description || ov.reason || ov.impact_summary || "")}')"`
-      : "";
-    return `
-      <li class="v2-list-item"${clickable} style="padding: 10px 12px;">
-        <div style="display:flex; align-items:flex-start; gap:8px;">
-          <div style="flex:1;">
-            <span class="v2-item-title" style="font-size:14px;">${title}${statusBadge}</span>
-            ${reason ? `<span class="v2-item-meta" style="font-size:12px;">${reason}</span>` : ""}
-          </div>
-        </div>
-      </li>
-    `;
-  }).join("");
-
-  return `
-    <section class="v2-rail-section">
-      <span class="v2-section-label">수동 오버라이드</span>
-      <div class="v2-rail-card" style="padding: 4px 0;">
-        <ul class="v2-list" style="margin:0;">${items}</ul>
-      </div>
-    </section>
-  `;
+  section.appendChild(card);
+  return section;
 }
 
 function injectOverridesSection(overrides) {
@@ -442,13 +497,11 @@ function injectOverridesSection(overrides) {
   const layout = root.querySelector(".v2-layout");
   if (!layout) return;
 
-  // Remove existing overrides container if present
   const existing = document.getElementById("v2-overrides-container");
   if (existing) existing.remove();
 
-  // Create and append
   const container = document.createElement("div");
   container.id = "v2-overrides-container";
-  container.innerHTML = renderOverridesSection(overrides);
+  container.appendChild(renderOverridesSection(overrides));
   layout.appendChild(container);
 }
