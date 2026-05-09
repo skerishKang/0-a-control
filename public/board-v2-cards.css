@@ -577,3 +577,15 @@
   color: var(--v2-text-muted);
   opacity: 0.7;
 }
+
+.v2-override-select {
+  padding: 6px 8px;
+  border: 1px solid var(--v2-border);
+  border-radius: 3px;
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-size: 13px;
+  font-family: inherit;
+  min-width: 90px;
+  cursor: pointer;
+}

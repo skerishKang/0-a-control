@@ -66,6 +66,20 @@ function isUserInteracting() {
     if (isFocused || hasContent) return true;
   }
 
+  // 4. 수동 오버라이드 생성 폼 입력 중인지 확인
+  const overrideType = document.getElementById("v2OverrideTargetType");
+  const overrideId = document.getElementById("v2OverrideTargetId");
+  const overrideStatus = document.getElementById("v2OverrideManualStatus");
+  const overrideReason = document.getElementById("v2OverrideReason");
+  if (overrideType || overrideId || overrideStatus || overrideReason) {
+    const hasContent = 
+      (overrideType && overrideType.value.trim().length > 0) ||
+      (overrideId && overrideId.value.trim().length > 0) ||
+      (overrideStatus && overrideStatus.value.trim().length > 0) ||
+      (overrideReason && overrideReason.value.trim().length > 0);
+    if (hasContent) return true;
+  }
+
   return false;
 }
 
@@ -423,26 +437,85 @@ function renderOverridesSection(overrides) {
 
   const form = document.createElement("form");
   form.className = "v2-override-form";
-  form.innerHTML = `
-    <input type="text" class="v2-override-input" id="v2OverrideTitle" placeholder="제목" maxlength="100" />
-    <input type="text" class="v2-override-input" id="v2OverrideReason" placeholder="사유 (선택)" maxlength="200" />
-    <button type="submit" class="v2-btn v2-btn-inline">추가</button>
-  `;
+
+  const typeSelect = document.createElement("select");
+  typeSelect.id = "v2OverrideTargetType";
+  typeSelect.className = "v2-override-select";
+  typeSelect.setAttribute("aria-label", "대상 유형");
+  const typeOptions = ["", "issue", "pr", "quest", "plan", "session", "source", "global"];
+  typeOptions.forEach((opt) => {
+    const option = document.createElement("option");
+    option.value = opt;
+    option.textContent = opt || "유형 선택";
+    typeSelect.appendChild(option);
+  });
+
+  const idInput = document.createElement("input");
+  idInput.type = "text";
+  idInput.id = "v2OverrideTargetId";
+  idInput.className = "v2-override-input";
+  idInput.setAttribute("placeholder", "대상 ID");
+  idInput.setAttribute("maxlength", "50");
+
+  const statusSelect = document.createElement("select");
+  statusSelect.id = "v2OverrideManualStatus";
+  statusSelect.className = "v2-override-select";
+  statusSelect.setAttribute("aria-label", "상태");
+  const statusOptions = ["", "READY", "IN_PROGRESS", "BLOCKED", "NEEDS_IMPLEMENTATION", "NEEDS_REVIEW", "NEEDS_VALIDATION", "DONE", "NO_ACTION", "PINNED", "WATCH", "IGNORE_UNTIL", "DO_NOT_MERGE", "DO_NOT_CLOSE"];
+  statusOptions.forEach((opt) => {
+    const option = document.createElement("option");
+    option.value = opt;
+    option.textContent = opt || "상태 선택";
+    statusSelect.appendChild(option);
+  });
+
+  const reasonInput = document.createElement("input");
+  reasonInput.type = "text";
+  reasonInput.id = "v2OverrideReason";
+  reasonInput.className = "v2-override-input";
+  reasonInput.setAttribute("placeholder", "사유");
+  reasonInput.setAttribute("maxlength", "200");
+
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.className = "v2-btn v2-btn-inline";
+  submitBtn.textContent = "추가";
+
+  form.appendChild(typeSelect);
+  form.appendChild(idInput);
+  form.appendChild(statusSelect);
+  form.appendChild(reasonInput);
+  form.appendChild(submitBtn);
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const titleInput = document.getElementById("v2OverrideTitle");
-    const reasonInput = document.getElementById("v2OverrideReason");
-    const title = titleInput.value.trim();
+    const target_type = typeSelect.value.trim();
+    const target_id = idInput.value.trim();
+    const manual_status = statusSelect.value.trim();
     const reason = reasonInput.value.trim();
 
-    if (!title) {
-      window.alert("제목을 입력해 주세요.");
+    if (!target_type) {
+      window.alert("대상 유형을 선택해 주세요.");
+      return;
+    }
+    if (!target_id) {
+      window.alert("대상 ID를 입력해 주세요.");
+      return;
+    }
+    if (!manual_status) {
+      window.alert("상태를 선택해 주세요.");
+      return;
+    }
+    if (!reason) {
+      window.alert("사유를 입력해 주세요.");
       return;
     }
 
     try {
-      await boardApi.createOverride({ title, reason });
-      titleInput.value = "";
+      await boardApi.createOverride({ target_type, target_id, manual_status, reason });
+      typeSelect.value = "";
+      idInput.value = "";
+      statusSelect.value = "";
       reasonInput.value = "";
       const root = document.getElementById("boardV2Root");
       if (root) {
