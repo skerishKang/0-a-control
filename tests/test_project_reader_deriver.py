@@ -214,7 +214,7 @@ class TestQuestDeriver(unittest.TestCase):
         import scripts.quest_deriver as quest_deriver
         result = quest_deriver.derive_suggestions()
         
-        self.assertEqual(len(result["suggestions"],), 0)
+        self.assertEqual(len(result["suggestions"]), 0)
 
     def test_deriver_priority_ordering(self):
         self.context_path.write_text(json.dumps({
