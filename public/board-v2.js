@@ -1014,10 +1014,10 @@ function renderOpsSection(data) {
   if (data.source_status) {
     if (typeof data.source_status === "object") {
       if (data.source_status.github !== undefined) {
-        addRow("GitHub", data.source_status.github ? "연결됨" : "미연결");
+        addRow("GitHub", String(data.source_status.github));
       }
       if (data.source_status.classifier !== undefined) {
-        addRow("분류기", data.source_status.classifier ? "활성" : "비활성");
+        addRow("분류기", String(data.source_status.classifier));
       }
     }
   }
@@ -1151,7 +1151,7 @@ function renderGuardrailsSection(settings, guardrails) {
         }
       });
       Object.entries(levelCounts).forEach(([level, count]) => {
-        addRow(` Level ${level}`, count + "개");
+        addRow(`Level ${level}`, count + "개");
       });
     }
   }
