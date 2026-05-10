@@ -43,6 +43,15 @@ const boardApi = {
     return this._handleResponse(response, "오버라이드 생성에 실패했습니다.");
   },
 
+  async deactivateOverride(id) {
+    const response = await fetch(`/api/ops-overrides/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_active: false }),
+    });
+    return this._handleResponse(response, "오버라이드 비활성화에 실패했습니다.");
+  },
+
   async promoteStartingPoint() {
     const response = await fetch("/api/tomorrow-first-quest/promote", {
       method: "POST",
