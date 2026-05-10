@@ -589,3 +589,19 @@
   min-width: 90px;
   cursor: pointer;
 }
+
+/* ── Handoff Panel ── */
+.v2-handoff-prompt {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.v2-handoff-copy-row {
+  margin-top: 8px;
+}
+
+.v2-handoff-feedback {
+  font-size: 11px;
+  color: var(--v2-primary);
+  margin-left: 8px;
+}
