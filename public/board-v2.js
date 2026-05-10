@@ -568,6 +568,31 @@ function renderOverridesSection(overrides) {
 
       contentDiv.appendChild(titleSpan);
       contentDiv.appendChild(badge);
+
+      if (active) {
+        const deactivateBtn = document.createElement("button");
+        deactivateBtn.type = "button";
+        deactivateBtn.className = "v2-btn v2-btn-inline v2-btn-deactivate";
+        deactivateBtn.textContent = "비활성화";
+        deactivateBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (!window.confirm("이 오버라이드를 비활성화할까요?")) return;
+          try {
+            await boardApi.deactivateOverride(ov.id);
+            const root = document.getElementById("boardV2Root");
+            if (root) {
+              const state = await boardApi.fetchFullState();
+              state.__overrides = await boardApi.fetchOverrides();
+              _cachedState = state;
+              injectOverridesSection(state.__overrides);
+            }
+          } catch (err) {
+            window.alert("오버라이드 비활성화에 실패했습니다.");
+          }
+        });
+        contentDiv.appendChild(deactivateBtn);
+      }
+
       li.appendChild(contentDiv);
 
       if (ov.reason) {
