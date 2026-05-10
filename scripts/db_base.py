@@ -8,20 +8,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from scripts.db_helpers import get_db_path, now_iso, row_to_dict, rows_to_dicts
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(os.getenv("CONTROL_TOWER_DATA_DIR", str(ROOT_DIR / "data")))
 DB_PATH = Path(os.getenv("CONTROL_TOWER_DB_PATH", str(DATA_DIR / "control_tower.db")))
 WORKDIARY_DIR = Path(os.getenv("CONTROL_TOWER_WORKDIARY_DIR", str(ROOT_DIR.parent)))
 UTC = timezone.utc
-
-
-def now_iso() -> str:
-    return datetime.now(UTC).replace(microsecond=0).isoformat()
-
-
-def get_db_path() -> Path:
-    return Path(os.getenv("CONTROL_TOWER_DB_PATH", str(DATA_DIR / "control_tower.db")))
 
 
 TELEGRAM_INBOX_SCHEMA = """
@@ -512,21 +505,7 @@ def backfill_event_log(conn: sqlite3.Connection) -> None:
         )
 
 
-def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
-    if row is None:
-        return None
-    item = dict(row)
-    for key, value in list(item.items()):
-        if key.endswith("_json") and value:
-            try:
-                item[key] = json.loads(value)
-            except json.JSONDecodeError:
-                pass
-    return item
 
-
-def rows_to_dicts(rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
-    return [row_to_dict(row) for row in rows]
 
 
 def upsert_state(conn: sqlite3.Connection, key: str, value: Any, metadata: dict[str, Any] | None = None) -> None:
