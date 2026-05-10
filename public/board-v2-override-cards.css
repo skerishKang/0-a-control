@@ -1,0 +1,47 @@
+/* ── Override Card Styles ── */
+.v2-override-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.v2-override-title {
+  flex: 1;
+}
+
+/* ── Override Create Form ── */
+.v2-override-form {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--v2-border);
+}
+
+.v2-override-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--v2-border);
+  border-radius: 3px;
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.v2-override-input::placeholder {
+  color: var(--v2-text-muted);
+  opacity: 0.7;
+}
+
+.v2-override-select {
+  padding: 6px 8px;
+  border: 1px solid var(--v2-border);
+  border-radius: 3px;
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-size: 13px;
+  font-family: inherit;
+  min-width: 90px;
+  cursor: pointer;
+}
