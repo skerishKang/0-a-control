@@ -72,12 +72,17 @@ function isUserInteracting() {
   const overrideStatus = document.getElementById("v2OverrideManualStatus");
   const overrideReason = document.getElementById("v2OverrideReason");
   if (overrideType || overrideId || overrideStatus || overrideReason) {
-    const hasContent = 
+    const isFocused =
+      document.activeElement === overrideType ||
+      document.activeElement === overrideId ||
+      document.activeElement === overrideStatus ||
+      document.activeElement === overrideReason;
+    const hasContent =
       (overrideType && overrideType.value.trim().length > 0) ||
       (overrideId && overrideId.value.trim().length > 0) ||
       (overrideStatus && overrideStatus.value.trim().length > 0) ||
       (overrideReason && overrideReason.value.trim().length > 0);
-    if (hasContent) return true;
+    if (isFocused || hasContent) return true;
   }
 
   return false;
@@ -549,7 +554,11 @@ function renderOverridesSection(overrides) {
 
       const titleSpan = document.createElement("span");
       titleSpan.className = "v2-override-title";
-      titleSpan.textContent = ov.title || "제목 없음";
+      const overrideLabel =
+        [ov.manual_status, [ov.target_type, ov.target_id].filter(Boolean).join("/")].filter(Boolean).join(" · ") ||
+        ov.title ||
+        "오버라이드";
+      titleSpan.textContent = overrideLabel;
 
       const active = ov.active !== false;
       const badge = document.createElement("span");
@@ -573,7 +582,7 @@ function renderOverridesSection(overrides) {
           return function() {
             window.boardV2OpenTextModal(overrideTitle, overrideText);
           };
-        })(ov.title || "제목 없음", ov.description || ov.reason || ov.impact_summary || ""));
+        })(overrideLabel, ov.description || ov.reason || ov.impact_summary || ""));
       }
 
       list.appendChild(li);
