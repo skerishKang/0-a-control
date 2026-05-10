@@ -31,14 +31,14 @@ class TestWorkItem(unittest.TestCase):
         )
         self.assertTrue(item.is_done)
 
-    def test_is_done_with_no_action_status(self):
+    def test_is_done_with_completed_status(self):
         item = WorkItem(
             id="test-2",
             source="github",
             source_type="pr",
             source_id="2",
             title="Test PR",
-            effective_status="NO_ACTION",
+            automatic_status="COMPLETED",
         )
         self.assertTrue(item.is_done)
 
@@ -53,12 +53,78 @@ class TestWorkItem(unittest.TestCase):
         )
         self.assertTrue(item.is_done)
 
-    def test_is_blocked_with_blocked_status(self):
+    def test_is_no_action_with_no_action_status(self):
         item = WorkItem(
             id="test-4",
             source="github",
-            source_type="issue",
+            source_type="pr",
             source_id="4",
+            title="Test PR",
+            effective_status="NO_ACTION",
+        )
+        self.assertTrue(item.is_no_action)
+
+    def test_is_no_action_with_ignore_status(self):
+        item = WorkItem(
+            id="test-5",
+            source="github",
+            source_type="pr",
+            source_id="5",
+            title="Test PR",
+            effective_status="IGNORE",
+        )
+        self.assertTrue(item.is_no_action)
+
+    def test_is_no_action_with_wontfix_status(self):
+        item = WorkItem(
+            id="test-6",
+            source="github",
+            source_type="issue",
+            source_id="6",
+            title="Test Issue",
+            effective_status="WONTFIX",
+        )
+        self.assertTrue(item.is_no_action)
+
+    def test_is_later_with_later_status(self):
+        item = WorkItem(
+            id="test-7",
+            source="github",
+            source_type="issue",
+            source_id="7",
+            title="Test Issue",
+            automatic_status="LATER",
+        )
+        self.assertTrue(item.is_later)
+
+    def test_is_later_with_watch_status(self):
+        item = WorkItem(
+            id="test-8",
+            source="github",
+            source_type="issue",
+            source_id="8",
+            title="Test Issue",
+            automatic_status="WATCH",
+        )
+        self.assertTrue(item.is_later)
+
+    def test_is_later_with_deferred_status(self):
+        item = WorkItem(
+            id="test-9",
+            source="github",
+            source_type="issue",
+            source_id="9",
+            title="Test Issue",
+            automatic_status="DEFERRED",
+        )
+        self.assertTrue(item.is_later)
+
+    def test_is_blocked_with_blocked_status(self):
+        item = WorkItem(
+            id="test-10",
+            source="github",
+            source_type="issue",
+            source_id="10",
             title="Test Issue",
             automatic_status="BLOCKED",
         )
@@ -66,10 +132,10 @@ class TestWorkItem(unittest.TestCase):
 
     def test_is_blocked_with_waiting_status(self):
         item = WorkItem(
-            id="test-5",
+            id="test-11",
             source="github",
             source_type="issue",
-            source_id="5",
+            source_id="11",
             title="Test Issue",
             effective_status="WAITING",
         )
@@ -77,10 +143,10 @@ class TestWorkItem(unittest.TestCase):
 
     def test_needs_validation(self):
         item = WorkItem(
-            id="test-6",
+            id="test-12",
             source="github",
             source_type="pr",
-            source_id="6",
+            source_id="12",
             title="Test PR",
             automatic_status="NEEDS_VALIDATION",
         )
@@ -88,10 +154,10 @@ class TestWorkItem(unittest.TestCase):
 
     def test_needs_review(self):
         item = WorkItem(
-            id="test-7",
+            id="test-13",
             source="github",
             source_type="pr",
-            source_id="7",
+            source_id="13",
             title="Test PR",
             effective_status="NEEDS_REVIEW",
         )
@@ -99,10 +165,10 @@ class TestWorkItem(unittest.TestCase):
 
     def test_is_high_priority_p0(self):
         item = WorkItem(
-            id="test-8",
+            id="test-14",
             source="github",
             source_type="issue",
-            source_id="8",
+            source_id="14",
             title="Test Issue",
             priority=Priority.P0,
         )
@@ -110,10 +176,10 @@ class TestWorkItem(unittest.TestCase):
 
     def test_is_high_priority_p1(self):
         item = WorkItem(
-            id="test-9",
+            id="test-15",
             source="github",
             source_type="issue",
-            source_id="9",
+            source_id="15",
             title="Test Issue",
             priority=Priority.P1,
         )
@@ -121,14 +187,26 @@ class TestWorkItem(unittest.TestCase):
 
     def test_is_not_high_priority_p2(self):
         item = WorkItem(
-            id="test-10",
+            id="test-16",
             source="github",
             source_type="issue",
-            source_id="10",
+            source_id="16",
             title="Test Issue",
             priority=Priority.P2,
         )
         self.assertFalse(item.is_high_priority)
+
+    def test_upper_guards_converts_to_uppercase(self):
+        item = WorkItem(
+            id="test-17",
+            source="github",
+            source_type="issue",
+            source_id="17",
+            title="Test Issue",
+            guards=["local_required", "Needs_Validation"],
+        )
+        self.assertIn("LOCAL_REQUIRED", item.upper_guards)
+        self.assertIn("NEEDS_VALIDATION", item.upper_guards)
 
 
 class TestNormalizeWorkItem(unittest.TestCase):
@@ -176,9 +254,87 @@ class TestNormalizeWorkItem(unittest.TestCase):
         self.assertIn("LOCAL_REQUIRED", item.guards)
         self.assertIn("VALIDATION_NEEDED", item.guards)
 
+    def test_priority_parsed_from_raw_p0(self):
+        raw = {
+            "id": "test-priority",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+            "priority": "P0",
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.priority, Priority.P0)
+
+    def test_priority_parsed_from_raw_lowercase(self):
+        raw = {
+            "id": "test-priority",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+            "priority": "p1",
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.priority, Priority.P1)
+
+    def test_priority_parsed_from_raw_mixed_case(self):
+        raw = {
+            "id": "test-priority",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+            "priority": "p2",
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.priority, Priority.P2)
+
+    def test_priority_default_to_p2_for_unknown(self):
+        raw = {
+            "id": "test-priority",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+            "priority": "INVALID",
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.priority, Priority.P2)
+
+    def test_priority_default_to_p2_for_missing(self):
+        raw = {
+            "id": "test-priority",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.priority, Priority.P2)
+
+    def test_lowercase_guards_matched_case_insensitive(self):
+        raw = {
+            "id": "test-guard-case",
+            "title": "Test",
+            "source": "github",
+            "source_type": "issue",
+            "source_id": "1",
+            "guards": ["local_required", "needs_review"],
+        }
+        item = normalize_work_item(raw)
+        self.assertIsNotNone(item)
+        self.assertIn("local_required", item.guards)
+        self.assertTrue(item.needs_review)
+
 
 class TestAssignQueuePriority(unittest.TestCase):
-    def test_done_item_no_action(self):
+    def test_done_item_done_queue(self):
         item = WorkItem(
             id="done-1",
             source="github",
@@ -188,8 +344,69 @@ class TestAssignQueuePriority(unittest.TestCase):
             automatic_status="DONE",
         )
         queue, priority, ctx = assign_queue_priority(item)
-        self.assertEqual(queue, Queue.NO_ACTION)
+        self.assertEqual(queue, Queue.DONE)
         self.assertEqual(priority, Priority.P3)
+
+    def test_completed_item_done_queue(self):
+        item = WorkItem(
+            id="completed-1",
+            source="github",
+            source_type="pr",
+            source_id="1",
+            title="Completed PR",
+            automatic_status="COMPLETED",
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.DONE)
+
+    def test_no_action_item_no_action_queue(self):
+        item = WorkItem(
+            id="noaction-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Wontfix Issue",
+            automatic_status="NO_ACTION",
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.NO_ACTION)
+
+    def test_ignore_item_no_action_queue(self):
+        item = WorkItem(
+            id="ignore-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Ignored Issue",
+            automatic_status="IGNORE",
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.NO_ACTION)
+
+    def test_later_item_later_queue(self):
+        item = WorkItem(
+            id="later-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Later Issue",
+            automatic_status="LATER",
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.LATER)
+        self.assertEqual(priority, Priority.P3)
+
+    def test_watch_item_later_queue(self):
+        item = WorkItem(
+            id="watch-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Watch Issue",
+            automatic_status="WATCH",
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.LATER)
 
     def test_blocked_item_blocked_queue(self):
         item = WorkItem(
@@ -229,6 +446,7 @@ class TestAssignQueuePriority(unittest.TestCase):
         )
         queue, priority, ctx = assign_queue_priority(item)
         self.assertEqual(queue, Queue.LOCAL_NEEDED)
+        self.assertEqual(ctx, ExecutionContext.LOCAL_NEEDED)
 
     def test_validation_needed_status(self):
         item = WorkItem(
@@ -255,7 +473,7 @@ class TestAssignQueuePriority(unittest.TestCase):
         queue, priority, ctx = assign_queue_priority(item)
         self.assertEqual(queue, Queue.REVIEW_NEEDED)
 
-    def test_p0_high_priority_now(self):
+    def test_p0_high_priority_now_preserved(self):
         item = WorkItem(
             id="p0-1",
             source="github",
@@ -267,9 +485,9 @@ class TestAssignQueuePriority(unittest.TestCase):
         )
         queue, priority, ctx = assign_queue_priority(item)
         self.assertEqual(queue, Queue.NOW)
-        self.assertEqual(priority, Priority.P1)
+        self.assertEqual(priority, Priority.P0)
 
-    def test_p1_high_priority_now(self):
+    def test_p1_high_priority_now_preserved(self):
         item = WorkItem(
             id="p1-1",
             source="github",
@@ -281,6 +499,7 @@ class TestAssignQueuePriority(unittest.TestCase):
         )
         queue, priority, ctx = assign_queue_priority(item)
         self.assertEqual(queue, Queue.NOW)
+        self.assertEqual(priority, Priority.P1)
 
     def test_p2_regular_priority_next(self):
         item = WorkItem(
@@ -294,6 +513,225 @@ class TestAssignQueuePriority(unittest.TestCase):
         )
         queue, priority, ctx = assign_queue_priority(item)
         self.assertEqual(queue, Queue.NEXT)
+        self.assertEqual(priority, Priority.P2)
+
+    def test_github_web_guard_returns_github_web_context(self):
+        item = WorkItem(
+            id="web-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Web Model Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["GITHUB_WEB_MODEL_NEEDED"],
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.GITHUB_WEB_MODEL_NEEDED)
+
+    def test_mixed_guard_returns_mixed_context(self):
+        item = WorkItem(
+            id="mixed-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Mixed Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["MIXED_REMOTE_CODE_LOCAL_VALIDATION"],
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.MIXED_REMOTE_CODE_LOCAL_VALIDATION)
+
+    def test_local_guard_returns_local_context(self):
+        item = WorkItem(
+            id="local-ctx-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Local Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["LOCAL_REQUIRED"],
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.LOCAL_NEEDED)
+
+    def test_default_context_is_remote_doable(self):
+        item = WorkItem(
+            id="default-1",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Default Issue",
+            automatic_status="IN_PROGRESS",
+            priority=Priority.P2,
+        )
+        queue, priority, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.REMOTE_DOABLE)
+
+
+class TestAllQueueValues(unittest.TestCase):
+    def test_queue_now(self):
+        item = WorkItem(
+            id="q-now",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Now Issue",
+            priority=Priority.P0,
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.NOW)
+
+    def test_queue_next(self):
+        item = WorkItem(
+            id="q-next",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Next Issue",
+            automatic_status="IN_PROGRESS",
+            priority=Priority.P2,
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.NEXT)
+
+    def test_queue_blocked(self):
+        item = WorkItem(
+            id="q-blocked",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Blocked Issue",
+            automatic_status="BLOCKED",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.BLOCKED)
+
+    def test_queue_local_needed(self):
+        item = WorkItem(
+            id="q-local",
+            source="github",
+            source_type="pr",
+            source_id="1",
+            title="Local PR",
+            automatic_status="IN_PROGRESS",
+            is_local_needed=True,
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.LOCAL_NEEDED)
+
+    def test_queue_validation_needed(self):
+        item = WorkItem(
+            id="q-val",
+            source="github",
+            source_type="pr",
+            source_id="1",
+            title="Validation PR",
+            automatic_status="NEEDS_VALIDATION",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.VALIDATION_NEEDED)
+
+    def test_queue_review_needed(self):
+        item = WorkItem(
+            id="q-review",
+            source="github",
+            source_type="pr",
+            source_id="1",
+            title="Review PR",
+            effective_status="NEEDS_REVIEW",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.REVIEW_NEEDED)
+
+    def test_queue_later(self):
+        item = WorkItem(
+            id="q-later",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Later Issue",
+            automatic_status="LATER",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.LATER)
+
+    def test_queue_done(self):
+        item = WorkItem(
+            id="q-done",
+            source="github",
+            source_type="pr",
+            source_id="1",
+            title="Done PR",
+            automatic_status="DONE",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.DONE)
+
+    def test_queue_no_action(self):
+        item = WorkItem(
+            id="q-noaction",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="NoAction Issue",
+            automatic_status="NO_ACTION",
+        )
+        queue, _, _ = assign_queue_priority(item)
+        self.assertEqual(queue, Queue.NO_ACTION)
+
+
+class TestAllExecutionContextValues(unittest.TestCase):
+    def test_context_remote_doable(self):
+        item = WorkItem(
+            id="ctx-remote",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Remote Issue",
+            automatic_status="IN_PROGRESS",
+            priority=Priority.P2,
+        )
+        _, _, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.REMOTE_DOABLE)
+
+    def test_context_local_needed(self):
+        item = WorkItem(
+            id="ctx-local",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Local Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["LOCAL_REQUIRED"],
+        )
+        _, _, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.LOCAL_NEEDED)
+
+    def test_context_github_web_model_needed(self):
+        item = WorkItem(
+            id="ctx-web",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Web Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["GITHUB_WEB_MODEL_NEEDED"],
+        )
+        _, _, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.GITHUB_WEB_MODEL_NEEDED)
+
+    def test_context_mixed_remote_code_local_validation(self):
+        item = WorkItem(
+            id="ctx-mixed",
+            source="github",
+            source_type="issue",
+            source_id="1",
+            title="Mixed Issue",
+            automatic_status="IN_PROGRESS",
+            guards=["MIXED_REMOTE_CODE_LOCAL_VALIDATION"],
+        )
+        _, _, ctx = assign_queue_priority(item)
+        self.assertEqual(ctx, ExecutionContext.MIXED_REMOTE_CODE_LOCAL_VALIDATION)
 
 
 class TestSortWorkItems(unittest.TestCase):

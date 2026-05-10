@@ -54,11 +54,15 @@ PRIORITY_ORDER = {
     Priority.P3: 3,
 }
 
-DONE_STATUSES = {"DONE", "NO_ACTION", "COMPLETED", "CLOSED", "MERGED"}
+DONE_STATUSES = {"DONE", "COMPLETED", "MERGED", "CLOSED"}
+NO_ACTION_STATUSES = {"NO_ACTION", "IGNORE", "WONTFIX"}
+LATER_STATUSES = {"LATER", "WATCH", "IGNORE_UNTIL", "DEFERRED"}
 BLOCKED_STATUSES = {"BLOCKED", "WAITING", "ON_HOLD"}
 VALIDATION_STATUSES = {"NEEDS_VALIDATION", "VALIDATION_REQUIRED", "VALIDATION_NEEDED"}
 REVIEW_STATUSES = {"NEEDS_REVIEW", "REVIEW_REQUIRED", "REVIEW_NEEDED"}
 LOCAL_GUARDS = {"LOCAL_REQUIRED", "LOCAL_NEEDED", "BROWSER_REQUIRED", "MANUAL_EXECUTION_REQUIRED"}
+GITHUB_WEB_GUARDS = {"GITHUB_WEB_MODEL_NEEDED", "WEB_MODEL_REQUIRED", "AI_REQUIRED"}
+MIXED_GUARDS = {"MIXED_REMOTE_CODE_LOCAL_VALIDATION", "HYBRID_EXECUTION", "SPLIT_CONTEXT"}
 BLOCKING_GUARDS = {"BLOCKED", "WAITING_ON_DEPENDENCY", "ON_HOLD", "CANNOT_PROCEED"}
 
 
@@ -92,6 +96,22 @@ class WorkItem:
         return False
 
     @property
+    def is_no_action(self) -> bool:
+        if self.effective_status:
+            return self.effective_status.upper() in NO_ACTION_STATUSES
+        if self.automatic_status:
+            return self.automatic_status.upper() in NO_ACTION_STATUSES
+        return False
+
+    @property
+    def is_later(self) -> bool:
+        if self.effective_status:
+            return self.effective_status.upper() in LATER_STATUSES
+        if self.automatic_status:
+            return self.automatic_status.upper() in LATER_STATUSES
+        return False
+
+    @property
     def is_blocked(self) -> bool:
         if self.effective_status:
             return self.effective_status.upper() in BLOCKED_STATUSES
@@ -105,7 +125,7 @@ class WorkItem:
             return self.effective_status.upper() in VALIDATION_STATUSES
         if self.automatic_status:
             return self.automatic_status.upper() in VALIDATION_STATUSES
-        return bool(set(self.guards) & VALIDATION_STATUSES)
+        return bool(set(self.upper_guards) & VALIDATION_STATUSES)
 
     @property
     def needs_review(self) -> bool:
@@ -113,11 +133,15 @@ class WorkItem:
             return self.effective_status.upper() in REVIEW_STATUSES
         if self.automatic_status:
             return self.automatic_status.upper() in REVIEW_STATUSES
-        return bool(set(self.guards) & REVIEW_STATUSES)
+        return bool(set(self.upper_guards) & REVIEW_STATUSES)
 
     @property
     def is_high_priority(self) -> bool:
         return self.priority in (Priority.P0, Priority.P1)
+
+    @property
+    def upper_guards(self) -> set[str]:
+        return {g.upper() for g in self.guards}
 
     @property
     def updated_timestamp(self) -> float:
@@ -130,6 +154,15 @@ class WorkItem:
         return 0.0
 
 
+def _parse_priority(raw_priority: Any) -> Priority:
+    if raw_priority is None:
+        return Priority.P2
+    raw_str = str(raw_priority).strip().upper()
+    if raw_str in ("P0", "P1", "P2", "P3"):
+        return Priority(raw_str)
+    return Priority.P2
+
+
 def normalize_work_item(raw: dict[str, Any]) -> WorkItem | None:
     if not raw or not raw.get("id"):
         return None
@@ -139,6 +172,8 @@ def normalize_work_item(raw: dict[str, Any]) -> WorkItem | None:
     source = str(raw.get("source", "unknown"))
     source_type = str(raw.get("source_type", raw.get("type", "unknown")))
     source_id = str(raw.get("source_id", raw.get("id", item_id)))
+
+    priority = _parse_priority(raw.get("priority"))
 
     automatic_status = raw.get("automatic_status") or raw.get("status") or raw.get("state")
     if automatic_status and not isinstance(automatic_status, str):
@@ -167,6 +202,7 @@ def normalize_work_item(raw: dict[str, Any]) -> WorkItem | None:
         source_type=source_type,
         source_id=source_id,
         title=title,
+        priority=priority,
         automatic_status=automatic_status,
         manual_status=manual_status,
         effective_status=effective_status,
@@ -190,26 +226,38 @@ def normalize_work_item(raw: dict[str, Any]) -> WorkItem | None:
 
 
 def assign_queue_priority(item: WorkItem) -> tuple[Queue, Priority, ExecutionContext]:
-    if item.is_done:
+    if item.is_no_action:
         return Queue.NO_ACTION, Priority.P3, ExecutionContext.REMOTE_DOABLE
+
+    if item.is_done:
+        return Queue.DONE, Priority.P3, ExecutionContext.REMOTE_DOABLE
+
+    if item.is_later:
+        return Queue.LATER, Priority.P3, ExecutionContext.REMOTE_DOABLE
 
     if item.is_blocked:
         return Queue.BLOCKED, Priority.P2, ExecutionContext.REMOTE_DOABLE
 
-    if item.is_local_needed or bool(set(item.guards) & LOCAL_GUARDS):
+    if item.is_local_needed or bool(item.upper_guards & LOCAL_GUARDS):
         return Queue.LOCAL_NEEDED, Priority.P1, ExecutionContext.LOCAL_NEEDED
 
-    if item.needs_validation or bool(set(item.guards) & VALIDATION_STATUSES):
+    if item.needs_validation or bool(item.upper_guards & VALIDATION_STATUSES):
         return Queue.VALIDATION_NEEDED, Priority.P1, ExecutionContext.LOCAL_NEEDED
 
-    if item.needs_review or bool(set(item.guards) & REVIEW_STATUSES):
+    if item.needs_review or bool(item.upper_guards & REVIEW_STATUSES):
         return Queue.REVIEW_NEEDED, Priority.P2, ExecutionContext.REMOTE_DOABLE
 
-    if bool(set(item.guards) & BLOCKING_GUARDS):
+    if bool(item.upper_guards & MIXED_GUARDS):
+        return Queue.NEXT, item.priority, ExecutionContext.MIXED_REMOTE_CODE_LOCAL_VALIDATION
+
+    if bool(item.upper_guards & GITHUB_WEB_GUARDS):
+        return Queue.NEXT, item.priority, ExecutionContext.GITHUB_WEB_MODEL_NEEDED
+
+    if bool(item.upper_guards & BLOCKING_GUARDS):
         return Queue.BLOCKED, Priority.P2, ExecutionContext.REMOTE_DOABLE
 
     if item.is_high_priority:
-        return Queue.NOW, Priority.P1, ExecutionContext.REMOTE_DOABLE
+        return Queue.NOW, item.priority, ExecutionContext.REMOTE_DOABLE
 
     return Queue.NEXT, Priority.P2, ExecutionContext.REMOTE_DOABLE
 
