@@ -89,9 +89,31 @@ function isUserInteracting() {
   // 5. 실행자 핸드오프 패널 입력 중인지 확인
   const handoffSelect = document.getElementById("v2HandoffTaskType");
   const handoffPrompt = document.getElementById("v2HandoffPrompt");
-  if (handoffSelect || handoffPrompt) {
-    const isFocused = document.activeElement === handoffSelect || document.activeElement === handoffPrompt;
+  const handoffRepo = document.getElementById("v2HandoffRepo");
+  const handoffIssue = document.getElementById("v2HandoffIssue");
+  const handoffPR = document.getElementById("v2HandoffPR");
+  const handoffBranch = document.getElementById("v2HandoffBranch");
+  const handoffHead = document.getElementById("v2HandoffHead");
+  const handoffTask = document.getElementById("v2HandoffTask");
+  if (handoffSelect || handoffPrompt || handoffRepo || handoffIssue || handoffPR || handoffBranch || handoffHead || handoffTask) {
+    const isFocused =
+      document.activeElement === handoffSelect ||
+      document.activeElement === handoffPrompt ||
+      document.activeElement === handoffRepo ||
+      document.activeElement === handoffIssue ||
+      document.activeElement === handoffPR ||
+      document.activeElement === handoffBranch ||
+      document.activeElement === handoffHead ||
+      document.activeElement === handoffTask;
     if (isFocused) return true;
+    const hasContent =
+      (handoffRepo && handoffRepo.value.trim().length > 0) ||
+      (handoffIssue && handoffIssue.value.trim().length > 0) ||
+      (handoffPR && handoffPR.value.trim().length > 0) ||
+      (handoffBranch && handoffBranch.value.trim().length > 0) ||
+      (handoffHead && handoffHead.value.trim().length > 0) ||
+      (handoffTask && handoffTask.value.trim().length > 0);
+    if (hasContent) return true;
   }
 
   return false;
@@ -704,7 +726,7 @@ const TASK_SPECIFIC = {
   ]
 };
 
-function getHandoffPrompt(taskType) {
+function getHandoffPrompt(taskType, context) {
   const header = `[CTO → ${taskType}] 실행자 핸드오프 프롬프트`;
   const safety = HANDOFF_SAFETY_RULES.map(r => `- ${r}`).join("\n");
   const taskSpec = (TASK_SPECIFIC[taskType] || []).map(r => `- ${r}`).join("\n");
@@ -723,7 +745,20 @@ function getHandoffPrompt(taskType) {
 - Final recommendation:
   - PASS → CTO review
   - HOLD → sanitized blocker`;
-  return taskSpec ? `${header}\n\n- Safety rules:\n${safety}\n\n- Task-specific:\n${taskSpec}\n\n${reportTemplate}` : `${header}\n\n${safety}\n\n${reportTemplate}`;
+
+  const contextParts = [];
+  if (context.repo) contextParts.push(`- Repo: ${context.repo}`);
+  if (context.issueNumber) contextParts.push(`- Issue: #${context.issueNumber}`);
+  if (context.prNumber) contextParts.push(`- PR: #${context.prNumber}`);
+  if (context.branch) contextParts.push(`- Branch: ${context.branch}`);
+  if (context.expectedHead) contextParts.push(`- Expected HEAD: ${context.expectedHead}`);
+  if (context.taskName) contextParts.push(`- Task: ${context.taskName}`);
+
+  const contextBlock = contextParts.length > 0 ? `\n\n- Context:\n${contextParts.join("\n")}` : "";
+
+  return taskSpec
+    ? `${header}${contextBlock}\n\n- Safety rules:\n${safety}\n\n- Task-specific:\n${taskSpec}\n\n${reportTemplate}`
+    : `${header}${contextBlock}\n\n${safety}\n\n${reportTemplate}`;
 }
 
 function renderHandoffSection() {
@@ -756,13 +791,56 @@ function renderHandoffSection() {
     select.appendChild(option);
   });
 
+  // Context fields
+  const ctxRepo = document.createElement("input");
+  ctxRepo.type = "text";
+  ctxRepo.id = "v2HandoffRepo";
+  ctxRepo.className = "v2-override-input";
+  ctxRepo.setAttribute("placeholder", "Repo (e.g. owner/repo)");
+  ctxRepo.setAttribute("maxlength", "100");
+
+  const ctxIssue = document.createElement("input");
+  ctxIssue.type = "text";
+  ctxIssue.id = "v2HandoffIssue";
+  ctxIssue.className = "v2-override-input";
+  ctxIssue.setAttribute("placeholder", "Issue #");
+  ctxIssue.setAttribute("maxlength", "20");
+
+  const ctxPR = document.createElement("input");
+  ctxPR.type = "text";
+  ctxPR.id = "v2HandoffPR";
+  ctxPR.className = "v2-override-input";
+  ctxPR.setAttribute("placeholder", "PR #");
+  ctxPR.setAttribute("maxlength", "20");
+
+  const ctxBranch = document.createElement("input");
+  ctxBranch.type = "text";
+  ctxBranch.id = "v2HandoffBranch";
+  ctxBranch.className = "v2-override-input";
+  ctxBranch.setAttribute("placeholder", "Branch");
+  ctxBranch.setAttribute("maxlength", "100");
+
+  const ctxHead = document.createElement("input");
+  ctxHead.type = "text";
+  ctxHead.id = "v2HandoffHead";
+  ctxHead.className = "v2-override-input";
+  ctxHead.setAttribute("placeholder", "Expected HEAD SHA");
+  ctxHead.setAttribute("maxlength", "40");
+
+  const ctxTask = document.createElement("input");
+  ctxTask.type = "text";
+  ctxTask.id = "v2HandoffTask";
+  ctxTask.className = "v2-override-input";
+  ctxTask.setAttribute("placeholder", "Task name");
+  ctxTask.setAttribute("maxlength", "200");
+
   // Prompt output
   const output = document.createElement("textarea");
   output.id = "v2HandoffPrompt";
   output.className = "v2-textarea v2-handoff-prompt";
-  output.rows = 6;
+  output.rows = 8;
   output.readOnly = true;
-  output.value = getHandoffPrompt(taskTypes[0]);
+  output.value = getHandoffPrompt(taskTypes[0], {});
 
   // Copy button row
   const copyRow = document.createElement("div");
@@ -778,11 +856,33 @@ function renderHandoffSection() {
   copyFeedback.className = "v2-handoff-feedback";
   copyFeedback.textContent = "";
 
-  // Event handlers
-  select.addEventListener("change", () => {
-    output.value = getHandoffPrompt(select.value);
+  // Helper to get current context
+  function getCurrentContext() {
+    return {
+      repo: ctxRepo.value.trim(),
+      issueNumber: ctxIssue.value.trim(),
+      prNumber: ctxPR.value.trim(),
+      branch: ctxBranch.value.trim(),
+      expectedHead: ctxHead.value.trim(),
+      taskName: ctxTask.value.trim()
+    };
+  }
+
+  // Helper to update prompt
+  function updatePrompt() {
+    output.value = getHandoffPrompt(select.value, getCurrentContext());
     copyFeedback.textContent = "";
-  });
+  }
+
+  // Event handlers
+  select.addEventListener("change", updatePrompt);
+
+  ctxRepo.addEventListener("input", updatePrompt);
+  ctxIssue.addEventListener("input", updatePrompt);
+  ctxPR.addEventListener("input", updatePrompt);
+  ctxBranch.addEventListener("input", updatePrompt);
+  ctxHead.addEventListener("input", updatePrompt);
+  ctxTask.addEventListener("input", updatePrompt);
 
   copyBtn.addEventListener("click", async () => {
     try {
@@ -805,6 +905,12 @@ function renderHandoffSection() {
   copyRow.appendChild(copyFeedback);
 
   card.appendChild(select);
+  card.appendChild(ctxRepo);
+  card.appendChild(ctxIssue);
+  card.appendChild(ctxPR);
+  card.appendChild(ctxBranch);
+  card.appendChild(ctxHead);
+  card.appendChild(ctxTask);
   card.appendChild(output);
   card.appendChild(copyRow);
 
