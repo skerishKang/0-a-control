@@ -27,12 +27,12 @@ if __package__ in (None, ""):
         get_quests,
         get_recent_sessions,
     )
+    from scripts.db_session_view import get_session_view_model
     from scripts.db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
         end_session,
         get_resume_context,
-        get_session_view_model,
         get_source_records,
         start_session,
         update_session_summary,
@@ -66,12 +66,12 @@ else:
         get_quests,
         get_recent_sessions,
     )
+    from .db_session_view import get_session_view_model
     from .db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
         end_session,
         get_resume_context,
-        get_session_view_model,
         get_source_records,
         start_session,
         update_session_summary,
