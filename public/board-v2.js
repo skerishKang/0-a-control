@@ -560,7 +560,7 @@ function renderOverridesSection(overrides) {
         "오버라이드";
       titleSpan.textContent = overrideLabel;
 
-      const active = ov.active !== false;
+      const active = ov.is_active !== false;
       const badge = document.createElement("span");
       badge.className = active ? "v2-status-badge -auto" : "v2-status-badge";
       badge.textContent = active ? "활성" : "비활성";
