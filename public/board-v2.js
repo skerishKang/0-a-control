@@ -816,14 +816,21 @@ function injectHandoffSection() {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
 
-  const layout = root.querySelector(".v2-layout");
-  if (!layout) return;
-
   const existing = document.getElementById("v2-handoff-container");
   if (existing) existing.remove();
 
   const container = document.createElement("div");
   container.id = "v2-handoff-container";
   container.appendChild(renderHandoffSection());
-  layout.appendChild(container);
+
+  const layout = root.querySelector(".v2-layout");
+  if (layout) {
+    layout.appendChild(container);
+    return;
+  }
+
+  root.appendChild(container);
 }
+
+// Expose for debugging
+window.injectHandoffSection = injectHandoffSection;
