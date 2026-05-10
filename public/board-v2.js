@@ -66,7 +66,7 @@ function isUserInteracting() {
     if (isFocused || hasContent) return true;
   }
 
-  // 4. 수동 오버라이드 생성 폼 입력 중인지 확인
+  // 4. 수동 오버라이드 생성 폼 입력 중인지 확인 (포커스 또는 미전송 내용)
   const overrideType = document.getElementById("v2OverrideTargetType");
   const overrideId = document.getElementById("v2OverrideTargetId");
   const overrideStatus = document.getElementById("v2OverrideManualStatus");
@@ -427,7 +427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 window.addEventListener("beforeunload", stopBoardV2Polling);
 
-// ── Manual Overrides UI (read-only + create) ──
+// ── Manual Overrides UI (read-only) ──
 function renderOverridesSection(overrides) {
   const section = document.createElement("section");
   section.className = "v2-rail-section";
@@ -440,18 +440,19 @@ function renderOverridesSection(overrides) {
   const card = document.createElement("div");
   card.className = "v2-rail-card";
 
+  // Create form for manual override
   const form = document.createElement("form");
   form.className = "v2-override-form";
 
   const typeSelect = document.createElement("select");
   typeSelect.id = "v2OverrideTargetType";
   typeSelect.className = "v2-override-select";
-  typeSelect.setAttribute("aria-label", "대상 유형");
+  typeSelect.setAttribute("aria-label", "타입 선택");
   const typeOptions = ["", "issue", "pr", "quest", "plan", "session", "source", "global"];
   typeOptions.forEach((opt) => {
     const option = document.createElement("option");
     option.value = opt;
-    option.textContent = opt || "유형 선택";
+    option.textContent = opt || "타입 선택";
     typeSelect.appendChild(option);
   });
 
@@ -459,7 +460,7 @@ function renderOverridesSection(overrides) {
   idInput.type = "text";
   idInput.id = "v2OverrideTargetId";
   idInput.className = "v2-override-input";
-  idInput.setAttribute("placeholder", "대상 ID");
+  idInput.setAttribute("placeholder", "대상ID");
   idInput.setAttribute("maxlength", "50");
 
   const statusSelect = document.createElement("select");
@@ -500,11 +501,11 @@ function renderOverridesSection(overrides) {
     const reason = reasonInput.value.trim();
 
     if (!target_type) {
-      window.alert("대상 유형을 선택해 주세요.");
+      window.alert("타입을 선택해 주세요.");
       return;
     }
     if (!target_id) {
-      window.alert("대상 ID를 입력해 주세요.");
+      window.alert("대상ID를 입력해 주세요.");
       return;
     }
     if (!manual_status) {
@@ -530,7 +531,7 @@ function renderOverridesSection(overrides) {
         injectOverridesSection(state.__overrides);
       }
     } catch (err) {
-      window.alert("생성에 실패했습니다.");
+      window.alert("생성 중 오류가 발생했습니다.");
     }
   });
 
