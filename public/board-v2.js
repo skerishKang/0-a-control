@@ -21,6 +21,28 @@ async function loadBoardV2() {
       state.__overrides = [];
     }
 
+    // Load ops panels non-fatally
+    try {
+      state.__operations = await boardApi.fetchOperationsSummary();
+    } catch (opsErr) {
+      console.warn("Operations summary fetch failed, continuing without:", opsErr);
+      state.__operations = null;
+    }
+
+    try {
+      state.__settings = await boardApi.fetchSettingsStatus();
+    } catch (settingsErr) {
+      console.warn("Settings status fetch failed, continuing without:", settingsErr);
+      state.__settings = null;
+    }
+
+    try {
+      state.__guardrails = await boardApi.fetchGuardrailsStatus();
+    } catch (guardrailsErr) {
+      console.warn("Guardrails status fetch failed, continuing without:", guardrailsErr);
+      state.__guardrails = null;
+    }
+
     _cachedState = state;
     const phase = getEffectivePhase(state);
     renderPhaseTabs(phase);
@@ -28,6 +50,8 @@ async function loadBoardV2() {
     dispatchRender(state, phase);
     injectOverridesSection(state.__overrides);
     injectHandoffSection();
+    injectOpsSection(state.__operations);
+    injectGuardrailsSection(state.__settings, state.__guardrails);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
@@ -928,6 +952,217 @@ function injectHandoffSection() {
   const container = document.createElement("div");
   container.id = "v2-handoff-container";
   container.appendChild(renderHandoffSection());
+
+  const layout = root.querySelector(".v2-layout");
+  if (layout) {
+    layout.appendChild(container);
+    return;
+  }
+
+  root.appendChild(container);
+}
+
+// ── Read-only Ops Panel ──
+function renderOpsSection(data) {
+  const section = document.createElement("section");
+  section.className = "v2-rail-section";
+
+  const label = document.createElement("span");
+  label.className = "v2-section-label";
+  label.textContent = "운영 요약";
+  section.appendChild(label);
+
+  const card = document.createElement("div");
+  card.className = "v2-rail-card";
+
+  if (!data) {
+    const empty = document.createElement("p");
+    empty.className = "v2-empty";
+    empty.textContent = "정보 없음";
+    card.appendChild(empty);
+    section.appendChild(card);
+    return section;
+  }
+
+  const list = document.createElement("ul");
+  list.className = "v2-list v2-list-compact";
+
+  const safeFields = [
+    { key: "active_agents", label: "활성 에이전트" },
+    { key: "running_tasks", label: "실행 중인 작업" },
+    { key: "pending_items", label: "대기 항목" },
+    { key: "completed_today", label: "오늘 완료" },
+    { key: "failed_today", label: "오늘 실패" },
+    { key: "queued_items", label: "대기열" },
+    { key: "status", label: "상태" },
+    { key: "source_status", label: "소스 상태" },
+    { key: "sync_status", label: "동기화 상태" },
+  ];
+
+  safeFields.forEach(({ key, label: fieldLabel }) => {
+    if (data.hasOwnProperty(key)) {
+      const value = data[key];
+      if (value === null || value === undefined) return;
+      if (typeof value === "object") return;
+
+      const li = document.createElement("li");
+      li.className = "v2-list-item";
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "v2-item-meta";
+      labelSpan.textContent = fieldLabel + ":";
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "v2-item-title";
+      valueSpan.textContent = String(value);
+
+      li.appendChild(labelSpan);
+      li.appendChild(valueSpan);
+      list.appendChild(li);
+    }
+  });
+
+  if (data.generated_at) {
+    const ts = document.createElement("li");
+    ts.className = "v2-list-item";
+    const tsLabel = document.createElement("span");
+    tsLabel.className = "v2-item-meta";
+    tsLabel.textContent = "생성:";
+    const tsValue = document.createElement("span");
+    tsValue.className = "v2-item-title";
+    tsValue.textContent = new Date(data.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+    ts.appendChild(tsLabel);
+    ts.appendChild(tsValue);
+    list.appendChild(ts);
+  }
+
+  if (list.children.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "v2-empty";
+    empty.textContent = "정보 없음";
+    card.appendChild(empty);
+  } else {
+    card.appendChild(list);
+  }
+
+  section.appendChild(card);
+  return section;
+}
+
+function injectOpsSection(data) {
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  const existing = document.getElementById("v2-ops-container");
+  if (existing) existing.remove();
+
+  const container = document.createElement("div");
+  container.id = "v2-ops-container";
+  container.appendChild(renderOpsSection(data));
+
+  const layout = root.querySelector(".v2-layout");
+  if (layout) {
+    layout.appendChild(container);
+    return;
+  }
+
+  root.appendChild(container);
+}
+
+// ── Read-only Settings/Guardrails Panel ──
+function renderGuardrailsSection(settings, guardrails) {
+  const section = document.createElement("section");
+  section.className = "v2-rail-section";
+
+  const label = document.createElement("span");
+  label.className = "v2-section-label";
+  label.textContent = "설정/가이드레일";
+  section.appendChild(label);
+
+  const card = document.createElement("div");
+  card.className = "v2-rail-card";
+
+  const list = document.createElement("ul");
+  list.className = "v2-list v2-list-compact";
+
+  const addSafeField = (value, fieldLabel) => {
+    if (value === null || value === undefined) return;
+    if (typeof value === "object") return;
+
+    const li = document.createElement("li");
+    li.className = "v2-list-item";
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "v2-item-meta";
+    labelSpan.textContent = fieldLabel + ":";
+
+    const valueSpan = document.createElement("span");
+    valueSpan.className = "v2-item-title";
+    valueSpan.textContent = String(value);
+
+    li.appendChild(labelSpan);
+    li.appendChild(valueSpan);
+    list.appendChild(li);
+  };
+
+  if (settings) {
+    const settingsFields = [
+      { key: "status", label: "설정 상태" },
+      { key: "mode", label: "모드" },
+      { key: "enabled", label: "활성화" },
+      { key: "active_rules", label: "활성 규칙" },
+      { key: "total_rules", label: "전체 규칙" },
+    ];
+    settingsFields.forEach(({ key, label: fieldLabel }) => {
+      if (settings.hasOwnProperty(key)) {
+        addSafeField(settings[key], fieldLabel);
+      }
+    });
+    if (settings.generated_at) {
+      addSafeField(new Date(settings.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), "설정 생성");
+    }
+  }
+
+  if (guardrails) {
+    const guardrailsFields = [
+      { key: "status", label: "가이드레일 상태" },
+      { key: "active_rules", label: "활성 규칙" },
+      { key: "total_rules", label: "전체 규칙" },
+      { key: "enforcement_level", label: "적용 수준" },
+    ];
+    guardrailsFields.forEach(({ key, label: fieldLabel }) => {
+      if (guardrails.hasOwnProperty(key)) {
+        addSafeField(guardrails[key], fieldLabel);
+      }
+    });
+    if (guardrails.generated_at) {
+      addSafeField(new Date(guardrails.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), "가이드레일 생성");
+    }
+  }
+
+  if (list.children.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "v2-empty";
+    empty.textContent = "정보 없음";
+    card.appendChild(empty);
+  } else {
+    card.appendChild(list);
+  }
+
+  section.appendChild(card);
+  return section;
+}
+
+function injectGuardrailsSection(settings, guardrails) {
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  const existing = document.getElementById("v2-guardrails-container");
+  if (existing) existing.remove();
+
+  const container = document.createElement("div");
+  container.id = "v2-guardrails-container";
+  container.appendChild(renderGuardrailsSection(settings, guardrails));
 
   const layout = root.querySelector(".v2-layout");
   if (layout) {

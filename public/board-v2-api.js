@@ -153,6 +153,45 @@ const boardApi = {
     return await response.text();
   },
 
+  async fetchOperationsSummary() {
+    try {
+      const response = await fetch("/api/operations/summary");
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (err) {
+      console.warn("Operations summary fetch failed:", err);
+      return null;
+    }
+  },
+
+  async fetchSettingsStatus() {
+    try {
+      const response = await fetch("/api/settings/status");
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (err) {
+      console.warn("Settings status fetch failed:", err);
+      return null;
+    }
+  },
+
+  async fetchGuardrailsStatus() {
+    try {
+      const response = await fetch("/api/guardrails/status");
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (err) {
+      console.warn("Guardrails status fetch failed:", err);
+      return null;
+    }
+  },
+
   async _handleResponse(response, defaultErrorMsg) {
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
