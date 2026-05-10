@@ -978,7 +978,7 @@ function renderOpsSection(data) {
   if (!data) {
     const empty = document.createElement("p");
     empty.className = "v2-empty";
-    empty.textContent = "정보 없음";
+    empty.textContent = "운영 요약을 불러오지 못했습니다";
     card.appendChild(empty);
     section.appendChild(card);
     return section;
@@ -987,53 +987,63 @@ function renderOpsSection(data) {
   const list = document.createElement("ul");
   list.className = "v2-list v2-list-compact";
 
-  const safeFields = [
-    { key: "active_agents", label: "활성 에이전트" },
-    { key: "running_tasks", label: "실행 중인 작업" },
-    { key: "pending_items", label: "대기 항목" },
-    { key: "completed_today", label: "오늘 완료" },
-    { key: "failed_today", label: "오늘 실패" },
-    { key: "queued_items", label: "대기열" },
-    { key: "status", label: "상태" },
-    { key: "source_status", label: "소스 상태" },
-    { key: "sync_status", label: "동기화 상태" },
-  ];
+  const addRow = (fieldLabel, value) => {
+    if (value === null || value === undefined) return;
+    if (typeof value === "object") return;
 
-  safeFields.forEach(({ key, label: fieldLabel }) => {
-    if (data.hasOwnProperty(key)) {
-      const value = data[key];
-      if (value === null || value === undefined) return;
-      if (typeof value === "object") return;
+    const li = document.createElement("li");
+    li.className = "v2-list-item";
 
-      const li = document.createElement("li");
-      li.className = "v2-list-item";
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "v2-item-meta";
+    labelSpan.textContent = fieldLabel + ":";
 
-      const labelSpan = document.createElement("span");
-      labelSpan.className = "v2-item-meta";
-      labelSpan.textContent = fieldLabel + ":";
+    const valueSpan = document.createElement("span");
+    valueSpan.className = "v2-item-title";
+    valueSpan.textContent = String(value);
 
-      const valueSpan = document.createElement("span");
-      valueSpan.className = "v2-item-title";
-      valueSpan.textContent = String(value);
+    li.appendChild(labelSpan);
+    li.appendChild(valueSpan);
+    list.appendChild(li);
+  };
 
-      li.appendChild(labelSpan);
-      li.appendChild(valueSpan);
-      list.appendChild(li);
+  if (data.ok !== undefined) {
+    addRow("OK", data.ok ? "예" : "아니오");
+  }
+
+  if (data.source_status) {
+    if (typeof data.source_status === "object") {
+      if (data.source_status.github !== undefined) {
+        addRow("GitHub", data.source_status.github ? "연결됨" : "미연결");
+      }
+      if (data.source_status.classifier !== undefined) {
+        addRow("분류기", data.source_status.classifier ? "활성" : "비활성");
+      }
     }
-  });
+  }
+
+  if (data.counts && typeof data.counts === "object") {
+    Object.entries(data.counts).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && !isNaN(Number(value))) {
+        addRow(key.replace(/_/g, " "), Number(value));
+      }
+    });
+  }
+
+  if (data.open_issues && Array.isArray(data.open_issues)) {
+    addRow("오픈 이슈", data.open_issues.length);
+  }
+
+  if (data.open_pull_requests && Array.isArray(data.open_pull_requests)) {
+    addRow("오픈 PR", data.open_pull_requests.length);
+  }
+
+  if (data.recent_closed_pull_requests && Array.isArray(data.recent_closed_pull_requests)) {
+    addRow("최근 닫힌 PR", data.recent_closed_pull_requests.length);
+  }
 
   if (data.generated_at) {
-    const ts = document.createElement("li");
-    ts.className = "v2-list-item";
-    const tsLabel = document.createElement("span");
-    tsLabel.className = "v2-item-meta";
-    tsLabel.textContent = "생성:";
-    const tsValue = document.createElement("span");
-    tsValue.className = "v2-item-title";
-    tsValue.textContent = new Date(data.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-    ts.appendChild(tsLabel);
-    ts.appendChild(tsValue);
-    list.appendChild(ts);
+    addRow("생성", new Date(data.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
   }
 
   if (list.children.length === 0) {
@@ -1082,10 +1092,19 @@ function renderGuardrailsSection(settings, guardrails) {
   const card = document.createElement("div");
   card.className = "v2-rail-card";
 
+  if (!settings && !guardrails) {
+    const empty = document.createElement("p");
+    empty.className = "v2-empty";
+    empty.textContent = "설정·가이드레일 정보를 불러오지 못했습니다";
+    card.appendChild(empty);
+    section.appendChild(card);
+    return section;
+  }
+
   const list = document.createElement("ul");
   list.className = "v2-list v2-list-compact";
 
-  const addSafeField = (value, fieldLabel) => {
+  const addRow = (fieldLabel, value) => {
     if (value === null || value === undefined) return;
     if (typeof value === "object") return;
 
@@ -1106,37 +1125,34 @@ function renderGuardrailsSection(settings, guardrails) {
   };
 
   if (settings) {
-    const settingsFields = [
-      { key: "status", label: "설정 상태" },
-      { key: "mode", label: "모드" },
-      { key: "enabled", label: "활성화" },
-      { key: "active_rules", label: "활성 규칙" },
-      { key: "total_rules", label: "전체 규칙" },
-    ];
-    settingsFields.forEach(({ key, label: fieldLabel }) => {
-      if (settings.hasOwnProperty(key)) {
-        addSafeField(settings[key], fieldLabel);
-      }
-    });
-    if (settings.generated_at) {
-      addSafeField(new Date(settings.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), "설정 생성");
+    addRow("호스트", settings.host || "N/A");
+    addRow("포트", settings.port);
+    addRow("디버그", settings.debug_enabled ? "활성" : "비활성");
+    addRow("Python", settings.python_version || "N/A");
+
+    if (settings.telegram && typeof settings.telegram === "object") {
+      addRow("Telegram", settings.telegram.configured ? "설정됨" : "미설정");
+      addRow("TG API ID", settings.telegram.api_id_configured ? "예" : "아니오");
+      addRow("TG API Hash", settings.telegram.api_hash_configured ? "예" : "아니오");
+      addRow("TG 세션", settings.telegram.session_path_configured ? "있음" : "없음");
     }
   }
 
   if (guardrails) {
-    const guardrailsFields = [
-      { key: "status", label: "가이드레일 상태" },
-      { key: "active_rules", label: "활성 규칙" },
-      { key: "total_rules", label: "전체 규칙" },
-      { key: "enforcement_level", label: "적용 수준" },
-    ];
-    guardrailsFields.forEach(({ key, label: fieldLabel }) => {
-      if (guardrails.hasOwnProperty(key)) {
-        addSafeField(guardrails[key], fieldLabel);
-      }
-    });
-    if (guardrails.generated_at) {
-      addSafeField(new Date(guardrails.generated_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), "가이드레일 생성");
+    addRow("적용 수준", guardrails.overall_level || "N/A");
+
+    if (guardrails.checks && Array.isArray(guardrails.checks)) {
+      addRow("체크 수", guardrails.checks.length);
+
+      const levelCounts = {};
+      guardrails.checks.forEach(check => {
+        if (check.level) {
+          levelCounts[check.level] = (levelCounts[check.level] || 0) + 1;
+        }
+      });
+      Object.entries(levelCounts).forEach(([level, count]) => {
+        addRow(` Level ${level}`, count + "개");
+      });
     }
   }
 
