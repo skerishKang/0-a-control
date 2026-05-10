@@ -831,6 +831,3 @@ function injectHandoffSection() {
 
   root.appendChild(container);
 }
-
-// Expose for debugging
-window.injectHandoffSection = injectHandoffSection;
