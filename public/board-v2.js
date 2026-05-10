@@ -27,6 +27,7 @@ async function loadBoardV2() {
     renderStatusLabel(state, phase);
     dispatchRender(state, phase);
     injectOverridesSection(state.__overrides);
+    injectHandoffSection();
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
@@ -83,6 +84,14 @@ function isUserInteracting() {
       (overrideStatus && overrideStatus.value.trim().length > 0) ||
       (overrideReason && overrideReason.value.trim().length > 0);
     if (isFocused || hasContent) return true;
+  }
+
+  // 5. 실행자 핸드오프 패널 입력 중인지 확인
+  const handoffSelect = document.getElementById("v2HandoffTaskType");
+  const handoffPrompt = document.getElementById("v2HandoffPrompt");
+  if (handoffSelect || handoffPrompt) {
+    const isFocused = document.activeElement === handoffSelect || document.activeElement === handoffPrompt;
+    if (isFocused) return true;
   }
 
   return false;
@@ -634,5 +643,187 @@ function injectOverridesSection(overrides) {
   const container = document.createElement("div");
   container.id = "v2-overrides-container";
   container.appendChild(renderOverridesSection(overrides));
+  layout.appendChild(container);
+}
+
+// ── Executor Handoff Panel ──
+const HANDOFF_SAFETY_RULES = [
+  "main 직접 수정/push 금지",
+  "PR merge 금지 unless explicitly instructed",
+  "issue close 금지 unless explicitly instructed",
+  "secret/token/session/private data/raw runtime payload 출력 금지",
+  "runtime data stage 금지",
+  "tests/__init__.py 추가 금지",
+  "python scripts/server.py 직접 foreground 실행 금지",
+  "use python scripts/smoke_server.py for smoke validation",
+  "broad codebase exploration 금지",
+  "line-ending/full-file rewrite churn 금지"
+];
+
+const TASK_SPECIFIC = {
+  "Local Code Executor": [
+    "branch creation/update",
+    "code changes allowed only within scope",
+    "CLI validation required",
+    "no python scripts/server.py foreground",
+    "no runtime data stage",
+    "targeted diff only"
+  ],
+  "Browser QA Executor": [
+    "URL tested",
+    "source branch/HEAD confirmation",
+    "no code changes",
+    "screenshot redaction if needed",
+    "console/network safety checks",
+    "report PASS/HOLD/NOT_RUN"
+  ],
+  "GitHub Ops Executor": [
+    "issue/PR metadata actions only",
+    "no code changes",
+    "no merge/issue close unless explicitly instructed",
+    "verify repo and issue/PR number before mutation",
+    "report URLs and blocked actions"
+  ],
+  "Long-running Local Loop Executor": [
+    "repeat same PR fixes only",
+    "max loop limit: 3 cycles",
+    "stop conditions:",
+    "  - validation failure not obvious",
+    "  - scope expansion",
+    "  - server/storage changes needed",
+    "  - full-file churn",
+    "  - runtime data staged",
+    "report after each cycle"
+  ],
+  "Diff Cleanup Executor": [
+    "no feature expansion",
+    "restore line endings/formatting",
+    "reduce full-file replacement to targeted hunks",
+    "preserve existing functional fixes",
+    "validate diff before commit"
+  ]
+};
+
+function getHandoffPrompt(taskType) {
+  const header = `[CTO → ${taskType}] 실행자 핸드오프 프롬프트`;
+  const safety = HANDOFF_SAFETY_RULES.map(r => `- ${r}`).join("\n");
+  const taskSpec = (TASK_SPECIFIC[taskType] || []).map(r => `- ${r}`).join("\n");
+  const reportTemplate = `Report:
+- Branch:
+- PR URL:
+- HEAD SHA:
+- Changed files:
+- Implementation summary:
+- Prompt types included:
+- Copy behavior:
+- Diff targeted, no full-file churn: YES/NO
+- Validation results:
+- Runtime data staged: NO/YES
+- Browser verification: PASS/NOT_RUN/FAIL
+- Final recommendation:
+  - PASS → CTO review
+  - HOLD → sanitized blocker`;
+  return taskSpec ? `${header}\n\n- Safety rules:\n${safety}\n\n- Task-specific:\n${taskSpec}\n\n${reportTemplate}` : `${header}\n\n${safety}\n\n${reportTemplate}`;
+}
+
+function renderHandoffSection() {
+  const section = document.createElement("section");
+  section.className = "v2-rail-section";
+
+  const label = document.createElement("span");
+  label.className = "v2-section-label";
+  label.textContent = "실행자 핸드오프";
+  section.appendChild(label);
+
+  const card = document.createElement("div");
+  card.className = "v2-rail-card";
+
+  // Task type selector
+  const select = document.createElement("select");
+  select.id = "v2HandoffTaskType";
+  select.className = "v2-override-select";
+  const taskTypes = [
+    "Local Code Executor",
+    "Browser QA Executor",
+    "GitHub Ops Executor",
+    "Long-running Local Loop Executor",
+    "Diff Cleanup Executor"
+  ];
+  taskTypes.forEach(tt => {
+    const option = document.createElement("option");
+    option.value = tt;
+    option.textContent = tt;
+    select.appendChild(option);
+  });
+
+  // Prompt output
+  const output = document.createElement("textarea");
+  output.id = "v2HandoffPrompt";
+  output.className = "v2-textarea v2-handoff-prompt";
+  output.rows = 6;
+  output.readOnly = true;
+  output.value = getHandoffPrompt(taskTypes[0]);
+
+  // Copy button row
+  const copyRow = document.createElement("div");
+  copyRow.className = "v2-handoff-copy-row";
+
+  const copyBtn = document.createElement("button");
+  copyBtn.type = "button";
+  copyBtn.className = "v2-btn v2-btn-secondary v2-btn-inline";
+  copyBtn.textContent = "복사";
+
+  const copyFeedback = document.createElement("span");
+  copyFeedback.id = "v2HandoffFeedback";
+  copyFeedback.className = "v2-handoff-feedback";
+  copyFeedback.textContent = "";
+
+  // Event handlers
+  select.addEventListener("change", () => {
+    output.value = getHandoffPrompt(select.value);
+    copyFeedback.textContent = "";
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(output.value);
+        copyFeedback.textContent = "복사됨";
+      } else {
+        output.select();
+        document.execCommand("copy");
+        copyFeedback.textContent = "복사됨";
+      }
+      setTimeout(() => { copyFeedback.textContent = ""; }, 2000);
+    } catch (e) {
+      output.select();
+      copyFeedback.textContent = "수동으로 복사해주세요";
+    }
+  });
+
+  copyRow.appendChild(copyBtn);
+  copyRow.appendChild(copyFeedback);
+
+  card.appendChild(select);
+  card.appendChild(output);
+  card.appendChild(copyRow);
+
+  section.appendChild(card);
+  return section;
+}
+
+function injectHandoffSection() {
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  const layout = root.querySelector(".v2-layout");
+  if (!layout) return;
+
+  const existing = document.getElementById("v2-handoff-container");
+  if (existing) existing.remove();
+
+  const container = document.createElement("div");
+  container.id = "v2-handoff-container";
+  container.appendChild(renderHandoffSection());
   layout.appendChild(container);
 }
