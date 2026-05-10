@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,7 +25,6 @@ def get_db_path() -> Path:
 def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
     if row is None:
         return None
-    import json
     item = dict(row)
     for key, value in list(item.items()):
         if key.endswith("_json") and value:
@@ -37,3 +37,4 @@ def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
 
 def rows_to_dicts(rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
     return [row_to_dict(row) for row in rows]
+
