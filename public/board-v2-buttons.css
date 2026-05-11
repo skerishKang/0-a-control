@@ -1,0 +1,80 @@
+/* ── Button Styles ── */
+.v2-action-btn {
+  appearance: none;
+  background: rgba(45, 90, 39, 0.04);
+  border: 1px solid rgba(45, 90, 39, 0.1);
+  border-radius: 3px;
+  color: var(--v2-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.v2-action-btn:hover {
+  background: rgba(45, 90, 39, 0.08);
+  color: var(--v2-primary);
+  border-color: rgba(45, 90, 39, 0.3);
+}
+
+.v2-action-btn.-done:hover {
+  background: rgba(45, 90, 39, 0.12);
+  color: var(--v2-primary);
+}
+
+.v2-action-btn.-hold:hover {
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--v2-amber);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.v2-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.v2-btn-primary {
+  background: var(--v2-primary);
+  color: #fff;
+  flex: 1;
+}
+
+.v2-btn-primary:hover {
+  background: var(--v2-primary-strong);
+}
+
+.v2-btn-primary:disabled {
+  background: #8b9889;
+  cursor: not-allowed;
+}
+
+.v2-btn-secondary {
+  background: transparent;
+  color: var(--v2-primary);
+  border: 1px solid rgba(45, 90, 39, 0.22);
+}
+
+.v2-btn-secondary:hover {
+  background: rgba(45, 90, 39, 0.06);
+}
+
+.v2-loading {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--v2-text-muted);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.v2-btn-inline {
+  padding: 6px 12px;
+  font-size: 11px;
+}
