@@ -29,6 +29,7 @@ if __package__ in (None, ""):
     )
     from scripts.db_session_view import get_session_view_model
     from scripts.db_session_resume import get_resume_context
+    from scripts.db_inbox import get_external_inbox_overview, get_external_inbox_source_messages
     from scripts.db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
@@ -39,8 +40,6 @@ if __package__ in (None, ""):
     )
     from scripts.db_seed import create_sample_data_if_empty
     from scripts.db_state import (
-        get_external_inbox_overview,
-        get_external_inbox_source_messages,
         get_workdiary_priority_candidates,
         get_workdiary_top_level,
         refresh_current_state,
@@ -68,6 +67,7 @@ else:
     )
     from .db_session_view import get_session_view_model
     from .db_session_resume import get_resume_context
+    from .db_inbox import get_external_inbox_overview, get_external_inbox_source_messages
     from .db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
@@ -78,8 +78,6 @@ else:
     )
     from .db_seed import create_sample_data_if_empty
     from .db_state import (
-        get_external_inbox_overview,
-        get_external_inbox_source_messages,
         get_workdiary_priority_candidates,
         get_workdiary_top_level,
         refresh_current_state,
