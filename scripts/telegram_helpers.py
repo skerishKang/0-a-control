@@ -108,7 +108,8 @@ def _message_sender_label(message) -> str:
             return sender.first_name
         if getattr(sender, "title", None):
             return sender.title
-    return str(getattr(message, "sender_id", None) or "Unknown")
+    sender_id = getattr(message, "sender_id", None)
+    return str(sender_id) if sender_id is not None else "Unknown"
 
 
 def _count_missing_attachments(source_id: str) -> int:

@@ -288,9 +288,9 @@ def fill_missing_attachments(
     source = conn.execute(
         "SELECT source_id, source_name FROM telegram_sources WHERE source_id = ?", (source_id,)
     ).fetchone()
-    conn.close()
 
     if not source:
+        conn.close()
         return {"ok": False, "error": f"No existing telegram history found for source {source_id}"}
 
     query_limit = limit if max_file_size_mb is None else 1000000

@@ -8,16 +8,16 @@
 
 | File | Lines | Status |
 |------|-------|--------|
-| scripts/telegram_cli.py | 480 | ✓ Below 500 |
-| scripts/telegram_service.py | 520 | ❌ Exceeds 500 |
+| scripts/telegram_cli.py | 431 | ✓ Below 500 |
+| scripts/telegram_service.py | 494 | ✓ Below 500 |
 | scripts/telegram_db.py | 56 | ✓ Below 500 |
 
 ### New Helper Modules Created
 | File | Lines | Purpose |
 |------|-------|---------|
-| scripts/telegram_helpers.py | 128 | Pure helper functions + DB query helpers |
-| scripts/telegram_progress.py | 56 | AttachmentProgressReporter |
-| scripts/telegram_cli_main.py | 107 | CLI entrypoint/dispatch |
+| scripts/telegram_helpers.py | 110 | Pure helper functions + DB query helpers |
+| scripts/telegram_progress.py | 50 | AttachmentProgressReporter |
+| scripts/telegram_cli_main.py | 95 | CLI entrypoint/dispatch |
 
 ## 2. File Responsibilities
 
@@ -264,7 +264,7 @@ python -m pytest tests/test_telegram_*.py
 | 4 | Message insert helper | LOW | ~23 lines | ✅ Complete |
 | 5 | Count missing attachments helper | LOW | ~23 lines | ✅ Complete |
 
-**Final Result:** `telegram_cli.py` reduced from 666 → 483 lines (-183 lines)
+**Final Result:** `telegram_cli.py` reduced from 666 → 431 lines (-235 lines)
 
 ## 9. Changes Made (PR #98)
 
