@@ -8,12 +8,12 @@
 
 | File | Lines | Status |
 |------|-------|--------|
-| public/styles.css | 883 | > 500 |
+| public/styles.css | 1035 | > 500 |
 | public/panels-detail.css | 634 | > 500 |
 
 ## 2. File Structure Analysis
 
-### public/styles.css (883 lines)
+### public/styles.css (1035 lines)
 
 **Responsibility Groups:**
 
@@ -39,19 +39,21 @@
    - `.criteria-box`, `.quest-focus-box` - lines 317-352
    - `.mission-grid` - lines 354-372
 
-6. **Form/Input/Button Styles (608-445)**
-   - `.quest-form`, `.field` - lines 608-632
-   - `.mission-reason-btn`, `.mission-subhead-btn` - lines 231-264
-   - `.header-action-btn` - lines 266-284
+6. **Form/Input/Button Styles**
+   - `.quest-form`, `.field` selectors
+   - `.mission-reason-btn`, `.mission-subhead-btn` selectors
+   - `.header-action-btn` selector
 
 7. **Responsive/Media Query Sections (201-737)**
    - `@media (max-width: 860px)` - lines 201-220
    - `@media (max-width: 760px)` - lines 447-451
    - `@media (max-width: 860px)` (second block) - lines 701-737
 
-8. **Bridge Panel Styles (739-1035)**
-   - `.bridge-panel`, `.bridge-header`, `.bridge-content` - lines 739-772
-   - Bridge candidate/items styles - lines 745-1008
+8. **Bridge Panel Styles (.bridge-* selectors)**
+   - `.bridge-panel`, `.bridge-header`, `.bridge-content` container selectors
+   - Bridge panel header and content styling
+   - Bridge candidate/item and bucket badge selectors
+   - Bridge highlight card and priority selectors
 
 ### public/panels-detail.css (634 lines)
 
@@ -107,10 +109,11 @@
 ## 4. Proposed Safe Split Phases
 
 ### Phase 1: Extract Bridge Panel CSS
-**Target:** `styles.css` lines 739-1035 (bridge component)
+**Target:** `styles.css` bridge-panel component (`.bridge-*` selectors)
 - Creates `public/css/components/bridge.css`
 - Self-contained component with minimal dependencies
 - Low risk - only affects bridge panel
+- **Note:** Will require adding a `<link>` tag in HTML to load the new CSS file
 
 ### Phase 2: Extract Telegram Panel CSS
 **Target:** `panels-detail.css` lines 409-712 (Telegram-specific)
@@ -163,11 +166,12 @@ Each implementation PR must pass:
 
 **Target Module:** `public/css/components/bridge.css` (new file)
 
-**Content to extract:** `styles.css` lines 739-1035
+**Content to extract:** `.bridge-*` selectors from `styles.css`
 
 **Expected changes:**
-- Create `bridge.css` (~300 lines)
-- Remove extracted lines from `styles.css`
+- Create `public/css/components/bridge.css`
+- Remove extracted selectors from `styles.css`
+- Add `<link>` tag in HTML to load `bridge.css`
 
 **Risk Level:** LOW
 - Self-contained component
@@ -175,12 +179,12 @@ Each implementation PR must pass:
 - Easy rollback
 
 **Line reduction estimate:**
-- `styles.css`: 883 → ~583 (-300 lines)
+- `styles.css`: 1035 → ~735 (-300 lines)
 
 **Rollback Plan:**
 1. Delete `bridge.css`
-2. Restore extracted lines in `styles.css`
-3. No HTML changes required
+2. Restore extracted selectors in `styles.css`
+3. Remove `<link>` tag from HTML
 
 ## 8. Summary
 
