@@ -1,0 +1,79 @@
+.layout {
+  padding: 1rem 1.5rem 2rem;
+  display: grid;
+  gap: 1rem;
+  max-width: 1760px;
+  margin: 0 auto;
+}
+.support-grid,
+.midday-grid,
+.endday-grid {
+  display: grid;
+  gap: 1rem;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+.midday-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.support-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  transition: all 0.4s ease;
+}
+
+.support-grid .panel {
+  background: #fdfdfe;
+  border-style: dashed;
+}
+
+.midday-grid,
+.endday-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quest-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 860px) {
+
+  .support-grid,
+  .midday-grid,
+  .endday-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .layout {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-wide {
+    grid-column: span 1;
+  }
+
+  .panel-order-candidates {
+    order: 6;
+  }
+
+  .panel-order-sessions {
+    order: 7;
+  }
+
+  .panel-order-workdiary {
+    order: 8;
+  }
+
+  .panel-order-briefs {
+    order: 9;
+  }
+}

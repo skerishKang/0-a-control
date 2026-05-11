@@ -1,0 +1,63 @@
+.verdict-card {
+  margin-top: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: #f8fbff;
+  overflow: hidden;
+}
+
+.verdict-card summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.95rem 1rem;
+}
+
+.verdict-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.verdict-summary .list-item.empty {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.verdict-card-main {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.verdict-card-main span {
+  color: var(--muted);
+}
+
+.verdict-reason-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+}
+
+.detail-body {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+}
+
+.detail-section p {
+  margin: 0.25rem 0 0;
+  line-height: 1.6;
+}
+
+.reading-flow {
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  color: #2d3748;
+}
+
+.reading-flow p {
+  margin-bottom: 1.2rem;
+}

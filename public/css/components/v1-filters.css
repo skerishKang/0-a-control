@@ -1,0 +1,35 @@
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0.85rem;
+}
+
+.filter-chip-row.compact {
+  margin-top: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.filter-chip {
+  border: 1px solid var(--line);
+  background: #f8fbff;
+  color: var(--muted);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 120ms ease;
+}
+
+.filter-chip:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: var(--accent);
+}
+
+.filter-chip.active {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.28);
+  color: var(--accent);
+}
