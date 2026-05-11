@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import atexit
 import json
 import os
 import re
@@ -19,6 +18,19 @@ if __package__ in (None, ""):
         _classify_message_type,
         _message_sender_label,
     )
+    from scripts.telegram_service_helpers import (
+        _runtime_dir,
+        _write_status,
+        _original_attachment_name,
+        _build_attachment_path,
+        _inspect_attachment,
+    )
+    from scripts.telegram_session_lock import (
+        TelegramSessionBusyError,
+        acquire_telegram_session_lock,
+        get_telegram_session_lock_status,
+        _clear_session_lock,
+    )
 else:
     from .telegram_db import DATA_DIR
     from .telegram_helpers import (
@@ -27,6 +39,19 @@ else:
         _classify_message_type,
         _message_sender_label,
     )
+    from .telegram_service_helpers import (
+        _runtime_dir,
+        _write_status,
+        _original_attachment_name,
+        _build_attachment_path,
+        _inspect_attachment,
+    )
+    from .telegram_session_lock import (
+        TelegramSessionBusyError,
+        acquire_telegram_session_lock,
+        get_telegram_session_lock_status,
+        _clear_session_lock,
+    )
 
 
 RUNTIME_DIR = Path(DATA_DIR) / "runtime"
@@ -34,17 +59,9 @@ TELEGRAM_BLOBS_DIR = Path(DATA_DIR) / "blobs" / "telegram"
 STATUS_FILE = RUNTIME_DIR / "telegram_status.json"
 CHATS_CACHE_FILE = RUNTIME_DIR / "telegram_chats.json"
 DEFAULT_SESSION_PATH = RUNTIME_DIR / "telegram_userbot.session"
-SESSION_LOCK_FILE = RUNTIME_DIR / "telegram_userbot.lock"
 TELEGRAM_HEARTBEAT_TTL_SECONDS = 1800
-TELEGRAM_SESSION_LOCK_TTL_SECONDS = 7200
-TELEGRAM_SESSION_LOCK_WAIT_SECONDS = 5
 LOCAL_TIMEZONE = ZoneInfo("Asia/Seoul")
 
-_SESSION_LOCK_HELD = False
-
-
-class TelegramSessionBusyError(RuntimeError):
-    pass
 
 def _load_local_env() -> None:
     if os.environ.get("CONTROL_TOWER_IGNORE_DOTENV") == "1":
@@ -61,119 +78,6 @@ def _load_local_env() -> None:
         key = key.strip()
         if key and key not in os.environ:
             os.environ[key] = value.strip()
-
-
-def _runtime_dir() -> Path:
-    RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
-    return RUNTIME_DIR
-
-
-def _read_session_lock() -> dict | None:
-    try:
-        raw = SESSION_LOCK_FILE.read_text(encoding="utf-8")
-        data = json.loads(raw)
-        if isinstance(data, dict):
-            return data
-    except FileNotFoundError:
-        return None
-    except Exception:
-        return None
-    return None
-
-
-def _pid_alive(pid: int | None) -> bool:
-    if not pid or pid <= 0:
-        return False
-    try:
-        os.kill(pid, 0)
-        return True
-    except OSError:
-        return False
-
-
-def get_telegram_session_lock_status() -> dict:
-    payload = _read_session_lock()
-    if not payload:
-        return {"locked": False, "lock_file": str(SESSION_LOCK_FILE)}
-
-    acquired_at = payload.get("acquired_at")
-    age_seconds = None
-    if acquired_at:
-        try:
-            age_seconds = int((datetime.now(timezone.utc) - datetime.fromisoformat(acquired_at)).total_seconds())
-        except Exception:
-            age_seconds = None
-
-    return {
-        "locked": True,
-        "lock_file": str(SESSION_LOCK_FILE),
-        "pid": payload.get("pid"),
-        "command": payload.get("command"),
-        "acquired_at": acquired_at,
-        "age_seconds": age_seconds,
-        "pid_alive": _pid_alive(payload.get("pid")),
-    }
-
-
-def _clear_session_lock() -> None:
-    global _SESSION_LOCK_HELD
-    if not _SESSION_LOCK_HELD:
-        return
-    try:
-        payload = _read_session_lock()
-        if payload and payload.get("pid") not in (None, os.getpid()):
-            return
-        SESSION_LOCK_FILE.unlink(missing_ok=True)
-    finally:
-        _SESSION_LOCK_HELD = False
-
-
-atexit.register(_clear_session_lock)
-
-
-def acquire_telegram_session_lock(wait_seconds: int = TELEGRAM_SESSION_LOCK_WAIT_SECONDS) -> None:
-    global _SESSION_LOCK_HELD
-    _runtime_dir()
-    deadline = time.monotonic() + max(0, wait_seconds)
-    payload = {
-        "pid": os.getpid(),
-        "command": " ".join(os.sys.argv),
-        "acquired_at": datetime.now(timezone.utc).isoformat(),
-    }
-
-    while True:
-        try:
-            fd = os.open(str(SESSION_LOCK_FILE), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                json.dump(payload, handle, ensure_ascii=False, indent=2)
-            _SESSION_LOCK_HELD = True
-            return
-        except FileExistsError:
-            current = _read_session_lock() or {}
-            acquired_at = current.get("acquired_at")
-            is_stale = False
-            if acquired_at:
-                try:
-                    age = (datetime.now(timezone.utc) - datetime.fromisoformat(acquired_at)).total_seconds()
-                    is_stale = age > TELEGRAM_SESSION_LOCK_TTL_SECONDS
-                except Exception:
-                    is_stale = True
-            current_pid = current.get("pid")
-            if is_stale or not _pid_alive(current_pid):
-                try:
-                    SESSION_LOCK_FILE.unlink(missing_ok=True)
-                except OSError:
-                    pass
-                continue
-
-            if time.monotonic() >= deadline:
-                detail = f"pid={current_pid}"
-                if current.get("command"):
-                    detail += f", command={current['command']}"
-                raise TelegramSessionBusyError(
-                    f"Telegram 세션이 다른 작업에서 사용 중입니다 ({detail})."
-                )
-            time.sleep(1)
 
 
 def _telegram_env() -> dict:
@@ -224,55 +128,6 @@ def _build_status_payload() -> dict:
         "auth_required": False,
         "user": None,
         "setup_message": setup_message,
-    }
-
-
-def _write_status(payload: dict) -> None:
-    _runtime_dir()
-    STATUS_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def _original_attachment_name(message, item_type: str) -> str | None:
-    file_obj = getattr(message, "file", None)
-    original_name = getattr(file_obj, "name", None) if file_obj else None
-    if original_name:
-        return original_name
-
-    ext = getattr(file_obj, "ext", None) if file_obj else None
-    ext = ext or ""
-    base = {
-        "image": "image",
-        "audio": "audio",
-        "video": "video",
-        "file": "file",
-    }.get(item_type, "attachment")
-    return f"{base}{ext}" if item_type != "text" else None
-
-
-def _build_attachment_path(source_name: str, message, item_type: str) -> Path | None:
-    if item_type == "text":
-        return None
-
-    message_dt = message.date.astimezone(LOCAL_TIMEZONE) if message.date else datetime.now(LOCAL_TIMEZONE)
-    day_part = message_dt.strftime("%Y-%m-%d")
-    safe_source = _safe_path_part(source_name or "telegram")
-    original_name = _safe_path_part(_original_attachment_name(message, item_type), f"{item_type}")
-    filename = f"{safe_source}_{day_part}_{message.id}_{original_name}"
-    target_dir = TELEGRAM_BLOBS_DIR / safe_source / day_part
-    target_dir.mkdir(parents=True, exist_ok=True)
-    return target_dir / filename
-
-
-def _inspect_attachment(message) -> dict:
-    item_type = _classify_message_type(message)
-    file_obj = getattr(message, "file", None)
-    original_name = _original_attachment_name(message, item_type)
-    return {
-        "item_type": item_type,
-        "attachment_path": None,
-        "attachment_name": original_name,
-        "mime_type": getattr(file_obj, "mime_type", None) if file_obj else None,
-        "file_size": getattr(file_obj, "size", None) if file_obj else None,
     }
 
 
