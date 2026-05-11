@@ -5,9 +5,7 @@ _root = str(Path(__file__).resolve().parents[1])
 if _root not in sys.path:
     sys.path.insert(0, _root)
 
-import sqlite3
 import json
-import argparse
 from datetime import datetime, timezone
 from scripts.telegram_db import get_db_connection, init_db
 from scripts.telegram_service import (
@@ -17,88 +15,73 @@ from scripts.telegram_service import (
     get_telegram_status,
 )
 from scripts.telegram_helpers import (
+    _get_core_sources_sync_status,
+    _count_missing_attachments,
     _normalize_message_timestamp,
     _format_bytes,
     _metadata_file_size,
 )
+from scripts.telegram_progress import AttachmentProgressReporter
+
+
+def _insert_telegram_message(conn, source: dict, msg: dict, source_id: str, now_iso: str) -> None:
+    """Insert a single telegram message into external_inbox."""
+    author = msg.get("sender", "Unknown")
+    item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
+    conn.execute(
+        """
+        INSERT INTO external_inbox
+        (
+            source_type, source_id, source_name, external_message_id,
+            author, item_type, title, raw_content, attachment_path, attachment_ref,
+            item_timestamp, imported_at, status, metadata_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(source_id, external_message_id) DO UPDATE SET
+            source_name = excluded.source_name,
+            author = excluded.author,
+            item_type = excluded.item_type,
+            title = excluded.title,
+            raw_content = excluded.raw_content,
+            attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
+            attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
+            item_timestamp = excluded.item_timestamp,
+            metadata_json = excluded.metadata_json
+        """,
+        (
+            "telegram",
+            source_id,
+            source["source_name"],
+            str(msg["id"]),
+            author,
+            msg.get("item_type", "text"),
+            source["source_name"],
+            msg.get("text", ""),
+            msg.get("attachment_path"),
+            msg.get("attachment_name") or str(msg["id"]),
+            item_timestamp,
+            now_iso,
+            "new",
+            json.dumps({
+                "date": msg.get("date"),
+                "sender": msg.get("sender"),
+                "from_me": msg.get("from_me"),
+                "chat_id": source_id,
+                "attachment_name": msg.get("attachment_name"),
+                "mime_type": msg.get("mime_type"),
+                "file_size": msg.get("file_size"),
+            }, ensure_ascii=False),
+        ),
+    )
 
 
 def get_db():
     return get_db_connection()
 
 
-class AttachmentProgressReporter:
-    def __init__(self, total_items: int):
-        self.total_items = total_items
-        self.started = 0
-        self.current_index_by_message_id = {}
-        self.last_percent_by_message_id = {}
-
-    def __call__(self, event: dict) -> None:
-        stage = event.get("stage")
-        message_id = event.get("message_id")
-        if message_id is None:
-            return
-
-        if stage == "start":
-            self.started += 1
-            self.current_index_by_message_id[message_id] = self.started
-            name = event.get("attachment_name") or f"message-{message_id}"
-            size = _format_bytes(event.get("file_size"))
-            print(
-                f"[{self.started}/{self.total_items}] download start "
-                f"msg={message_id} file={name} size={size}",
-                flush=True,
-            )
-            return
-
-        index = self.current_index_by_message_id.get(message_id, self.started or 1)
-        if stage == "progress":
-            percent = int(event.get("percent") or 0)
-            prev_percent = self.last_percent_by_message_id.get(message_id, -1)
-            if percent == prev_percent:
-                return
-            self.last_percent_by_message_id[message_id] = percent
-            current_bytes = _format_bytes(event.get("current_bytes"))
-            total_bytes = _format_bytes(event.get("total_bytes"))
-            name = event.get("attachment_name") or f"message-{message_id}"
-            bar_fill = min(10, max(0, percent // 10))
-            bar = "#" * bar_fill + "-" * (10 - bar_fill)
-            print(
-                f"[{index}/{self.total_items}] [{bar}] {percent:>3}% "
-                f"{name} {current_bytes}/{total_bytes}",
-                flush=True,
-            )
-            return
-
-        if stage in {"done", "exists"}:
-            name = event.get("attachment_name") or f"message-{message_id}"
-            suffix = "already-exists" if stage == "exists" else "saved"
-            target_path = event.get("target_path") or "-"
-            print(
-                f"[{index}/{self.total_items}] {suffix} msg={message_id} "
-                f"file={name} path={target_path}",
-                flush=True,
-            )
-
-
 def get_core_sources_sync_status() -> list[dict]:
-    conn = get_db()
-    rows = conn.execute(
-        """
-        SELECT 
-            ts.source_id, ts.source_name, ts.chat_class, ts.is_core, ts.sync_mode, ts.last_synced_at, ts.last_message_id,
-            COUNT(CASE WHEN ei.status = 'new' THEN 1 END) as new_count,
-            COUNT(CASE WHEN ei.status = 'reviewing' THEN 1 END) as reviewing_count
-        FROM telegram_sources ts
-        LEFT JOIN external_inbox ei ON ts.source_id = ei.source_id
-        WHERE ts.is_core = 1
-        GROUP BY ts.source_id
-        ORDER BY ts.source_name COLLATE NOCASE ASC
-        """
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
+    return _get_core_sources_sync_status()
+
 
 def run_sync_core() -> dict:
     status = {"ok": True, "details": [], "synced_count": 0, "success_count": 0, "failed_count": 0}
@@ -206,55 +189,8 @@ def import_chat(
         
         now_iso = datetime.now(timezone.utc).isoformat()
         for msg in messages:
-            author = msg.get("sender", "Unknown")
-            item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
             is_new = msg["id"] > last_id
-
-            conn.execute(
-                """
-                INSERT INTO external_inbox
-                (
-                    source_type, source_id, source_name, external_message_id,
-                    author, item_type, title, raw_content, attachment_path, attachment_ref,
-                    item_timestamp, imported_at, status, metadata_json
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(source_id, external_message_id) DO UPDATE SET
-                    source_name = excluded.source_name,
-                    author = excluded.author,
-                    item_type = excluded.item_type,
-                    title = excluded.title,
-                    raw_content = excluded.raw_content,
-                    attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
-                    attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
-                    item_timestamp = excluded.item_timestamp,
-                    metadata_json = excluded.metadata_json
-                """,
-                (
-                    "telegram",
-                    source_id,
-                    source["source_name"],
-                    str(msg["id"]),
-                    author,
-                    msg.get("item_type", "text"),
-                    source["source_name"],
-                    msg.get("text", ""),
-                    msg.get("attachment_path"),
-                    msg.get("attachment_name") or str(msg["id"]),
-                    item_timestamp,
-                    now_iso,
-                    "new",
-                    json.dumps({
-                        "date": msg.get("date"),
-                        "sender": msg.get("sender"),
-                        "from_me": msg.get("from_me"),
-                        "chat_id": source_id,
-                        "attachment_name": msg.get("attachment_name"),
-                        "mime_type": msg.get("mime_type"),
-                        "file_size": msg.get("file_size"),
-                    }, ensure_ascii=False),
-                ),
-            )
+            _insert_telegram_message(conn, source, msg, source_id, now_iso)
             if msg["id"] > new_last_id:
                 new_last_id = msg["id"]
             if is_new:
@@ -349,10 +285,13 @@ def fill_missing_attachments(
     max_file_size_mb: float | None = None,
 ) -> dict:
     conn = get_db()
-    source = conn.execute("SELECT * FROM telegram_sources WHERE source_id = ?", (source_id,)).fetchone()
+    source = conn.execute(
+        "SELECT source_id, source_name FROM telegram_sources WHERE source_id = ?", (source_id,)
+    ).fetchone()
+
     if not source:
         conn.close()
-        return {"ok": False, "error": f"Source {source_id} not found"}
+        return {"ok": False, "error": f"No existing telegram history found for source {source_id}"}
 
     query_limit = limit if max_file_size_mb is None else 1000000
     rows = conn.execute(
@@ -390,19 +329,7 @@ def fill_missing_attachments(
             break
 
     if not message_ids:
-        conn = get_db()
-        remaining_missing = conn.execute(
-            """
-            SELECT COUNT(*) AS count
-            FROM external_inbox
-            WHERE source_type = 'telegram'
-              AND source_id = ?
-              AND COALESCE(item_type, 'text') != 'text'
-              AND COALESCE(attachment_path, '') = ''
-            """,
-            (source_id,),
-        ).fetchone()["count"]
-        conn.close()
+        remaining_missing = _count_missing_attachments(source_id)
         return {
             "ok": True,
             "source_id": source_id,
@@ -422,20 +349,7 @@ def fill_missing_attachments(
     if not result.get("ok"):
         return result
 
-    conn = get_db()
-    remaining_missing = conn.execute(
-        """
-        SELECT COUNT(*) AS count
-        FROM external_inbox
-        WHERE source_type = 'telegram'
-          AND source_id = ?
-          AND COALESCE(item_type, 'text') != 'text'
-          AND COALESCE(attachment_path, '') = ''
-        """,
-        (source_id,),
-    ).fetchone()["count"]
-    conn.close()
-    result["remaining_missing"] = remaining_missing
+    result["remaining_missing"] = _count_missing_attachments(source_id)
     result["skipped_too_large"] = skipped_too_large
     return result
 
@@ -476,53 +390,7 @@ def import_message_ids(
         total_changes_before = conn.total_changes
         now_iso = datetime.now(timezone.utc).isoformat()
         for msg in messages:
-            author = msg.get("sender", "Unknown")
-            item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
-            conn.execute(
-                """
-                INSERT INTO external_inbox
-                (
-                    source_type, source_id, source_name, external_message_id,
-                    author, item_type, title, raw_content, attachment_path, attachment_ref,
-                    item_timestamp, imported_at, status, metadata_json
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(source_id, external_message_id) DO UPDATE SET
-                    source_name = excluded.source_name,
-                    author = excluded.author,
-                    item_type = excluded.item_type,
-                    title = excluded.title,
-                    raw_content = excluded.raw_content,
-                    attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
-                    attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
-                    item_timestamp = excluded.item_timestamp,
-                    metadata_json = excluded.metadata_json
-                """,
-                (
-                    "telegram",
-                    source_id,
-                    source["source_name"],
-                    str(msg["id"]),
-                    author,
-                    msg.get("item_type", "text"),
-                    source["source_name"],
-                    msg.get("text", ""),
-                    msg.get("attachment_path"),
-                    msg.get("attachment_name") or str(msg["id"]),
-                    item_timestamp,
-                    now_iso,
-                    "new",
-                    json.dumps({
-                        "date": msg.get("date"),
-                        "sender": msg.get("sender"),
-                        "from_me": msg.get("from_me"),
-                        "chat_id": source_id,
-                        "attachment_name": msg.get("attachment_name"),
-                        "mime_type": msg.get("mime_type"),
-                        "file_size": msg.get("file_size"),
-                    }, ensure_ascii=False),
-                ),
-            )
+            _insert_telegram_message(conn, source, msg, source_id, now_iso)
 
         conn.commit()
         result["processed_count"] = len(messages)
@@ -609,85 +477,7 @@ def show_attachment_status(source_id: str, max_file_size_mb: float | None = None
         )
     )
 
+
 if __name__ == "__main__":
-    init_db()
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(dest="command")
-    
-    subparsers.add_parser("list-sources")
-    subparsers.add_parser("sync-core")
-    subparsers.add_parser("sync-status")
-    subparsers.add_parser("telegram-status")
-    
-    import_parser = subparsers.add_parser("import-chat")
-    import_parser.add_argument("source_id")
-    import_parser.add_argument("--limit", type=int, default=200)
-    import_parser.add_argument("--max-id", type=int, default=None)
-    import_parser.add_argument("--skip-attachments", action="store_true")
-
-    backfill_parser = subparsers.add_parser("backfill-chat")
-    backfill_parser.add_argument("source_id")
-    backfill_parser.add_argument("--batch-limit", type=int, default=200)
-    backfill_parser.add_argument("--max-batches", type=int, default=None)
-    backfill_parser.add_argument("--skip-attachments", action="store_true")
-
-    fill_parser = subparsers.add_parser("fill-missing-attachments")
-    fill_parser.add_argument("source_id")
-    fill_parser.add_argument("--limit", type=int, default=50)
-    fill_parser.add_argument("--max-file-size-mb", type=float, default=None)
-
-    attachment_status_parser = subparsers.add_parser("attachment-status")
-    attachment_status_parser.add_argument("source_id")
-    attachment_status_parser.add_argument("--max-file-size-mb", type=float, default=None)
-    
-    args = parser.parse_args()
-    
-    if args.command == "list-sources":
-        list_sources()
-    elif args.command == "sync-core":
-        sync_core()
-    elif args.command == "sync-status":
-        show_sync_status()
-    elif args.command == "telegram-status":
-        print(json.dumps(get_telegram_status(), ensure_ascii=False, indent=2))
-    elif args.command == "import-chat":
-        print(
-            json.dumps(
-                import_chat(
-                    args.source_id,
-                    limit=args.limit,
-                    max_id=args.max_id,
-                    download_attachments=not args.skip_attachments,
-                ),
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-    elif args.command == "backfill-chat":
-        print(
-            json.dumps(
-                backfill_chat(
-                    args.source_id,
-                    batch_limit=args.batch_limit,
-                    max_batches=args.max_batches,
-                    download_attachments=not args.skip_attachments,
-                ),
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-    elif args.command == "fill-missing-attachments":
-        print(
-            json.dumps(
-                fill_missing_attachments(
-                    args.source_id,
-                    limit=args.limit,
-                    show_progress=True,
-                    max_file_size_mb=args.max_file_size_mb,
-                ),
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-    elif args.command == "attachment-status":
-        show_attachment_status(args.source_id, args.max_file_size_mb)
+    from scripts.telegram_cli_main import run_cli
+    run_cli()
