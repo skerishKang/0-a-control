@@ -9,7 +9,7 @@
 | File | Lines | Status |
 |------|-------|--------|
 | public/styles.css | 1035 | > 500 |
-| public/panels-detail.css | 634 | > 500 |
+| public/panels-detail.css | 739 | > 500 |
 
 ## 2. File Structure Analysis
 
@@ -55,37 +55,35 @@
    - Bridge candidate/item and bucket badge selectors
    - Bridge highlight card and priority selectors
 
-### public/panels-detail.css (634 lines)
+### public/panels-detail.css (739 lines)
 
 **Responsibility Groups:**
 
-1. **Panel/Side Panel Styles (1-60)**
-   - `.side-panel`, `.side-panel-header`, `.side-panel-body` - lines 1-60
-   - `.panel-backdrop` - lines 55-60
+1. **Panel/Side Panel Styles**
+   - `.side-panel`, `.side-panel-header`, `.side-panel-body` selectors
+   - `.panel-backdrop` selector
 
-2. **Verdict Card Styles (62-103)**
-   - `.verdict-card`, `.verdict-summary` - lines 62-94
+2. **Verdict Card Styles**
+   - `.verdict-card`, `.verdict-summary` selectors
 
-3. **Detail/Side Panel Content (105-290)**
-   - `.detail-body`, `.detail-section`, `.reading-flow` - lines 105-124
-   - `.conversation-thread`, `.conversation-row` - lines 263-334
+3. **Detail/Side Panel Content**
+   - `.detail-body`, `.detail-section`, `.reading-flow` selectors
+   - `.conversation-thread`, `.conversation-day-block`, `.conversation-row` selectors
 
-4. **Filter/Chip Styles (131-152, 354-365)**
-   - `.filter-chip-row`, `.filter-chip` - lines 131-152, 354-365
+4. **Filter/Chip Styles**
+   - `.filter-chip-row`, `.filter-chip` selectors
 
-5. **External Context Layout (154-240)**
-   - `.external-context-layout` - lines 183-191
-   - `.external-context-list-panel`, `.external-context-detail-panel` - lines 193-218
+5. **External Context Layout**
+   - `.external-context-layout` selector
+   - `.external-context-list-panel`, `.external-context-detail-panel` selectors
 
-6. **Telegram-Specific Styles (409-712)**
-   - `.telegram-sync-btn` - lines 409-432
-   - `.telegram-status-chip` - lines 621-642
-   - `.telegram-setup-hint` - lines 643-664
-   - `.telegram-source-pill` - lines 666-712
+6. **Telegram-Specific Styles**
+   - `.telegram-sync-btn` selector
+   - `.telegram-status-chip`, `.telegram-setup-hint` selectors
+   - `.telegram-source-pill` selector
 
-7. **Responsive Rules (434-739)**
-   - `@media (max-width: 1040px)` - lines 434-442, 729-733
-   - `@media (max-width: 720px)` - lines 735-739
+7. **Responsive Rules**
+   - `@media (max-width: 1040px)` and `@media (max-width: 720px)` blocks
 
 ## 3. Coupling Risks
 
@@ -116,10 +114,11 @@
 - **Note:** Will require adding a `<link>` tag in HTML to load the new CSS file
 
 ### Phase 2: Extract Telegram Panel CSS
-**Target:** `panels-detail.css` lines 409-712 (Telegram-specific)
+**Target:** `panels-detail.css` Telegram-specific selectors (`.telegram-*`)
 - Creates `public/css/components/telegram-panel.css`
 - Panel-detail scoped, clear boundaries
 - Medium risk - verify external-context dependencies
+- **Note:** Will require adding a `<link>` tag in HTML to load the new CSS file
 
 ### Phase 3: Extract Form/Button Utilities
 **Target:** Both files' button/form styles
