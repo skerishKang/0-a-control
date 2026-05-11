@@ -13,8 +13,20 @@ from zoneinfo import ZoneInfo
 
 if __package__ in (None, ""):
     from scripts.telegram_db import DATA_DIR
+    from scripts.telegram_helpers import (
+        _mask_phone,
+        _safe_path_part,
+        _classify_message_type,
+        _message_sender_label,
+    )
 else:
     from .telegram_db import DATA_DIR
+    from .telegram_helpers import (
+        _mask_phone,
+        _safe_path_part,
+        _classify_message_type,
+        _message_sender_label,
+    )
 
 
 RUNTIME_DIR = Path(DATA_DIR) / "runtime"
@@ -220,37 +232,6 @@ def _write_status(payload: dict) -> None:
     STATUS_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def _mask_phone(phone: str | None) -> str | None:
-    if not phone:
-        return None
-    if len(phone) <= 7:
-        return "****"
-    return f"{phone[:4]}****{phone[-4:]}"
-
-
-def _safe_path_part(value: str | None, fallback: str = "unknown") -> str:
-    raw = (value or "").strip()
-    if not raw:
-        return fallback
-    cleaned = re.sub(r'[\\/:*?"<>|\r\n\t]+', "_", raw)
-    cleaned = re.sub(r"\s+", "_", cleaned).strip("._ ")
-    return cleaned or fallback
-
-
-def _classify_message_type(message) -> str:
-    if getattr(message, "photo", None):
-        return "image"
-    if getattr(message, "voice", None):
-        return "audio"
-    if getattr(message, "video", None):
-        return "video"
-    if getattr(message, "audio", None):
-        return "audio"
-    if getattr(message, "document", None):
-        return "file"
-    return "text"
-
-
 def _original_attachment_name(message, item_type: str) -> str | None:
     file_obj = getattr(message, "file", None)
     original_name = getattr(file_obj, "name", None) if file_obj else None
@@ -447,21 +428,6 @@ def get_telegram_status() -> dict:
             payload["error"] = str(exc)
 
     return payload
-
-
-def _message_sender_label(message) -> str:
-    if getattr(message, "out", False):
-        return "me"
-    sender = getattr(message, "sender", None)
-    if sender is not None:
-        if getattr(sender, "username", None):
-            return sender.username
-        if getattr(sender, "first_name", None):
-            return sender.first_name
-        if getattr(sender, "title", None):
-            return sender.title
-    sender_id = getattr(message, "sender_id", None)
-    return str(sender_id) if sender_id is not None else "Unknown"
 
 
 async def _fetch_chats_async(limit: int = 50) -> list[dict]:

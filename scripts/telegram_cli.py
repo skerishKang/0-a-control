@@ -16,35 +16,15 @@ from scripts.telegram_service import (
     get_telegram_session_lock_status,
     get_telegram_status,
 )
+from scripts.telegram_helpers import (
+    _normalize_message_timestamp,
+    _format_bytes,
+    _metadata_file_size,
+)
 
-
-def _normalize_message_timestamp(raw_value, fallback_iso: str) -> str:
-    if raw_value is None:
-        return fallback_iso
-    if isinstance(raw_value, (int, float)):
-        return datetime.fromtimestamp(raw_value, timezone.utc).isoformat()
-    if isinstance(raw_value, str):
-        cleaned = raw_value.strip()
-        if not cleaned:
-            return fallback_iso
-        return cleaned
-    return fallback_iso
 
 def get_db():
     return get_db_connection()
-
-
-def _format_bytes(num_bytes: int | None) -> str:
-    value = int(num_bytes or 0)
-    units = ["B", "KB", "MB", "GB", "TB"]
-    size = float(value)
-    for unit in units:
-        if size < 1024 or unit == units[-1]:
-            if unit == "B":
-                return f"{int(size)}{unit}"
-            return f"{size:.1f}{unit}"
-        size /= 1024
-    return f"{value}B"
 
 
 class AttachmentProgressReporter:
@@ -101,20 +81,6 @@ class AttachmentProgressReporter:
                 flush=True,
             )
 
-
-def _metadata_file_size(row) -> int | None:
-    raw = row["metadata_json"] if "metadata_json" in row.keys() else None
-    if not raw:
-        return None
-    try:
-        metadata = json.loads(raw)
-    except Exception:
-        return None
-    try:
-        value = metadata.get("file_size")
-        return int(value) if value is not None else None
-    except Exception:
-        return None
 
 def get_core_sources_sync_status() -> list[dict]:
     conn = get_db()
