@@ -3,6 +3,26 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone
+from scripts.telegram_db import get_db_connection
+
+
+def _get_core_sources_sync_status() -> list[dict]:
+    conn = get_db_connection()
+    rows = conn.execute(
+        """
+        SELECT 
+            ts.source_id, ts.source_name, ts.chat_class, ts.is_core, ts.sync_mode, ts.last_synced_at, ts.last_message_id,
+            COUNT(CASE WHEN ei.status = 'new' THEN 1 END) as new_count,
+            COUNT(CASE WHEN ei.status = 'reviewing' THEN 1 END) as reviewing_count
+        FROM telegram_sources ts
+        LEFT JOIN external_inbox ei ON ts.source_id = ei.source_id
+        WHERE ts.is_core = 1
+        GROUP BY ts.source_id
+        ORDER BY ts.source_name COLLATE NOCASE ASC
+        """
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
 
 
 def _normalize_message_timestamp(raw_value, fallback_iso: str) -> str:
@@ -88,5 +108,21 @@ def _message_sender_label(message) -> str:
             return sender.first_name
         if getattr(sender, "title", None):
             return sender.title
-    sender_id = getattr(message, "sender_id", None)
-    return str(sender_id) if sender_id is not None else "Unknown"
+    return str(getattr(message, "sender_id", None) or "Unknown")
+
+
+def _count_missing_attachments(source_id: str) -> int:
+    conn = get_db_connection()
+    result = conn.execute(
+        """
+        SELECT COUNT(*) AS count
+        FROM external_inbox
+        WHERE source_type = 'telegram'
+          AND source_id = ?
+          AND COALESCE(item_type, 'text') != 'text'
+          AND COALESCE(attachment_path, '') = ''
+        """,
+        (source_id,),
+    ).fetchone()
+    conn.close()
+    return result["count"]

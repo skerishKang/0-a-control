@@ -5,9 +5,7 @@ _root = str(Path(__file__).resolve().parents[1])
 if _root not in sys.path:
     sys.path.insert(0, _root)
 
-import sqlite3
 import json
-import argparse
 from datetime import datetime, timezone
 from scripts.telegram_db import get_db_connection, init_db
 from scripts.telegram_service import (
@@ -17,6 +15,8 @@ from scripts.telegram_service import (
     get_telegram_status,
 )
 from scripts.telegram_helpers import (
+    _get_core_sources_sync_status,
+    _count_missing_attachments,
     _normalize_message_timestamp,
     _format_bytes,
     _metadata_file_size,
@@ -24,27 +24,64 @@ from scripts.telegram_helpers import (
 from scripts.telegram_progress import AttachmentProgressReporter
 
 
+def _insert_telegram_message(conn, source: dict, msg: dict, source_id: str, now_iso: str) -> None:
+    """Insert a single telegram message into external_inbox."""
+    author = msg.get("sender", "Unknown")
+    item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
+    conn.execute(
+        """
+        INSERT INTO external_inbox
+        (
+            source_type, source_id, source_name, external_message_id,
+            author, item_type, title, raw_content, attachment_path, attachment_ref,
+            item_timestamp, imported_at, status, metadata_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(source_id, external_message_id) DO UPDATE SET
+            source_name = excluded.source_name,
+            author = excluded.author,
+            item_type = excluded.item_type,
+            title = excluded.title,
+            raw_content = excluded.raw_content,
+            attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
+            attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
+            item_timestamp = excluded.item_timestamp,
+            metadata_json = excluded.metadata_json
+        """,
+        (
+            "telegram",
+            source_id,
+            source["source_name"],
+            str(msg["id"]),
+            author,
+            msg.get("item_type", "text"),
+            source["source_name"],
+            msg.get("text", ""),
+            msg.get("attachment_path"),
+            msg.get("attachment_name") or str(msg["id"]),
+            item_timestamp,
+            now_iso,
+            "new",
+            json.dumps({
+                "date": msg.get("date"),
+                "sender": msg.get("sender"),
+                "from_me": msg.get("from_me"),
+                "chat_id": source_id,
+                "attachment_name": msg.get("attachment_name"),
+                "mime_type": msg.get("mime_type"),
+                "file_size": msg.get("file_size"),
+            }, ensure_ascii=False),
+        ),
+    )
+
+
 def get_db():
     return get_db_connection()
 
 
 def get_core_sources_sync_status() -> list[dict]:
-    conn = get_db()
-    rows = conn.execute(
-        """
-        SELECT 
-            ts.source_id, ts.source_name, ts.chat_class, ts.is_core, ts.sync_mode, ts.last_synced_at, ts.last_message_id,
-            COUNT(CASE WHEN ei.status = 'new' THEN 1 END) as new_count,
-            COUNT(CASE WHEN ei.status = 'reviewing' THEN 1 END) as reviewing_count
-        FROM telegram_sources ts
-        LEFT JOIN external_inbox ei ON ts.source_id = ei.source_id
-        WHERE ts.is_core = 1
-        GROUP BY ts.source_id
-        ORDER BY ts.source_name COLLATE NOCASE ASC
-        """
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
+    return _get_core_sources_sync_status()
+
 
 def run_sync_core() -> dict:
     status = {"ok": True, "details": [], "synced_count": 0, "success_count": 0, "failed_count": 0}
@@ -152,55 +189,8 @@ def import_chat(
         
         now_iso = datetime.now(timezone.utc).isoformat()
         for msg in messages:
-            author = msg.get("sender", "Unknown")
-            item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
             is_new = msg["id"] > last_id
-
-            conn.execute(
-                """
-                INSERT INTO external_inbox
-                (
-                    source_type, source_id, source_name, external_message_id,
-                    author, item_type, title, raw_content, attachment_path, attachment_ref,
-                    item_timestamp, imported_at, status, metadata_json
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(source_id, external_message_id) DO UPDATE SET
-                    source_name = excluded.source_name,
-                    author = excluded.author,
-                    item_type = excluded.item_type,
-                    title = excluded.title,
-                    raw_content = excluded.raw_content,
-                    attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
-                    attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
-                    item_timestamp = excluded.item_timestamp,
-                    metadata_json = excluded.metadata_json
-                """,
-                (
-                    "telegram",
-                    source_id,
-                    source["source_name"],
-                    str(msg["id"]),
-                    author,
-                    msg.get("item_type", "text"),
-                    source["source_name"],
-                    msg.get("text", ""),
-                    msg.get("attachment_path"),
-                    msg.get("attachment_name") or str(msg["id"]),
-                    item_timestamp,
-                    now_iso,
-                    "new",
-                    json.dumps({
-                        "date": msg.get("date"),
-                        "sender": msg.get("sender"),
-                        "from_me": msg.get("from_me"),
-                        "chat_id": source_id,
-                        "attachment_name": msg.get("attachment_name"),
-                        "mime_type": msg.get("mime_type"),
-                        "file_size": msg.get("file_size"),
-                    }, ensure_ascii=False),
-                ),
-            )
+            _insert_telegram_message(conn, source, msg, source_id, now_iso)
             if msg["id"] > new_last_id:
                 new_last_id = msg["id"]
             if is_new:
@@ -295,10 +285,13 @@ def fill_missing_attachments(
     max_file_size_mb: float | None = None,
 ) -> dict:
     conn = get_db()
-    source = conn.execute("SELECT * FROM telegram_sources WHERE source_id = ?", (source_id,)).fetchone()
+    source = conn.execute(
+        "SELECT source_id, source_name FROM telegram_sources WHERE source_id = ?", (source_id,)
+    ).fetchone()
+    conn.close()
+
     if not source:
-        conn.close()
-        return {"ok": False, "error": f"Source {source_id} not found"}
+        return {"ok": False, "error": f"No existing telegram history found for source {source_id}"}
 
     query_limit = limit if max_file_size_mb is None else 1000000
     rows = conn.execute(
@@ -336,19 +329,7 @@ def fill_missing_attachments(
             break
 
     if not message_ids:
-        conn = get_db()
-        remaining_missing = conn.execute(
-            """
-            SELECT COUNT(*) AS count
-            FROM external_inbox
-            WHERE source_type = 'telegram'
-              AND source_id = ?
-              AND COALESCE(item_type, 'text') != 'text'
-              AND COALESCE(attachment_path, '') = ''
-            """,
-            (source_id,),
-        ).fetchone()["count"]
-        conn.close()
+        remaining_missing = _count_missing_attachments(source_id)
         return {
             "ok": True,
             "source_id": source_id,
@@ -368,20 +349,7 @@ def fill_missing_attachments(
     if not result.get("ok"):
         return result
 
-    conn = get_db()
-    remaining_missing = conn.execute(
-        """
-        SELECT COUNT(*) AS count
-        FROM external_inbox
-        WHERE source_type = 'telegram'
-          AND source_id = ?
-          AND COALESCE(item_type, 'text') != 'text'
-          AND COALESCE(attachment_path, '') = ''
-        """,
-        (source_id,),
-    ).fetchone()["count"]
-    conn.close()
-    result["remaining_missing"] = remaining_missing
+    result["remaining_missing"] = _count_missing_attachments(source_id)
     result["skipped_too_large"] = skipped_too_large
     return result
 
@@ -422,53 +390,7 @@ def import_message_ids(
         total_changes_before = conn.total_changes
         now_iso = datetime.now(timezone.utc).isoformat()
         for msg in messages:
-            author = msg.get("sender", "Unknown")
-            item_timestamp = _normalize_message_timestamp(msg.get("date"), now_iso)
-            conn.execute(
-                """
-                INSERT INTO external_inbox
-                (
-                    source_type, source_id, source_name, external_message_id,
-                    author, item_type, title, raw_content, attachment_path, attachment_ref,
-                    item_timestamp, imported_at, status, metadata_json
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(source_id, external_message_id) DO UPDATE SET
-                    source_name = excluded.source_name,
-                    author = excluded.author,
-                    item_type = excluded.item_type,
-                    title = excluded.title,
-                    raw_content = excluded.raw_content,
-                    attachment_path = COALESCE(excluded.attachment_path, external_inbox.attachment_path),
-                    attachment_ref = COALESCE(excluded.attachment_ref, external_inbox.attachment_ref),
-                    item_timestamp = excluded.item_timestamp,
-                    metadata_json = excluded.metadata_json
-                """,
-                (
-                    "telegram",
-                    source_id,
-                    source["source_name"],
-                    str(msg["id"]),
-                    author,
-                    msg.get("item_type", "text"),
-                    source["source_name"],
-                    msg.get("text", ""),
-                    msg.get("attachment_path"),
-                    msg.get("attachment_name") or str(msg["id"]),
-                    item_timestamp,
-                    now_iso,
-                    "new",
-                    json.dumps({
-                        "date": msg.get("date"),
-                        "sender": msg.get("sender"),
-                        "from_me": msg.get("from_me"),
-                        "chat_id": source_id,
-                        "attachment_name": msg.get("attachment_name"),
-                        "mime_type": msg.get("mime_type"),
-                        "file_size": msg.get("file_size"),
-                    }, ensure_ascii=False),
-                ),
-            )
+            _insert_telegram_message(conn, source, msg, source_id, now_iso)
 
         conn.commit()
         result["processed_count"] = len(messages)
