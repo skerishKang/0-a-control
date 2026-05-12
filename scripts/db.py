@@ -1,5 +1,22 @@
 from __future__ import annotations
 
+"""
+scripts/db.py — Public facade for the database layer.
+
+This module re-exports selected symbols from the internal ``scripts.db_*``
+submodules so that callers can import everything they need from a single
+entry point (``from scripts import db`` or ``from scripts.db import ...``).
+
+**Stable public API** is explicitly listed in ``__all__``.  Anything not
+present in ``__all__`` is an internal implementation detail and should not
+be imported from this module.
+
+Future direction: as the codebase grows, the facade may be split into
+smaller domain-specific facades (e.g. ``scripts.db_quests``,
+``scripts.db_sessions``) and this module will become a thin aggregator
+that re-exports those.  For now, all re-exports live here.
+"""
+
 import sys
 from pathlib import Path
 
@@ -31,10 +48,6 @@ if __package__ in (None, ""):
     from scripts.db_session_view import get_session_view_model
     from scripts.db_session_resume import get_resume_context
     from scripts.db_inbox import get_external_inbox_overview, get_external_inbox_source_messages
-    from scripts.db_workdiary_helpers import (
-        get_workdiary_priority_candidates,
-        get_workdiary_top_level,
-    )
     from scripts.db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
@@ -88,10 +101,6 @@ else:
     from .db_session_view import get_session_view_model
     from .db_session_resume import get_resume_context
     from .db_inbox import get_external_inbox_overview, get_external_inbox_source_messages
-    from .db_workdiary_helpers import (
-        get_workdiary_priority_candidates,
-        get_workdiary_top_level,
-    )
     from .db_sessions import (
         append_source_record,
         close_latest_active_session_for_agent,
@@ -122,42 +131,62 @@ else:
     )
 
 __all__ = [
+    # --- Sessions ---
     "append_source_record",
     "close_latest_active_session_for_agent",
+    # --- Database connection & config ---
     "DB_PATH",
     "ROOT_DIR",
     "WORKDIARY_DIR",
     "UTC",
     "connect",
+    # --- Seeding ---
     "create_sample_data_if_empty",
+    # --- Verdicts ---
     "DuplicateVerdict",
     "apply_verdict",
     "evaluate_quest",
+    # --- Inbox ---
     "get_external_inbox_overview",
     "get_external_inbox_source_messages",
+    # --- Agents ---
     "get_agent_statuses",
     "list_registered_agents",
+    # --- Sessions (cont.) ---
     "end_session",
+    # --- State ---
     "get_current_state",
+    # --- Quests ---
     "mark_current_quest_unfinished",
     "start_current_quest_from_main_mission",
     "defer_current_quest_to_short_term",
+    # --- Plans ---
     "get_plans",
+    # --- Quests ---
     "get_quests",
+    # --- Sessions (cont.) ---
     "get_recent_sessions",
     "get_resume_context",
     "get_session_view_model",
     "get_source_records",
+    # --- Work Queue ---
     "get_work_queue_raw",
+    # --- Verdicts (cont.) ---
     "report_quest_progress",
+    # --- State (cont.) ---
     "get_workdiary_priority_candidates",
     "get_workdiary_top_level",
+    # --- Database connection & config (cont.) ---
     "init_db",
     "now_iso",
+    # --- Quests (cont.) ---
     "promote_confirmed_starting_point_to_quest",
+    # --- State (cont.) ---
     "refresh_current_state",
+    # --- Sessions (cont.) ---
     "start_session",
     "update_session_summary",
+    # --- Work Queue (cont.) ---
     "Queue",
     "get_blocked_items",
     "get_local_needed_items",
@@ -166,6 +195,7 @@ __all__ = [
     "group_by_queue",
     "normalize_work_items",
     "sort_work_items",
+    # --- Prompts ---
     "generate_executor_prompt",
     "get_executor_prompt_templates",
 ]
