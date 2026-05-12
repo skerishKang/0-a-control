@@ -25,7 +25,7 @@ def valid_report() -> dict:
         "report": {
             "quest_id": "q-1",
             "quest_title": "Test quest",
-            "completion_criteria": ["done"],
+            "completion_criteria": "done",
             "work_summary": "Implemented the requested change"
         }
     }
@@ -39,11 +39,11 @@ def valid_verdict() -> dict:
             "status": "done",
             "reason": "Meets criteria",
             "plan_impact": {
-                "today": [],
-                "short_term": [],
-                "long_term": [],
-                "recurring": [],
-                "dated": []
+                "today": "",
+                "short_term": "",
+                "long_term": "",
+                "recurring": "",
+                "dated": ""
             }
         }
     }
