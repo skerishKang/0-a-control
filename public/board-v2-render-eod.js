@@ -1,3 +1,23 @@
+function bindEndOfDayInteractions({ tomorrowFirst, decisionTitle, decisionContent }) {
+  const confirmButton = document.getElementById("boardV2ConfirmTomorrowFirst");
+  if (confirmButton && tomorrowFirst?.title) {
+    confirmButton.addEventListener("click", () => {
+      window.boardV2ConfirmStartingPoint(
+        tomorrowFirst.title,
+        tomorrowFirst.reason || "",
+        tomorrowFirst.source || "suggestion"
+      );
+    });
+  }
+
+  const decisionCard = document.getElementById("boardV2DecisionCard");
+  if (decisionCard) {
+    decisionCard.addEventListener("click", () => {
+      window.boardV2OpenModal(decisionTitle, decisionContent);
+    });
+  }
+}
+
 function renderEndOfDay(state) {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
@@ -32,8 +52,7 @@ function renderEndOfDay(state) {
         <span class="v2-item-title">${escapeHtml(tomorrowFirst.title)}</span>
         <span class="v2-item-meta">${escapeHtml(tomorrowFirst.reason || "")}</span>
         <div class="v2-start-actions">
-          <button class="v2-btn v2-btn-primary" type="button" 
-            onclick="window.boardV2ConfirmStartingPoint('${escapeHtml(tomorrowFirst.title)}', '${escapeHtml(tomorrowFirst.reason || "")}', '${escapeHtml(tomorrowFirst.source || "suggestion")}')">
+          <button id="boardV2ConfirmTomorrowFirst" class="v2-btn v2-btn-primary" type="button">
             이 제안으로 내일 시작 확정
           </button>
         </div>
@@ -47,7 +66,7 @@ function renderEndOfDay(state) {
   const decisionContent = decision?.impact_summary || decision?.reason || "";
   const decisionHtml = decision
     ? `
-      <div class="v2-rail-card v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(decisionTitle)}', '${escapeHtml(decisionContent)}')">
+      <div id="boardV2DecisionCard" class="v2-rail-card v2-modal-clickable" role="button" tabindex="0">
         <span class="v2-item-title">${escapeHtml(decisionTitle)}</span>
         <span class="v2-item-meta">${escapeHtml(decisionContent)}</span>
       </div>
@@ -105,4 +124,6 @@ function renderEndOfDay(state) {
       </aside>
     </div>
   `;
+
+  bindEndOfDayInteractions({ tomorrowFirst, decisionTitle, decisionContent });
 }
