@@ -48,7 +48,8 @@ class TelegramStatusTests(unittest.TestCase):
         status = telegram_service.get_telegram_status()
         self.assertFalse(status["configured"])
         self.assertEqual(status["missing_config"], ["TELEGRAM_API_ID", "TELEGRAM_API_HASH"])
-        self.assertEqual(status["session_path"], str(self.session_path))
+        self.assertEqual(status["session_path"], "telegram_userbot.session")
+        self.assertIsNone(status["session_dir"])
         self.assertFalse(status["session_exists"])
         self.assertIn("TELEGRAM_API_ID", status["setup_message"])
 
