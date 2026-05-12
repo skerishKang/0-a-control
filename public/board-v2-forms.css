@@ -1,0 +1,85 @@
+/* ── Form Styles ── */
+.v2-form-card {
+  margin-top: 24px;
+  max-width: 720px;
+}
+
+.v2-form-group {
+  margin-bottom: 16px;
+}
+
+.v2-form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--v2-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.v2-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid var(--v2-border);
+  background: var(--v2-surface);
+  color: var(--v2-text);
+  font-family: inherit;
+  font-size: 14px;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.v2-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--v2-border);
+  background: var(--v2-surface);
+  color: var(--v2-text);
+  font-family: inherit;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.v2-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.v2-info-box {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(45, 90, 39, 0.05);
+  border: 1px dashed var(--v2-border);
+  color: var(--v2-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── Quick Input Styles ── */
+.v2-quick-input-card {
+  margin-bottom: 32px;
+  border: 1px solid var(--v2-primary);
+  background: var(--v2-surface);
+  padding: 14px;
+  box-shadow: var(--v2-shadow);
+}
+
+.v2-quick-input-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--v2-border);
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 3px;
+  resize: none;
+  margin-bottom: 8px;
+}
+
+.v2-quick-input-actions {
+  display: flex;
+  justify-content: flex-end;
+}

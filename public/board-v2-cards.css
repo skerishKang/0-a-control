@@ -76,35 +76,6 @@
   border-top: 1px dashed var(--v2-border);
 }
 
-.v2-action-btn {
-  appearance: none;
-  background: rgba(45, 90, 39, 0.04);
-  border: 1px solid rgba(45, 90, 39, 0.1);
-  border-radius: 3px;
-  color: var(--v2-text-muted);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.v2-action-btn:hover {
-  background: rgba(45, 90, 39, 0.08);
-  color: var(--v2-primary);
-  border-color: rgba(45, 90, 39, 0.3);
-}
-
-.v2-action-btn.-done:hover {
-  background: rgba(45, 90, 39, 0.12);
-  color: var(--v2-primary);
-}
-
-.v2-action-btn.-hold:hover {
-  background: rgba(217, 119, 6, 0.08);
-  color: var(--v2-amber);
-  border-color: rgba(217, 119, 6, 0.3);
-}
 
 .v2-empty {
   color: var(--v2-text-muted);
@@ -203,17 +174,6 @@
   padding: 18px;
 }
 
-.v2-start-badge {
-  display: inline-block;
-  margin-bottom: 10px;
-  padding: 3px 8px;
-  background: rgba(45, 90, 39, 0.08);
-  color: var(--v2-primary);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
 
 .v2-start-actions {
   display: flex;
@@ -225,252 +185,11 @@
   font-size: 17px;
 }
 
-.v2-btn {
-  appearance: none;
-  border: 0;
-  border-radius: 4px;
-  padding: 12px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
 
-.v2-btn-primary {
-  background: var(--v2-primary);
-  color: #fff;
-  flex: 1;
-}
 
-.v2-btn-primary:hover {
-  background: var(--v2-primary-strong);
-}
 
-.v2-btn-primary:disabled {
-  background: #8b9889;
-  cursor: not-allowed;
-}
 
-.v2-btn-secondary {
-  background: transparent;
-  color: var(--v2-primary);
-  border: 1px solid rgba(45, 90, 39, 0.22);
-}
 
-.v2-btn-secondary:hover {
-  background: rgba(45, 90, 39, 0.06);
-}
-
-.v2-loading {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--v2-text-muted);
-  font-size: 18px;
-  font-weight: 600;
-}
-
-/* ── Form Styles ── */
-.v2-form-card {
-  margin-top: 24px;
-  max-width: 720px;
-}
-
-.v2-form-group {
-  margin-bottom: 16px;
-}
-
-.v2-form-label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--v2-text-muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.v2-textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 12px;
-  border: 1px solid var(--v2-border);
-  background: var(--v2-surface);
-  color: var(--v2-text);
-  font-family: inherit;
-  font-size: 14px;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-.v2-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--v2-border);
-  background: var(--v2-surface);
-  color: var(--v2-text);
-  font-family: inherit;
-  font-size: 14px;
-  border-radius: 4px;
-}
-
-.v2-form-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.v2-info-box {
-  margin-top: 24px;
-  padding: 16px;
-  background: rgba(45, 90, 39, 0.05);
-  border: 1px dashed var(--v2-border);
-  color: var(--v2-primary);
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* ── Modal Styles ── */
-.v2-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.v2-modal[hidden] {
-  display: none;
-}
-
-.v2-modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(26, 47, 26, 0.4);
-  backdrop-filter: blur(4px);
-}
-
-.v2-modal-content {
-  position: relative;
-  width: 90%;
-  max-width: 640px;
-  max-height: 85vh;
-  background: var(--v2-surface);
-  border: 1px solid var(--v2-border);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.v2-modal-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--v2-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.v2-modal-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--v2-text);
-}
-
-.v2-modal-close {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  font-size: 24px;
-  color: var(--v2-text-muted);
-  cursor: pointer;
-  line-height: 1;
-}
-
-.v2-modal-body {
-  padding: 24px;
-  overflow-y: auto;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--v2-text);
-  white-space: pre-wrap;
-}
-
-.v2-modal-clickable {
-  cursor: pointer;
-  transition: background 0.12s;
-}
-
-.v2-modal-clickable:hover {
-  background: rgba(45, 90, 39, 0.04) !important;
-}
-
-/* ── Quick Input Styles ── */
-.v2-quick-input-card {
-  margin-bottom: 32px;
-  border: 1px solid var(--v2-primary);
-  background: var(--v2-surface);
-  padding: 14px;
-  box-shadow: var(--v2-shadow);
-}
-
-.v2-quick-input-textarea {
-  width: 100%;
-  min-height: 60px;
-  padding: 8px;
-  border: 1px solid var(--v2-border);
-  background: var(--v2-bg);
-  color: var(--v2-text);
-  font-family: inherit;
-  font-size: 13px;
-  border-radius: 3px;
-  resize: none;
-  margin-bottom: 8px;
-}
-
-.v2-quick-input-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.v2-btn-inline {
-  padding: 6px 12px;
-  font-size: 11px;
-}
-
-/* ── Plan Badges ── */
-.v2-plan-badge {
-  display: inline-block;
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-.v2-plan-badge-today {
-  background: rgba(45, 90, 39, 0.1);
-  color: var(--v2-primary);
-  border: 1px solid rgba(45, 90, 39, 0.2);
-}
-.v2-plan-badge-short_term {
-  background: rgba(217, 119, 6, 0.1);
-  color: var(--v2-amber);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-}
-.v2-plan-badge-hold, .v2-plan-badge-long_term {
-  background: rgba(92, 107, 92, 0.1);
-  color: var(--v2-text-muted);
-  border: 1px solid rgba(92, 107, 92, 0.2);
-}
 
 /* ── In-Progress Enhancements ── */
 .v2-mission-context {
@@ -532,14 +251,6 @@
   color: var(--v2-primary);
   font-style: normal;
   margin-right: 4px;
-}
-.v2-start-badge.-confirmed {
-  background: var(--v2-primary);
-  color: #fff;
-}
-.v2-start-badge.-suggestion {
-  background: rgba(217, 119, 6, 0.1);
-  color: var(--v2-amber);
 }
 
 
