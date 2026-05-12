@@ -100,6 +100,15 @@ def _missing_config_items(env: dict) -> list[str]:
     return missing
 
 
+def _session_path_label(session_path: Path) -> str:
+    return session_path.name or "telegram_userbot.session"
+
+
+def _session_dir_label(session_path: Path) -> str:
+    parent_name = session_path.parent.name
+    return parent_name if parent_name else "[redacted]"
+
+
 def _build_status_payload() -> dict:
     env = _telegram_env()
     session_path = Path(env["session_path"])
@@ -112,7 +121,7 @@ def _build_status_payload() -> dict:
     elif not session_exists:
         setup_message = (
             "Telegram API 설정은 준비됐지만 첫 인증 세션 파일이 아직 없습니다. "
-            "첫 연결이 성공하면 이 경로에 세션 파일이 생성됩니다."
+            "첫 연결이 성공하면 세션 파일이 생성됩니다."
         )
     else:
         setup_message = "Telegram API 설정과 세션 파일이 준비되어 있습니다."
@@ -120,8 +129,8 @@ def _build_status_payload() -> dict:
     return {
         "configured": configured,
         "missing_config": missing,
-        "session_path": str(session_path),
-        "session_dir": str(session_path.parent),
+        "session_path": _session_path_label(session_path),
+        "session_dir": _session_dir_label(session_path),
         "session_exists": session_exists,
         "first_session_required": configured and not session_exists,
         "connected": False,
