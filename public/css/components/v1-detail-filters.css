@@ -1,0 +1,37 @@
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  border: 1px solid var(--line);
+  background: #f8fbff;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filter-chip.active {
+  background: #eaf1ff;
+  color: var(--accent);
+  border-color: rgba(37, 99, 235, 0.24);
+}
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: #f8fbff;
+  border: 1px solid var(--line);
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

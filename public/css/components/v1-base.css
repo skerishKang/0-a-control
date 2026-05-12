@@ -1,0 +1,32 @@
+:root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --line: #dbe4f0;
+  --text: #132033;
+  --muted: #5f6f86;
+  --accent: #2563eb;
+  --accent-soft: #fff1f1;
+  --green: #198754;
+  --yellow: #b7791f;
+  --pending: #d97706;
+  --red: #d14343;
+  --shadow: 0 16px 40px rgba(17, 34, 68, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 20rem),
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.06), transparent 24rem),
+    linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+}
+
+body.panel-open {
+  overflow: hidden;
+}

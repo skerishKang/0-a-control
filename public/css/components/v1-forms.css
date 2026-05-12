@@ -1,0 +1,56 @@
+.quest-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #f8fbff;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  color: var(--text);
+  font: inherit;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.report-card-body {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.report-quest-preview {
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: #f8fbff;
+  color: var(--text-strong);
+  font-size: 0.93rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.report-quest-preview.is-empty {
+  color: var(--muted);
+  font-weight: 600;
+  background: #fbfcfe;
+}
