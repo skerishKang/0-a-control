@@ -33,6 +33,7 @@ EXACT_ROUTE_METHODS: dict[str, str] = {
     "/api/settings/status": "_get_settings_status",
     "/api/guardrails/status": "_get_guardrails_status",
     "/api/ops-overrides": "_get_ops_overrides",
+    "/api/work-queue": "_get_work_queue",
 }
 
 PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
@@ -67,7 +68,7 @@ def _get_db():
     from scripts.server import (
         ROOT_DIR, get_current_state, get_plans, get_quests,
         get_latest_briefs, get_recent_sessions, get_active_session_runtime,
-        get_source_records, get_session_view_model, get_workdiary_top_level,
+        get_source_records, get_work_queue_raw, get_session_view_model, get_workdiary_top_level,
         get_workdiary_priority_candidates, get_external_inbox_overview,
         get_external_inbox_source_messages, get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
@@ -226,3 +227,37 @@ def handle_get_ops_overrides(handler, query):
         target_id=target_id,
     )
     handler.send_json({"overrides": overrides})
+
+
+def handle_get_work_queue(handler, query):
+    from scripts.work_queue import normalize_work_items, group_by_queue
+
+    limit = _get_db()["parse_limit"](query, "limit", 50, 200)
+    queue_filter = query.get("queue", [None])[0]
+
+    raw_items = _get_db()["get_work_queue_raw"](limit)
+    items = normalize_work_items(raw_items)
+
+    if queue_filter:
+        queue_filter = queue_filter.upper()
+        items = [i for i in items if i.queue.value == queue_filter]
+
+    grouped = group_by_queue(items)
+    queues = {}
+    for q in grouped:
+        queues[q.value] = [
+            {"id": i.id, "title": i.title, "source": i.source,
+             "priority": i.priority.value, "queue": i.queue.value,
+             "status": i.effective_status, "updated_at": i.updated_at}
+            for i in grouped[q]
+        ]
+
+    handler.send_json({
+        "queues": queues,
+        "items": [
+            {"id": i.id, "title": i.title, "source": i.source,
+             "priority": i.priority.value, "queue": i.queue.value,
+             "status": i.effective_status, "updated_at": i.updated_at}
+            for i in items
+        ],
+    })
