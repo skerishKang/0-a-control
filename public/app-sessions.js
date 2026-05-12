@@ -333,7 +333,8 @@ async function openSessionDetailPanel(sessionId) {
 
 function renderSessions() {
   const targetId = 'recentSessionList';
-  const parentPanel = document.getElementById(targetId)?.parentElement;
+  const target = document.getElementById(targetId);
+  const parentPanel = target?.parentElement;
   if (!parentPanel) return;
 
   // Hide agent filter for now - can be enabled later if needed
@@ -364,7 +365,7 @@ function renderSessions() {
     const title = normalizeSessionTitle(item.title, item.project_key);
     
     return `
-      <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}" onclick="openSessionDetailPanel('${item.id}')">
+      <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}">
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:4px;">
           <strong style="font-size:13px;">${escapeHtml(title.substring(0, 30))}</strong>
           <span style="color:${badges.lengthColor};font-size:10px;">${normalizeSessionLengthLabel(badges.lengthBadge)}</span>
@@ -377,7 +378,17 @@ function renderSessions() {
   };
 
   // Render compressed recent panel
-  document.getElementById(targetId).innerHTML = recentItems.map(renderRecentCard).join("");
+  target.innerHTML = recentItems.map(renderRecentCard).join("");
+  if (target._sessionCardClickHandler) {
+    target.removeEventListener("click", target._sessionCardClickHandler);
+  }
+  target._sessionCardClickHandler = (event) => {
+    const item = event.target.closest("[data-session-id]");
+    if (!item) return;
+    event.stopPropagation();
+    openSessionDetailPanel(item.dataset.sessionId);
+  };
+  target.addEventListener("click", target._sessionCardClickHandler);
   
   // Update count badge
   setCountBadge("recentSessionCount", sortedSessions.length);
@@ -429,7 +440,10 @@ function renderSessions() {
     simulated: "시뮬레이션 세션",
   };
 
-  parentPanel.onclick = () => {
+  if (parentPanel._sessionListClickHandler) {
+    parentPanel.removeEventListener("click", parentPanel._sessionListClickHandler);
+  }
+  parentPanel._sessionListClickHandler = () => {
     const sortedSessions = [...allFilteredSessions].sort((a, b) => {
       const categoryDiff = (categoryRank[classifySession(a)] ?? 99) - (categoryRank[classifySession(b)] ?? 99);
       if (categoryDiff !== 0) return categoryDiff;
@@ -446,11 +460,24 @@ function renderSessions() {
         : "";
       lastCategory = category;
       const cardHtml = renderSessionCard(item, true);
-      return `${headerHtml}<div onclick="openSessionDetailPanel('${item.id}')" class="clickable-item">${cardHtml}</div>`;
+      return `${headerHtml}${cardHtml}`;
     };
 
     showDetailedList("최근 세션", "전체 세션 목록", sortedSessions, detailFormatter);
+    const detailBody = document.getElementById("detailPanelBody");
+    if (!detailBody) return;
+    if (detailBody._sessionDetailClickHandler) {
+      detailBody.removeEventListener("click", detailBody._sessionDetailClickHandler);
+    }
+    detailBody._sessionDetailClickHandler = (event) => {
+      const item = event.target.closest("[data-session-id]");
+      if (!item) return;
+      event.stopPropagation();
+      openSessionDetailPanel(item.dataset.sessionId);
+    };
+    detailBody.addEventListener("click", detailBody._sessionDetailClickHandler);
   };
+  parentPanel.addEventListener("click", parentPanel._sessionListClickHandler);
 }
 
 
