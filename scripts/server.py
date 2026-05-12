@@ -83,12 +83,46 @@ SESSIONS_DIR = RUNTIME_DIR / "sessions"
 CURRENT_SESSION_FILE = RUNTIME_DIR / "current_session.json"
 
 
+def validate_session_id(session_id: str) -> bool:
+    """Validate that a session_id is safe for filesystem use.
+
+    Accepts UUID format, hex strings, and simple alphanumeric-plus-safe-chars.
+    Rejects path traversal patterns (slashes, dot-dot, backslashes, null bytes).
+    """
+    if not session_id or not isinstance(session_id, str):
+        return False
+    if len(session_id) > 128:
+        return False
+    # Reject path traversal characters
+    for ch in ("/", "\\", "..", "\0", ":"):
+        if ch in session_id:
+            return False
+    # Reject absolute paths and drive letters
+    if session_id.startswith("/") or session_id.startswith("\\\\"):
+        return False
+    if len(session_id) >= 2 and session_id[1] == ":":
+        return False
+    # Allow UUID, hex, alphanumeric plus underscore/dash/hyphen
+    import re
+    return bool(re.match(r"^[A-Za-z0-9_-]+$", session_id))
+
+
 def get_active_session_runtime(session_id: str | None = None) -> dict:
     target_file = CURRENT_SESSION_FILE
     if session_id:
+        if not validate_session_id(session_id):
+            return {}
         target_file = SESSIONS_DIR / f"{session_id}.json"
     if not target_file.exists():
         return {}
+    # Prevent path traversal: resolved target must be within SESSIONS_DIR
+    if session_id:
+        try:
+            resolved = target_file.resolve()
+            if not str(resolved).startswith(str(SESSIONS_DIR.resolve())):
+                return {}
+        except (OSError, RuntimeError):
+            return {}
     try:
         return json.loads(target_file.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
