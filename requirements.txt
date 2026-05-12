@@ -1,4 +1,4 @@
-# v1 uses Python standard library for most core logic,
-# but the optional web server component uses 'requests'.
-requests
-telethon
+# Runtime dependencies for 0-a-control.
+# Keep this file limited to packages needed to run local server/CLI/runtime features.
+requests>=2.32,<3
+telethon>=1.40,<2
