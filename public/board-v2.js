@@ -1,6 +1,47 @@
 // ── 전역 상태 ──
 let _pollingInterval = null;
 
+/**
+ * Render a small error indicator in the topbar when some board-v2 resources
+ * failed to load. Shows a count badge; hover reveals per-resource details.
+ * Removes itself when errors are cleared (no __errors or empty array).
+ */
+function renderErrorIndicator(errors) {
+  const existing = document.getElementById("v2-error-indicator");
+  if (existing) existing.remove();
+
+  if (!errors || errors.length === 0) return;
+
+  const el = document.createElement("span");
+  el.id = "v2-error-indicator";
+  el.style.cssText =
+    "display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;" +
+    "color:#b91c1c;background:rgba(185,28,28,0.08);padding:2px 7px;border-radius:4px;" +
+    "cursor:help;white-space:nowrap;";
+
+  // Count badge
+  const count = document.createElement("span");
+  count.textContent = `⚠ ${errors.length}`;
+  el.appendChild(count);
+
+  // Tooltip on hover (title attribute for native tooltip)
+  el.title = errors
+    .map((e) => `[${e.resource}] ${e.message}`)
+    .join("\n");
+
+  // Insert after the status label inside the topbar center
+  const center = document.querySelector(".v2-topbar-center");
+  if (center) {
+    // Place after v2StatusLabel to keep visual flow
+    const statusLabel = document.getElementById("v2StatusLabel");
+    if (statusLabel && statusLabel.nextSibling) {
+      center.insertBefore(el, statusLabel.nextSibling);
+    } else {
+      center.appendChild(el);
+    }
+  }
+}
+
 async function loadBoardV2() {
   const root = document.getElementById("boardV2Root");
   if (!root) return;
@@ -13,11 +54,21 @@ async function loadBoardV2() {
   try {
     const state = await boardApi.fetchFullState();
 
+    // Ensure __errors exists for optional-panel failures too
+    if (!state.__errors) state.__errors = [];
+    const _ts = new Date().toISOString();
+    const _fail = (resource, message) => {
+      state.__errors.push({ resource, message, timestamp: _ts });
+    };
+
+    renderErrorIndicator(state.__errors);
+
     // Load manual overrides (non-fatal, quiet failure allowed)
     try {
       state.__overrides = await boardApi.fetchOverrides();
     } catch (overrideErr) {
       console.warn("Manual overrides fetch failed, continuing without:", overrideErr);
+      _fail('overrides', overrideErr.message);
       state.__overrides = [];
     }
 
@@ -26,6 +77,7 @@ async function loadBoardV2() {
       state.__operations = await boardApi.fetchOperationsSummary();
     } catch (opsErr) {
       console.warn("Operations summary fetch failed, continuing without:", opsErr);
+      _fail('operations', opsErr.message);
       state.__operations = null;
     }
 
@@ -33,6 +85,7 @@ async function loadBoardV2() {
       state.__settings = await boardApi.fetchSettingsStatus();
     } catch (settingsErr) {
       console.warn("Settings status fetch failed, continuing without:", settingsErr);
+      _fail('settings', settingsErr.message);
       state.__settings = null;
     }
 
@@ -40,6 +93,7 @@ async function loadBoardV2() {
       state.__guardrails = await boardApi.fetchGuardrailsStatus();
     } catch (guardrailsErr) {
       console.warn("Guardrails status fetch failed, continuing without:", guardrailsErr);
+      _fail('guardrails', guardrailsErr.message);
       state.__guardrails = null;
     }
 
@@ -52,6 +106,7 @@ async function loadBoardV2() {
     injectHandoffSection();
     window.injectOpsSection(state.__operations);
     window.injectGuardrailsSection(state.__settings, state.__guardrails);
+    window.injectWorkQueueSection(state.__workQueue);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
