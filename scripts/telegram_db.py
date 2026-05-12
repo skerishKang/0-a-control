@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import sqlite3
 
-from scripts.db_base import TELEGRAM_INBOX_SCHEMA
+from scripts.db_schema import TELEGRAM_INBOX_SCHEMA
 
 
 # Respect environment variables if present
