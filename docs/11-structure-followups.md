@@ -7,8 +7,8 @@
 - `scripts/` 아래에는 DB, 서버, 큐, Telegram, import, wrapper 스크립트가 함께 있다.
 - 공통 세션 진입점은 이미 `scripts/agent-work.sh` 와 `scripts/agent_registry.py` 로 존재한다.
 - 파일 기반 verdict 파이프라인에는 `processed`, `failed`, `duplicates`, `archive/revisions` 처리가 이미 있다.
-- 로컬에서는 `python -m unittest discover -s tests -p "test_*.py"` 가 통과한다.
-- 아직 `.github/workflows/` 는 없다. 즉, CI는 연결되어 있지 않다.
+- GitHub Actions CI는 `.github/workflows/python-tests.yml` 로 연결되어 있다.
+- 현재 CI는 Ubuntu + Python 3.11에서 `requirements.txt` 와 `pytest`를 설치하고, 임시 데이터/DB/워크다이어리 경로와 테스트 환경을 준비한 뒤 `python -m pytest tests/ -q` 를 실행한다.
 
 ## 지금 당장 하지 않는 이유
 
@@ -31,9 +31,9 @@
 - README는 개요와 빠른 시작 중심으로 유지
 - 설치, 트러블슈팅, Windows/WSL 실행 차이, 운영 점검 절차는 별도 문서로 분리
 
-### 4. CI 도입
-- 최소 단위로 `python -m unittest discover -s tests -p "test_*.py"` 를 GitHub Actions에 연결
-- CI 도입 전까지는 로컬 검증 결과를 수동으로 보고해야 한다
+### 4. CI 운영 보강
+- 기본 CI는 연결되어 있으므로, 이후에는 테스트 범위, 캐시, 실패 로그 가독성을 점진적으로 보강
+- CI 환경 준비가 운영 데이터에 의존하지 않도록 임시 경로와 테스트 fixture 기준을 유지
 
 ### 5. Windows 지원 명확화
 - 현재는 부분 지원 상태이므로, launcher별로 “네이티브 CMD 가능 / WSL 필요” 표를 문서화
