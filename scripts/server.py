@@ -20,6 +20,7 @@ if __package__ in (None, ""):
     from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
     from scripts.validation_checklist import create_checklist, list_checklists, get_checklist, update_result_item, recompute_overall_status
     from scripts.server_handlers import server_get_routes, server_post_routes
+    from scripts.server_request_guard import mutation_request_allowed, mutation_rejection_payload
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
@@ -32,6 +33,7 @@ else:
     from .manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
     from .validation_checklist import create_checklist, list_checklists, get_checklist, update_result_item, recompute_overall_status
     from .server_handlers import server_get_routes, server_post_routes
+    from .server_request_guard import mutation_request_allowed, mutation_rejection_payload
 
 
 import json
@@ -310,6 +312,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         if not parsed.path.startswith("/api/"):
             self.send_error(HTTPStatus.NOT_FOUND, "Not found")
             return
+        if not mutation_request_allowed(self):
+            self.send_json(mutation_rejection_payload(), status=HTTPStatus.FORBIDDEN)
+            return
         body = self._parse_and_validate_request()
         if body is None:
             return
@@ -328,6 +333,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
     def do_PATCH(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path.startswith("/api/") and not mutation_request_allowed(self):
+            self.send_json(mutation_rejection_payload(), status=HTTPStatus.FORBIDDEN)
+            return
         if parsed.path.startswith("/api/ops-overrides/"):
             body = self._parse_and_validate_request()
             if body is None:
