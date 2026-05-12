@@ -1,8 +1,41 @@
 // ── API Layer ──
 // board-v2의 모든 서버 통신(fetch)을 전담합니다.
+//
+// Error convention (board-v2 API):
+// 1. fetchFullState() never throws for individual resource failures.
+//    Instead, it collects per-resource errors into state.__errors.
+//    Each entry: { resource: string, message: string, timestamp: string }.
+//    Failed resources still get an empty array/null so the UI can render
+//    partial data. This is "partial-load reporting".
+// 2. Optional-panel methods (fetchOperationsSummary, fetchSettingsStatus,
+//    fetchGuardrailsStatus) return null on failure. Consumers check for
+//    null to show "데이터를 불러오지 못했습니다" — this is the documented
+//    null/error convention for optional panels.
 
 const boardApi = {
   async fetchFullState() {
+    const _errors = [];
+    const _ts = new Date().toISOString();
+    const _fail = (resource, message) => {
+      _errors.push({ resource, message, timestamp: _ts });
+    };
+
+    // Internal helper: resolve a fetch Response into the expected array,
+    // recording an error on failure and returning [] as safe fallback.
+    const _resolveResource = async (response, resourceName) => {
+      if (!response.ok) {
+        _fail(resourceName, `HTTP ${response.status}`);
+        return [];
+      }
+      try {
+        const json = await response.json();
+        return json[resourceName] || [];
+      } catch (e) {
+        _fail(resourceName, `JSON parse error: ${e.message}`);
+        return [];
+      }
+    };
+
     const [stateResponse, briefsResponse, sessionsResponse, questsResponse, plansResponse] = await Promise.all([
       fetch("/api/current-state"),
       fetch("/api/briefs/latest?limit=3"),
@@ -11,16 +44,27 @@ const boardApi = {
       fetch("/api/plans"),
     ]);
 
+    // Process current state (non-fatal now — records error instead of throwing)
+    let state = {};
     if (!stateResponse.ok) {
-      throw new Error(`HTTP ${stateResponse.status}`);
+      _fail('current_state', `HTTP ${stateResponse.status}`);
+    } else {
+      try {
+        const payload = await stateResponse.json();
+        state = payload.current_state || {};
+      } catch (e) {
+        _fail('current_state', `JSON parse error: ${e.message}`);
+      }
     }
 
-    const payload = await stateResponse.json();
-    const state = payload.current_state || {};
-    state.__briefs = briefsResponse.ok ? ((await briefsResponse.json()).briefs || []) : [];
-    state.__sessions = sessionsResponse.ok ? ((await sessionsResponse.json()).sessions || []) : [];
-    state.__quests = questsResponse.ok ? ((await questsResponse.json()).quests || []) : [];
-    state.__plans = plansResponse.ok ? ((await plansResponse.json()).plans || []) : [];
+    state.__briefs = await _resolveResource(briefsResponse, 'briefs');
+    state.__sessions = await _resolveResource(sessionsResponse, 'sessions');
+    state.__quests = await _resolveResource(questsResponse, 'quests');
+    state.__plans = await _resolveResource(plansResponse, 'plans');
+
+    if (_errors.length > 0) {
+      state.__errors = _errors;
+    }
 
     return state;
   },
