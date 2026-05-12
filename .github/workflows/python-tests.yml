@@ -9,10 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      CONTROL_TOWER_DATA_DIR: ${{ runner.temp }}/control-data
-      CONTROL_TOWER_DB_PATH: ${{ runner.temp }}/control-data/control_tower.db
-      CONTROL_TOWER_WORKDIARY_DIR: ${{ runner.temp }}/workdiary
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,7 +21,10 @@ jobs:
           pip install pytest
       - name: Prepare CI test environment
         run: |
-          mkdir -p "$CONTROL_TOWER_DATA_DIR" "$CONTROL_TOWER_WORKDIARY_DIR" "$RUNNER_TEMP/ci-bin"
+          echo "CONTROL_TOWER_DATA_DIR=$RUNNER_TEMP/control-data" >> "$GITHUB_ENV"
+          echo "CONTROL_TOWER_DB_PATH=$RUNNER_TEMP/control-data/control_tower.db" >> "$GITHUB_ENV"
+          echo "CONTROL_TOWER_WORKDIARY_DIR=$RUNNER_TEMP/workdiary" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/control-data" "$RUNNER_TEMP/workdiary" "$RUNNER_TEMP/ci-bin"
           for executable in codex gemini antigravity windsurf kilo opencode; do
             printf '#!/usr/bin/env bash\nexit 0\n' > "$RUNNER_TEMP/ci-bin/$executable"
             chmod +x "$RUNNER_TEMP/ci-bin/$executable"
