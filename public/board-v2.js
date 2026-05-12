@@ -337,13 +337,13 @@ window.boardV2StartQuestFromMission = async function boardV2StartQuestFromMissio
       throw new Error(result.error || "퀘스트 시작에 실패했습니다.");
     }
     await loadBoardV2();
-    window.alert("보고가 완료되었습니다. AI 판정을 기다려 주세요.");
+    window.alert("오늘의 주 임무를 현재 퀘스트로 시작했습니다.");
     // 제출 성공 후 초안 초기화
     _reportDraft.summary = "";
     _reportDraft.assessment = "partial";
     } catch (error) {
-    console.error("Failed to report quest:", error);
-    window.alert(`보고 실패: ${error.message}`);
+    console.error("Failed to start quest from mission:", error);
+    window.alert(`퀘스트 시작 실패: ${error.message}`);
     }
     };
 
