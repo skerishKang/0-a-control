@@ -36,6 +36,8 @@ jobs:
           python -c "from scripts.db_base import init_db; init_db()"
       - name: Run tests
         run: python -m pytest tests/ -q
+      - name: Run frontend static safety checks
+        run: python scripts/check_frontend_safety.py
       - name: Run server smoke test
         run: |
           python - <<'PY'
