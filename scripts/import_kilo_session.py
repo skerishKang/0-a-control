@@ -87,6 +87,17 @@ def build_message_content(parts: list[dict], role: str) -> str:
     return "\n\n".join(texts).strip()
 
 
+def copy_sqlite_bundle(db_path: Path, temp_dir: Path) -> Path:
+    """Copy a SQLite database with available WAL/shm sidecar files."""
+    dest = temp_dir / db_path.name
+    shutil.copy2(db_path, dest)
+    for suffix in ("-wal", "-shm"):
+        sidecar = Path(str(db_path) + suffix)
+        if sidecar.exists():
+            shutil.copy2(sidecar, Path(str(dest) + suffix))
+    return dest
+
+
 def main() -> None:
     args = parse_args()
     db_path = Path(args.db_path)
@@ -94,8 +105,7 @@ def main() -> None:
         raise SystemExit(f"kilo db not found: {db_path}")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        temp_db = Path(temp_dir) / "kilo.db"
-        shutil.copy2(db_path, temp_db)
+        temp_db = copy_sqlite_bundle(db_path, Path(temp_dir))
         conn = sqlite3.connect(temp_db)
         conn.row_factory = sqlite3.Row
 
