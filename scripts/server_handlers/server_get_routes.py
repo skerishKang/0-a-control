@@ -34,6 +34,7 @@ EXACT_ROUTE_METHODS: dict[str, str] = {
     "/api/guardrails/status": "_get_guardrails_status",
     "/api/ops-overrides": "_get_ops_overrides",
     "/api/work-queue": "_get_work_queue",
+    "/api/executor-prompts/templates": "_get_executor_prompt_templates",
 }
 
 PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
@@ -75,6 +76,8 @@ def _get_db():
         fetch_chats, fetch_messages, parse_limit,
         build_operations_summary, build_settings_status, build_guardrails_status,
         list_manual_overrides,
+        generate_executor_prompt,
+        get_executor_prompt_templates,
     )
     return locals()
 
@@ -261,3 +264,7 @@ def handle_get_work_queue(handler, query):
             for i in items
         ],
     })
+
+
+def handle_get_executor_prompt_templates(handler, query):
+    handler.send_json(_get_db()["get_executor_prompt_templates"]())

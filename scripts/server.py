@@ -206,6 +206,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _get_work_queue(self, query):
         server_get_routes.handle_get_work_queue(self, query)
 
+    def _get_executor_prompt_templates(self, query):
+        server_get_routes.handle_get_executor_prompt_templates(self, query)
+
     # ---- POST route handlers (wrappers → module-level functions) ----
     handle_api_post_dispatch = server_post_routes.handle_post_dispatch
 
@@ -262,6 +265,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
     def _post_ops_overrides_create(self, body):
         server_post_routes.handle_post_ops_overrides_create(self, body)
+
+    def _post_executor_prompt_generate(self, body):
+        server_post_routes.handle_post_executor_prompt_generate(self, body)
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)

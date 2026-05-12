@@ -21,6 +21,7 @@ EXACT_ROUTE_METHODS: dict[str, str] = {
     "/api/tomorrow-first-quest/promote": "_post_tomorrow_first_quest_promote",
     "/api/tomorrow-first-quest/clear": "_post_tomorrow_first_quest_clear",
     "/api/ops-overrides": "_post_ops_overrides_create",
+    "/api/executor-prompts/generate": "_post_executor_prompt_generate",
 }
 
 PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
@@ -232,3 +233,24 @@ def handle_post_tomorrow_first_quest_clear(handler, body):
 def handle_post_ops_overrides_create(handler, body):
     result = _get_db()["create_manual_override"](body)
     handler.send_json({"ok": True, "override": result})
+
+
+def handle_post_executor_prompt_generate(handler, body):
+    from scripts.executor_prompt import generate_executor_prompt
+
+    result = generate_executor_prompt(
+        prompt_type=body["prompt_type"],
+        work_item=body.get("work_item"),
+        classification=body.get("classification"),
+        manual_override=body.get("manual_override"),
+        validation_checklist=body.get("validation_checklist"),
+        repository=body.get("repository"),
+        changed_files=body.get("changed_files"),
+        execution_context=body.get("execution_context", "remote_doable"),
+        guards=tuple(body.get("guards", [])),
+        links=body.get("links"),
+        include_validation=body.get("include_validation", False),
+        include_override=body.get("include_override", False),
+        include_links=body.get("include_links", False),
+    )
+    handler.send_json(result)

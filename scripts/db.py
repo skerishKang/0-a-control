@@ -59,6 +59,10 @@ if __package__ in (None, ""):
         normalize_work_items,
         sort_work_items,
     )
+    from scripts.executor_prompt import (
+        generate_executor_prompt,
+        get_executor_prompt_templates,
+    )
 else:
     from .agent_registry import get_agent_statuses, list_registered_agents
     from .db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
@@ -112,6 +116,10 @@ else:
         normalize_work_items,
         sort_work_items,
     )
+    from .executor_prompt import (
+        generate_executor_prompt,
+        get_executor_prompt_templates,
+    )
 
 __all__ = [
     "append_source_record",
@@ -158,4 +166,6 @@ __all__ = [
     "group_by_queue",
     "normalize_work_items",
     "sort_work_items",
+    "generate_executor_prompt",
+    "get_executor_prompt_templates",
 ]
