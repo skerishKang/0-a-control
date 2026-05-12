@@ -1,33 +1,106 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "0-a-control Verdict Contract",
+  "$id": "https://github.com/skerishKang/0-a-control/schemas/verdict.schema.json",
+  "title": "0-a-control Verdict Payload",
   "type": "object",
-  "required": ["schema_version", "report_ref", "verdict"],
   "additionalProperties": true,
+  "required": ["schema_version", "report_ref", "verdict"],
   "properties": {
-    "schema_version": { "type": "string" },
-    "report_ref": { "type": "string", "minLength": 1 },
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "report_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "report_id": {
+      "type": "string"
+    },
+    "quest_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
     "verdict": {
       "type": "object",
-      "required": ["status", "reason", "plan_impact"],
       "additionalProperties": true,
+      "required": ["status", "reason", "plan_impact"],
       "properties": {
         "status": {
           "type": "string",
           "enum": ["done", "partial", "hold"]
         },
-        "reason": { "type": "string", "minLength": 1 },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restart_point": {
+          "type": "string"
+        },
+        "next_hint": {
+          "type": "string"
+        },
         "plan_impact": {
           "type": "object",
+          "additionalProperties": false,
           "required": ["today", "short_term", "long_term", "recurring", "dated"],
-          "additionalProperties": true,
           "properties": {
-            "today": { "type": "array" },
-            "short_term": { "type": "array" },
-            "long_term": { "type": "array" },
-            "recurring": { "type": "array" },
-            "dated": { "type": "array" }
+            "today": {
+              "type": "string"
+            },
+            "short_term": {
+              "type": "string"
+            },
+            "long_term": {
+              "type": "string"
+            },
+            "recurring": {
+              "type": "string"
+            },
+            "dated": {
+              "type": "string"
+            }
           }
+        },
+        "ai_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "judge": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "prompt_hash": {
+          "type": "string"
+        },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0
         }
       }
     }
