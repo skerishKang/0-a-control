@@ -21,18 +21,18 @@ jobs:
           pip install pytest
       - name: Prepare CI test environment
         run: |
-          echo "CONTROL_TOWER_DATA_DIR=$RUNNER_TEMP/control-data" >> "$GITHUB_ENV"
-          echo "CONTROL_TOWER_DB_PATH=$RUNNER_TEMP/control-data/control_tower.db" >> "$GITHUB_ENV"
-          echo "CONTROL_TOWER_WORKDIARY_DIR=$RUNNER_TEMP/workdiary" >> "$GITHUB_ENV"
-          mkdir -p "$RUNNER_TEMP/control-data" "$RUNNER_TEMP/workdiary" "$RUNNER_TEMP/ci-bin"
+          export CONTROL_TOWER_DATA_DIR="$RUNNER_TEMP/control-data"
+          export CONTROL_TOWER_DB_PATH="$RUNNER_TEMP/control-data/control_tower.db"
+          export CONTROL_TOWER_WORKDIARY_DIR="$RUNNER_TEMP/workdiary"
+          echo "CONTROL_TOWER_DATA_DIR=$CONTROL_TOWER_DATA_DIR" >> "$GITHUB_ENV"
+          echo "CONTROL_TOWER_DB_PATH=$CONTROL_TOWER_DB_PATH" >> "$GITHUB_ENV"
+          echo "CONTROL_TOWER_WORKDIARY_DIR=$CONTROL_TOWER_WORKDIARY_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$CONTROL_TOWER_DATA_DIR" "$CONTROL_TOWER_WORKDIARY_DIR" "$RUNNER_TEMP/ci-bin"
           for executable in codex gemini antigravity windsurf kilo opencode; do
             printf '#!/usr/bin/env bash\nexit 0\n' > "$RUNNER_TEMP/ci-bin/$executable"
             chmod +x "$RUNNER_TEMP/ci-bin/$executable"
           done
           echo "$RUNNER_TEMP/ci-bin" >> "$GITHUB_PATH"
-          python - <<'PY'
-          from scripts.db_base import init_db
-          init_db()
-          PY
+          python -c "from scripts.db_base import init_db; init_db()"
       - name: Run tests
         run: python -m pytest tests/ -q
