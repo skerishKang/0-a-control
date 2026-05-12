@@ -36,3 +36,5 @@ jobs:
           python -c "from scripts.db_base import init_db; init_db()"
       - name: Run tests
         run: python -m pytest tests/ -q
+      - name: Run server smoke test
+        run: python scripts/smoke_server.py
