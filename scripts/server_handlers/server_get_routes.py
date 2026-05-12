@@ -186,7 +186,7 @@ def handle_get_telegram_messages(handler, query):
         handler.send_json({"error": "chat_id is required"}, status=HTTPStatus.BAD_REQUEST)
         return
     limit = db["parse_limit"](query, "limit", 200, 500)
-    handler.send_json({"status": "ok", "chat_id": chat_id, "messages": db["fetch_messages"](chat_id, limit=limit)})
+    handler.send_json({"status": "ok", "chat_id": chat_id, "messages": db["fetch_messages"](chat_id, limit=limit, download_attachments=False)})
 
 
 def handle_get_suggestions(handler, query):
