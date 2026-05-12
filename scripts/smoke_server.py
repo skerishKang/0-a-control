@@ -6,6 +6,7 @@ import subprocess
 import signal
 import os
 import json
+from http.client import RemoteDisconnected
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -56,8 +57,6 @@ def start_server_subprocess() -> subprocess.Popen | None:
 
         proc = subprocess.Popen(
             [sys.executable, str(server_script)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
             cwd=project_root,
             creationflags=CreationFlags,
         )
@@ -79,7 +78,7 @@ def wait_for_health(timeout: int = SERVER_START_TIMEOUT) -> bool:
                 payload = json.loads(data.decode("utf-8"))
                 if payload.get("ok") is True:
                     return True
-        except (URLError, HTTPError, json.JSONDecodeError, ValueError):
+        except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
             pass
         time.sleep(0.5)
     return False
@@ -96,7 +95,7 @@ def check_url(path: str, expect_json: bool = True) -> bool:
             data = resp.read()
             json.loads(data.decode("utf-8"))
         return True
-    except (URLError, HTTPError, json.JSONDecodeError, ValueError):
+    except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
         return False
 
 
@@ -112,6 +111,9 @@ def main() -> int:
 
         # Step 2: Wait for health endpoint
         if not wait_for_health():
+            return_code = server_proc.poll()
+            if return_code is not None:
+                log_status("SERVER_PROCESS", f"FAIL — exited with code {return_code}")
             log_status("HEALTH_ENDPOINT", "FAIL — timeout or invalid response")
             return 1
         log_status("HEALTH_ENDPOINT", "PASS")

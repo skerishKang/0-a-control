@@ -36,3 +36,11 @@ jobs:
           python -c "from scripts.db_base import init_db; init_db()"
       - name: Run tests
         run: python -m pytest tests/ -q
+      - name: Run server smoke test
+        run: |
+          python - <<'PY'
+          from scripts import smoke_server
+          smoke_server.SERVER_START_TIMEOUT = 30
+          smoke_server.wait_for_health.__defaults__ = (30,)
+          raise SystemExit(smoke_server.main())
+          PY

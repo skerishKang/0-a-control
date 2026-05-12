@@ -123,8 +123,8 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     # ---- GET dispatch (string-based → getattr for test compatibility) ----
 
     # ---- class-level dispatch so tests can call ControlTowerHandler.handle_api_get_dispatch ----
-    handle_api_get_dispatch = server_get_routes.handle_get_dispatch
-    handle_api_post_dispatch = server_post_routes.handle_post_dispatch
+    handle_api_get_dispatch = staticmethod(server_get_routes.handle_get_dispatch)
+    handle_api_post_dispatch = staticmethod(server_post_routes.handle_post_dispatch)
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
@@ -219,7 +219,6 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         server_get_routes.handle_get_validation_checklists(self, query)
 
     # ---- POST route handlers (wrappers → module-level functions) ----
-    handle_api_post_dispatch = server_post_routes.handle_post_dispatch
 
     def _post_quests_evaluate(self, body):
         server_post_routes.handle_post_quests_evaluate(self, body)
