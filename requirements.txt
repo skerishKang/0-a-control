@@ -2,3 +2,4 @@
 # Keep this file limited to packages needed to run local server/CLI/runtime features.
 requests>=2.32,<3
 telethon>=1.40,<2
+jsonschema>=4.22,<5
