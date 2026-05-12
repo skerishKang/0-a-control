@@ -8,8 +8,8 @@ function renderList(items, emptyText, metaFormatter, itemActionsRenderer) {
       ${items.map((item) => {
         const meta = metaFormatter(item);
         const clickableClass = item.description || item.reason || item.impact_summary ? " v2-modal-clickable" : "";
-        const onclick = clickableClass 
-          ? `onclick="window.boardV2OpenModal('${escapeHtml(item.title)}', '${escapeHtml(item.description || item.reason || item.impact_summary || "")}')"` 
+        const dataAttrs = clickableClass
+          ? `data-v2-modal="open" data-v2-modal-title="${escapeHtml(item.title)}" data-v2-modal-content="${escapeHtml(item.description || item.reason || item.impact_summary || "")}"`
           : "";
         
         // Plan bucket badge logic
@@ -21,7 +21,7 @@ function renderList(items, emptyText, metaFormatter, itemActionsRenderer) {
         const actionsHtml = itemActionsRenderer ? itemActionsRenderer(item) : "";
 
         return `
-          <li class="v2-list-item${clickableClass}" ${onclick}>
+          <li class="v2-list-item${clickableClass}" ${dataAttrs}>
             <div style="display:flex; align-items:flex-start; gap:0;">
               ${hasBucketLabel ? `<span class="v2-plan-badge${bucketClass}">${escapeHtml(bucketLabel)}</span>` : ""}
               <span class="v2-item-title" style="flex:1;">${escapeHtml(item.title)}</span>
@@ -46,7 +46,7 @@ function renderBriefList(items) {
         const title = item.title || "브리프";
         const content = item.content_md || "내용이 없습니다.";
         return `
-          <li class="v2-list-item v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(title)}', '${escapeHtml(content)}')">
+          <li class="v2-list-item v2-modal-clickable" data-v2-modal="open" data-v2-modal-title="${escapeHtml(title)}" data-v2-modal-content="${escapeHtml(content)}">
             <span class="v2-item-title">${escapeHtml(title)}</span>
             <span class="v2-item-meta">${escapeHtml(summarizeBrief(item))}</span>
           </li>

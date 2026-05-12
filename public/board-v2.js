@@ -374,7 +374,13 @@ window.boardV2StartQuestFromMission = async function boardV2StartQuestFromMissio
   if (!modal || !titleEl || !bodyEl) return;
 
   titleEl.textContent = title;
-  bodyEl.innerHTML = content;
+  // Default to textContent for untrusted text content.
+  // Pass { html: '...' } for intentional HTML rendering.
+  if (content && typeof content === 'object' && content.html) {
+    bodyEl.innerHTML = content.html;
+  } else {
+    bodyEl.textContent = String(content ?? '');
+  }
   modal.hidden = false;
 };
 
@@ -394,6 +400,18 @@ window.boardV2OpenTextModal = function boardV2OpenTextModal(title, text) {
 
   titleEl.textContent = title;
   bodyEl.textContent = text;
+  modal.hidden = false;
+};
+
+// Safe model output display — uses textContent to prevent XSS
+window.boardV2ShowModelOutput = function boardV2ShowModelOutput(title, formattedText) {
+  const modal = document.getElementById("v2Modal");
+  const titleEl = document.getElementById("v2ModalTitle");
+  const bodyEl = document.getElementById("v2ModalBody");
+  if (!modal || !titleEl || !bodyEl) return;
+
+  titleEl.textContent = title;
+  bodyEl.textContent = formattedText;
   modal.hidden = false;
 };
 
@@ -474,10 +492,37 @@ function startClock() {
   setInterval(update, 1000);
 }
 
+function setupBoardV2EventDelegation() {
+  // Event delegation for data-v2-modal attributes and modal backdrop/close clicks.
+  // This replaces inline onclick handlers with centralized handling.
+  const root = document.getElementById("boardV2Root");
+  if (!root) return;
+
+  // Click delegation for modal open via data attributes
+  root.addEventListener("click", function (e) {
+    const trigger = e.target.closest("[data-v2-modal]");
+    if (trigger) {
+      e.preventDefault();
+      const title = trigger.getAttribute("data-v2-modal-title") || "";
+      const content = trigger.getAttribute("data-v2-modal-content") || "";
+      window.boardV2OpenModal(title, content);
+      return;
+    }
+  });
+
+  // Modal close: backdrop click or close button
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("v2-modal-backdrop") || e.target.closest(".v2-modal-close")) {
+      window.boardV2CloseModal();
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   startClock();
   await loadBoardV2();
   startBoardV2Polling();
+  setupBoardV2EventDelegation();
 });
 
 window.addEventListener("beforeunload", stopBoardV2Polling);
