@@ -23,6 +23,7 @@ kilo.json
 # 런타임 파일
 *.log
 data/runtime/
+data/state.db
 data/control_tower.db
 data/control_tower.db*.bak
 data/control_tower*.db.bak
