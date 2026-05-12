@@ -1,0 +1,6 @@
+# Development and test-only dependencies.
+-r requirements.txt
+
+pytest>=8,<9
+jsonschema>=4.23,<5
+ruff>=0.8,<1
