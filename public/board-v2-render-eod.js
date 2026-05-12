@@ -12,8 +12,15 @@ function bindEndOfDayInteractions({ tomorrowFirst, decisionTitle, decisionConten
 
   const decisionCard = document.getElementById("boardV2DecisionCard");
   if (decisionCard) {
-    decisionCard.addEventListener("click", () => {
+    const openDecisionModal = () => {
       window.boardV2OpenModal(decisionTitle, decisionContent);
+    };
+    decisionCard.addEventListener("click", openDecisionModal);
+    decisionCard.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openDecisionModal();
+      }
     });
   }
 }
