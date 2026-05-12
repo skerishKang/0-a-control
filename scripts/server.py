@@ -20,7 +20,7 @@ if __package__ in (None, ""):
     from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
     from scripts.validation_checklist import create_checklist, list_checklists, get_checklist, update_result_item, recompute_overall_status
     from scripts.server_handlers import server_get_routes, server_post_routes
-    from scripts.server_request_guard import mutation_request_allowed, mutation_rejection_payload
+    from scripts.server_request_guard import mutation_request_allowed, mutation_rejection_payload, read_request_allowed, read_rejection_payload
 else:
     from . import db as _db
     from .db_ops import approve_plan_candidates
@@ -33,7 +33,7 @@ else:
     from .manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
     from .validation_checklist import create_checklist, list_checklists, get_checklist, update_result_item, recompute_overall_status
     from .server_handlers import server_get_routes, server_post_routes
-    from .server_request_guard import mutation_request_allowed, mutation_rejection_payload
+    from .server_request_guard import mutation_request_allowed, mutation_rejection_payload, read_request_allowed, read_rejection_payload
 
 
 import json
@@ -129,6 +129,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
+            if not read_request_allowed(self, parsed.path):
+                self.send_json(read_rejection_payload(), status=HTTPStatus.FORBIDDEN)
+                return
             self.handle_api_get_dispatch(self, parsed.path, parse_qs(parsed.query))
             return
         if parsed.path in {"", "/"}:
