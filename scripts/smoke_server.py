@@ -6,6 +6,7 @@ import subprocess
 import signal
 import os
 import json
+from http.client import RemoteDisconnected
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -79,7 +80,7 @@ def wait_for_health(timeout: int = SERVER_START_TIMEOUT) -> bool:
                 payload = json.loads(data.decode("utf-8"))
                 if payload.get("ok") is True:
                     return True
-        except (URLError, HTTPError, json.JSONDecodeError, ValueError):
+        except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
             pass
         time.sleep(0.5)
     return False
@@ -96,7 +97,7 @@ def check_url(path: str, expect_json: bool = True) -> bool:
             data = resp.read()
             json.loads(data.decode("utf-8"))
         return True
-    except (URLError, HTTPError, json.JSONDecodeError, ValueError):
+    except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
         return False
 
 
