@@ -18,6 +18,7 @@ if __package__ in (None, ""):
     from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from scripts.operations_summary import build_operations_summary
     from scripts.manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
+    from scripts.validation_checklist import create_checklist, list_checklists, update_result_item
     from scripts.server_handlers import server_get_routes, server_post_routes
 else:
     from . import db as _db
@@ -29,6 +30,7 @@ else:
     from .telegram_service import fetch_chats, fetch_messages, get_telegram_status
     from .operations_summary import build_operations_summary
     from .manual_overrides import create_manual_override, list_manual_overrides, update_manual_override
+    from .validation_checklist import create_checklist, list_checklists, update_result_item
     from .server_handlers import server_get_routes, server_post_routes
 
 
@@ -269,27 +271,39 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _post_executor_prompt_generate(self, body):
         server_post_routes.handle_post_executor_prompt_generate(self, body)
 
-    def do_POST(self) -> None:
-        parsed = urlparse(self.path)
-        if not parsed.path.startswith("/api/"):
-            self.send_error(HTTPStatus.NOT_FOUND, "Not found")
-            return
+    def _parse_and_validate_request(self) -> dict | None:
+        """Parse and validate the request body from a POST/PATCH request.
+
+        Reads Content-Length header, validates it, reads the body, and parses JSON.
+        Sends an error response and returns None on failure.
+        Returns the parsed dict on success.
+        """
         try:
             content_length = int(self.headers.get("Content-Length", "0"))
         except (TypeError, ValueError):
             self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
-            return
+            return None
         if content_length < 0:
             self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
-            return
+            return None
         if content_length > MAX_BODY_SIZE:
             self.send_json({"error": "request body too large"}, status=HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
-            return
+            return None
         raw_body = self.rfile.read(content_length) if content_length else b"{}"
         try:
             body = json.loads(raw_body.decode("utf-8") or "{}")
         except json.JSONDecodeError:
             self.send_json({"error": "invalid JSON body"}, status=HTTPStatus.BAD_REQUEST)
+            return None
+        return body
+
+    def do_POST(self) -> None:
+        parsed = urlparse(self.path)
+        if not parsed.path.startswith("/api/"):
+            self.send_error(HTTPStatus.NOT_FOUND, "Not found")
+            return
+        body = self._parse_and_validate_request()
+        if body is None:
             return
         try:
             self.handle_api_post_dispatch(self, parsed.path, body)
@@ -301,38 +315,45 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
             return
         except Exception as exc:
             logging.error(f"POST API error: {exc}", exc_info=True)
-            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            self.send_json({"error": "Internal Server Error"}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
             return
 
     def do_PATCH(self) -> None:
         parsed = urlparse(self.path)
-        if not parsed.path.startswith("/api/ops-overrides/"):
+        if parsed.path.startswith("/api/ops-overrides/"):
+            body = self._parse_and_validate_request()
+            if body is None:
+                return
+            try:
+                override_id = parsed.path.rsplit("/", 1)[-1]
+                override = update_manual_override(override_id, body)
+                self.send_json({"ok": True, "override": override})
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+            except Exception as exc:
+                logging.error(f"PATCH API error: {exc}", exc_info=True)
+                self.send_json({"error": "Internal Server Error"}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        elif parsed.path.startswith("/api/validation-checklists/"):
+            body = self._parse_and_validate_request()
+            if body is None:
+                return
+            try:
+                parts = parsed.path.split("/")
+                if len(parts) < 6 or parts[4] != "items" or not parts[3] or not parts[5]:
+                    self.send_error(HTTPStatus.NOT_FOUND, "Invalid path")
+                    return
+                checklist_id = parts[3]
+                item_key = parts[5]
+                result = update_result_item(checklist_id, item_key, body)
+                self.send_json({"ok": True, "checklist": result})
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+            except Exception as exc:
+                logging.error(f"PATCH API error: {exc}", exc_info=True)
+                self.send_json({"error": "Internal Server Error"}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        else:
             self.send_error(HTTPStatus.NOT_FOUND, "Not found")
             return
-        try:
-            content_length = int(self.headers.get("Content-Length", "0"))
-        except (TypeError, ValueError):
-            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
-            return
-        if content_length < 0:
-            self.send_json({"error": "invalid Content-Length"}, status=HTTPStatus.BAD_REQUEST)
-            return
-        if content_length > MAX_BODY_SIZE:
-            self.send_json({"error": "request body too large"}, status=HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
-            return
-        raw_body = self.rfile.read(content_length) if content_length else b"{}"
-        try:
-            body = json.loads(raw_body.decode("utf-8") or "{}")
-            override_id = parsed.path.rsplit("/", 1)[-1]
-            override = update_manual_override(override_id, body)
-            self.send_json({"ok": True, "override": override})
-        except json.JSONDecodeError:
-            self.send_json({"error": "invalid JSON body"}, status=HTTPStatus.BAD_REQUEST)
-        except ValueError as exc:
-            self.send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
-        except Exception as exc:
-            logging.error(f"PATCH API error: {exc}", exc_info=True)
-            self.send_json({"error": "Internal Server Error", "details": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def handle_static(self, path: str) -> None:
         candidate = (PUBLIC_DIR / path.lstrip("/")).resolve()
