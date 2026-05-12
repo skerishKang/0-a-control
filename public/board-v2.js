@@ -43,6 +43,14 @@ async function loadBoardV2() {
       state.__guardrails = null;
     }
 
+    // Load work queue non-fatally
+    try {
+      state.__workQueue = await boardApi.fetchWorkQueue();
+    } catch (wqErr) {
+      console.warn("Work queue fetch failed, continuing without:", wqErr);
+      state.__workQueue = null;
+    }
+
     _cachedState = state;
     const phase = getEffectivePhase(state);
     renderPhaseTabs(phase);
@@ -52,6 +60,7 @@ async function loadBoardV2() {
     injectHandoffSection();
     window.injectOpsSection(state.__operations);
     window.injectGuardrailsSection(state.__settings, state.__guardrails);
+    window.injectWorkQueueSection(state.__workQueue);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시

@@ -192,6 +192,19 @@ const boardApi = {
     }
   },
 
+  async fetchWorkQueue() {
+    try {
+      const response = await fetch("/api/work-queue");
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (err) {
+      console.warn("Work queue fetch failed:", err);
+      return null;
+    }
+  },
+
   async _handleResponse(response, defaultErrorMsg) {
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
