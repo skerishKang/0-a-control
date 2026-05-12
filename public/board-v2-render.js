@@ -78,22 +78,20 @@ function renderQuickInputSection() {
     <section class="v2-quick-input-card">
       <span class="v2-section-label">빠른 입력</span>
       <textarea id="v2QuickInput" class="v2-quick-input-textarea" 
-        placeholder="오늘 할 일, 기한, 아이디어 등을 자유롭게 입력하세요 (Enter: 전송)"
-        oninput="window.boardV2SyncQuickInputDraft()">${escapeHtml(_quickInputDraft)}</textarea>
+        placeholder="오늘 할 일, 기한, 아이디어 등을 자유롭게 입력하세요 (Enter: 전송)">${escapeHtml(_quickInputDraft)}</textarea>
       <div class="v2-quick-input-actions">
-        <button type="button" class="v2-btn v2-btn-primary v2-btn-inline" onclick="window.boardV2SubmitQuickInput()">전송</button>
+        <button type="button" class="v2-btn v2-btn-primary v2-btn-inline" data-v2-action="quick-input-submit">전송</button>
       </div>
     </section>
   `;
 }
 
 function renderOverdueActions(item) {
-  const titleEscaped = escapeHtml(item.title).replace(/'/g, "\\'");
   return `
     <div class="v2-item-actions">
-      <button class="v2-action-btn -done" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueDone('${item.id}', '${titleEscaped}')">완료</button>
-      <button class="v2-action-btn -move" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueReschedule('${item.id}', '${titleEscaped}')">재배치</button>
-      <button class="v2-action-btn -hold" type="button" onclick="event.stopPropagation(); window.boardV2ActionOverdueHold('${item.id}', '${titleEscaped}')">보류</button>
+      <button class="v2-action-btn -done" type="button" data-v2-action="overdue-done" data-v2-item-id="${escapeHtml(item.id)}" data-v2-item-title="${escapeHtml(item.title)}">완료</button>
+      <button class="v2-action-btn -move" type="button" data-v2-action="overdue-reschedule" data-v2-item-id="${escapeHtml(item.id)}" data-v2-item-title="${escapeHtml(item.title)}">재배치</button>
+      <button class="v2-action-btn -hold" type="button" data-v2-action="overdue-hold" data-v2-item-id="${escapeHtml(item.id)}" data-v2-item-title="${escapeHtml(item.title)}">보류</button>
     </div>
   `;
 }
