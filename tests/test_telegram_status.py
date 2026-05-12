@@ -48,7 +48,10 @@ class TelegramStatusTests(unittest.TestCase):
         status = telegram_service.get_telegram_status()
         self.assertFalse(status["configured"])
         self.assertEqual(status["missing_config"], ["TELEGRAM_API_ID", "TELEGRAM_API_HASH"])
-        self.assertEqual(status["session_path"], str(self.session_path))
+        self.assertEqual(status["session_path"], "telegram_userbot.session")
+        self.assertEqual(status["session_dir"], "runtime")
+        self.assertNotIn(str(self.root), status["session_path"])
+        self.assertNotIn(str(self.root), status["session_dir"])
         self.assertFalse(status["session_exists"])
         self.assertIn("TELEGRAM_API_ID", status["setup_message"])
 
@@ -60,6 +63,8 @@ class TelegramStatusTests(unittest.TestCase):
         self.assertTrue(status["configured"])
         self.assertEqual(status["missing_config"], [])
         self.assertTrue(status["first_session_required"])
+        self.assertEqual(status["session_path"], "telegram_userbot.session")
+        self.assertNotIn(str(self.root), status["setup_message"])
         self.assertIn("세션 파일", status["setup_message"])
 
 
