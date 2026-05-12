@@ -60,6 +60,7 @@ get_quests = _db.get_quests
 get_recent_sessions = _db.get_recent_sessions
 get_session_view_model = _db.get_session_view_model
 get_source_records = _db.get_source_records
+get_work_queue_raw = _db.get_work_queue_raw
 get_workdiary_priority_candidates = _db.get_workdiary_priority_candidates
 get_workdiary_top_level = _db.get_workdiary_top_level
 report_quest_progress = _db.report_quest_progress
@@ -202,6 +203,12 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
     def _get_ops_overrides(self, query):
         server_get_routes.handle_get_ops_overrides(self, query)
 
+    def _get_work_queue(self, query):
+        server_get_routes.handle_get_work_queue(self, query)
+
+    def _get_executor_prompt_templates(self, query):
+        server_get_routes.handle_get_executor_prompt_templates(self, query)
+
     # ---- POST route handlers (wrappers → module-level functions) ----
     handle_api_post_dispatch = server_post_routes.handle_post_dispatch
 
@@ -258,6 +265,9 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
     def _post_ops_overrides_create(self, body):
         server_post_routes.handle_post_ops_overrides_create(self, body)
+
+    def _post_executor_prompt_generate(self, body):
+        server_post_routes.handle_post_executor_prompt_generate(self, body)
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)

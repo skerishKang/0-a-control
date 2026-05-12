@@ -26,6 +26,7 @@ if __package__ in (None, ""):
         get_current_state,
         get_quests,
         get_recent_sessions,
+        get_work_queue_raw,
     )
     from scripts.db_session_view import get_session_view_model
     from scripts.db_session_resume import get_resume_context
@@ -48,6 +49,20 @@ if __package__ in (None, ""):
         get_workdiary_top_level,
         refresh_current_state,
     )
+    from scripts.work_queue import (
+        Queue,
+        get_blocked_items,
+        get_local_needed_items,
+        get_now_items,
+        get_validation_needed_items,
+        group_by_queue,
+        normalize_work_items,
+        sort_work_items,
+    )
+    from scripts.executor_prompt import (
+        generate_executor_prompt,
+        get_executor_prompt_templates,
+    )
 else:
     from .agent_registry import get_agent_statuses, list_registered_agents
     from .db_base import DB_PATH, ROOT_DIR, WORKDIARY_DIR, UTC, connect, init_db, now_iso
@@ -68,6 +83,7 @@ else:
         get_current_state,
         get_quests,
         get_recent_sessions,
+        get_work_queue_raw,
     )
     from .db_session_view import get_session_view_model
     from .db_session_resume import get_resume_context
@@ -89,6 +105,20 @@ else:
         get_workdiary_priority_candidates,
         get_workdiary_top_level,
         refresh_current_state,
+    )
+    from .work_queue import (
+        Queue,
+        get_blocked_items,
+        get_local_needed_items,
+        get_now_items,
+        get_validation_needed_items,
+        group_by_queue,
+        normalize_work_items,
+        sort_work_items,
+    )
+    from .executor_prompt import (
+        generate_executor_prompt,
+        get_executor_prompt_templates,
     )
 
 __all__ = [
@@ -118,6 +148,7 @@ __all__ = [
     "get_resume_context",
     "get_session_view_model",
     "get_source_records",
+    "get_work_queue_raw",
     "report_quest_progress",
     "get_workdiary_priority_candidates",
     "get_workdiary_top_level",
@@ -127,4 +158,14 @@ __all__ = [
     "refresh_current_state",
     "start_session",
     "update_session_summary",
+    "Queue",
+    "get_blocked_items",
+    "get_local_needed_items",
+    "get_now_items",
+    "get_validation_needed_items",
+    "group_by_queue",
+    "normalize_work_items",
+    "sort_work_items",
+    "generate_executor_prompt",
+    "get_executor_prompt_templates",
 ]

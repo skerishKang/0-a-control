@@ -70,3 +70,20 @@ def get_recent_sessions(limit: int = 10) -> list[dict]:
                     status = match.group(1)
             session["quest_verdict_status"] = status
         return sessions
+
+
+def get_work_queue_raw(limit: int = 50) -> list[dict]:
+    with connect() as conn:
+        refresh_current_state(conn)
+        row = conn.execute(
+            "SELECT state_value FROM current_state WHERE state_key = 'work_queue'"
+        ).fetchone()
+        if not row or not row["state_value"]:
+            return []
+        try:
+            items = json.loads(row["state_value"])
+            if not isinstance(items, list):
+                return []
+            return items[:limit]
+        except (json.JSONDecodeError, TypeError):
+            return []
