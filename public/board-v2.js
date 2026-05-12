@@ -105,6 +105,14 @@ async function loadBoardV2() {
       state.__workQueue = null;
     }
 
+    // Load validation checklists non-fatally
+    try {
+      state.__validationChecklists = await fetchValidationChecklists();
+    } catch (vcErr) {
+      console.warn("Validation checklists fetch failed, continuing without:", vcErr);
+      state.__validationChecklists = null;
+    }
+
     _cachedState = state;
     const phase = getEffectivePhase(state);
     renderPhaseTabs(phase);
@@ -115,6 +123,7 @@ async function loadBoardV2() {
     window.injectOpsSection(state.__operations);
     window.injectGuardrailsSection(state.__settings, state.__guardrails);
     window.injectWorkQueueSection(state.__workQueue);
+    window.injectValidationChecklists(state.__validationChecklists);
   } catch (error) {
     console.error("Failed to load board-v2 state:", error);
     // 에러 발생 시 UI가 아예 없으면 실패 메시지 표시
