@@ -57,8 +57,6 @@ def start_server_subprocess() -> subprocess.Popen | None:
 
         proc = subprocess.Popen(
             [sys.executable, str(server_script)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
             cwd=project_root,
             creationflags=CreationFlags,
         )
@@ -113,6 +111,9 @@ def main() -> int:
 
         # Step 2: Wait for health endpoint
         if not wait_for_health():
+            return_code = server_proc.poll()
+            if return_code is not None:
+                log_status("SERVER_PROCESS", f"FAIL — exited with code {return_code}")
             log_status("HEALTH_ENDPOINT", "FAIL — timeout or invalid response")
             return 1
         log_status("HEALTH_ENDPOINT", "PASS")
