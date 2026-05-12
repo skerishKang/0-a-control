@@ -37,4 +37,9 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -q
       - name: Run server smoke test
-        run: python scripts/smoke_server.py
+        run: |
+          python - <<'PY'
+          from scripts import smoke_server
+          smoke_server.SERVER_START_TIMEOUT = 30
+          raise SystemExit(smoke_server.main())
+          PY
