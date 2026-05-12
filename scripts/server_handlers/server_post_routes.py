@@ -3,6 +3,8 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
+from scripts.request_validation import validate_mutation_body
+
 
 # ---- route method name mapping (string-based dispatch) ----
 EXACT_ROUTE_METHODS: dict[str, str] = {
@@ -36,10 +38,17 @@ PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
 def handle_post_dispatch(handler, path: str, body: dict) -> None:
     """Dispatch POST /api/ requests to the appropriate handler method.
 
+    Validates request body against registered JSON schemas before dispatch.
     Uses getattr(handler, method_name) so mock handlers in tests can
     intercept calls, while production ControlTowerHandler delegates
     through its wrappers to the module-level logic below.
     """
+    # Route-level JSON schema validation
+    validation_error = validate_mutation_body(path, body)
+    if validation_error:
+        handler.send_json(validation_error, status=HTTPStatus.BAD_REQUEST)
+        return
+
     method_name = EXACT_ROUTE_METHODS.get(path)
     if method_name:
         getattr(handler, method_name)(body)
