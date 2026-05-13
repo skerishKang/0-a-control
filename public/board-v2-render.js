@@ -15,8 +15,9 @@ function renderList(items, emptyText, metaFormatter, itemActionsRenderer) {
         // Plan bucket badge logic
         const bucket = item.bucket || item.status;
         const bucketLabel = formatPlanLabel(bucket);
-        const hasBucketLabel = bucket && bucketLabel && bucket !== 'active' && bucket !== 'done';
-        const bucketClass = hasBucketLabel ? ` v2-plan-badge-${bucket}` : "";
+        const safeBucketClassToken = String(bucket || "").replace(/[^a-zA-Z0-9_-]/g, "");
+        const hasBucketLabel = bucket && bucketLabel && safeBucketClassToken && bucket !== 'active' && bucket !== 'done';
+        const bucketClass = hasBucketLabel ? ` v2-plan-badge-${safeBucketClassToken}` : "";
 
         const actionsHtml = itemActionsRenderer ? itemActionsRenderer(item) : "";
 
