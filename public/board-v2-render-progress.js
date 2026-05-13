@@ -15,7 +15,7 @@ function renderInProgress(state) {
   const verdictContent = recentVerdict?.reason || recentVerdict?.impact_summary || "최근 판단 요약이 없습니다.";
   const verdictHtml = recentVerdict
     ? `
-      <div class="v2-rail-card v2-modal-clickable" onclick="window.boardV2OpenModal('${escapeHtml(verdictTitle)}', '${escapeHtml(verdictContent)}')">
+      <div class="v2-rail-card v2-modal-clickable" data-progress-action="open-modal" data-modal-title="${escapeHtml(verdictTitle)}" data-modal-content="${escapeHtml(verdictContent)}">
         <span class="v2-item-title">${escapeHtml(verdictTitle)}</span>
         <span class="v2-item-meta">${escapeHtml(verdictContent)}</span>
       </div>
@@ -30,11 +30,11 @@ function renderInProgress(state) {
     <div class="v2-inline-card" style="margin-top: 12px;">
       <span class="v2-inline-label">수동 판정 (강제 종료)</span>
       <div class="v2-start-actions" style="margin-top: 0;">
-        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'done')">완료</button>
-        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'partial')">부분</button>
-        <button type="button" class="v2-btn v2-btn-secondary" onclick="window.boardV2EvaluateQuest('${escapeHtml(id)}', 'hold')">보류</button>
+        <button type="button" class="v2-btn v2-btn-secondary" data-progress-action="evaluate-quest" data-quest-id="${escapeHtml(id)}" data-evaluation-status="done">완료</button>
+        <button type="button" class="v2-btn v2-btn-secondary" data-progress-action="evaluate-quest" data-quest-id="${escapeHtml(id)}" data-evaluation-status="partial">부분</button>
+        <button type="button" class="v2-btn v2-btn-secondary" data-progress-action="evaluate-quest" data-quest-id="${escapeHtml(id)}" data-evaluation-status="hold">보류</button>
         <button type="button" class="v2-btn v2-btn-secondary" style="border-color: rgba(217, 119, 6, 0.3); color: var(--v2-amber);" 
-          onclick="window.boardV2DeferQuest()">단기 플랜으로 미루기</button>
+          data-progress-action="defer-quest">단기 플랜으로 미루기</button>
       </div>
     </div>
   `;
@@ -64,18 +64,18 @@ function renderInProgress(state) {
           <div class="v2-form-group">
             <label class="v2-form-label" for="v2WorkSummary">작업 내용 입력</label>
             <textarea id="v2WorkSummary" class="v2-textarea" placeholder="무엇을 완료했나요?" 
-              oninput="window.boardV2SyncDraft()" style="min-height: 100px;">${escapeHtml(_reportDraft.summary)}</textarea>
+              data-sync-draft="true" style="min-height: 100px;">${escapeHtml(_reportDraft.summary)}</textarea>
           </div>
           <div class="v2-form-group" style="margin-top: 16px;">
             <label class="v2-form-label" for="v2SelfAssessment">자가 평가</label>
-            <select id="v2SelfAssessment" class="v2-select" onchange="window.boardV2SyncDraft()">
+            <select id="v2SelfAssessment" class="v2-select" data-sync-draft="true">
               <option value="done" ${_reportDraft.assessment === "done" ? "selected" : ""}>완료 (목표 달성)</option>
               <option value="partial" ${_reportDraft.assessment === "partial" ? "selected" : ""}>부분 완료 (진전 있음)</option>
               <option value="hold" ${_reportDraft.assessment === "hold" ? "selected" : ""}>보류 (중단/방향 전환)</option>
             </select>
           </div>
           <div class="v2-form-actions" style="margin-top: 24px;">
-            <button type="button" class="v2-btn v2-btn-primary" style="font-size:16px; padding:12px 24px;" onclick="window.boardV2ReportQuest('${escapeHtml(quest.id)}')">보고하고 다음으로 진행</button>
+            <button type="button" class="v2-btn v2-btn-primary" style="font-size:16px; padding:12px 24px;" data-progress-action="report-quest" data-quest-id="${escapeHtml(quest.id)}">보고하고 다음으로 진행</button>
           </div>
         </div>
 
@@ -134,4 +134,41 @@ function renderInProgress(state) {
       </div>
     </div>
   `;
+
+  bindProgressEvents(root);
+}
+
+function bindProgressEvents(root) {
+  if (!root || root._progressEventsAttached) return;
+  root._progressEventsAttached = true;
+
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-progress-action]");
+    if (!btn || btn.disabled) return;
+
+    const action = btn.dataset.progressAction;
+    const ds = btn.dataset;
+
+    if (action === "open-modal") {
+      window.boardV2OpenModal(ds.modalTitle, ds.modalContent);
+    } else if (action === "evaluate-quest") {
+      window.boardV2EvaluateQuest(ds.questId, ds.evaluationStatus);
+    } else if (action === "defer-quest") {
+      window.boardV2DeferQuest();
+    } else if (action === "report-quest") {
+      window.boardV2ReportQuest(ds.questId);
+    }
+  });
+
+  root.addEventListener("input", (e) => {
+    if (e.target.closest("[data-sync-draft]")) {
+      window.boardV2SyncDraft();
+    }
+  });
+
+  root.addEventListener("change", (e) => {
+    if (e.target.closest("[data-sync-draft]")) {
+      window.boardV2SyncDraft();
+    }
+  });
 }
