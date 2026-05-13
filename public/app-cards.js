@@ -251,6 +251,19 @@ function selectCalendarDate(dateStr) {
   }
 }
 
+function bindCalendarCardEvents(container) {
+  if (container.dataset.calendarEventsBound === "true") return;
+  container.dataset.calendarEventsBound = "true";
+
+  container.addEventListener("click", (event) => {
+    const dayEl = event.target.closest("[data-calendar-date]");
+    if (!dayEl || !container.contains(dayEl)) return;
+
+    event.preventDefault();
+    selectCalendarDate(dayEl.dataset.calendarDate || "");
+  });
+}
+
 /**
  * Card 6. 계획 달력 카드
  */
@@ -259,6 +272,7 @@ function renderCalendarCard(plans, selectedDate) {
   const summaryEl = document.getElementById("calendarSummary");
   if (!container) return;
   container.parentElement.classList.add("panel-browsing");
+  bindCalendarCardEvents(container);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -304,7 +318,7 @@ function renderCalendarCard(plans, selectedDate) {
 
     html += `
       <div class="calendar-day ${isToday ? 'is-today' : ''} ${isSelected ? 'is-selected' : ''} ${hasPlans ? 'has-plans' : ''}" 
-           onclick="selectCalendarDate('${dateStr}')">
+           data-calendar-date="${dateStr}">
         <span>${i}</span>
         ${hasPlans ? `<div class="plan-count-hint">${dayPlans.length}</div>` : ''}
       </div>
