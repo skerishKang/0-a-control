@@ -90,8 +90,8 @@ function renderHistory(state) {
       }
       
       const clickableClass = " v2-modal-clickable";
-      const modalContent = item.description ? escapeHtml(item.description).replace(/\n/g, '\\n').replace(/'/g, "\\'") : "상세 내용 없음";
-      const onclick = `onclick="window.boardV2OpenModal('${escapeHtml(item.title).replace(/\n/g, '\\n').replace(/'/g, "\\'")}', '${modalContent}')"`;
+      const modalTitle = escapeHtml(item.title);
+      const modalContent = item.description ? escapeHtml(item.description) : "상세 내용 없음";
       
       const titleStyle = !isLog 
           ? `font-size: ${compact ? '14px' : '15px'}; font-weight: 700; color: var(--v2-text);`
@@ -100,7 +100,7 @@ function renderHistory(state) {
       const subtextOpacity = !isLog ? '0.85' : '0.5';
       
       html += `
-        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" ${onclick} style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
+        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" data-history-action="open-modal" data-modal-title="${modalTitle}" data-modal-content="${modalContent}" style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
           <div style="display:flex; flex-direction:column; gap:2px;">
             <span class="v2-item-title" style="${titleStyle}">${escapeHtml(item.title)}</span>
             ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: ${subtextOpacity};">↳ ${escapeHtml(item.subtext)}</span>` : ''}
@@ -143,9 +143,9 @@ function renderHistory(state) {
             </p>
           </div>
           <div style="display:flex; gap: 4px; border: 1px solid var(--v2-border); border-radius: 4px; padding: 2px; margin-top: 4px;">
-            <button class="v2-btn-inline v2-history-filter-btn" data-filter="all" onclick="window.filterHistory('all')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
-            <button class="v2-btn-inline v2-history-filter-btn" data-filter="tasks" onclick="window.filterHistory('tasks')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">작업</button>
-            <button class="v2-btn-inline v2-history-filter-btn" data-filter="logs" onclick="window.filterHistory('logs')" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">로그</button>
+            <button class="v2-btn-inline v2-history-filter-btn" data-history-action="filter" data-filter="all" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">전체</button>
+            <button class="v2-btn-inline v2-history-filter-btn" data-history-action="filter" data-filter="tasks" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">작업</button>
+            <button class="v2-btn-inline v2-history-filter-btn" data-history-action="filter" data-filter="logs" style="border:0; background:transparent; border-radius:3px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer; color:var(--v2-text-muted);">로그</button>
           </div>
         </div>
 
@@ -188,4 +188,25 @@ function renderHistory(state) {
   } else {
     setTimeout(() => window.filterHistory('all'), 0);
   }
+
+  bindHistoryEvents(root);
+}
+
+function bindHistoryEvents(root) {
+  if (!root || root._historyEventsAttached) return;
+  root._historyEventsAttached = true;
+
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-history-action]");
+    if (!btn || btn.disabled) return;
+
+    const action = btn.dataset.historyAction;
+    const ds = btn.dataset;
+
+    if (action === "open-modal") {
+      window.boardV2OpenModal(ds.modalTitle, ds.modalContent);
+    } else if (action === "filter") {
+      window.filterHistory(ds.filter);
+    }
+  });
 }
