@@ -22,10 +22,35 @@ function formatAgentTimestamp(value) {
   return String(value);
 }
 
+function bindAgentStatusEvents() {
+  if (window.__agentStatusEventsBound) return;
+  window.__agentStatusEventsBound = true;
+
+  document.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-agent-action]");
+    if (!actionButton) return;
+
+    const action = actionButton.dataset.agentAction;
+    if (action !== "cleanup-stale" && action !== "cleanup-all-stale") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (action === "cleanup-stale") {
+      window.cleanupStaleAgentSession(actionButton.dataset.agentName || "");
+      return;
+    }
+
+    window.cleanupAllStaleAgents();
+  }, true);
+}
+
 function renderAgentStatusSection(state) {
   const targetId = "agentStatusList";
   const container = document.getElementById(targetId);
   if (!container) return;
+
+  bindAgentStatusEvents();
 
   const parentPanel = container.parentElement;
   if (parentPanel) parentPanel.classList.add("panel-browsing");
@@ -48,7 +73,7 @@ function renderAgentStatusSection(state) {
   const staleItems = items.filter((item) => item.status === "stale");
   const topItems = items.slice(0, 4);
   const topActions = staleItems.length
-    ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><button type="button" class="secondary-btn" onclick="cleanupAllStaleAgents()">전체 정리 (${staleItems.length})</button></div>`
+    ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><button type="button" class="secondary-btn" data-agent-action="cleanup-all-stale">전체 정리 (${staleItems.length})</button></div>`
     : "";
 
   container.innerHTML = topActions + topItems.map((item) => {
@@ -82,7 +107,7 @@ function renderAgentStatusSection(state) {
             item.status === "stale" ? "실행 프로세스는 없지만 active 세션 기록이 남아 있음" : "",
           ].filter(Boolean);
         const actionButton = item.status === "stale"
-          ? `<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="secondary-btn" onclick="cleanupStaleAgentSession('${escapeHtml(item.canonical_name)}')">stale 세션 정리</button><button type="button" class="secondary-btn" onclick="cleanupAllStaleAgents()">전체 정리 (${staleItems.length})</button></div>`
+          ? `<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="secondary-btn" data-agent-action="cleanup-stale" data-agent-name="${escapeHtml(item.canonical_name)}">stale 세션 정리</button><button type="button" class="secondary-btn" data-agent-action="cleanup-all-stale">전체 정리 (${staleItems.length})</button></div>`
           : "";
         return `
           <div class='list-item'>
