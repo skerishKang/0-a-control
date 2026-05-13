@@ -40,7 +40,7 @@ function renderPhaseTabs(activePhase) {
     .map(
       (tab) =>
         `<button class="v2-phase-tab${activePhase === tab.key ? " -active" : ""}" ` +
-        `type="button" onclick="window.boardV2SetPhase('${tab.key}')">${tab.label}</button>`
+        `type="button" data-phase-key="${tab.key}">${tab.label}</button>`
     )
     .join("");
 }
@@ -74,7 +74,7 @@ function renderStatusLabel(state, phase) {
         <div style="display:flex; align-items:center; gap:8px;">
           <span class="v2-status-badge -preview">미리보기</span>
           <span class="v2-status-text">${label}</span>
-          <button type="button" class="v2-status-reset-btn" onclick="window.boardV2ResetPhase()">자동 상태로 복귀</button>
+          <button type="button" class="v2-status-reset-btn" data-phase-reset="true">자동 상태로 복귀</button>
         </div>
         <span class="v2-status-reason">${escapeHtml(reason)}</span>
       </div>
@@ -125,3 +125,24 @@ window.boardV2ResetPhase = function boardV2ResetPhase() {
     dispatchRender(_cachedState, autoPhase);
   }
 };
+
+/* ── Event delegation for phase controls ── */
+(function setupPhaseEvents() {
+  const tabsEl = document.getElementById("v2PhaseTabs");
+  if (tabsEl && !tabsEl._phaseEventsAttached) {
+    tabsEl._phaseEventsAttached = true;
+    tabsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-phase-key]");
+      if (btn) window.boardV2SetPhase(btn.dataset.phaseKey);
+    });
+  }
+
+  const statusEl = document.getElementById("v2StatusLabel");
+  if (statusEl && !statusEl._phaseResetAttached) {
+    statusEl._phaseResetAttached = true;
+    statusEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-phase-reset]");
+      if (btn) window.boardV2ResetPhase();
+    });
+  }
+})();
