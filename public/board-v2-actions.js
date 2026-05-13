@@ -144,7 +144,11 @@ window.boardV2OpenModal = function (title, content) {
   if (!modal || !titleEl || !bodyEl) return;
 
   titleEl.textContent = title;
-  bodyEl.innerHTML = content;
+  if (content && typeof content === "object" && content.html) {
+    bodyEl.innerHTML = content.html;
+  } else {
+    bodyEl.textContent = String(content ?? "");
+  }
   modal.hidden = false;
 };
 
@@ -181,14 +185,14 @@ window.boardV2OpenWorkfile = async function (questId, fallbackTitle) {
 
   try {
     const content = await boardApi.fetchWorkfileContent(workfilePath);
-    window.boardV2OpenModal('작업철: ' + fallbackTitle, `<pre style="white-space:pre-wrap;font-size:14px;">${content}</pre>`);
+    window.boardV2OpenModal('작업철: ' + fallbackTitle, { html: `<pre style="white-space:pre-wrap;font-size:14px;">${escapeHtml(content)}</pre>` });
   } catch (e) {
     // Retry with simpler fallback name if the first one fails
     if (fallbackTitle) {
         const simpleSlug = fallbackTitle.replace(/[^\w가-힣]/g, '').slice(0, 10);
         try {
             const content2 = await boardApi.fetchWorkfileContent(`작업철/${simpleSlug}.md`);
-            window.boardV2OpenModal('작업철: ' + fallbackTitle, `<pre style="white-space:pre-wrap;font-size:14px;">${content2}</pre>`);
+            window.boardV2OpenModal('작업철: ' + fallbackTitle, { html: `<pre style="white-space:pre-wrap;font-size:14px;">${escapeHtml(content2)}</pre>` });
             return;
         } catch(err) {
             // ignore
