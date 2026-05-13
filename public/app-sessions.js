@@ -156,6 +156,11 @@ function renderTranscriptActions(transcriptText, sessionTitle, transcriptMode) {
   });
 }
 
+function sanitizeSessionBadgeColor(value, fallback = "#999") {
+  const color = String(value || "").trim();
+  return /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(color) ? color : fallback;
+}
+
 function renderSessionRecords() {
   renderSessionRecordFilters();
   const filteredRecords = (state.sessionPanelView?.dialogue || []).filter((record) => {
@@ -290,9 +295,9 @@ async function openSessionDetailPanel(sessionId) {
 
   const view = viewPayload.view;
   const badges = {
-    lengthColor: view.badges?.length_color || "#999",
+    lengthColor: sanitizeSessionBadgeColor(view.badges?.length_color),
     lengthBadge: view.badges?.length_badge || "short",
-    valueColor: view.badges?.value_color || "#999",
+    valueColor: sanitizeSessionBadgeColor(view.badges?.value_color),
     valueLabel: view.badges?.value_label || "비어있음",
   };
   const preview = view.summary?.intent || generateSessionPreview(session);
@@ -307,8 +312,8 @@ async function openSessionDetailPanel(sessionId) {
     <div class="session-panel-body">
       <div style="margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:8px;">
         <div style="display:flex;gap:8px;margin-bottom:8px;">
-          <span style="color:${badges.lengthColor};font-size:12px;padding:2px 8px;background:${badges.lengthColor}22;border-radius:4px;">${badges.lengthBadge}</span>
-          <span style="color:${badges.valueColor};font-size:12px;padding:2px 8px;background:${badges.valueColor}22;border-radius:4px;">${badges.valueLabel}</span>
+          <span style="color:${badges.lengthColor};font-size:12px;padding:2px 8px;background:${badges.lengthColor}22;border-radius:4px;">${escapeHtml(badges.lengthBadge)}</span>
+          <span style="color:${badges.valueColor};font-size:12px;padding:2px 8px;background:${badges.valueColor}22;border-radius:4px;">${escapeHtml(badges.valueLabel)}</span>
         </div>
         <span style="color:#555;font-size:13px;">${escapeHtml(preview)}</span>
       </div>
@@ -360,6 +365,8 @@ function renderSessions() {
   
   const renderRecentCard = (item) => {
     const badges = analyzeSessionForBadges(item);
+    const lengthColor = sanitizeSessionBadgeColor(badges.lengthColor);
+    const valueColor = sanitizeSessionBadgeColor(badges.valueColor);
     const preview = generateSessionPreview(item);
     const time = formatRecentLabel(item.ended_at || item.started_at);
     const title = normalizeSessionTitle(item.title, item.project_key);
@@ -368,8 +375,8 @@ function renderSessions() {
       <div class="list-item session-link" data-session-id="${escapeHtml(item.id)}">
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:4px;">
           <strong style="font-size:13px;">${escapeHtml(title.substring(0, 30))}</strong>
-          <span style="color:${badges.lengthColor};font-size:10px;">${normalizeSessionLengthLabel(badges.lengthBadge)}</span>
-          <span style="color:${badges.valueColor};font-size:10px;">${badges.valueLabel}</span>
+          <span style="color:${lengthColor};font-size:10px;">${escapeHtml(normalizeSessionLengthLabel(badges.lengthBadge))}</span>
+          <span style="color:${valueColor};font-size:10px;">${escapeHtml(badges.valueLabel)}</span>
         </div>
         <span style="color:#777;font-size:11px;">${escapeHtml(preview)}</span>
         <span style="color:#999;font-size:10px;display:block;margin-top:2px;">${escapeHtml(item.agent_name)} · ${time}</span>
@@ -407,7 +414,7 @@ function renderSessions() {
     
     // category badge for non-operational sessions
     const categoryBadge = (isDetailed && category !== 'operational') 
-      ? `<span class="session-badge verdict ${category === 'test' ? 'hold' : 'pending'}">${category.toUpperCase()}</span>` 
+      ? `<span class="session-badge verdict ${category === 'test' ? 'hold' : 'pending'}">${escapeHtml(category.toUpperCase())}</span>` 
       : "";
 
     return `
