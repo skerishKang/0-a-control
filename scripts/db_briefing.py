@@ -89,8 +89,6 @@ def generate_morning_brief(conn, state: dict) -> dict:
     confirmed = state.get("confirmed_starting_point")
     due_items = state["due_items"][:3]
     unfinished = state["unfinished_items"][:3]
-    recommendation = generate_priority_recommendation(state)
-    candidates = recommendation["candidates"]
     main_title = main.get("title", "미정")
     main_reason = main.get("priority_reason", "우선순위 이유 없음")
     quest_title = quest.get("title", "미정")
@@ -114,11 +112,6 @@ def generate_morning_brief(conn, state: dict) -> dict:
         lines.append(f"- 기한 압박: {due_items[0]['title']}")
     if unfinished:
         lines.append(f"- 가장 큰 미완료: {unfinished[0]['title']}")
-    if candidates:
-        names = ", ".join(item["name"] for item in candidates[:3])
-        lines.append(f"- 우선 검토 후보: {names}")
-        lines.append(f"- 자동 추천 후보: {recommendation['title']}")
-
     content_md = "\n".join(lines) + "\n"
     title = f"자동 아침 브리프 {datetime.now(UTC).date().isoformat()}"
     conn.execute("DELETE FROM brief_records WHERE brief_type = 'morning_auto'")

@@ -290,8 +290,5 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
     upsert_state(conn, "day_phase", day_phase)
     upsert_state(conn, "day_phase_reason", day_phase_reason)
     
-    upsert_state(conn, "workdiary_top_level", get_workdiary_top_level(12))
-    upsert_state(conn, "workdiary_priority_candidates", get_workdiary_priority_candidates(8))
-    upsert_state(conn, "priority_recommendation", recommendation)
     upsert_state(conn, "latest_morning_brief", generate_morning_brief(conn, state))
     return state
