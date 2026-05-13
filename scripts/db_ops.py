@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 
 from scripts.db_base import connect, rows_to_dicts
 from scripts.db_state import refresh_current_state
@@ -11,8 +12,17 @@ from scripts.verdict_ops import DuplicateVerdict, apply_verdict, report_quest_pr
 
 VERDICT_STATUS_RE = re.compile(r"^AI 판정:\s*(done|partial|hold|pending)\b", re.MULTILINE)
 
+# Simple module-level cache for get_current_state with 5-second TTL
+_cache_state = None
+_cache_time = 0.0
+
 
 def get_current_state() -> dict:
+    global _cache_state, _cache_time
+    now = time.time()
+    if _cache_state is not None and now - _cache_time < 5:
+        return _cache_state
+
     with connect() as conn:
         refresh_current_state(conn)
         rows = conn.execute(
@@ -25,6 +35,8 @@ def get_current_state() -> dict:
                 state[row["state_key"]] = json.loads(value)
             except (TypeError, json.JSONDecodeError):
                 state[row["state_key"]] = value
+        _cache_state = state
+        _cache_time = now
         return state
 
 def get_quests() -> list[dict]:
