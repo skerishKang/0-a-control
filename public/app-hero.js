@@ -42,7 +42,8 @@ function renderHeroCard(current) {
   const reasonBtn = document.getElementById("openMissionReasonBtn");
   if (reasonBtn) {
     reasonBtn.onclick = () => {
-      openDetailPanel("추천 이유", current.main_mission_title, `<div class="detail-content"><p>${reason.replace(/\n/g, '<br>')}</p></div>`);
+      const safeReasonHtml = escapeHtml(reason).replace(/\n/g, '<br>');
+      openDetailPanel("추천 이유", current.main_mission_title, `<div class="detail-content"><p>${safeReasonHtml}</p></div>`);
     };
   }
 
@@ -93,4 +94,3 @@ function renderHeroCard(current) {
   // Return values for other cards to use (like Caution Card)
   return { nextCore, cautionText };
 }
-
