@@ -82,8 +82,8 @@ function renderHistory(state) {
       
       if (dateStr && dateStr !== lastDateStr) {
         html += `
-          <li class="v2-history-divider" data-date="${dateStr}" style="padding: 12px 16px 8px; background: rgba(45, 90, 39, 0.04); border-bottom: 1px solid rgba(45, 90, 39, 0.1); color: var(--v2-primary); font-size: 11px; font-weight: 800; letter-spacing: 0.04em;">
-            ${dateStr}
+          <li class="v2-history-divider" data-date="${escapeHtml(dateStr)}" style="padding: 12px 16px 8px; background: rgba(45, 90, 39, 0.04); border-bottom: 1px solid rgba(45, 90, 39, 0.1); color: var(--v2-primary); font-size: 11px; font-weight: 800; letter-spacing: 0.04em;">
+            ${escapeHtml(dateStr)}
           </li>
         `;
         lastDateStr = dateStr;
@@ -100,7 +100,7 @@ function renderHistory(state) {
       const subtextOpacity = !isLog ? '0.85' : '0.5';
       
       html += `
-        <li class="v2-list-item${clickableClass}" data-type="${item.type}" data-date="${dateStr}" data-history-action="open-modal" data-modal-title="${modalTitle}" data-modal-content="${modalContent}" style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
+        <li class="v2-list-item${clickableClass}" data-type="${escapeHtml(item.type)}" data-date="${escapeHtml(dateStr)}" data-history-action="open-modal" data-modal-title="${modalTitle}" data-modal-content="${modalContent}" style="padding: ${compact ? '8px 16px' : '10px 16px 12px'}; border-bottom: 1px solid var(--v2-border); ${itemBg}">
           <div style="display:flex; flex-direction:column; gap:2px;">
             <span class="v2-item-title" style="${titleStyle}">${escapeHtml(item.title)}</span>
             ${item.subtext ? `<span style="font-size: 11px; color: var(--v2-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: ${subtextOpacity};">↳ ${escapeHtml(item.subtext)}</span>` : ''}
@@ -108,7 +108,7 @@ function renderHistory(state) {
           <div class="v2-history-item-meta">
             <span class="v2-history-badge ${typeClass}" style="${isLog ? 'opacity: 0.7;' : ''}">${typeLabel}</span>
             <span class="v2-history-badge ${statusClass}" style="${isLog ? 'background: rgba(0,0,0,0.05); color: #666;' : ''}">${statusLabel}</span>
-            <span style="opacity: 0.8;">${timeStr || dateStr}</span>
+            <span style="opacity: 0.8;">${escapeHtml(timeStr || dateStr)}</span>
           </div>
         </li>
       `;
