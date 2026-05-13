@@ -5,8 +5,6 @@ const state = {
   quests: [],
   sessions: [],
   agents: [],
-  workdiaryItems: [],
-  priorityCandidates: [],
   externalInbox: { items: [], summary: {} },
   externalInboxPanel: { items: [] },
   externalContextThread: null,
