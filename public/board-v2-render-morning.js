@@ -20,8 +20,8 @@ function renderMorning(state) {
         <span class="v2-item-title">${escapeHtml(startPoint.title)}</span>
         <span class="v2-item-meta">${escapeHtml(startPoint.reason || "")}</span>
         <div class="v2-start-actions">
-          <button class="v2-btn v2-btn-primary" type="button" onclick="window.boardV2PromoteStartingPoint()" ${hasCurrentQuest ? "disabled" : ""}>${hasCurrentQuest ? "진행 중인 작업 있음" : "이 약속으로 작업 시작"}</button>
-          ${canClear ? `<button class="v2-btn v2-btn-secondary" type="button" onclick="window.boardV2ClearStartingPoint()">이 약속 비우기</button>` : ""}
+          <button class="v2-btn v2-btn-primary" type="button" data-morning-action="promote-starting-point" ${hasCurrentQuest ? "disabled" : ""}>${hasCurrentQuest ? "진행 중인 작업 있음" : "이 약속으로 작업 시작"}</button>
+          ${canClear ? `<button class="v2-btn v2-btn-secondary" type="button" data-morning-action="clear-starting-point">이 약속 비우기</button>` : ""}
         </div>
       </div>
     `
@@ -64,7 +64,7 @@ function renderMorning(state) {
             <p class="v2-mission-reason" style="font-size: 16px; line-height: 1.6; color: var(--v2-foreground); margin: 0;">${escapeHtml(mission.reason)}</p>
           </div>
           <div class="v2-start-actions" style="margin-top: 40px;">
-            <button class="v2-btn v2-btn-primary" type="button" style="font-size: 18px; padding: 16px 32px;" onclick="window.boardV2StartQuestFromMission()" ${hasCurrentQuest ? "disabled" : ""}>
+            <button class="v2-btn v2-btn-primary" type="button" style="font-size: 18px; padding: 16px 32px;" data-morning-action="start-quest-from-mission" ${hasCurrentQuest ? "disabled" : ""}>
               ${hasCurrentQuest ? "진행 중인 활성 작업 존재" : "이 목표를 현재 퀘스트로 올려서 실행 개시"}
             </button>
           </div>
@@ -88,4 +88,24 @@ function renderMorning(state) {
       </aside>
     </div>
   `;
+
+  bindMorningEvents(root);
+}
+
+function bindMorningEvents(root) {
+  if (!root || root._morningEventsAttached) return;
+  root._morningEventsAttached = true;
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-morning-action]");
+    if (!btn || btn.disabled) return;
+
+    const action = btn.dataset.morningAction;
+    if (action === "promote-starting-point") {
+      window.boardV2PromoteStartingPoint();
+    } else if (action === "clear-starting-point") {
+      window.boardV2ClearStartingPoint();
+    } else if (action === "start-quest-from-mission") {
+      window.boardV2StartQuestFromMission();
+    }
+  });
 }
