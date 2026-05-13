@@ -41,6 +41,18 @@ def init_db() -> None:
         conn.executescript(SCHEMA)
         conn.executescript(INDEXES)
         conn.executescript(FTS_SCHEMA)
+        clean_stale_state_keys(conn)
+
+
+def clean_stale_state_keys(conn: sqlite3.Connection) -> None:
+    """Remove stale state keys that are no longer written by the system."""
+    stale_keys = [
+        "workdiary_top_level",
+        "workdiary_priority_candidates",
+        "priority_recommendation",
+    ]
+    for key in stale_keys:
+        conn.execute("DELETE FROM current_state WHERE state_key = ?", (key,))
 
 
 def migrate_search_state() -> None:

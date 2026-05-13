@@ -139,7 +139,7 @@ function startBoardV2Polling() {
     if (!isUserInteracting()) {
       loadBoardV2();
     }
-  }, 30000); // 30초 간격
+  }, 300000); // 5분 간격 (30초에서 변경)
 }
 
 function isUserInteracting() {
