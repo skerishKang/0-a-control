@@ -11,10 +11,36 @@ function normalizeDayPhaseLabel(value) {
   }[String(value || "").trim()] || value || "미정";
 }
 
+function bindTodaySummaryEvents() {
+  if (window.__todaySummaryEventsBound) return;
+  window.__todaySummaryEventsBound = true;
+
+  document.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-summary-action]");
+    if (!actionButton) return;
+
+    const action = actionButton.dataset.summaryAction;
+    if (action !== "promote-starting-point" && action !== "clear-starting-point") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (action === "promote-starting-point") {
+      window.promoteStartingPoint();
+      return;
+    }
+
+    window.clearStartingPoint();
+  }, true);
+}
+
 function renderTodaySummarySection(state) {
   const targetId = "todaySummaryList";
   const container = document.getElementById(targetId);
   if (!container) return;
+
+  bindTodaySummaryEvents();
+
   const parentPanel = container.parentElement;
   if (parentPanel) parentPanel.classList.add("panel-browsing");
 
@@ -132,12 +158,12 @@ function renderTodaySummarySection(state) {
         const isPromotable = !current.current_quest_id;
         const actionHtml = isPromotable
           ? `<div style="margin-top:8px; display:flex; gap:8px;">
-               <button type="button" class="primary-btn" onclick="promoteStartingPoint()">이 약속으로 작업 시작</button>
-               <button type="button" class="secondary-btn" onclick="clearStartingPoint()">이 약속 비우기</button>
+               <button type="button" class="primary-btn" data-summary-action="promote-starting-point">이 약속으로 작업 시작</button>
+               <button type="button" class="secondary-btn" data-summary-action="clear-starting-point">이 약속 비우기</button>
              </div>`
           : `<div style="margin-top:8px; display:flex; gap:8px;">
                <button type="button" class="primary-btn" disabled title="이미 진행 중인 퀘스트가 있습니다">이 약속으로 작업 시작</button>
-               <button type="button" class="secondary-btn" onclick="clearStartingPoint()">이 약속 비우기</button>
+               <button type="button" class="secondary-btn" data-summary-action="clear-starting-point">이 약속 비우기</button>
              </div>`;
 
         detailItems.push({
