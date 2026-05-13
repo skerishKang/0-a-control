@@ -402,9 +402,12 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
         content_type, _ = mimetypes.guess_type(str(candidate))
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type or "application/octet-stream")
-        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
-        self.send_header("Pragma", "no-cache")
-        self.send_header("Expires", "0")
+        if content_type in ("text/css", "application/javascript"):
+            self.send_header("Cache-Control", "max-age=31536000, immutable")
+        else:
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
         self.end_headers()
         try:
             self.wfile.write(candidate.read_bytes())

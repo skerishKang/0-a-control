@@ -35,6 +35,7 @@ EXACT_ROUTE_METHODS: dict[str, str] = {
     "/api/ops-overrides": "_get_ops_overrides",
     "/api/work-queue": "_get_work_queue",
     "/api/executor-prompts/templates": "_get_executor_prompt_templates",
+    "/api/validation-checklists": "_get_validation_checklists",
 }
 
 PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
@@ -78,6 +79,7 @@ def _get_db():
         list_manual_overrides,
         generate_executor_prompt,
         get_executor_prompt_templates,
+        list_checklists,
     )
     return locals()
 
@@ -268,3 +270,7 @@ def handle_get_work_queue(handler, query):
 
 def handle_get_executor_prompt_templates(handler, query):
     handler.send_json(_get_db()["get_executor_prompt_templates"]())
+
+
+def handle_get_validation_checklists(handler, query):
+    handler.send_json({"checklists": _get_db()["list_checklists"]()})

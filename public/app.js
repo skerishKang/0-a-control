@@ -83,8 +83,6 @@ function applyApiResult(api, payload) {
     case "sessions":        state.sessions = payload?.sessions || []; break;
     case "agents":          state.agents = payload?.agents || []; break;
     case "activeSession":   state.activeSession = payload?.session || null; break;
-    case "workdiaryItems":  state.workdiaryItems = payload?.items || []; break;
-    case "priorityCandidates": state.priorityCandidates = payload?.items || []; break;
     case "externalInbox":
       state.externalInbox = { items: payload?.items || [], summary: payload?.summary || {} };
       break;
@@ -134,8 +132,6 @@ async function loadAll() {
     { key: "sessions",            label: "sessions",                    url: "/api/sessions/recent?limit=8" },
     { key: "agents",              label: "agents",                      url: "/api/agents/status", optional: true },
     { key: "activeSession",       label: "active-session",              url: "/api/sessions/active" },
-    { key: "workdiaryItems",      label: "workdiary",                   url: "/api/workdiary/top-level" },
-    { key: "priorityCandidates",  label: "priority-candidates",         url: "/api/workdiary/priority-candidates" },
     { key: "externalInbox",       label: "external-inbox",              url: "/api/external-inbox?limit=500" },
     { key: "externalInboxPanel",  label: "external-inbox-panel",        url: "/api/external-inbox?limit=1000&status=" + encodeURIComponent(state.externalContextStatus || "new") },
     { key: "telegramSyncStatus",  label: "telegram-sync-status",        url: "/api/telegram/sync-status", optional: true },

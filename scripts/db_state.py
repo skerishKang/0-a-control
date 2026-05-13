@@ -17,19 +17,13 @@ except ModuleNotFoundError:
 try:
     from scripts.db_workdiary_helpers import (
         build_day_progress_summary,
-        build_workdiary_item,
         extract_completion_criteria_for_plan,
-        get_workdiary_priority_candidates,
-        get_workdiary_top_level,
         latest_decision_summary,
     )
 except ModuleNotFoundError:
     from db_workdiary_helpers import (
         build_day_progress_summary,
-        build_workdiary_item,
         extract_completion_criteria_for_plan,
-        get_workdiary_priority_candidates,
-        get_workdiary_top_level,
         latest_decision_summary,
     )
 
@@ -46,14 +40,12 @@ try:
         build_today_done_quests,
         build_tomorrow_first_quest,
         generate_morning_brief,
-        generate_priority_recommendation,
     )
 except ModuleNotFoundError:
     from db_briefing import (
         build_today_done_quests,
         build_tomorrow_first_quest,
         generate_morning_brief,
-        generate_priority_recommendation,
     )
 
 
@@ -211,19 +203,12 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
         state["recommended_next_quest"] = state["recommended_next_quest"] or "대체 퀘스트를 권장합니다."
 
     state["quest_status_summary"] = quest_status_summary
-    recommendation = generate_priority_recommendation(state)
-    candidates = recommendation["candidates"]
 
     main = state["main_mission"] or {}
     quest = state["current_quest"] or {}
     main_title = main.get("title", "")
     main_reason = main.get("priority_reason", "")
     quest_title = quest.get("title", "")
-
-    if candidates and "workdiary 핵심 프로젝트 흐름 파악" in main_title:
-        main_title = f"{recommendation['title']} 포함 핵심 프로젝트 흐름 파악"
-        main_reason = f"{main_reason} 우선 추천 후보는 {recommendation['title']}이며, {recommendation['reason']}"
-        quest_title = f"{recommendation['title']} 포함 우선 검토 후보 5개 좁히기"
 
     upsert_state(conn, "main_mission_id", main.get("id", ""))
     upsert_state(conn, "main_mission_title", main_title)
@@ -290,8 +275,5 @@ def _refresh_current_state_impl(conn: sqlite3.Connection) -> dict:
     upsert_state(conn, "day_phase", day_phase)
     upsert_state(conn, "day_phase_reason", day_phase_reason)
     
-    upsert_state(conn, "workdiary_top_level", get_workdiary_top_level(12))
-    upsert_state(conn, "workdiary_priority_candidates", get_workdiary_priority_candidates(8))
-    upsert_state(conn, "priority_recommendation", recommendation)
     upsert_state(conn, "latest_morning_brief", generate_morning_brief(conn, state))
     return state
