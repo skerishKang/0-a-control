@@ -11,6 +11,11 @@ function normalizeExternalStatusLabel(value) {
   return (typeof labelStatus === "function" ? labelStatus(value) : value) || "";
 }
 
+function normalizeExternalCount(value) {
+  const count = Number(value);
+  return Number.isFinite(count) && count >= 0 ? String(Math.floor(count)) : "0";
+}
+
 const externalContextStatusOptions = [
   { value: "new", label: "새 항목" },
   { value: "reviewing", label: "검토중" },
@@ -95,7 +100,7 @@ function renderExternalContextTabs(containerId, options, activeValue, counts = {
   if (!target) return;
   target.innerHTML = options.map((option) => {
     const count = counts[option.value];
-    const countLabel = (count !== undefined) ? ` <span class="chip-count">${count}</span>` : "";
+    const countLabel = (count !== undefined) ? ` <span class="chip-count">${normalizeExternalCount(count)}</span>` : "";
     return `
       <button
         type="button"
