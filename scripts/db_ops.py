@@ -16,6 +16,12 @@ _cache_state = None
 _cache_time = 0.0
 
 
+def clear_current_state_cache() -> None:
+    global _cache_state, _cache_time
+    _cache_state = None
+    _cache_time = 0.0
+
+
 def get_current_state() -> dict:
     global _cache_state, _cache_time
     now = time.time()
