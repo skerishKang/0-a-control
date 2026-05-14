@@ -57,10 +57,10 @@ if __package__ in (None, ""):
         update_session_summary,
     )
     from scripts.db_seed import create_sample_data_if_empty
-    from scripts.db_state import (
+    from scripts.db_state import refresh_current_state
+    from scripts.db_workdiary_helpers import (
         get_workdiary_priority_candidates,
         get_workdiary_top_level,
-        refresh_current_state,
     )
     from scripts.work_queue import (
         Queue,
@@ -110,10 +110,10 @@ else:
         update_session_summary,
     )
     from .db_seed import create_sample_data_if_empty
-    from .db_state import (
+    from .db_state import refresh_current_state
+    from .db_workdiary_helpers import (
         get_workdiary_priority_candidates,
         get_workdiary_top_level,
-        refresh_current_state,
     )
     from .work_queue import (
         Queue,
