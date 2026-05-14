@@ -85,7 +85,7 @@ def _get_db():
 
 
 def handle_get_current_state(handler, query):
-    handler.send_json({"current_state": _get_db()["get_current_state"]()})
+    handler.send_json({"current_state": _get_db()["get_current_state"](refresh=False)})
 
 
 def handle_get_plans(handler, query):
