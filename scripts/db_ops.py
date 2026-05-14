@@ -22,25 +22,32 @@ def clear_current_state_cache() -> None:
     _cache_time = 0.0
 
 
-def get_current_state() -> dict:
+def _read_current_state_snapshot(conn) -> dict:
+    rows = conn.execute(
+        "SELECT state_key, state_value, updated_at, metadata_json FROM current_state ORDER BY state_key ASC"
+    ).fetchall()
+    state: dict = {}
+    for row in rows:
+        value = row["state_value"]
+        try:
+            state[row["state_key"]] = json.loads(value)
+        except (TypeError, json.JSONDecodeError):
+            state[row["state_key"]] = value
+    return state
+
+
+def get_current_state(*, refresh: bool = True) -> dict:
     global _cache_state, _cache_time
     now = time.time()
-    if _cache_state is not None and now - _cache_time < 5:
+    if refresh and _cache_state is not None and now - _cache_time < 5:
         return _cache_state
     with connect() as conn:
-        refresh_current_state(conn)
-        rows = conn.execute(
-            "SELECT state_key, state_value, updated_at, metadata_json FROM current_state ORDER BY state_key ASC"
-        ).fetchall()
-        state: dict = {}
-        for row in rows:
-            value = row["state_value"]
-            try:
-                state[row["state_key"]] = json.loads(value)
-            except (TypeError, json.JSONDecodeError):
-                state[row["state_key"]] = value
-        _cache_state = state
-        _cache_time = now
+        if refresh:
+            refresh_current_state(conn)
+        state = _read_current_state_snapshot(conn)
+        if refresh:
+            _cache_state = state
+            _cache_time = now
         return state
 
 def get_quests() -> list[dict]:
