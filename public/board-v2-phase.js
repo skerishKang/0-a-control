@@ -73,7 +73,7 @@ function renderStatusLabel(state, phase) {
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span class="v2-status-badge -preview">미리보기</span>
-          <span class="v2-status-text">${label}</span>
+          <span class="v2-status-text">${escapeHtml(label)}</span>
           <button type="button" class="v2-status-reset-btn" data-phase-reset="true">자동 상태로 복귀</button>
         </div>
         <span class="v2-status-reason">${escapeHtml(reason)}</span>
@@ -84,7 +84,7 @@ function renderStatusLabel(state, phase) {
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span class="v2-status-badge -auto">자동 상태</span>
-          <span class="v2-status-text">${label}</span>
+          <span class="v2-status-text">${escapeHtml(label)}</span>
         </div>
         <span class="v2-status-reason">${escapeHtml(reason)}</span>
       </div>
