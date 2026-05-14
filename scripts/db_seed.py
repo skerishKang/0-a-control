@@ -12,8 +12,8 @@ import uuid
 from datetime import datetime
 
 from scripts.db_base import UTC, connect, init_db, now_iso
-from scripts.db_state import get_workdiary_priority_candidates
 from scripts.db_state import refresh_current_state
+from scripts.db_workdiary_helpers import get_workdiary_priority_candidates
 
 
 def create_sample_data_if_empty() -> None:

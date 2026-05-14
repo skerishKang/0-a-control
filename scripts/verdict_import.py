@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from .db_ops import apply_verdict, DuplicateVerdict
+from .db_ops import apply_verdict, clear_current_state_cache, DuplicateVerdict
 from .file_queue import (
     REPORTS_DIR,
     VERDICTS_DIR,
@@ -213,6 +213,7 @@ def import_verdicts() -> None:
                 session_id=session_id,
                 report_ref=report_ref,
             )
+            clear_current_state_cache()
         except DuplicateVerdict as exc:
             logger.info("중복/무시 verdict (%s): %s", file_path.name, exc)
             if exc.code == "stale_revision":
