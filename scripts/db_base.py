@@ -24,6 +24,8 @@ BASELINE_SCHEMA_VERSION = 1
 BASELINE_SCHEMA_NAME = "baseline-current-schema"
 ORPHAN_REFERENCE_CLEANUP_VERSION = 2
 ORPHAN_REFERENCE_CLEANUP_NAME = "null-orphan-relational-references"
+SOURCE_RECORDS_SESSION_FK_VERSION = 3
+SOURCE_RECORDS_SESSION_FK_NAME = "source-records-session-fk"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -94,6 +96,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             ORPHAN_REFERENCE_CLEANUP_VERSION,
             ORPHAN_REFERENCE_CLEANUP_NAME,
+        )
+    if not schema_migration_applied(conn, SOURCE_RECORDS_SESSION_FK_VERSION):
+        from scripts.db_fk_migrations import apply_source_records_session_fk
+
+        apply_source_records_session_fk(conn)
+        record_schema_migration(
+            conn,
+            SOURCE_RECORDS_SESSION_FK_VERSION,
+            SOURCE_RECORDS_SESSION_FK_NAME,
         )
 
 
