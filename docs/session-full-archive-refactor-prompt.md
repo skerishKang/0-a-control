@@ -3,7 +3,7 @@
 너는 `0-a-control`의 세션 export 구조를 재정의하는 엔지니어다.
 
 작업 경로:
-`G:\Ddrive\BatangD\task\workdiary\0-a-control`
+`<PROJECT_ROOT>`
 
 핵심 목표:
 - `sessions/`를 "운영용 요약 노트"가 아니라 **전체 세션 보존본**으로 바꾼다.

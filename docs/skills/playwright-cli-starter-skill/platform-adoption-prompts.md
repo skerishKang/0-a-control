@@ -8,7 +8,7 @@
 아래 스킬 초안을 바탕으로 Codex 환경에서 사용할 수 있는 Playwright-CLI 반복 웹업무 스킬로 변환해라.
 
 기준 문서:
-G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\SKILL.md
+docs/skills/playwright-cli-starter-skill/SKILL.md
 
 목표:
 - 반복 웹업무를 자연어 -> CLI 루틴으로 수행할 수 있게 한다.
@@ -32,7 +32,7 @@ G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-
 아래 스킬 초안을 바탕으로 Claude / Anthropic 계열에서 사용할 수 있는 Playwright-CLI 반복 웹업무 스킬로 변환해라.
 
 기준 문서:
-G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\SKILL.md
+docs/skills/playwright-cli-starter-skill/SKILL.md
 
 목표:
 - 자연어 명령을 반복 웹업무 실행 루틴으로 안정적으로 바꾸게 한다.
@@ -56,7 +56,7 @@ G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-
 아래 스킬 초안을 바탕으로 Kilo Code 환경에서 사용할 수 있는 Playwright-CLI 반복 웹업무 스킬로 변환해라.
 
 기준 문서:
-G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\SKILL.md
+docs/skills/playwright-cli-starter-skill/SKILL.md
 
 목표:
 - Kilo Code에서 MCP 없이도 반복 웹업무를 자연어 -> CLI 실행 루틴으로 돌릴 수 있게 한다.

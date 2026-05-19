@@ -60,6 +60,6 @@ python scripts/youtube_brief_cli.py ingest-brief --input-file "temp/summary.txt"
 
 ## 관련 위치
 
-- **실제 프로젝트 루트**: `G:\Ddrive\BatangD\task\workdiary\47-youtube-brief\`
+- **실제 프로젝트 루트**: `<PROJECT_ROOT>/47-youtube-brief/`
 - **DB 파일**: `47-youtube-brief/data/youtube_brief.db`
 - **웹 UI**: `http://127.0.0.1:4324`

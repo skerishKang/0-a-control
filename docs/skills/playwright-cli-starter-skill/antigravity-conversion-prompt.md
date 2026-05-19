@@ -7,9 +7,9 @@ Below is the prompt to give directly to Antigravity.
 You are running inside Antigravity. Convert the following local skill design documents into an Antigravity-native, actually usable skill or automation instruction package.
 
 Source documents:
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\SKILL.md`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\site-0-a-control-example.md`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\antigravity-skill.md`
+- `docs/skills/playwright-cli-starter-skill/SKILL.md`
+- `docs/skills/playwright-cli-starter-skill/site-0-a-control-example.md`
+- `docs/skills/playwright-cli-starter-skill/antigravity-skill.md`
 
 Target:
 - Create the real Antigravity-native skill/instruction format that Antigravity can actually use.

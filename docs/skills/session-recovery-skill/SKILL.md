@@ -7,7 +7,7 @@
 스킬 실행 시 다음 경로의 데이터를 우선적으로 탐색합니다:
 1. **Codex SQLite**: `~/.codex/state_5.sqlite` (스레드 메타데이터 및 세션 정보)
 2. **Codex History**: `~/.codex/history.jsonl` (대화 원문 로그)
-3. **로컬 세션 저장소**: `G:\Ddrive\BatangD\task\workdiary\0-a-control\sessions\` 및 `sessions_html/`
+3. **로컬 세션 저장소**: `sessions/` 및 `sessions_html/`
 4. **프로젝트 문서**: `task.md`, `walkthrough.md`, `implementation_plan.md`
 
 ## 🏗️ 3단계 복구 설계 (3-Layer Architecture)

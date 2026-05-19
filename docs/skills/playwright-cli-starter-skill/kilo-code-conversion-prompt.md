@@ -7,9 +7,9 @@ Below is the prompt to give directly to Kilo Code.
 You are running inside Kilo Code. Convert the following local skill design documents into a Kilo-native, actually usable skill or prompt package.
 
 Source documents:
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\SKILL.md`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\site-0-a-control-example.md`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\playwright-cli-starter-skill\kilo-code-skill.md`
+- `docs/skills/playwright-cli-starter-skill/SKILL.md`
+- `docs/skills/playwright-cli-starter-skill/site-0-a-control-example.md`
+- `docs/skills/playwright-cli-starter-skill/kilo-code-skill.md`
 
 Target:
 - Create the real Kilo Code skill/instruction format that Kilo can actually load or use.

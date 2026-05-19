@@ -7,8 +7,8 @@ Below is the prompt to give directly to Kilo Code.
 Convert the attached session-recovery design into a Kilo-native skill.
 
 Source documents:
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\session-recovery-skill\01-session-architecture-prompt.md`
-- `G:\Ddrive\BatangD\task\workdiary\0-a-control\docs\skills\session-recovery-skill\02-codex-session-skill.md`
+- `docs/skills/session-recovery-skill/01-session-architecture-prompt.md`
+- `docs/skills/session-recovery-skill/02-codex-session-skill.md`
 
 Goal:
 - Build a Kilo-native skill that can recover prior Codex work context from:
