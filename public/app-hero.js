@@ -22,6 +22,19 @@ function pickDashboardFreshness(current) {
   }
   return "데이터 기준 확인 필요";
 }
+
+function setHeroClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerHeroClickHandler) {
+    element.removeEventListener("click", element.__controlTowerHeroClickHandler);
+  }
+  element.__controlTowerHeroClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerHeroClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 /**
  * Hero Card rendering module
  * Responsibility: UI rendering for the main mission and overall progress
@@ -40,12 +53,10 @@ function renderHeroCard(current) {
   // Store reason for the button
   const reason = current.main_mission_reason || "추천 이유가 없습니다.";
   const reasonBtn = document.getElementById("openMissionReasonBtn");
-  if (reasonBtn) {
-    reasonBtn.onclick = () => {
-      const safeReasonHtml = escapeHtml(reason).replace(/\n/g, '<br>');
-      openDetailPanel("추천 이유", current.main_mission_title, `<div class="detail-content"><p>${safeReasonHtml}</p></div>`);
-    };
-  }
+  setHeroClickHandler(reasonBtn, () => {
+    const safeReasonHtml = escapeHtml(reason).replace(/\n/g, '<br>');
+    openDetailPanel("추천 이유", current.main_mission_title, `<div class="detail-content"><p>${safeReasonHtml}</p></div>`);
+  });
 
   document.getElementById("mainMissionCriteria").textContent =
     current.main_mission_completion_criteria || "완료 기준이 아직 없습니다.";
