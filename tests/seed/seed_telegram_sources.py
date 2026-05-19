@@ -1,10 +1,11 @@
-import sqlite3
 import json
+import os
+import sqlite3
 from pathlib import Path
 from telegram_db import init_db
 
 DB_PATH = Path(__file__).resolve().parents[1] / "data" / "control_tower.db"
-CHATS_FILE = Path("G:/Ddrive/BatangD/task/workdiary/0-conmand-center/data/telegram_chats.json")
+CHATS_FILE = Path(os.getenv("CONTROL_TOWER_TELEGRAM_CHATS_FILE", "data/telegram_chats.json"))
 
 def seed():
     init_db()
