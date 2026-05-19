@@ -34,6 +34,12 @@ PREFIX_ROUTE_METHODS: list[tuple[str, str]] = [
 ]
 
 
+def _clear_current_state_cache() -> None:
+    from scripts.db_ops import clear_current_state_cache
+
+    clear_current_state_cache()
+
+
 def handle_post_dispatch(handler, path: str, body: dict) -> None:
     """Dispatch POST /api/ requests to the appropriate handler method.
 
@@ -41,6 +47,10 @@ def handle_post_dispatch(handler, path: str, body: dict) -> None:
     getattr(handler, method_name) so mock handlers in tests can intercept calls,
     while production ControlTowerHandler delegates through its wrappers to the
     module-level logic below.
+
+    Any registered mutation clears the in-process current-state cache before
+    invoking the handler. Some handlers return a freshly computed current_state
+    in the same response, so clearing first prevents stale cache reuse.
     """
     validation_error = validate_mutation_body(path, body)
     if validation_error:
@@ -49,11 +59,13 @@ def handle_post_dispatch(handler, path: str, body: dict) -> None:
 
     method_name = EXACT_ROUTE_METHODS.get(path)
     if method_name:
+        _clear_current_state_cache()
         getattr(handler, method_name)(body)
         return
 
     for prefix, prefix_method in PREFIX_ROUTE_METHODS:
         if path.startswith(prefix):
+            _clear_current_state_cache()
             getattr(handler, prefix_method)(body)
             return
 
