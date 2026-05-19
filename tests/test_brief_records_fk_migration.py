@@ -1,4 +1,4 @@
-"""Tests for migration v5: decision_records plan and quest foreign keys."""
+"""Tests for migration v6: brief_records plan and quest foreign keys."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from pathlib import Path
 import scripts.db_base as db_base
 
 
-class DecisionRecordsFKMigrationTests(unittest.TestCase):
+class BriefRecordsFKMigrationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.root = Path(self.temp_dir.name)
@@ -46,14 +46,6 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
-    def _insert_session(self, conn: sqlite3.Connection, session_id: str = "sess-1") -> None:
-        conn.execute(
-            """INSERT INTO sessions
-               (id, agent_name, source_type, started_at, status)
-               VALUES (?, 'agent', 'test', '2026-01-01', 'active')""",
-            (session_id,),
-        )
-
     def _insert_plan(self, conn: sqlite3.Connection, plan_id: str = "plan-1") -> None:
         conn.execute(
             """INSERT INTO plan_items
@@ -70,23 +62,23 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
             (quest_id,),
         )
 
-    def _insert_decision(
+    def _insert_brief(
         self,
         conn: sqlite3.Connection,
-        decision_id: str,
+        brief_id: str,
         plan_id: str | None = None,
         quest_id: str | None = None,
         session_id: str | None = None,
     ) -> None:
         conn.execute(
-            """INSERT INTO decision_records
-               (id, decision_type, title, related_plan_item_id,
+            """INSERT INTO brief_records
+               (id, brief_type, title, content_md, related_plan_item_id,
                 related_quest_id, related_session_id, created_at)
-               VALUES (?, 'test', 'Decision', ?, ?, ?, '2026-01-01')""",
-            (decision_id, plan_id, quest_id, session_id),
+               VALUES (?, 'test', 'Brief', 'Content', ?, ?, ?, '2026-01-01')""",
+            (brief_id, plan_id, quest_id, session_id),
         )
 
-    def test_schema_migrations_records_v1_to_v5(self) -> None:
+    def test_schema_migrations_records_v1_to_v6(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -94,8 +86,8 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
                 "SELECT version, name FROM schema_migrations ORDER BY version"
             ).fetchall()
             result = {int(r["version"]): r["name"] for r in versions}
-            self.assertEqual(result[5], "decision-records-reference-fks")
-            self.assertGreaterEqual(max(result), 5)
+            self.assertEqual(result[6], "brief-records-reference-fks")
+            self.assertEqual(sorted(result), [1, 2, 3, 4, 5, 6])
         finally:
             conn.close()
 
@@ -103,7 +95,7 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         db_base.init_db()
         conn = self._connect()
         try:
-            fk_list = conn.execute("PRAGMA foreign_key_list(decision_records)").fetchall()
+            fk_list = conn.execute("PRAGMA foreign_key_list(brief_records)").fetchall()
             expected = {
                 ("plan_items", "related_plan_item_id"),
                 ("quests", "related_quest_id"),
@@ -122,12 +114,12 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         conn = self._connect()
         try:
             cases = [
-                ("decision-bad-plan", "missing-plan", None, None),
-                ("decision-bad-quest", None, "missing-quest", None),
+                ("brief-bad-plan", "missing-plan", None, None),
+                ("brief-bad-quest", None, "missing-quest", None),
             ]
-            for decision_id, plan_id, quest_id, session_id in cases:
+            for brief_id, plan_id, quest_id, session_id in cases:
                 with self.assertRaises(sqlite3.IntegrityError):
-                    self._insert_decision(conn, decision_id, plan_id, quest_id, session_id)
+                    self._insert_brief(conn, brief_id, plan_id, quest_id, session_id)
                     conn.commit()
                 conn.rollback()
         finally:
@@ -137,10 +129,10 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         db_base.init_db()
         conn = self._connect()
         try:
-            self._insert_decision(conn, "decision-legacy-session", None, None, "missing-session")
+            self._insert_brief(conn, "brief-legacy-session", None, None, "missing-session")
             conn.commit()
             row = conn.execute(
-                "SELECT related_session_id FROM decision_records WHERE id = 'decision-legacy-session'"
+                "SELECT related_session_id FROM brief_records WHERE id = 'brief-legacy-session'"
             ).fetchone()
             self.assertEqual(row["related_session_id"], "missing-session")
         finally:
@@ -152,12 +144,11 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         try:
             self._insert_plan(conn, "plan-valid")
             self._insert_quest(conn, "quest-valid")
-            self._insert_session(conn, "sess-valid")
-            self._insert_decision(conn, "decision-valid", "plan-valid", "quest-valid", "sess-valid")
+            self._insert_brief(conn, "brief-valid", "plan-valid", "quest-valid", "sess-valid")
             conn.commit()
             row = conn.execute(
                 """SELECT related_plan_item_id, related_quest_id, related_session_id
-                   FROM decision_records WHERE id = 'decision-valid'"""
+                   FROM brief_records WHERE id = 'brief-valid'"""
             ).fetchone()
             self.assertEqual(row["related_plan_item_id"], "plan-valid")
             self.assertEqual(row["related_quest_id"], "quest-valid")
@@ -171,18 +162,16 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         try:
             self._insert_plan(conn, "plan-del")
             self._insert_quest(conn, "quest-del")
-            self._insert_session(conn, "sess-del")
-            self._insert_decision(conn, "decision-null", "plan-del", "quest-del", "sess-del")
+            self._insert_brief(conn, "brief-null", "plan-del", "quest-del", "sess-del")
             conn.commit()
 
             conn.execute("DELETE FROM plan_items WHERE id = 'plan-del'")
             conn.execute("DELETE FROM quests WHERE id = 'quest-del'")
-            conn.execute("DELETE FROM sessions WHERE id = 'sess-del'")
             conn.commit()
 
             row = conn.execute(
                 """SELECT related_plan_item_id, related_quest_id, related_session_id
-                   FROM decision_records WHERE id = 'decision-null'"""
+                   FROM brief_records WHERE id = 'brief-null'"""
             ).fetchone()
             self.assertIsNone(row["related_plan_item_id"])
             self.assertIsNone(row["related_quest_id"])
@@ -190,13 +179,13 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         finally:
             conn.close()
 
-    def test_init_db_idempotent_for_v5(self) -> None:
+    def test_init_db_idempotent_for_v6(self) -> None:
         db_base.init_db()
         db_base.init_db()
         conn = self._connect()
         try:
             count = conn.execute(
-                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 5"
+                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 6"
             ).fetchone()
             self.assertEqual(count["cnt"], 1)
         finally:
@@ -215,13 +204,13 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         db_base.init_db()
         conn = self._connect()
         try:
-            self._insert_decision(conn, "decision-fts")
+            self._insert_brief(conn, "brief-fts")
             conn.commit()
             fts_row = conn.execute(
-                "SELECT id FROM decision_records_fts WHERE id = 'decision-fts'"
+                "SELECT id FROM brief_records_fts WHERE id = 'brief-fts'"
             ).fetchone()
             self.assertIsNotNone(fts_row)
-            self.assertEqual(fts_row["id"], "decision-fts")
+            self.assertEqual(fts_row["id"], "brief-fts")
         finally:
             conn.close()
 
