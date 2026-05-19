@@ -396,7 +396,7 @@ class ControlTowerHandler(BaseHTTPRequestHandler):
 
     def handle_static(self, path: str) -> None:
         candidate = (PUBLIC_DIR / path.lstrip("/")).resolve()
-        if not str(candidate).startswith(str(PUBLIC_DIR.resolve())) or not candidate.exists():
+        if not _is_path_inside(candidate, PUBLIC_DIR) or not candidate.exists():
             self.send_error(HTTPStatus.NOT_FOUND, "Static file not found")
             return
         content_type, _ = mimetypes.guess_type(str(candidate))
