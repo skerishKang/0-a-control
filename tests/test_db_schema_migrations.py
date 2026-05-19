@@ -21,17 +21,22 @@ class SchemaMigrationTests(unittest.TestCase):
             os.environ["CONTROL_TOWER_DB_PATH"] = self.orig_db_path
         self.temp_dir.cleanup()
 
-    def test_init_db_records_baseline_schema_version(self) -> None:
+    def test_init_db_records_schema_versions(self) -> None:
         db_base.init_db()
         with db_base.connect() as conn:
             versions = db_base.get_applied_schema_versions(conn)
-            row = conn.execute(
+            baseline_row = conn.execute(
                 "SELECT name FROM schema_migrations WHERE version = ?",
                 (db_base.BASELINE_SCHEMA_VERSION,),
             ).fetchone()
+            cleanup_row = conn.execute(
+                "SELECT name FROM schema_migrations WHERE version = ?",
+                (db_base.ORPHAN_REFERENCE_CLEANUP_VERSION,),
+            ).fetchone()
 
-        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION])
-        self.assertEqual(row["name"], db_base.BASELINE_SCHEMA_NAME)
+        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION])
+        self.assertEqual(baseline_row["name"], db_base.BASELINE_SCHEMA_NAME)
+        self.assertEqual(cleanup_row["name"], db_base.ORPHAN_REFERENCE_CLEANUP_NAME)
 
     def test_init_db_is_idempotent_for_baseline_migration(self) -> None:
         db_base.init_db()
@@ -49,7 +54,7 @@ class SchemaMigrationTests(unittest.TestCase):
             db_base.apply_schema_migrations(conn)
             versions = db_base.get_applied_schema_versions(conn)
 
-        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION])
+        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION])
 
 
 if __name__ == "__main__":
