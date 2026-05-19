@@ -14,6 +14,18 @@ function getActiveQuestContext(current) {
   };
 }
 
+function setElementClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerClickHandler) {
+    element.removeEventListener("click", element.__controlTowerClickHandler);
+  }
+  element.__controlTowerClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 /**
  * Card 1. 재시작 포인트 카드
  */
@@ -136,7 +148,7 @@ function renderRecentVerdictCard(current) {
         <span class="verdict-reason-preview muted" style="font-size: 0.85rem; opacity: 0.85;">${escapeHtml(statusSummary.preliminary_reason || "외부 에이전트의 응답을 기다리고 있습니다.")}</span>
       </div>
     `;
-    recentVerdictTarget.onclick = null;
+    setElementClickHandler(recentVerdictTarget, null);
     recentVerdictTarget.parentElement.classList.remove("panel-browsing");
   } else if (recentVerdict.title) {
     const providerStr = statusSummary.latest_verdict_provider ? ` (by ${statusSummary.latest_verdict_provider})` : "";
@@ -150,7 +162,7 @@ function renderRecentVerdictCard(current) {
         <span>${escapeHtml(formatRecentLabel(recentVerdict.updated_at))}${escapeHtml(providerStr)}</span>
       </div>
     `;
-    recentVerdictTarget.onclick = renderDetail;
+    setElementClickHandler(recentVerdictTarget, renderDetail);
     recentVerdictTarget.parentElement.classList.add("panel-browsing");
   } else {
     const hasQuests = (quests || []).length > 0;
@@ -158,7 +170,7 @@ function renderRecentVerdictCard(current) {
       ? "활성 퀘스트가 있습니다. 완료 보고를 하면 AI가 분석한 판정 결과가 여기에 나타납니다."
       : "아직 기록된 퀘스트가 없습니다. 첫 작업을 시작하여 통제 타워의 기록을 채워보세요.";
     recentVerdictTarget.innerHTML = `<div class="list-item empty">${msg}</div>`;
-    recentVerdictTarget.onclick = null;
+    setElementClickHandler(recentVerdictTarget, null);
     recentVerdictTarget.parentElement.classList.remove("panel-browsing");
   }
 }
@@ -211,9 +223,9 @@ function renderPlanChangesCard(current) {
   
   const cappedFormatter = (item) => `<div class="clickable-item">${formatter(item)}</div>`;
   
-  target.onclick = () => {
+  setElementClickHandler(target, () => {
     showDetailedList("오늘 판단 / 남은 핵심", "상세 내역", entries, formatter);
-  };
+  });
 
   renderCappedList("planChangeSummary", entries, cappedFormatter, 3, "오늘 진행된 핵심 결정이나 판정 이력이 아직 없습니다. 작업을 통해 흐름을 만들어보세요.");
 }
@@ -231,7 +243,7 @@ function selectCalendarDate(dateStr) {
   if (selectedPlans.length > 0) {
     summaryEl.textContent = `${dateStr} 일정: ${selectedPlans.length}개 (클릭하여 상세보기)`;
     summaryEl.classList.add("is-actionable");
-    summaryEl.onclick = () => {
+    setElementClickHandler(summaryEl, () => {
       const title = `${dateStr} 일정`;
       const label = "계획 달력 상세";
       showDetailedList(label, title, selectedPlans, (p) => `
@@ -243,11 +255,11 @@ function selectCalendarDate(dateStr) {
           <span class="muted" style="font-size: 0.85rem;">${escapeHtml(p.due_at)}</span>
         </div>
       `);
-    };
+    });
   } else {
     summaryEl.textContent = `${dateStr}일에는 예정된 고정 일정이 없습니다.`;
     summaryEl.classList.remove("is-actionable");
-    summaryEl.onclick = null;
+    setElementClickHandler(summaryEl, null);
   }
 }
 
@@ -336,7 +348,7 @@ function renderCalendarCard(plans, selectedDate) {
   if (selectedPlans.length > 0) {
     summaryEl.textContent = `${effectiveDate} 일정: ${selectedPlans.length}개 (클릭하여 상세보기)`;
     summaryEl.classList.add("is-actionable");
-    summaryEl.onclick = () => {
+    setElementClickHandler(summaryEl, () => {
       showDetailedList("계획 달력 상세", `${effectiveDate} 일정`, selectedPlans, (p) => `
         <div class="list-item signal-item">
           <div class="signal-head">
@@ -346,10 +358,10 @@ function renderCalendarCard(plans, selectedDate) {
           <span class="muted" style="font-size: 0.85rem;">${escapeHtml(p.due_at)}</span>
         </div>
       `);
-    };
+    });
   } else {
     summaryEl.textContent = `${effectiveDate} 일정: 0개`;
     summaryEl.classList.remove("is-actionable");
-    summaryEl.onclick = null;
+    setElementClickHandler(summaryEl, null);
   }
 }
