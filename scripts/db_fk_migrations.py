@@ -31,13 +31,12 @@ def _drop_index_if_exists(conn: sqlite3.Connection, name: str) -> None:
     conn.execute(f"DROP INDEX IF EXISTS {name}")
 
 
-def _drop_source_records_fts_triggers(conn: sqlite3.Connection) -> None:
+def _drop_fts_triggers(conn: sqlite3.Connection, table: str) -> None:
     for suffix in ("ai", "au", "ad"):
-        conn.execute(f"DROP TRIGGER IF EXISTS source_records_{suffix}")
+        conn.execute(f"DROP TRIGGER IF EXISTS {table}_{suffix}")
 
 
 def _source_records_columns() -> list[str]:
-    """Canonical column list for source_records (order matters for INSERT..SELECT)."""
     return [
         "id",
         "source_type",
@@ -53,7 +52,6 @@ def _source_records_columns() -> list[str]:
 
 
 def _quests_columns() -> list[str]:
-    """Canonical column list for quests (order matters for INSERT..SELECT)."""
     return [
         "id",
         "plan_item_id",
@@ -71,11 +69,23 @@ def _quests_columns() -> list[str]:
     ]
 
 
-def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
-    """Rebuild source_records with ``session_id -> sessions(id) ON DELETE SET NULL``.
+def _decision_records_columns() -> list[str]:
+    return [
+        "id",
+        "decision_type",
+        "title",
+        "reason",
+        "impact_summary",
+        "related_plan_item_id",
+        "related_quest_id",
+        "related_session_id",
+        "created_at",
+        "metadata_json",
+    ]
 
-    No-op when either table is missing or the FK already exists.
-    """
+
+def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
+    """Rebuild source_records with ``session_id -> sessions(id) ON DELETE SET NULL``."""
     if not _table_exists(conn, "source_records") or not _table_exists(
         conn, "sessions"
     ):
@@ -87,13 +97,9 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     columns = _source_records_columns()
     col_sql = ", ".join(columns)
 
-    # 1. Drop FTS triggers (will be recreated by FTS_SCHEMA)
-    _drop_source_records_fts_triggers(conn)
-
-    # 2. Rename current table
+    _drop_fts_triggers(conn, "source_records")
     conn.execute("ALTER TABLE source_records RENAME TO source_records_old")
 
-    # 3. Create new table with FK constraint
     conn.execute(
         """
         CREATE TABLE source_records (
@@ -112,23 +118,15 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
         """
     )
 
-    # 4. Copy data
     conn.execute(
         f"INSERT INTO source_records ({col_sql}) "
         f"SELECT {col_sql} FROM source_records_old"
     )
-
-    # 5. Drop old table
     conn.execute("DROP TABLE source_records_old")
-
-    # 6. Re-apply indexes and FTS virtual tables/triggers
     conn.executescript(INDEXES)
     conn.executescript(FTS_SCHEMA)
-
-    # 7. Rebuild all FTS indexes from current data
     rebuild_fts(conn)
 
-    # 8. Verify FK integrity
     fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
     if fk_errors:
         raise sqlite3.IntegrityError(
@@ -137,14 +135,7 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
 
 
 def apply_quests_plan_parent_fks(conn: sqlite3.Connection) -> None:
-    """Rebuild quests with plan and parent quest foreign keys.
-
-    Foreign keys added:
-    - ``plan_item_id -> plan_items(id) ON DELETE SET NULL``
-    - ``parent_quest_id -> quests(id) ON DELETE SET NULL``
-
-    No-op when required tables are missing or both FKs already exist.
-    """
+    """Rebuild quests with plan and parent quest foreign keys."""
     if not _table_exists(conn, "quests") or not _table_exists(conn, "plan_items"):
         return
 
@@ -156,10 +147,7 @@ def apply_quests_plan_parent_fks(conn: sqlite3.Connection) -> None:
     columns = _quests_columns()
     col_sql = ", ".join(columns)
 
-    # The existing index can move with the renamed table. Drop it before rebuild so
-    # INDEXES can recreate it on the new quests table.
     _drop_index_if_exists(conn, "idx_quests_status_updated")
-
     conn.execute("ALTER TABLE quests RENAME TO quests_old")
 
     conn.execute(
@@ -192,4 +180,64 @@ def apply_quests_plan_parent_fks(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after quests rebuild: {fk_errors}"
+        )
+
+
+def apply_decision_records_reference_fks(conn: sqlite3.Connection) -> None:
+    """Rebuild decision_records with plan and quest reference FKs.
+
+    ``related_session_id`` is intentionally left unconstrained in this slice
+    because legacy report imports may pass placeholder or external session ids.
+    """
+    required_tables = ("decision_records", "plan_items", "quests")
+    if not all(_table_exists(conn, table) for table in required_tables):
+        return
+
+    has_plan_fk = _has_fk_on_column(
+        conn, "decision_records", "related_plan_item_id", "plan_items"
+    )
+    has_quest_fk = _has_fk_on_column(
+        conn, "decision_records", "related_quest_id", "quests"
+    )
+    if has_plan_fk and has_quest_fk:
+        return
+
+    columns = _decision_records_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_fts_triggers(conn, "decision_records")
+    conn.execute("ALTER TABLE decision_records RENAME TO decision_records_old")
+
+    conn.execute(
+        """
+        CREATE TABLE decision_records (
+            id TEXT PRIMARY KEY,
+            decision_type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            reason TEXT,
+            impact_summary TEXT,
+            related_plan_item_id TEXT
+                REFERENCES plan_items(id) ON DELETE SET NULL,
+            related_quest_id TEXT
+                REFERENCES quests(id) ON DELETE SET NULL,
+            related_session_id TEXT,
+            created_at TEXT NOT NULL,
+            metadata_json TEXT
+        )
+        """
+    )
+
+    conn.execute(
+        f"INSERT INTO decision_records ({col_sql}) "
+        f"SELECT {col_sql} FROM decision_records_old"
+    )
+    conn.execute("DROP TABLE decision_records_old")
+    conn.executescript(INDEXES)
+    conn.executescript(FTS_SCHEMA)
+    rebuild_fts(conn)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after decision_records rebuild: {fk_errors}"
         )

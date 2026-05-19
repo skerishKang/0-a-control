@@ -37,6 +37,10 @@ class SchemaMigrationTests(unittest.TestCase):
                 "SELECT name FROM schema_migrations WHERE version = ?",
                 (db_base.QUESTS_PLAN_PARENT_FK_VERSION,),
             ).fetchone()
+            decision_fk_row = conn.execute(
+                "SELECT name FROM schema_migrations WHERE version = ?",
+                (db_base.DECISION_RECORDS_REFERENCE_FK_VERSION,),
+            ).fetchone()
 
         self.assertEqual(
             versions,
@@ -45,11 +49,13 @@ class SchemaMigrationTests(unittest.TestCase):
                 db_base.ORPHAN_REFERENCE_CLEANUP_VERSION,
                 db_base.SOURCE_RECORDS_SESSION_FK_VERSION,
                 db_base.QUESTS_PLAN_PARENT_FK_VERSION,
+                db_base.DECISION_RECORDS_REFERENCE_FK_VERSION,
             ],
         )
         self.assertEqual(baseline_row["name"], db_base.BASELINE_SCHEMA_NAME)
         self.assertEqual(cleanup_row["name"], db_base.ORPHAN_REFERENCE_CLEANUP_NAME)
         self.assertEqual(quests_fk_row["name"], db_base.QUESTS_PLAN_PARENT_FK_NAME)
+        self.assertEqual(decision_fk_row["name"], db_base.DECISION_RECORDS_REFERENCE_FK_NAME)
 
     def test_init_db_is_idempotent_for_baseline_migration(self) -> None:
         db_base.init_db()
@@ -74,6 +80,7 @@ class SchemaMigrationTests(unittest.TestCase):
                 db_base.ORPHAN_REFERENCE_CLEANUP_VERSION,
                 db_base.SOURCE_RECORDS_SESSION_FK_VERSION,
                 db_base.QUESTS_PLAN_PARENT_FK_VERSION,
+                db_base.DECISION_RECORDS_REFERENCE_FK_VERSION,
             ],
         )
 
