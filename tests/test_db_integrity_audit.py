@@ -71,6 +71,7 @@ class RelationalOrphanAuditTests(unittest.TestCase):
     def test_audit_detects_missing_plan_item_for_quest(self) -> None:
         with db_base.connect() as conn:
             now = db_base.now_iso()
+            conn.execute("PRAGMA foreign_keys = OFF")
             conn.execute(
                 """
                 INSERT INTO quests (
@@ -79,6 +80,7 @@ class RelationalOrphanAuditTests(unittest.TestCase):
                 """,
                 ("quest-1", "missing-plan", "Quest", "Done", "active", now, now),
             )
+            conn.execute("PRAGMA foreign_keys = ON")
             findings = audit_orphan_references(conn)
 
         self.assertEqual(len(findings), 1)
