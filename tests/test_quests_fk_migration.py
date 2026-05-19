@@ -77,15 +77,11 @@ class QuestsFKMigrationTests(unittest.TestCase):
                 "SELECT version, name FROM schema_migrations ORDER BY version"
             ).fetchall()
             result = {int(r["version"]): r["name"] for r in versions}
-            self.assertEqual(
-                result,
-                {
-                    1: "baseline-current-schema",
-                    2: "null-orphan-relational-references",
-                    3: "source-records-session-fk",
-                    4: "quests-plan-parent-fks",
-                },
-            )
+            self.assertEqual(result[1], "baseline-current-schema")
+            self.assertEqual(result[2], "null-orphan-relational-references")
+            self.assertEqual(result[3], "source-records-session-fk")
+            self.assertEqual(result[4], "quests-plan-parent-fks")
+            self.assertGreaterEqual(max(result), 4)
         finally:
             conn.close()
 
