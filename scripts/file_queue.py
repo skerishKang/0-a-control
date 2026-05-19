@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
-import uuid
 import os
+import re
+import uuid
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,21 +14,61 @@ REPORTS_DIR = QUEUE_DIR / "reports"
 VERDICTS_DIR = QUEUE_DIR / "verdicts"
 PROCESSED_DIR = QUEUE_DIR / "processed"
 
+# Pattern for a well-formed UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+_UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
+# Allowed characters in filename tokens: alphanumeric, hyphen, underscore, dot
+_SAFE_TOKEN_RE = re.compile(r"[^a-zA-Z0-9._-]")
+# Suffix allowlist — only these suffixes are accepted
+SAFE_SUFFIXES: frozenset[str] = frozenset({
+    "quest-report",
+    "phase-report",
+    "quest-plan",
+    "session-log",
+    "verdict",
+    "event",
+    "summary",
+    "checkpoint",
+    "debug",
+    "plan",
+    "revision",
+    "detail",
+})
+
 
 def get_iso8601_basic(dt: datetime) -> str:
     # Generate ISO8601 basic format (e.g., 20260309T053100Z)
     return dt.strftime("%Y%m%dT%H%M%SZ")
 
 
+def _safe_token(value: str, placeholder: str = "_") -> str:
+    """Normalize *value* into a filesystem-safe token.
+
+    - Removes characters that are not alphanumeric, ``-``, ``_``, or ``.``
+    - Strips leading/trailing dots to avoid hidden files and traversal tokens
+    - Returns *placeholder* if the result is empty.
+    """
+    cleaned = _SAFE_TOKEN_RE.sub("", value).strip(".")
+    return cleaned if cleaned else placeholder
+
+
 def generate_report_id(quest_id: str, session_id: str = "") -> str:
     now = datetime.now(timezone.utc)
     ts = get_iso8601_basic(now)
-    sid = session_id if session_id else "_"
-    return f"{ts}-{quest_id}-{sid}"
+    safe_quest = _safe_token(quest_id)
+    sid = _safe_token(session_id) if session_id else "_"
+    return f"{ts}-{safe_quest}-{sid}"
 
 
 def generate_filename(report_id: str, suffix: str) -> str:
-    return f"{report_id}.{suffix}.json"
+    """Produce a ``{report_id}.{suffix}.json`` filename.
+
+    If *suffix* is not in :data:`SAFE_SUFFIXES`, it is normalized via
+    :func:`_safe_token` to prevent arbitrary extensions or path fragments.
+    """
+    if suffix not in SAFE_SUFFIXES:
+        suffix = _safe_token(suffix, "report")
+    safe_id = _safe_token(report_id)
+    return f"{safe_id}.{suffix}.json"
 
 
 def save_json(directory: Path, filename: str, data: dict) -> Path:
