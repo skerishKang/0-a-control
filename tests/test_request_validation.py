@@ -125,8 +125,93 @@ class RequestValidationTests(unittest.TestCase):
                 "/api/sessions/end",
                 "/api/quests/evaluate",
                 "/api/quests/report",
+                "/api/bridge/parse",
+                "/api/bridge/quick-input",
+                "/api/bridge/create-plan",
+                "/api/tomorrow-first-quest/confirm",
+                "/api/tomorrow-first-quest/promote",
+                "/api/tomorrow-first-quest/clear",
+                "/api/agents/cleanup-stale",
+                "/api/executor-prompts/generate",
             },
         )
+
+    def test_bridge_parse_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body("/api/bridge/parse", {"text": "hello"}))
+
+    def test_bridge_parse_requires_text(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/parse", {}))
+
+    def test_bridge_parse_rejects_non_string_text(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/parse", {"text": 123}))
+
+    def test_bridge_quick_input_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/bridge/quick-input",
+            {"text": "add task to short term"},
+        ))
+
+    def test_bridge_quick_input_requires_text(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/quick-input", {}))
+
+    def test_bridge_create_plan_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/bridge/create-plan",
+            {"candidates": [{"title": "Plan A", "reason": "important"}]},
+        ))
+
+    def test_bridge_create_plan_requires_candidates(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/create-plan", {}))
+
+    def test_bridge_create_plan_rejects_empty_array(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/create-plan", {"candidates": []}))
+
+    def test_bridge_create_plan_rejects_non_array(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/bridge/create-plan", {"candidates": "string"}))
+
+    def test_tomorrow_first_quest_confirm_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/tomorrow-first-quest/confirm",
+            {"title": "Investigate X"},
+        ))
+
+    def test_tomorrow_first_quest_confirm_requires_title(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/tomorrow-first-quest/confirm", {}))
+
+    def test_tomorrow_first_quest_confirm_source_default(self) -> None:
+        body = {"title": "Task"}
+        self.assertIsNone(validate_mutation_body("/api/tomorrow-first-quest/confirm", body))
+        self.assertEqual(body["source"], "manual")
+
+    def test_tomorrow_first_quest_promote_valid_empty_body(self) -> None:
+        self.assertIsNone(validate_mutation_body("/api/tomorrow-first-quest/promote", {}))
+
+    def test_tomorrow_first_quest_promote_valid_with_extra(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/tomorrow-first-quest/promote",
+            {"unexpected": "field"},
+        ))
+
+    def test_tomorrow_first_quest_clear_valid_empty_body(self) -> None:
+        self.assertIsNone(validate_mutation_body("/api/tomorrow-first-quest/clear", {}))
+
+    def test_agents_cleanup_stale_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/agents/cleanup-stale",
+            {"agent_name": "kilo"},
+        ))
+
+    def test_agents_cleanup_stale_requires_agent_name(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/agents/cleanup-stale", {}))
+
+    def test_executor_prompt_generate_valid(self) -> None:
+        self.assertIsNone(validate_mutation_body(
+            "/api/executor-prompts/generate",
+            {"prompt_type": "code_review"},
+        ))
+
+    def test_executor_prompt_generate_requires_prompt_type(self) -> None:
+        self.assertIsNotNone(validate_mutation_body("/api/executor-prompts/generate", {}))
 
 
 if __name__ == "__main__":
