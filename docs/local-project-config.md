@@ -16,3 +16,9 @@ The repository only tracks `data/config/tracked_projects.example.json`.
 - Commit the example file.
 - Do not commit the real local config file.
 - Do not commit runtime database files, generated session files, or generated queue artifacts.
+
+## Generated session exports
+
+`sessions/` contains generated session notes and indexes.
+These are local-only outputs produced by `export_sessions.py` and related scripts.
+Do not commit them to the repository.
