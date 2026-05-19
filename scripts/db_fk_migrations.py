@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 
+from scripts.db_base import normalize_existing_session_id
 from scripts.db_schema import INDEXES, FTS_SCHEMA, rebuild_fts
 
 
@@ -34,6 +35,24 @@ def _drop_index_if_exists(conn: sqlite3.Connection, name: str) -> None:
 def _drop_fts_triggers(conn: sqlite3.Connection, table: str) -> None:
     for suffix in ("ai", "au", "ad"):
         conn.execute(f"DROP TRIGGER IF EXISTS {table}_{suffix}")
+
+
+def _normalize_session_column(
+    conn: sqlite3.Connection, table: str, id_column: str, session_column: str
+) -> None:
+    """Normalize nullable session references before adding a session FK."""
+    rows = conn.execute(
+        f"SELECT {id_column}, {session_column} FROM {table} WHERE {session_column} IS NOT NULL"
+    ).fetchall()
+    for row in rows:
+        row_id = row[0]
+        current_session_id = row[1]
+        normalized_session_id = normalize_existing_session_id(conn, current_session_id)
+        if normalized_session_id != current_session_id:
+            conn.execute(
+                f"UPDATE {table} SET {session_column} = ? WHERE {id_column} = ?",
+                (normalized_session_id, row_id),
+            )
 
 
 def _source_records_columns() -> list[str]:
@@ -254,6 +273,63 @@ def apply_decision_records_reference_fks(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after decision_records rebuild: {fk_errors}"
+        )
+
+
+def apply_decision_records_session_fk(conn: sqlite3.Connection) -> None:
+    """Rebuild decision_records with a nullable session FK."""
+    required_tables = ("decision_records", "plan_items", "quests", "sessions")
+    if not all(_table_exists(conn, table) for table in required_tables):
+        return
+
+    if _has_fk_on_column(conn, "decision_records", "related_session_id", "sessions"):
+        return
+
+    columns = _decision_records_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_fts_triggers(conn, "decision_records")
+    conn.execute("ALTER TABLE decision_records RENAME TO decision_records_old")
+    _normalize_session_column(
+        conn,
+        "decision_records_old",
+        "id",
+        "related_session_id",
+    )
+
+    conn.execute(
+        """
+        CREATE TABLE decision_records (
+            id TEXT PRIMARY KEY,
+            decision_type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            reason TEXT,
+            impact_summary TEXT,
+            related_plan_item_id TEXT
+                REFERENCES plan_items(id) ON DELETE SET NULL,
+            related_quest_id TEXT
+                REFERENCES quests(id) ON DELETE SET NULL,
+            related_session_id TEXT
+                REFERENCES sessions(id) ON DELETE SET NULL,
+            created_at TEXT NOT NULL,
+            metadata_json TEXT
+        )
+        """
+    )
+
+    conn.execute(
+        f"INSERT INTO decision_records ({col_sql}) "
+        f"SELECT {col_sql} FROM decision_records_old"
+    )
+    conn.execute("DROP TABLE decision_records_old")
+    conn.executescript(INDEXES)
+    conn.executescript(FTS_SCHEMA)
+    rebuild_fts(conn)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after decision_records session rebuild: {fk_errors}"
         )
 
 
