@@ -6,18 +6,19 @@ Creates session notes in sessions/YYYY-MM-DD/ folder.
 
 from __future__ import annotations
 
+import os
 from datetime import datetime
 from pathlib import Path
 
 try:
     from scripts.db_sessions import get_session_view_model
-    from scripts.db_base import connect, rows_to_dicts
+    from scripts.db_base import ROOT_DIR, connect, rows_to_dicts
 except ModuleNotFoundError:
     from db_sessions import get_session_view_model
-    from db_base import connect, rows_to_dicts
+    from db_base import ROOT_DIR, connect, rows_to_dicts
 
 
-SESSIONS_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions")
+SESSIONS_DIR = Path(os.getenv("CONTROL_TOWER_SESSIONS_EXPORT_DIR", str(ROOT_DIR / "sessions")))
 
 
 def parse_timestamp(ts: str | None) -> tuple[datetime | None, str | None]:
