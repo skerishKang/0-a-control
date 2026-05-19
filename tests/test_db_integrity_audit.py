@@ -30,6 +30,8 @@ class RelationalOrphanAuditTests(unittest.TestCase):
 
     def test_audit_detects_missing_session_for_source_record(self) -> None:
         with db_base.connect() as conn:
+            # FK constraint now prevents orphan inserts; disable temporarily
+            conn.execute("PRAGMA foreign_keys = OFF")
             conn.execute(
                 """
                 INSERT INTO source_records (
@@ -38,6 +40,7 @@ class RelationalOrphanAuditTests(unittest.TestCase):
                 """,
                 ("src-1", "manual", "tester", "missing-session", "hello", db_base.now_iso()),
             )
+            conn.execute("PRAGMA foreign_keys = ON")
             findings = audit_orphan_references(conn)
 
         self.assertEqual(len(findings), 1)

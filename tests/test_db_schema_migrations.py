@@ -34,7 +34,7 @@ class SchemaMigrationTests(unittest.TestCase):
                 (db_base.ORPHAN_REFERENCE_CLEANUP_VERSION,),
             ).fetchone()
 
-        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION])
+        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION, db_base.SOURCE_RECORDS_FK_VERSION])
         self.assertEqual(baseline_row["name"], db_base.BASELINE_SCHEMA_NAME)
         self.assertEqual(cleanup_row["name"], db_base.ORPHAN_REFERENCE_CLEANUP_NAME)
 
@@ -54,7 +54,7 @@ class SchemaMigrationTests(unittest.TestCase):
             db_base.apply_schema_migrations(conn)
             versions = db_base.get_applied_schema_versions(conn)
 
-        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION])
+        self.assertEqual(versions, [db_base.BASELINE_SCHEMA_VERSION, db_base.ORPHAN_REFERENCE_CLEANUP_VERSION, db_base.SOURCE_RECORDS_FK_VERSION])
 
 
 if __name__ == "__main__":
