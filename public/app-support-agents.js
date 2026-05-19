@@ -2,6 +2,18 @@
  * Agent Status rendering module for Classic UI
  */
 
+function setAgentPanelClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerAgentClickHandler) {
+    element.removeEventListener("click", element.__controlTowerAgentClickHandler);
+  }
+  element.__controlTowerAgentClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerAgentClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 function labelAgentStatus(status) {
   return {
     working: "작업 중",
@@ -94,7 +106,7 @@ function renderAgentStatusSection(state) {
   }).join("");
 
   if (parentPanel) {
-    parentPanel.onclick = () => {
+    setAgentPanelClickHandler(parentPanel, () => {
       showDetailedList("에이전트 상태", "실행기 상태와 최근 세션", items, (item) => {
         const latest = item.last_session || {};
         const latestTitle = latest.title ? normalizeSessionTitleLabel(latest.title) : formatAgentTimestamp(latest.started_at);
@@ -118,7 +130,7 @@ function renderAgentStatusSection(state) {
           </div>
         `;
       });
-    };
+    });
   }
 }
 
