@@ -84,6 +84,20 @@ def _decision_records_columns() -> list[str]:
     ]
 
 
+def _brief_records_columns() -> list[str]:
+    return [
+        "id",
+        "brief_type",
+        "title",
+        "content_md",
+        "related_plan_item_id",
+        "related_quest_id",
+        "related_session_id",
+        "created_at",
+        "metadata_json",
+    ]
+
+
 def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     """Rebuild source_records with ``session_id -> sessions(id) ON DELETE SET NULL``."""
     if not _table_exists(conn, "source_records") or not _table_exists(
@@ -240,4 +254,63 @@ def apply_decision_records_reference_fks(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after decision_records rebuild: {fk_errors}"
+        )
+
+
+def apply_brief_records_reference_fks(conn: sqlite3.Connection) -> None:
+    """Rebuild brief_records with plan and quest reference FKs.
+
+    ``related_session_id`` is intentionally left unconstrained in this slice
+    because legacy brief/import paths may pass placeholder or external session ids.
+    """
+    required_tables = ("brief_records", "plan_items", "quests")
+    if not all(_table_exists(conn, table) for table in required_tables):
+        return
+
+    has_plan_fk = _has_fk_on_column(
+        conn, "brief_records", "related_plan_item_id", "plan_items"
+    )
+    has_quest_fk = _has_fk_on_column(
+        conn, "brief_records", "related_quest_id", "quests"
+    )
+    if has_plan_fk and has_quest_fk:
+        return
+
+    columns = _brief_records_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_fts_triggers(conn, "brief_records")
+    conn.execute("ALTER TABLE brief_records RENAME TO brief_records_old")
+
+    conn.execute(
+        """
+        CREATE TABLE brief_records (
+            id TEXT PRIMARY KEY,
+            brief_type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content_md TEXT NOT NULL,
+            related_plan_item_id TEXT
+                REFERENCES plan_items(id) ON DELETE SET NULL,
+            related_quest_id TEXT
+                REFERENCES quests(id) ON DELETE SET NULL,
+            related_session_id TEXT,
+            created_at TEXT NOT NULL,
+            metadata_json TEXT
+        )
+        """
+    )
+
+    conn.execute(
+        f"INSERT INTO brief_records ({col_sql}) "
+        f"SELECT {col_sql} FROM brief_records_old"
+    )
+    conn.execute("DROP TABLE brief_records_old")
+    conn.executescript(INDEXES)
+    conn.executescript(FTS_SCHEMA)
+    rebuild_fts(conn)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after brief_records rebuild: {fk_errors}"
         )
