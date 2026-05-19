@@ -32,6 +32,8 @@ DECISION_RECORDS_REFERENCE_FK_VERSION = 5
 DECISION_RECORDS_REFERENCE_FK_NAME = "decision-records-reference-fks"
 BRIEF_RECORDS_REFERENCE_FK_VERSION = 6
 BRIEF_RECORDS_REFERENCE_FK_NAME = "brief-records-reference-fks"
+DECISION_RECORDS_SESSION_FK_VERSION = 7
+DECISION_RECORDS_SESSION_FK_NAME = "decision-records-session-fk"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -153,6 +155,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             BRIEF_RECORDS_REFERENCE_FK_VERSION,
             BRIEF_RECORDS_REFERENCE_FK_NAME,
+        )
+    if not schema_migration_applied(conn, DECISION_RECORDS_SESSION_FK_VERSION):
+        from scripts.db_fk_migrations import apply_decision_records_session_fk
+
+        apply_decision_records_session_fk(conn)
+        record_schema_migration(
+            conn,
+            DECISION_RECORDS_SESSION_FK_VERSION,
+            DECISION_RECORDS_SESSION_FK_NAME,
         )
 
 

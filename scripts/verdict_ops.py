@@ -7,7 +7,7 @@ import uuid
 from typing import Optional
 
 from scripts.ai_verdict import generate_verdict
-from scripts.db_base import connect, now_iso, record_event, row_to_dict
+from scripts.db_base import connect, normalize_existing_session_id, now_iso, record_event, row_to_dict
 from scripts.db_sessions import append_source_record
 from scripts.db_state import refresh_current_state
 from scripts.report_export import export_quest_report
@@ -34,6 +34,7 @@ def _update_quest_status_with_decision(
     metadata_json: Optional[str] = None,
 ) -> None:
     updated_at = now_iso()
+    related_session_id = normalize_existing_session_id(conn, session_id)
 
     conn.execute(
         """
@@ -65,7 +66,7 @@ def _update_quest_status_with_decision(
             plan_impact,
             quest["plan_item_id"],
             quest_id,
-            session_id or None,
+            related_session_id,
             updated_at,
             None,
         ),
@@ -89,7 +90,7 @@ def _update_quest_status_with_decision(
     refresh_current_state(conn)
 
 
-VERDICT_STATUS_RE = re.compile(r"^AI 판정:\s*(done|partial|hold|pending)\b", re.MULTILINE)
+VERDICT_STATUS_RE = re.compile("^AI \\uD310\\uC815:\\s*(done|partial|hold|pending)\\b", re.MULTILINE)
 
 
 def apply_verdict(
@@ -111,6 +112,7 @@ def apply_verdict(
         quest = conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone()
         if quest is None:
             raise ValueError("quest not found")
+        related_session_id = normalize_existing_session_id(conn, session_id)
 
         existing_metadata = json.loads(quest["metadata_json"] or "{}")
 
@@ -164,7 +166,7 @@ def apply_verdict(
             for b, desc in plan_impact.items():
                 if desc and desc != "--":
                     parts.append(f"[{b}] {desc}")
-            impact_str = "\n".join(parts) if parts else "영향 없음"
+            impact_str = "\n".join(parts) if parts else "\\uC601\\uD5A5 \\uC5C6\\uC74C"
 
         conn.execute(
             """
@@ -202,7 +204,7 @@ def apply_verdict(
                 impact_str,
                 quest["plan_item_id"],
                 quest_id,
-                session_id or None,
+                related_session_id,
                 updated_at,
                 json.dumps({"report_ref": report_ref, "raw_impact": plan_impact}, ensure_ascii=False),
             ),
@@ -223,23 +225,23 @@ def apply_verdict(
         refresh_current_state(conn)
         updated_quest = row_to_dict(conn.execute("SELECT * FROM quests WHERE id = ?", (quest_id,)).fetchone())
 
-    if session_id:
+    if related_session_id:
         with connect() as conn:
             session = conn.execute(
                 "SELECT agent_name, project_key, working_dir FROM sessions WHERE id = ?",
-                (session_id,),
+                (related_session_id,),
             ).fetchone()
         if session is not None:
             assistant_lines = [
-                f"AI 판정: {verdict}",
-                f"- 이유: {reason or '-'}",
-                f"- 재시작 지점: {restart_point or '-'}",
-                f"- 다음 퀘스트: {next_hint or '-'}",
-                f"- 계획 반영: {plan_impact or '-'}",
+                f"AI \\uD310\\uC815: {verdict}",
+                f"- \\uC774\\uC720: {reason or '-'}",
+                f"- \\uC7AC\\uC2DC\\uC791 \\uC9C0\\uC810: {restart_point or '-'}",
+                f"- \\uB2E4\\uC74C \\uD018\\uC2A4\\uD2B8: {next_hint or '-'}",
+                f"- \\uACC4\\uD68D \\uBC18\\uC601: {plan_impact or '-'}",
                 f"- provider: {provider}",
             ]
             append_source_record(
-                session_id=session_id,
+                session_id=related_session_id,
                 source_name=session["agent_name"],
                 source_type="quest_verdict",
                 content="\n".join(assistant_lines),
@@ -394,11 +396,11 @@ def report_quest_progress(
             ).fetchone()
         if session is not None:
             user_report_lines = [
-                f"퀘스트 보고: {quest['title']} (판정 대기중)",
-                f"- 한 일: {work_summary or '-'}",
-                f"- 남은 일: {remaining_work or '-'}",
-                f"- 막힌 점: {blocker or '-'}",
-                f"- 자기 판단: {self_assessment or '-'}",
+                f"\\uD018\\uC2A4\\uD2B8 \\uBCF4\\uACE0: {quest['title']} (\\uD310\\uC815 \\uB300\\uAE30\\uC911)",
+                f"- \\uD55C \\uC77C: {work_summary or '-'}",
+                f"- \\uB0A8\\uC740 \\uC77C: {remaining_work or '-'}",
+                f"- \\uB9C9\\uD78C \\uC810: {blocker or '-'}",
+                f"- \\uC790\\uAE30 \\uD310\\uB2E8: {self_assessment or '-'}",
             ]
             append_source_record(
                 session_id=session_id,

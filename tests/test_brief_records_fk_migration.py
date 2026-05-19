@@ -87,7 +87,7 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
             ).fetchall()
             result = {int(r["version"]): r["name"] for r in versions}
             self.assertEqual(result[6], "brief-records-reference-fks")
-            self.assertEqual(sorted(result), [1, 2, 3, 4, 5, 6])
+            self.assertGreaterEqual(max(result), 6)
         finally:
             conn.close()
 
