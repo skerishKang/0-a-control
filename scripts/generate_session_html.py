@@ -7,18 +7,19 @@ Creates sessions_html/ directory with index and individual session HTMLs.
 from __future__ import annotations
 
 import html
+import os
 from datetime import datetime
 from pathlib import Path
 
 try:
     from scripts.db_sessions import get_session_view_model
-    from scripts.db_base import connect, rows_to_dicts
+    from scripts.db_base import ROOT_DIR, connect, rows_to_dicts
 except ModuleNotFoundError:
     from db_sessions import get_session_view_model
-    from db_base import connect, rows_to_dicts
+    from db_base import ROOT_DIR, connect, rows_to_dicts
 
 
-OUTPUT_DIR = Path("G:/Ddrive/BatangD/task/workdiary/0-a-control/sessions_html")
+OUTPUT_DIR = Path(os.getenv("CONTROL_TOWER_SESSIONS_HTML_DIR", str(ROOT_DIR / "sessions_html")))
 
 CSS = """
 <style>
