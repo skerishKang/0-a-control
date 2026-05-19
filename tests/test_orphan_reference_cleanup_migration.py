@@ -26,6 +26,7 @@ class OrphanReferenceCleanupMigrationTests(unittest.TestCase):
         db_base.init_db()
         with db_base.connect() as conn:
             now = db_base.now_iso()
+            conn.execute("PRAGMA foreign_keys = OFF")
             conn.execute(
                 """
                 INSERT INTO decision_records (
@@ -34,6 +35,7 @@ class OrphanReferenceCleanupMigrationTests(unittest.TestCase):
                 """,
                 ("decision-1", "test", "Decision", "missing-quest", "_", now),
             )
+            conn.execute("PRAGMA foreign_keys = ON")
             self.assertEqual(len(audit_orphan_references(conn)), 2)
             updates = clear_orphan_references(conn)
             row = conn.execute(
