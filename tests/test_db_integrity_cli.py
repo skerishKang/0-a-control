@@ -46,6 +46,7 @@ class RelationalIntegrityCliTests(unittest.TestCase):
 
     def test_main_returns_one_when_orphans_exist(self) -> None:
         with db_base.connect() as conn:
+            conn.execute("PRAGMA foreign_keys = OFF")
             conn.execute(
                 """
                 INSERT INTO source_records (
@@ -54,6 +55,7 @@ class RelationalIntegrityCliTests(unittest.TestCase):
                 """,
                 ("src-1", "manual", "tester", "missing-session", "hello", db_base.now_iso()),
             )
+            conn.execute("PRAGMA foreign_keys = ON")
 
         output = io.StringIO()
         with redirect_stdout(output):
