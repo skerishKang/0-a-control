@@ -26,6 +26,8 @@ ORPHAN_REFERENCE_CLEANUP_VERSION = 2
 ORPHAN_REFERENCE_CLEANUP_NAME = "null-orphan-relational-references"
 SOURCE_RECORDS_SESSION_FK_VERSION = 3
 SOURCE_RECORDS_SESSION_FK_NAME = "source-records-session-fk"
+QUESTS_PLAN_PARENT_FK_VERSION = 4
+QUESTS_PLAN_PARENT_FK_NAME = "quests-plan-parent-fks"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -105,6 +107,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             SOURCE_RECORDS_SESSION_FK_VERSION,
             SOURCE_RECORDS_SESSION_FK_NAME,
+        )
+    if not schema_migration_applied(conn, QUESTS_PLAN_PARENT_FK_VERSION):
+        from scripts.db_fk_migrations import apply_quests_plan_parent_fks
+
+        apply_quests_plan_parent_fks(conn)
+        record_schema_migration(
+            conn,
+            QUESTS_PLAN_PARENT_FK_VERSION,
+            QUESTS_PLAN_PARENT_FK_NAME,
         )
 
 
