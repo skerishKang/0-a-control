@@ -59,6 +59,21 @@ def connect():
         conn.close()
 
 
+def normalize_existing_session_id(conn: sqlite3.Connection, session_id: str | None) -> str | None:
+    """Return an existing session id or ``None`` for nullable FK references.
+
+    Legacy callers sometimes pass blank values, ``_`` placeholders, or external
+    session ids that are not present in the local ``sessions`` table. Nullable
+    reference columns should store ``NULL`` instead of those values before a FK
+    constraint is added.
+    """
+    candidate = (session_id or "").strip()
+    if not candidate or candidate == "_":
+        return None
+    row = conn.execute("SELECT 1 FROM sessions WHERE id = ?", (candidate,)).fetchone()
+    return candidate if row is not None else None
+
+
 def ensure_schema_migrations(conn: sqlite3.Connection) -> None:
     conn.execute(
         """
