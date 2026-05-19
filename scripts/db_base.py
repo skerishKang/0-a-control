@@ -28,6 +28,8 @@ SOURCE_RECORDS_SESSION_FK_VERSION = 3
 SOURCE_RECORDS_SESSION_FK_NAME = "source-records-session-fk"
 QUESTS_PLAN_PARENT_FK_VERSION = 4
 QUESTS_PLAN_PARENT_FK_NAME = "quests-plan-parent-fks"
+DECISION_RECORDS_REFERENCE_FK_VERSION = 5
+DECISION_RECORDS_REFERENCE_FK_NAME = "decision-records-reference-fks"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -116,6 +118,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             QUESTS_PLAN_PARENT_FK_VERSION,
             QUESTS_PLAN_PARENT_FK_NAME,
+        )
+    if not schema_migration_applied(conn, DECISION_RECORDS_REFERENCE_FK_VERSION):
+        from scripts.db_fk_migrations import apply_decision_records_reference_fks
+
+        apply_decision_records_reference_fks(conn)
+        record_schema_migration(
+            conn,
+            DECISION_RECORDS_REFERENCE_FK_VERSION,
+            DECISION_RECORDS_REFERENCE_FK_NAME,
         )
 
 
