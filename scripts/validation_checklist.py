@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,10 +38,18 @@ def _read_all() -> dict[str, Any]:
 def _write_all(data: dict[str, Any]) -> None:
     path = _storage_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+
+    temp_path = path.with_suffix(f"{path.suffix}.tmp_{uuid.uuid4().hex}")
+    try:
+        temp_path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        os.replace(temp_path, path)
+    except Exception:
+        if temp_path.exists():
+            temp_path.unlink()
+        raise
 
 
 def _now_iso() -> str:
