@@ -22,6 +22,8 @@ WORKDIARY_DIR = Path(os.getenv("CONTROL_TOWER_WORKDIARY_DIR", str(ROOT_DIR.paren
 UTC = timezone.utc
 BASELINE_SCHEMA_VERSION = 1
 BASELINE_SCHEMA_NAME = "baseline-current-schema"
+ORPHAN_REFERENCE_CLEANUP_VERSION = 2
+ORPHAN_REFERENCE_CLEANUP_NAME = "null-orphan-relational-references"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -71,15 +73,28 @@ def record_schema_migration(conn: sqlite3.Connection, version: int, name: str) -
     )
 
 
-def apply_schema_migrations(conn: sqlite3.Connection) -> None:
-    """Record the baseline schema version for future incremental migrations.
+def schema_migration_applied(conn: sqlite3.Connection, version: int) -> bool:
+    ensure_schema_migrations(conn)
+    row = conn.execute(
+        "SELECT 1 FROM schema_migrations WHERE version = ?",
+        (version,),
+    ).fetchone()
+    return row is not None
 
-    The current schema is still applied through idempotent SQL strings. This
-    function adds migration bookkeeping without changing existing tables, so
-    future schema changes can be added as numbered migration functions.
-    """
+
+def apply_schema_migrations(conn: sqlite3.Connection) -> None:
+    """Apply schema/data migrations in order."""
     ensure_schema_migrations(conn)
     record_schema_migration(conn, BASELINE_SCHEMA_VERSION, BASELINE_SCHEMA_NAME)
+    if not schema_migration_applied(conn, ORPHAN_REFERENCE_CLEANUP_VERSION):
+        from scripts.db_integrity import clear_orphan_references
+
+        clear_orphan_references(conn)
+        record_schema_migration(
+            conn,
+            ORPHAN_REFERENCE_CLEANUP_VERSION,
+            ORPHAN_REFERENCE_CLEANUP_NAME,
+        )
 
 
 def get_applied_schema_versions(conn: sqlite3.Connection) -> list[int]:
