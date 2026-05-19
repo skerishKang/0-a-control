@@ -25,11 +25,11 @@ class _CapturingControlTowerHandler(ControlTowerHandler):
     def send_json(self, payload, status=HTTPStatus.OK):
         self.json_response = {"payload": payload, "status": status}
 
-    def handle_api_get_dispatch(self, path, query):
+    def handle_api_get_dispatch(self, handler, path, query):
         self.dispatched = True
         self.send_json({"ok": True, "path": path})
 
-    def handle_api_post_dispatch(self, path, body):
+    def handle_api_post_dispatch(self, handler, path, body):
         self.dispatched = True
         self.send_json({"ok": True, "path": path})
 
