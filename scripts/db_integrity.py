@@ -39,6 +39,20 @@ def _quote_identifier(value: str) -> str:
     return f'"{value}"'
 
 
+def _orphan_where_clause(relationship: Relationship) -> str:
+    child_column = _quote_identifier(relationship.child_column)
+    parent_table = _quote_identifier(relationship.parent_table)
+    parent_column = _quote_identifier(relationship.parent_column)
+    return f"""
+        {child_column} IS NOT NULL
+        AND NOT EXISTS (
+            SELECT 1
+            FROM {parent_table} AS parent
+            WHERE parent.{parent_column} = child.{child_column}
+        )
+    """
+
+
 def audit_orphan_references(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     """Return orphaned references for high-confidence relationships.
 
@@ -71,6 +85,25 @@ def audit_orphan_references(conn: sqlite3.Connection) -> list[dict[str, Any]]:
                 }
             )
     return findings
+
+
+def clear_orphan_references(conn: sqlite3.Connection) -> dict[str, int]:
+    """Set orphaned high-confidence reference columns to NULL.
+
+    Returns a mapping of relationship key to the number of updated rows.
+    """
+    updates: dict[str, int] = {}
+    for relationship in HIGH_CONFIDENCE_RELATIONSHIPS:
+        child_table = _quote_identifier(relationship.child_table)
+        child_column = _quote_identifier(relationship.child_column)
+        query = f"""
+            UPDATE {child_table} AS child
+            SET {child_column} = NULL
+            WHERE {_orphan_where_clause(relationship)}
+        """
+        cursor = conn.execute(query)
+        updates[relationship.key] = cursor.rowcount if cursor.rowcount is not None else 0
+    return updates
 
 
 def has_orphan_references(conn: sqlite3.Connection) -> bool:
