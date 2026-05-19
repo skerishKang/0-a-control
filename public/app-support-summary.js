@@ -2,6 +2,18 @@
  * Today Summary and Unfinished Plans rendering module for Classic UI
  */
 
+function setSummaryPanelClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerSummaryClickHandler) {
+    element.removeEventListener("click", element.__controlTowerSummaryClickHandler);
+  }
+  element.__controlTowerSummaryClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerSummaryClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 function normalizeDayPhaseLabel(value) {
   return {
     "in-progress": "진행 중",
@@ -102,7 +114,7 @@ function renderTodaySummarySection(state) {
   }
 
   if (parentPanel) {
-    parentPanel.onclick = () => {
+    setSummaryPanelClickHandler(parentPanel, () => {
       const detailItems = [
         {
           title: "오늘 진행 요약",
@@ -186,7 +198,7 @@ function renderTodaySummarySection(state) {
           <p class='muted'>${escapeHtml(i.detail || "-")}</p>
         </div>
       `);
-    };
+    });
   }
 }
 
