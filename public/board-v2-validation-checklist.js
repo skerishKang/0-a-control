@@ -20,6 +20,18 @@ const VALIDATION_STATUS_CLASS = {
   not_started: "v2-status-pending",
 };
 
+function setValidationChecklistClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerValidationClickHandler) {
+    element.removeEventListener("click", element.__controlTowerValidationClickHandler);
+  }
+  element.__controlTowerValidationClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerValidationClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 // ── API ──
 
 async function fetchValidationChecklists() {
@@ -53,10 +65,10 @@ function renderValidationChecklists(data) {
   var header = document.createElement("div");
   header.className = "v2-panel-header v2-panel-header-inset";
   header.textContent = "검증 체크리스트";
-  header.onclick = function () {
+  setValidationChecklistClickHandler(header, function () {
     var body = section.querySelector(".v2-panel-body");
     if (body) body.style.display = body.style.display === "none" ? "" : "none";
-  };
+  });
   section.appendChild(header);
 
   var body = document.createElement("div");
