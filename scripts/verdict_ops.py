@@ -90,7 +90,8 @@ def _update_quest_status_with_decision(
     refresh_current_state(conn)
 
 
-VERDICT_STATUS_RE = re.compile("^AI \\uD310\\uC815:\\s*(done|partial|hold|pending)\\b", re.MULTILINE)
+VERDICT_LABEL = "\uD310\uC815"
+VERDICT_STATUS_RE = re.compile(rf"^AI {VERDICT_LABEL}:\s*(done|partial|hold|pending)\b", re.MULTILINE)
 
 
 def apply_verdict(
@@ -166,7 +167,7 @@ def apply_verdict(
             for b, desc in plan_impact.items():
                 if desc and desc != "--":
                     parts.append(f"[{b}] {desc}")
-            impact_str = "\n".join(parts) if parts else "\\uC601\\uD5A5 \\uC5C6\\uC74C"
+            impact_str = "\n".join(parts) if parts else "\uC601\uD5A5 \uC5C6\uC74C"
 
         conn.execute(
             """
@@ -233,11 +234,11 @@ def apply_verdict(
             ).fetchone()
         if session is not None:
             assistant_lines = [
-                f"AI \\uD310\\uC815: {verdict}",
-                f"- \\uC774\\uC720: {reason or '-'}",
-                f"- \\uC7AC\\uC2DC\\uC791 \\uC9C0\\uC810: {restart_point or '-'}",
-                f"- \\uB2E4\\uC74C \\uD018\\uC2A4\\uD2B8: {next_hint or '-'}",
-                f"- \\uACC4\\uD68D \\uBC18\\uC601: {plan_impact or '-'}",
+                f"AI \uD310\uC815: {verdict}",
+                f"- \uC774\uC720: {reason or '-'}",
+                f"- \uC7AC\uC2DC\uC791 \uC9C0\uC810: {restart_point or '-'}",
+                f"- \uB2E4\uC74C \uD018\uC2A4\uD2B8: {next_hint or '-'}",
+                f"- \uACC4\uD68D \uBC18\uC601: {plan_impact or '-'}",
                 f"- provider: {provider}",
             ]
             append_source_record(
@@ -396,11 +397,11 @@ def report_quest_progress(
             ).fetchone()
         if session is not None:
             user_report_lines = [
-                f"\\uD018\\uC2A4\\uD2B8 \\uBCF4\\uACE0: {quest['title']} (\\uD310\\uC815 \\uB300\\uAE30\\uC911)",
-                f"- \\uD55C \\uC77C: {work_summary or '-'}",
-                f"- \\uB0A8\\uC740 \\uC77C: {remaining_work or '-'}",
-                f"- \\uB9C9\\uD78C \\uC810: {blocker or '-'}",
-                f"- \\uC790\\uAE30 \\uD310\\uB2E8: {self_assessment or '-'}",
+                f"\uD018\uC2A4\uD2B8 \uBCF4\uACE0: {quest['title']} (\uD310\uC815 \uB300\uAE30\uC911)",
+                f"- \uD55C \uC77C: {work_summary or '-'}",
+                f"- \uB0A8\uC740 \uC77C: {remaining_work or '-'}",
+                f"- \uB9C9\uD78C \uC810: {blocker or '-'}",
+                f"- \uC790\uAE30 \uD310\uB2E8: {self_assessment or '-'}",
             ]
             append_source_record(
                 session_id=session_id,
