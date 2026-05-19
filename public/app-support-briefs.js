@@ -2,6 +2,18 @@
  * Briefs rendering module for Classic UI
  */
 
+function setBriefPanelClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerBriefClickHandler) {
+    element.removeEventListener("click", element.__controlTowerBriefClickHandler);
+  }
+  element.__controlTowerBriefClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerBriefClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 function normalizeBriefContent(value) {
   return String(value || "")
     .replace(/\bNone\b/g, "없음")
@@ -43,12 +55,12 @@ function renderBriefsSection(state) {
   };
 
   renderCappedList(targetId, items, formatter, 3, "아직 생성된 브리프가 없습니다. 작업 일지가 쌓이면 AI가 요약 브리프를 생성합니다.");
-  parentPanel.onclick = () => {
+  setBriefPanelClickHandler(parentPanel, () => {
     showDetailedList("최근 브리프", "브리프 목록", state.briefs, (i) => `
       <div class='list-item'>
         <strong>${escapeHtml(i.title)}</strong>
         <p class='muted'>${escapeHtml(normalizeBriefContent(i.content_md))}</p>
       </div>
     `);
-  };
+  });
 }
