@@ -31,9 +31,9 @@ def _drop_index_if_exists(conn: sqlite3.Connection, name: str) -> None:
     conn.execute(f"DROP INDEX IF EXISTS {name}")
 
 
-def _drop_source_records_fts_triggers(conn: sqlite3.Connection) -> None:
+def _drop_fts_triggers(conn: sqlite3.Connection, table: str) -> None:
     for suffix in ("ai", "au", "ad"):
-        conn.execute(f"DROP TRIGGER IF EXISTS source_records_{suffix}")
+        conn.execute(f"DROP TRIGGER IF EXISTS {table}_{suffix}")
 
 
 def _source_records_columns() -> list[str]:
@@ -71,6 +71,22 @@ def _quests_columns() -> list[str]:
     ]
 
 
+def _decision_records_columns() -> list[str]:
+    """Canonical column list for decision_records (order matters for INSERT..SELECT)."""
+    return [
+        "id",
+        "decision_type",
+        "title",
+        "reason",
+        "impact_summary",
+        "related_plan_item_id",
+        "related_quest_id",
+        "related_session_id",
+        "created_at",
+        "metadata_json",
+    ]
+
+
 def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     """Rebuild source_records with ``session_id -> sessions(id) ON DELETE SET NULL``.
 
@@ -88,7 +104,7 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     col_sql = ", ".join(columns)
 
     # 1. Drop FTS triggers (will be recreated by FTS_SCHEMA)
-    _drop_source_records_fts_triggers(conn)
+    _drop_fts_triggers(conn, "source_records")
 
     # 2. Rename current table
     conn.execute("ALTER TABLE source_records RENAME TO source_records_old")
@@ -192,4 +208,70 @@ def apply_quests_plan_parent_fks(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after quests rebuild: {fk_errors}"
+        )
+
+
+def apply_decision_records_reference_fks(conn: sqlite3.Connection) -> None:
+    """Rebuild decision_records with plan, quest, and session reference FKs.
+
+    Foreign keys added:
+    - ``related_plan_item_id -> plan_items(id) ON DELETE SET NULL``
+    - ``related_quest_id -> quests(id) ON DELETE SET NULL``
+    - ``related_session_id -> sessions(id) ON DELETE SET NULL``
+    """
+    required_tables = ("decision_records", "plan_items", "quests", "sessions")
+    if not all(_table_exists(conn, table) for table in required_tables):
+        return
+
+    has_plan_fk = _has_fk_on_column(
+        conn, "decision_records", "related_plan_item_id", "plan_items"
+    )
+    has_quest_fk = _has_fk_on_column(
+        conn, "decision_records", "related_quest_id", "quests"
+    )
+    has_session_fk = _has_fk_on_column(
+        conn, "decision_records", "related_session_id", "sessions"
+    )
+    if has_plan_fk and has_quest_fk and has_session_fk:
+        return
+
+    columns = _decision_records_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_fts_triggers(conn, "decision_records")
+    conn.execute("ALTER TABLE decision_records RENAME TO decision_records_old")
+
+    conn.execute(
+        """
+        CREATE TABLE decision_records (
+            id TEXT PRIMARY KEY,
+            decision_type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            reason TEXT,
+            impact_summary TEXT,
+            related_plan_item_id TEXT
+                REFERENCES plan_items(id) ON DELETE SET NULL,
+            related_quest_id TEXT
+                REFERENCES quests(id) ON DELETE SET NULL,
+            related_session_id TEXT
+                REFERENCES sessions(id) ON DELETE SET NULL,
+            created_at TEXT NOT NULL,
+            metadata_json TEXT
+        )
+        """
+    )
+
+    conn.execute(
+        f"INSERT INTO decision_records ({col_sql}) "
+        f"SELECT {col_sql} FROM decision_records_old"
+    )
+    conn.execute("DROP TABLE decision_records_old")
+    conn.executescript(INDEXES)
+    conn.executescript(FTS_SCHEMA)
+    rebuild_fts(conn)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after decision_records rebuild: {fk_errors}"
         )
