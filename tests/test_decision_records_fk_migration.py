@@ -1,4 +1,4 @@
-"""Tests for migration v5: decision_records plan and quest foreign keys."""
+"""Tests for decision_records foreign-key migrations."""
 
 from __future__ import annotations
 
@@ -86,7 +86,7 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
             (decision_id, plan_id, quest_id, session_id),
         )
 
-    def test_schema_migrations_records_v1_to_v5(self) -> None:
+    def test_schema_migrations_records_v1_to_v7(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -95,11 +95,12 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
             ).fetchall()
             result = {int(r["version"]): r["name"] for r in versions}
             self.assertEqual(result[5], "decision-records-reference-fks")
-            self.assertGreaterEqual(max(result), 5)
+            self.assertEqual(result[7], "decision-records-session-fk")
+            self.assertGreaterEqual(max(result), 7)
         finally:
             conn.close()
 
-    def test_foreign_key_list_has_plan_and_quest_fks(self) -> None:
+    def test_foreign_key_list_has_plan_quest_and_session_fks(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -107,42 +108,30 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
             expected = {
                 ("plan_items", "related_plan_item_id"),
                 ("quests", "related_quest_id"),
+                ("sessions", "related_session_id"),
             }
             actual = {(r[2], r[3]) for r in fk_list}
             self.assertTrue(expected.issubset(actual))
-            self.assertNotIn(("sessions", "related_session_id"), actual)
             for row in fk_list:
                 if (row[2], row[3]) in expected:
                     self.assertEqual(row[6], "SET NULL")
         finally:
             conn.close()
 
-    def test_invalid_plan_and_quest_references_raise(self) -> None:
+    def test_invalid_references_raise(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
             cases = [
                 ("decision-bad-plan", "missing-plan", None, None),
                 ("decision-bad-quest", None, "missing-quest", None),
+                ("decision-bad-session", None, None, "missing-session"),
             ]
             for decision_id, plan_id, quest_id, session_id in cases:
                 with self.assertRaises(sqlite3.IntegrityError):
                     self._insert_decision(conn, decision_id, plan_id, quest_id, session_id)
                     conn.commit()
                 conn.rollback()
-        finally:
-            conn.close()
-
-    def test_legacy_session_reference_remains_unconstrained_for_now(self) -> None:
-        db_base.init_db()
-        conn = self._connect()
-        try:
-            self._insert_decision(conn, "decision-legacy-session", None, None, "missing-session")
-            conn.commit()
-            row = conn.execute(
-                "SELECT related_session_id FROM decision_records WHERE id = 'decision-legacy-session'"
-            ).fetchone()
-            self.assertEqual(row["related_session_id"], "missing-session")
         finally:
             conn.close()
 
@@ -165,7 +154,7 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
         finally:
             conn.close()
 
-    def test_delete_plan_and_quest_sets_reference_columns_null(self) -> None:
+    def test_delete_referenced_rows_sets_reference_columns_null(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -186,17 +175,17 @@ class DecisionRecordsFKMigrationTests(unittest.TestCase):
             ).fetchone()
             self.assertIsNone(row["related_plan_item_id"])
             self.assertIsNone(row["related_quest_id"])
-            self.assertEqual(row["related_session_id"], "sess-del")
+            self.assertIsNone(row["related_session_id"])
         finally:
             conn.close()
 
-    def test_init_db_idempotent_for_v5(self) -> None:
+    def test_init_db_idempotent_for_v7(self) -> None:
         db_base.init_db()
         db_base.init_db()
         conn = self._connect()
         try:
             count = conn.execute(
-                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 5"
+                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 7"
             ).fetchone()
             self.assertEqual(count["cnt"], 1)
         finally:
