@@ -20,6 +20,11 @@ dist/
 !.env.example
 kilo.json
 
+# 로컬 프로젝트 설정
+# 실제 로컬 workdiary/project 경로가 들어가므로 example 파일만 추적합니다.
+data/config/tracked_projects.json
+!data/config/tracked_projects.example.json
+
 # 런타임 파일
 *.log
 data/runtime/
