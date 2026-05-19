@@ -89,12 +89,105 @@ QUEST_REPORT_SCHEMA: dict[str, Any] = {
     },
 }
 
+BRIDGE_PARSE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["text"],
+    "additionalProperties": True,
+    "properties": {
+        "text": {"type": "string", "minLength": 1, "maxLength": 10000},
+    },
+}
+
+BRIDGE_QUICK_INPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["text"],
+    "additionalProperties": True,
+    "properties": {
+        "text": {"type": "string", "minLength": 1, "maxLength": 10000},
+    },
+}
+
+BRIDGE_CREATE_PLAN_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["candidates"],
+    "additionalProperties": True,
+    "properties": {
+        "candidates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "object"},
+        },
+    },
+}
+
+TOMORROW_FIRST_QUEST_CONFIRM_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["title"],
+    "additionalProperties": True,
+    "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 500},
+        "reason": {"type": "string", "maxLength": 5000},
+        "source": {"type": "string", "maxLength": 100, "default": "manual"},
+    },
+}
+
+TOMORROW_FIRST_QUEST_PROMOTE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": True,
+    "properties": {},
+}
+
+TOMORROW_FIRST_QUEST_CLEAR_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": True,
+    "properties": {},
+}
+
+AGENTS_CLEANUP_STALE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["agent_name"],
+    "additionalProperties": True,
+    "properties": {
+        "agent_name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "summary_md": {"type": "string", "maxLength": 5000},
+    },
+}
+
+EXECUTOR_PROMPT_GENERATE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["prompt_type"],
+    "additionalProperties": True,
+    "properties": {
+        "prompt_type": {"type": "string", "maxLength": 100},
+        "work_item": {"type": "object"},
+        "classification": {"type": "object"},
+        "manual_override": {"type": "object"},
+        "validation_checklist": {"type": "object"},
+        "repository": {"type": "string", "maxLength": 500},
+        "changed_files": {"type": "array", "items": {"type": "string"}},
+        "execution_context": {"type": "string", "maxLength": 200},
+        "guards": {"type": "array", "items": {"type": "string"}},
+        "links": {"type": "object"},
+        "include_validation": {"type": "boolean"},
+        "include_override": {"type": "boolean"},
+        "include_links": {"type": "boolean"},
+    },
+}
+
 ROUTE_SCHEMAS: dict[str, dict[str, Any]] = {
     "/api/sessions/start": SESSION_START_SCHEMA,
     "/api/sessions/log": SESSION_LOG_SCHEMA,
     "/api/sessions/end": SESSION_END_SCHEMA,
     "/api/quests/evaluate": QUEST_EVALUATE_SCHEMA,
     "/api/quests/report": QUEST_REPORT_SCHEMA,
+    "/api/bridge/parse": BRIDGE_PARSE_SCHEMA,
+    "/api/bridge/quick-input": BRIDGE_QUICK_INPUT_SCHEMA,
+    "/api/bridge/create-plan": BRIDGE_CREATE_PLAN_SCHEMA,
+    "/api/tomorrow-first-quest/confirm": TOMORROW_FIRST_QUEST_CONFIRM_SCHEMA,
+    "/api/tomorrow-first-quest/promote": TOMORROW_FIRST_QUEST_PROMOTE_SCHEMA,
+    "/api/tomorrow-first-quest/clear": TOMORROW_FIRST_QUEST_CLEAR_SCHEMA,
+    "/api/agents/cleanup-stale": AGENTS_CLEANUP_STALE_SCHEMA,
+    "/api/executor-prompts/generate": EXECUTOR_PROMPT_GENERATE_SCHEMA,
 }
 
 
