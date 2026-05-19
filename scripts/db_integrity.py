@@ -39,6 +39,18 @@ def _quote_identifier(value: str) -> str:
     return f'"{value}"'
 
 
+def _table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table_name,),
+    ).fetchone()
+    return row is not None
+
+
+def _relationship_tables_exist(conn: sqlite3.Connection, relationship: Relationship) -> bool:
+    return _table_exists(conn, relationship.child_table) and _table_exists(conn, relationship.parent_table)
+
+
 def _orphan_where_clause(relationship: Relationship) -> str:
     child_column = _quote_identifier(relationship.child_column)
     parent_table = _quote_identifier(relationship.parent_table)
@@ -60,6 +72,8 @@ def audit_orphan_references(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     """
     findings: list[dict[str, Any]] = []
     for relationship in HIGH_CONFIDENCE_RELATIONSHIPS:
+        if not _relationship_tables_exist(conn, relationship):
+            continue
         child_table = _quote_identifier(relationship.child_table)
         child_column = _quote_identifier(relationship.child_column)
         parent_table = _quote_identifier(relationship.parent_table)
@@ -94,6 +108,8 @@ def clear_orphan_references(conn: sqlite3.Connection) -> dict[str, int]:
     """
     updates: dict[str, int] = {}
     for relationship in HIGH_CONFIDENCE_RELATIONSHIPS:
+        if not _relationship_tables_exist(conn, relationship):
+            continue
         child_table = _quote_identifier(relationship.child_table)
         child_column = _quote_identifier(relationship.child_column)
         query = f"""
