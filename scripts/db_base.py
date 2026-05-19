@@ -22,13 +22,24 @@ WORKDIARY_DIR = Path(os.getenv("CONTROL_TOWER_WORKDIARY_DIR", str(ROOT_DIR.paren
 UTC = timezone.utc
 
 
+def configure_connection(conn: sqlite3.Connection) -> None:
+    conn.execute("PRAGMA busy_timeout = 10000")
+    conn.execute("PRAGMA foreign_keys = ON")
+    try:
+        journal_mode = conn.execute("PRAGMA journal_mode = WAL").fetchone()
+        if journal_mode and str(journal_mode[0]).lower() == "wal":
+            conn.execute("PRAGMA synchronous = NORMAL")
+    except sqlite3.DatabaseError:
+        pass
+
+
 @contextmanager
 def connect():
     path = get_db_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path, timeout=10)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA busy_timeout = 10000")
+    configure_connection(conn)
     try:
         yield conn
         conn.commit()
