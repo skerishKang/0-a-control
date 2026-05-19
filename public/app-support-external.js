@@ -2,6 +2,19 @@
  * External Inbox and Telegram Sync rendering module for Classic UI
  */
 
+function setExternalElementHandler(element, eventName, handler) {
+  if (!element) return;
+  const key = `__controlTowerExternal${eventName}Handler`;
+  if (element[key]) {
+    element.removeEventListener(eventName, element[key]);
+  }
+  element[key] = null;
+  if (typeof handler === "function") {
+    element[key] = handler;
+    element.addEventListener(eventName, handler);
+  }
+}
+
 function normalizeExternalStatusLabel(value) {
   const key = String(value || "").trim().toLowerCase();
   if (!key || key === "new") return "새 항목";
@@ -112,7 +125,7 @@ function renderExternalContextTabs(containerId, options, activeValue, counts = {
     `;
   }).join("");
   target.querySelectorAll(".filter-chip").forEach((button) => {
-    button.onclick = () => onClick(button.dataset.value);
+    setExternalElementHandler(button, "click", () => onClick(button.dataset.value));
   });
 }
 
@@ -230,20 +243,20 @@ function attachExternalContextThreadInteractions() {
   if (button) {
     const loading = Boolean(state.externalContextThread?.loadingOlder);
     button.disabled = loading;
-    button.onclick = () => {
+    setExternalElementHandler(button, "click", () => {
       if (!loading && window.loadOlderExternalContextDay) {
         window.loadOlderExternalContextDay();
       }
-    };
+    });
   }
 
-  target.onscroll = () => {
+  setExternalElementHandler(target, "scroll", () => {
     if (target.scrollTop > 24) return;
     if (!state.externalContextThread?.has_more_before || state.externalContextThread?.loadingOlder) return;
     if (window.loadOlderExternalContextDay) {
       window.loadOlderExternalContextDay();
     }
-  };
+  });
 }
 
 function renderExternalContextPanel(state) {
@@ -328,7 +341,7 @@ function renderExternalContextPanel(state) {
 
   // 6. Attach click events to list items
   target.querySelectorAll(".external-context-list-item").forEach((node) => {
-    node.onclick = () => {
+    setExternalElementHandler(node, "click", () => {
       state.externalContextSelectedId = node.dataset.id;
       const selectedItem = entries.map((entry) => entry.item).find((item) => String(item.id) === String(state.externalContextSelectedId));
       state.externalContextThread = null;
@@ -337,7 +350,7 @@ function renderExternalContextPanel(state) {
         window.refreshExternalContextThread(selectedItem.source_id);
       }
       target.querySelectorAll(".external-context-list-item").forEach(n => n.classList.toggle("active", n.dataset.id === node.dataset.id));
-    };
+    });
   });
 
   // 7. Render detail view for initially selected item
@@ -383,7 +396,7 @@ function renderExternalInboxSection(state) {
     "새로 검토할 항목이 없습니다. 텔레그램/이메일을 동기화하면 여기에 표시됩니다."
   );
 
-  parentPanel.onclick = () => {
+  setExternalElementHandler(parentPanel, "click", () => {
     openExternalContextPanel();
-  };
+  });
 }
