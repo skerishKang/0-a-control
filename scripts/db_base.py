@@ -20,6 +20,8 @@ DATA_DIR = Path(os.getenv("CONTROL_TOWER_DATA_DIR", str(ROOT_DIR / "data")))
 DB_PATH = Path(os.getenv("CONTROL_TOWER_DB_PATH", str(DATA_DIR / "control_tower.db")))
 WORKDIARY_DIR = Path(os.getenv("CONTROL_TOWER_WORKDIARY_DIR", str(ROOT_DIR.parent)))
 UTC = timezone.utc
+BASELINE_SCHEMA_VERSION = 1
+BASELINE_SCHEMA_NAME = "baseline-current-schema"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -47,11 +49,51 @@ def connect():
         conn.close()
 
 
+def ensure_schema_migrations(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            applied_at TEXT NOT NULL
+        )
+        """
+    )
+
+
+def record_schema_migration(conn: sqlite3.Connection, version: int, name: str) -> None:
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO schema_migrations (version, name, applied_at)
+        VALUES (?, ?, ?)
+        """,
+        (version, name, now_iso()),
+    )
+
+
+def apply_schema_migrations(conn: sqlite3.Connection) -> None:
+    """Record the baseline schema version for future incremental migrations.
+
+    The current schema is still applied through idempotent SQL strings. This
+    function adds migration bookkeeping without changing existing tables, so
+    future schema changes can be added as numbered migration functions.
+    """
+    ensure_schema_migrations(conn)
+    record_schema_migration(conn, BASELINE_SCHEMA_VERSION, BASELINE_SCHEMA_NAME)
+
+
+def get_applied_schema_versions(conn: sqlite3.Connection) -> list[int]:
+    ensure_schema_migrations(conn)
+    rows = conn.execute("SELECT version FROM schema_migrations ORDER BY version ASC").fetchall()
+    return [int(row["version"]) for row in rows]
+
+
 def init_db() -> None:
     with connect() as conn:
         conn.executescript(SCHEMA)
         conn.executescript(INDEXES)
         conn.executescript(FTS_SCHEMA)
+        apply_schema_migrations(conn)
         clean_stale_state_keys(conn)
 
 
@@ -71,6 +113,7 @@ def migrate_search_state() -> None:
         conn.executescript(SCHEMA)
         conn.executescript(INDEXES)
         conn.executescript(FTS_SCHEMA)
+        apply_schema_migrations(conn)
         backfill_event_log(conn)
         rebuild_fts(conn)
 
