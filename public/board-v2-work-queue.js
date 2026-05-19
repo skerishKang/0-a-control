@@ -27,6 +27,18 @@ const WORK_QUEUE_PRIORITY_CLASS = {
   P3: "v2-priority-p3",
 };
 
+function setWorkQueueClickHandler(element, handler) {
+  if (!element) return;
+  if (element.__controlTowerWorkQueueClickHandler) {
+    element.removeEventListener("click", element.__controlTowerWorkQueueClickHandler);
+  }
+  element.__controlTowerWorkQueueClickHandler = null;
+  if (typeof handler === "function") {
+    element.__controlTowerWorkQueueClickHandler = handler;
+    element.addEventListener("click", handler);
+  }
+}
+
 // ── Executor Prompt Generation (for LOCAL_NEEDED / VALIDATION_NEEDED) ──
 
 const COPY_SAFETY_RULES = [
@@ -117,10 +129,10 @@ function renderWorkQueueSection(data) {
   var header = document.createElement("div");
   header.className = "v2-panel-header v2-panel-header-inset";
   header.textContent = "작업 큐";
-  header.onclick = function () {
+  setWorkQueueClickHandler(header, function () {
     var body = section.querySelector(".v2-panel-body");
     if (body) body.style.display = body.style.display === "none" ? "" : "none";
-  };
+  });
   section.appendChild(header);
 
   var body = document.createElement("div");
@@ -186,9 +198,9 @@ function renderWorkQueueSection(data) {
         var copyBtn = document.createElement("button");
         copyBtn.textContent = "📋 프롬프트 복사";
         copyBtn.style.cssText = "margin-left:auto;padding:2px 6px;font-size:11px;cursor:pointer;background:#3a3a3a;color:#ddd;border:1px solid #555;border-radius:3px;";
-        copyBtn.onclick = (function (itm, qk) {
+        setWorkQueueClickHandler(copyBtn, (function (itm, qk) {
           return function () { copyPromptToClipboard(itm, qk); };
-        })(item, queueKey);
+        })(item, queueKey));
         metaRow.appendChild(copyBtn);
       }
 
