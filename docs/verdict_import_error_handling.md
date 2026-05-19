@@ -2,7 +2,7 @@
    verdict_import.py 파일에서 파일 읽기 작업 중 발생할 수 있는 OSError(예: 권한 문제, 파일 삭제)를 처리하지 않아 worker가 crash할 수 있는 문제를 최소한의 수정으로 보강
 
 2. 수정 파일
-   G:\Ddrive\BatangD\task\workdiary\0-a-control\scripts\verdict_import.py
+   <PROJECT_ROOT>/scripts/verdict_import.py
 
 3. 핵심 수정 내용
    - 줄 134 주변: 기존 JSONDecodeError 전용 예외 처리를 OSError도 포함하도록 확장

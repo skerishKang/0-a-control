@@ -71,9 +71,9 @@ Rules:
 If a tool session was run outside the wrapper, import the saved transcript into an existing session:
 
 ```bash
-python scripts/import_codex_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\codex.log
-python scripts/import_gemini_cli_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\gemini.log
-python scripts/import_windsurf_session.py --session-id <session_id> --project 0-a-control --cwd G:\Ddrive\BatangD\task\workdiary\0-a-control --file path\to\windsurf.log
+python scripts/import_codex_session.py --session-id <session_id> --project 0-a-control --cwd <PROJECT_ROOT> --file path\to\codex.log
+python scripts/import_gemini_cli_session.py --session-id <session_id> --project 0-a-control --cwd <PROJECT_ROOT> --file path\to\gemini.log
+python scripts/import_windsurf_session.py --session-id <session_id> --project 0-a-control --cwd <PROJECT_ROOT> --file path\to\windsurf.log
 ```
 
 If `--file` is omitted, the importer looks for:

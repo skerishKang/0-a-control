@@ -5,7 +5,7 @@ Actual runnable skills should live in the global Codex skills directory so every
 
 ## Rule
 
-- Install reusable Codex skills globally in `C:\Users\limone\.codex\skills`
+- Install reusable Codex skills globally in `<USER_HOME>/.codex/skills`
 - Track the reason, source, and intended usage in `0-a-control`
 - Do not duplicate full skill payloads into each project unless a project-specific fork is required
 
@@ -14,7 +14,7 @@ Actual runnable skills should live in the global Codex skills directory so every
 ### `hwpx`
 
 - Source: `https://github.com/Canine89/hwpxskill`
-- Installed path: `C:\Users\limone\.codex\skills\hwpx`
+- Installed path: `<USER_HOME>/.codex/skills\hwpx`
 - Installed as: global Codex skill
 - Reason:
   - HWPX document generation/editing/parsing is reusable across multiple projects
