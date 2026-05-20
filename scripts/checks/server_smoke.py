@@ -1,0 +1,187 @@
+from __future__ import annotations
+
+import json
+import os
+import signal
+import subprocess
+import sys
+import time
+from http.client import RemoteDisconnected
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+# Enable both `python scripts/checks/server_smoke.py` and `python -m scripts.checks.server_smoke`.
+project_root = Path(__file__).resolve().parents[2]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Configuration
+HOST = os.getenv("HOST", "127.0.0.1")
+PORT = int(os.getenv("PORT", "4310"))
+BASE_URL = f"http://{HOST}:{PORT}"
+HEALTH_ENDPOINT = "/api/health"
+BOARD_V2_HTML = "/board-v2.html"
+API_ENDPOINTS = [
+    "/api/current-state",
+    "/api/briefs/latest?limit=3",
+    "/api/sessions/recent?limit=50",
+    "/api/quests",
+    "/api/plans",
+]
+
+OPS_OVERRIDES_ENDPOINT = "/api/ops-overrides"
+
+# Timeouts
+SERVER_START_TIMEOUT = 10  # seconds to wait for server to start
+REQUEST_TIMEOUT = 5        # seconds per request
+
+
+def log_status(label: str, status: str) -> None:
+    """Print sanitized PASS/FAIL status line."""
+    print(f"{label}: {status}")
+
+
+def start_server_subprocess() -> subprocess.Popen | None:
+    """Start the server as a subprocess using the existing entrypoint."""
+    server_script = project_root / "scripts" / "server.py"
+    if not server_script.exists():
+        log_status("SERVER_START", "FAIL — scripts/server.py not found")
+        return None
+
+    try:
+        creation_flags = 0
+        if os.name == "nt":
+            creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
+
+        proc = subprocess.Popen(
+            [sys.executable, str(server_script)],
+            cwd=project_root,
+            creationflags=creation_flags,
+        )
+        return proc
+    except Exception as exc:
+        log_status("SERVER_START", f"FAIL — {type(exc).__name__}: {exc}")
+        return None
+
+
+def wait_for_health(timeout: int = SERVER_START_TIMEOUT) -> bool:
+    """Poll health endpoint until it responds OK or timeout."""
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            req = Request(f"{BASE_URL}{HEALTH_ENDPOINT}", method="GET")
+            resp = urlopen(req, timeout=REQUEST_TIMEOUT)
+            if resp.status == 200:
+                data = resp.read()
+                payload = json.loads(data.decode("utf-8"))
+                if payload.get("ok") is True:
+                    return True
+        except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
+            pass
+        time.sleep(0.5)
+    return False
+
+
+def check_url(path: str, expect_json: bool = True) -> bool:
+    """Request a URL path and verify it returns 200 and JSON when expected."""
+    try:
+        req = Request(f"{BASE_URL}{path}", method="GET")
+        resp = urlopen(req, timeout=REQUEST_TIMEOUT)
+        if resp.status != 200:
+            return False
+        if expect_json:
+            data = resp.read()
+            json.loads(data.decode("utf-8"))
+        return True
+    except (URLError, HTTPError, RemoteDisconnected, json.JSONDecodeError, ValueError):
+        return False
+
+
+def main() -> int:
+    server_proc = None
+    try:
+        server_proc = start_server_subprocess()
+        if server_proc is None:
+            return 1
+
+        log_status("SERVER_START", "PASS — subprocess launched")
+
+        if not wait_for_health():
+            return_code = server_proc.poll()
+            if return_code is not None:
+                log_status("SERVER_PROCESS", f"FAIL — exited with code {return_code}")
+            log_status("HEALTH_ENDPOINT", "FAIL — timeout or invalid response")
+            return 1
+        log_status("HEALTH_ENDPOINT", "PASS")
+
+        if not check_url(BOARD_V2_HTML, expect_json=False):
+            log_status("BOARD_V2_HTML", "FAIL — not reachable or invalid")
+            return 1
+        log_status("BOARD_V2_HTML", "PASS")
+
+        all_ok = True
+        for path in API_ENDPOINTS:
+            if not check_url(path, expect_json=True):
+                log_status("API_ENDPOINT", f"FAIL — {path}")
+                all_ok = False
+            else:
+                log_status("API_ENDPOINT", f"PASS — {path}")
+
+        if not all_ok:
+            log_status("BOARD_V2_REQUIRED_API_ENDPOINTS", "FAIL")
+            return 1
+
+        log_status("BOARD_V2_REQUIRED_API_ENDPOINTS", "PASS")
+
+        try:
+            req = Request(f"{BASE_URL}{OPS_OVERRIDES_ENDPOINT}", method="GET")
+            resp = urlopen(req, timeout=REQUEST_TIMEOUT)
+            if resp.status == 200:
+                data = resp.read()
+                payload = json.loads(data.decode("utf-8"))
+                if isinstance(payload, dict) and "overrides" in payload:
+                    log_status("OPS_OVERRIDES_ENDPOINT", "PASS")
+                else:
+                    log_status("OPS_OVERRIDES_ENDPOINT", "FAIL — missing overrides key")
+                    log_status("FINAL", "FAIL")
+                    return 1
+            else:
+                log_status("OPS_OVERRIDES_ENDPOINT", f"FAIL — HTTP {resp.status}")
+                log_status("FINAL", "FAIL")
+                return 1
+        except Exception:
+            log_status("OPS_OVERRIDES_ENDPOINT", "FAIL — unreachable or invalid response")
+            log_status("FINAL", "FAIL")
+            return 1
+
+        log_status("FINAL", "PASS")
+        return 0
+
+    except KeyboardInterrupt:
+        print("\n[INFO] Interrupted by user", file=sys.stderr)
+        return 130
+    finally:
+        if server_proc is not None:
+            try:
+                if os.name == "nt":
+                    server_proc.send_signal(signal.CTRL_BREAK_EVENT)
+                    try:
+                        server_proc.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        server_proc.kill()
+                else:
+                    server_proc.terminate()
+                    try:
+                        server_proc.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        server_proc.kill()
+            except Exception:
+                try:
+                    server_proc.kill()
+                except Exception:
+                    pass
+
+
+if __name__ == "__main__":
+    sys.exit(main())
