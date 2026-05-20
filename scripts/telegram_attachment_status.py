@@ -1,29 +1,7 @@
-import sys
-from pathlib import Path
+from __future__ import annotations
 
-_root = str(Path(__file__).resolve().parents[1])
-if _root not in sys.path:
-    sys.path.insert(0, _root)
-
-from scripts.telegram_cli import show_attachment_status
-
-
-def main() -> int:
-    if len(sys.argv) < 2:
-        print("usage: python scripts/telegram_attachment_status.py <source_id> [max_file_size_mb]")
-        return 1
-
-    source_id = sys.argv[1]
-    max_file_size_mb = None
-    if len(sys.argv) >= 3:
-        try:
-            max_file_size_mb = float(sys.argv[2])
-        except ValueError:
-            print("invalid max_file_size_mb")
-            return 1
-
-    show_attachment_status(source_id, max_file_size_mb)
-    return 0
+from scripts.integrations.telegram_attachment_status import *  # noqa: F401,F403
+from scripts.integrations.telegram_attachment_status import main
 
 
 if __name__ == "__main__":
