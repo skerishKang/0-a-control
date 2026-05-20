@@ -32,6 +32,8 @@ def get_plans() -> list[dict]:
 def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> list[dict]:
     created_items = []
     updated_at = now_iso()
+    related_session_id: str | None = None
+    log_lines: list[str] = []
 
     with connect() as conn:
         related_session_id = normalize_existing_session_id(conn, session_id)
@@ -93,15 +95,16 @@ def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> lis
             for item in created_items:
                 log_lines.append(f"- [{item['bucket']}] {item['title']}")
 
-            append_source_record(
-                session_id=related_session_id,
-                source_name="inbox_cli",
-                source_type="plan_update",
-                content="\n".join(log_lines),
-                role="system",
-            )
-
         refresh_current_state(conn)
+
+    if related_session_id and log_lines:
+        append_source_record(
+            session_id=related_session_id,
+            source_name="inbox_cli",
+            source_type="plan_update",
+            content="\n".join(log_lines),
+            role="system",
+        )
 
     return created_items
 
