@@ -22,6 +22,7 @@ This log records completed small package movement slices.
 - `scripts/services/operational_state.py` keeps `scripts/operational_state.py` as a compatibility wrapper.
 - `scripts/services/github_service.py` keeps `scripts/github_service.py` as a compatibility wrapper.
 - `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
+- `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
 
 ## Follow-up notes
 
