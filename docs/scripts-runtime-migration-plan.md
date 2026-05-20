@@ -39,7 +39,7 @@ Current candidate files: `telegram_cli.py`, `telegram_db.py`, `telegram_service.
 
 ## stdlib queue shadow risk
 
-The original plan referenced `scripts/queue/` as a target package name. This name shadows Python's standard library `queue` module. Any code that does `import queue` inside the `scripts/` package tree would resolve to the local subpackage instead of the stdlib, causing subtle breakage.
+The original plan referenced `scripts/queue/` as a target package name. This name shadows Python's standard library `queue` module. Any code that does `import queue` inside the `scripts/` package tree could resolve to the local subpackage instead of the stdlib, causing subtle breakage.
 
 The scaffold uses `scripts.queue_runtime/` instead to avoid this collision. This decision is documented here so future contributors do not reintroduce the `scripts/queue/` name.
 
@@ -66,16 +66,16 @@ Each movement slice should be:
 - independently revertible
 - accompanied by wrapper-based compatibility
 
-This follows the pattern established by the `scripts/checks/` movement, which moved three modules with wrappers in a single PR without breaking existing entrypoints.
+This follows the pattern recorded in `docs/scripts-package-movement-log.md`: small module moves, stable command wrappers, and no behavior changes in the same PR.
 
 ## What has been done
 
 - `scripts/cli/` scaffold with `__init__.py` and README
 - `scripts/queue_runtime/` scaffold with `__init__.py` and README
 - `scripts/integrations/` scaffold with `__init__.py` and README
-- `scripts/checks/` movement completed (PR #325 pattern)
-- DB helpers movement completed (compatibility wrappers in place)
-- Services movement completed (compatibility wrappers in place)
+- `scripts/checks/` movement completed with stable command wrappers
+- DB helper movement completed with compatibility wrappers
+- service helper movement completed with compatibility wrappers
 
 ## What has not been done
 
