@@ -38,6 +38,7 @@ This log records completed small package movement slices.
 - `scripts/cli/telegram_attachment_status.py` keeps `scripts/telegram_attachment_status.py` as a compatibility wrapper.
 - `scripts/cli/telegram_missing_attachment_count.py` keeps `scripts/telegram_missing_attachment_count.py` as a compatibility wrapper.
 - `scripts/cli/telegram_backfill_priority.py` keeps `scripts/telegram_backfill_priority.py` as a compatibility wrapper.
+- `scripts/integrations/telegram_service_helpers.py` keeps `scripts/telegram_service_helpers.py` as a compatibility wrapper.
 
 ## Follow-up notes
 
