@@ -38,6 +38,8 @@ BRIEF_RECORDS_SESSION_FK_VERSION = 8
 BRIEF_RECORDS_SESSION_FK_NAME = "brief-records-session-fk"
 PLAN_ITEMS_SESSION_FK_VERSION = 9
 PLAN_ITEMS_SESSION_FK_NAME = "plan-items-session-fk"
+EXTERNAL_INBOX_SESSION_FK_VERSION = 10
+EXTERNAL_INBOX_SESSION_FK_NAME = "external-inbox-session-fk"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -186,6 +188,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             PLAN_ITEMS_SESSION_FK_VERSION,
             PLAN_ITEMS_SESSION_FK_NAME,
+        )
+    if not schema_migration_applied(conn, EXTERNAL_INBOX_SESSION_FK_VERSION):
+        from scripts.db_fk_migrations import apply_external_inbox_session_fk
+
+        apply_external_inbox_session_fk(conn)
+        record_schema_migration(
+            conn,
+            EXTERNAL_INBOX_SESSION_FK_VERSION,
+            EXTERNAL_INBOX_SESSION_FK_NAME,
         )
 
 

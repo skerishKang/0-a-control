@@ -70,6 +70,28 @@ def _source_records_columns() -> list[str]:
     ]
 
 
+def _external_inbox_columns() -> list[str]:
+    return [
+        "id",
+        "source_type",
+        "source_id",
+        "source_name",
+        "external_message_id",
+        "author",
+        "item_type",
+        "title",
+        "raw_content",
+        "attachment_path",
+        "attachment_ref",
+        "item_timestamp",
+        "imported_at",
+        "processed_at",
+        "status",
+        "session_id",
+        "metadata_json",
+    ]
+
+
 def _plan_items_columns() -> list[str]:
     return [
         "id",
@@ -183,6 +205,67 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after source_records rebuild: {fk_errors}"
+        )
+
+
+def apply_external_inbox_session_fk(conn: sqlite3.Connection) -> None:
+    """Rebuild external_inbox with ``session_id -> sessions(id) ON DELETE SET NULL``."""
+    if not _table_exists(conn, "external_inbox") or not _table_exists(conn, "sessions"):
+        return
+
+    if _has_fk_on_column(conn, "external_inbox", "session_id", "sessions"):
+        return
+
+    columns = _external_inbox_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_index_if_exists(conn, "idx_external_inbox_status_imported")
+    _drop_index_if_exists(conn, "idx_external_inbox_source_timestamp")
+    conn.execute("ALTER TABLE external_inbox RENAME TO external_inbox_old")
+    _normalize_session_column(
+        conn,
+        "external_inbox_old",
+        "id",
+        "session_id",
+    )
+
+    conn.execute(
+        """
+        CREATE TABLE external_inbox (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_type TEXT NOT NULL,
+            source_id TEXT NOT NULL,
+            source_name TEXT,
+            external_message_id TEXT,
+            author TEXT,
+            item_type TEXT DEFAULT 'text',
+            title TEXT,
+            raw_content TEXT NOT NULL,
+            attachment_path TEXT,
+            attachment_ref TEXT,
+            item_timestamp TEXT,
+            imported_at TEXT NOT NULL,
+            processed_at TEXT,
+            status TEXT NOT NULL DEFAULT 'new',
+            session_id TEXT
+                REFERENCES sessions(id) ON DELETE SET NULL,
+            metadata_json TEXT,
+            UNIQUE(source_id, external_message_id)
+        )
+        """
+    )
+
+    conn.execute(
+        f"INSERT INTO external_inbox ({col_sql}) "
+        f"SELECT {col_sql} FROM external_inbox_old"
+    )
+    conn.execute("DROP TABLE external_inbox_old")
+    conn.executescript(INDEXES)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after external_inbox session rebuild: {fk_errors}"
         )
 
 
