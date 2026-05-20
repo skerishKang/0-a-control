@@ -18,19 +18,6 @@ if __package__ in (None, ""):
         _classify_message_type,
         _message_sender_label,
     )
-    from scripts.telegram_service_helpers import (
-        _runtime_dir,
-        _write_status,
-        _original_attachment_name,
-        _build_attachment_path,
-        _inspect_attachment,
-    )
-    from scripts.telegram_session_lock import (
-        TelegramSessionBusyError,
-        acquire_telegram_session_lock,
-        get_telegram_session_lock_status,
-        _clear_session_lock,
-    )
 else:
     from .telegram_db import DATA_DIR
     from .telegram_helpers import (
@@ -39,19 +26,20 @@ else:
         _classify_message_type,
         _message_sender_label,
     )
-    from .telegram_service_helpers import (
-        _runtime_dir,
-        _write_status,
-        _original_attachment_name,
-        _build_attachment_path,
-        _inspect_attachment,
-    )
-    from .telegram_session_lock import (
-        TelegramSessionBusyError,
-        acquire_telegram_session_lock,
-        get_telegram_session_lock_status,
-        _clear_session_lock,
-    )
+
+from scripts.integrations.telegram_service_helpers import (
+    _runtime_dir,
+    _write_status,
+    _original_attachment_name,
+    _build_attachment_path,
+    _inspect_attachment,
+)
+from scripts.integrations.telegram_session_lock import (
+    TelegramSessionBusyError,
+    acquire_telegram_session_lock,
+    get_telegram_session_lock_status,
+    _clear_session_lock,
+)
 
 
 RUNTIME_DIR = Path(DATA_DIR) / "runtime"
