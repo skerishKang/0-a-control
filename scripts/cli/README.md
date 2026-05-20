@@ -10,3 +10,4 @@ Home for command-line utilities.
 - `scripts/cli/validate_contract.py` keeps `scripts/validate_contract.py` as a compatibility wrapper.
 - `scripts/cli/telegram_cli_main.py` keeps the old path as a compatibility wrapper.
 - `scripts/cli/session_cli.py` keeps `scripts/session_cli.py` as a compatibility wrapper.
+- `scripts/cli/inbox_cli.py` keeps `scripts/inbox_cli.py` as a compatibility wrapper.
