@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import requests
+
 from scripts.services.github_service import (
     DEFAULT_REPOSITORY,
     GITHUB_API_BASE_URL,
@@ -18,4 +20,5 @@ __all__ = [
     "GitHubConfig",
     "get_github_config",
     "get_github_summary",
+    "requests",
 ]
