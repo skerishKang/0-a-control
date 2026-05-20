@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Callable
 
-from scripts.github_service import get_github_summary
+from scripts.services.github_service import get_github_summary
 from scripts.services.operational_state import classify_github_summary
 
 
