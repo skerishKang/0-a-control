@@ -13,3 +13,4 @@ Home for command-line utilities.
 - `scripts/cli/inbox_cli.py` keeps `scripts/inbox_cli.py` as a compatibility wrapper.
 - `scripts/cli/telegram_attachment_status.py` keeps `scripts/telegram_attachment_status.py` as a compatibility wrapper.
 - `scripts/cli/telegram_missing_attachment_count.py` keeps `scripts/telegram_missing_attachment_count.py` as a compatibility wrapper.
+- `scripts/cli/telegram_backfill_priority.py` keeps `scripts/telegram_backfill_priority.py` as a compatibility wrapper.
