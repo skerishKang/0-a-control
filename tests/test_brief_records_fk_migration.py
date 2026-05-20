@@ -1,4 +1,4 @@
-"""Tests for migration v6: brief_records plan and quest foreign keys."""
+"""Tests for brief_records foreign-key migrations."""
 
 from __future__ import annotations
 
@@ -46,6 +46,14 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
+    def _insert_session(self, conn: sqlite3.Connection, session_id: str = "sess-1") -> None:
+        conn.execute(
+            """INSERT INTO sessions
+               (id, agent_name, source_type, started_at, status)
+               VALUES (?, 'agent', 'test', '2026-01-01', 'active')""",
+            (session_id,),
+        )
+
     def _insert_plan(self, conn: sqlite3.Connection, plan_id: str = "plan-1") -> None:
         conn.execute(
             """INSERT INTO plan_items
@@ -78,7 +86,7 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
             (brief_id, plan_id, quest_id, session_id),
         )
 
-    def test_schema_migrations_records_v1_to_v6(self) -> None:
+    def test_schema_migrations_records_v1_to_v8(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -87,11 +95,12 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
             ).fetchall()
             result = {int(r["version"]): r["name"] for r in versions}
             self.assertEqual(result[6], "brief-records-reference-fks")
-            self.assertGreaterEqual(max(result), 6)
+            self.assertEqual(result[8], "brief-records-session-fk")
+            self.assertGreaterEqual(max(result), 8)
         finally:
             conn.close()
 
-    def test_foreign_key_list_has_plan_and_quest_fks(self) -> None:
+    def test_foreign_key_list_has_plan_quest_and_session_fks(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
@@ -99,23 +108,24 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
             expected = {
                 ("plan_items", "related_plan_item_id"),
                 ("quests", "related_quest_id"),
+                ("sessions", "related_session_id"),
             }
             actual = {(r[2], r[3]) for r in fk_list}
             self.assertTrue(expected.issubset(actual))
-            self.assertNotIn(("sessions", "related_session_id"), actual)
             for row in fk_list:
                 if (row[2], row[3]) in expected:
                     self.assertEqual(row[6], "SET NULL")
         finally:
             conn.close()
 
-    def test_invalid_plan_and_quest_references_raise(self) -> None:
+    def test_invalid_references_raise(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
             cases = [
                 ("brief-bad-plan", "missing-plan", None, None),
                 ("brief-bad-quest", None, "missing-quest", None),
+                ("brief-bad-session", None, None, "missing-session"),
             ]
             for brief_id, plan_id, quest_id, session_id in cases:
                 with self.assertRaises(sqlite3.IntegrityError):
@@ -125,25 +135,13 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
         finally:
             conn.close()
 
-    def test_legacy_session_reference_remains_unconstrained_for_now(self) -> None:
-        db_base.init_db()
-        conn = self._connect()
-        try:
-            self._insert_brief(conn, "brief-legacy-session", None, None, "missing-session")
-            conn.commit()
-            row = conn.execute(
-                "SELECT related_session_id FROM brief_records WHERE id = 'brief-legacy-session'"
-            ).fetchone()
-            self.assertEqual(row["related_session_id"], "missing-session")
-        finally:
-            conn.close()
-
     def test_valid_references_succeed(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
             self._insert_plan(conn, "plan-valid")
             self._insert_quest(conn, "quest-valid")
+            self._insert_session(conn, "sess-valid")
             self._insert_brief(conn, "brief-valid", "plan-valid", "quest-valid", "sess-valid")
             conn.commit()
             row = conn.execute(
@@ -156,17 +154,19 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
         finally:
             conn.close()
 
-    def test_delete_plan_and_quest_sets_reference_columns_null(self) -> None:
+    def test_delete_referenced_rows_sets_reference_columns_null(self) -> None:
         db_base.init_db()
         conn = self._connect()
         try:
             self._insert_plan(conn, "plan-del")
             self._insert_quest(conn, "quest-del")
+            self._insert_session(conn, "sess-del")
             self._insert_brief(conn, "brief-null", "plan-del", "quest-del", "sess-del")
             conn.commit()
 
             conn.execute("DELETE FROM plan_items WHERE id = 'plan-del'")
             conn.execute("DELETE FROM quests WHERE id = 'quest-del'")
+            conn.execute("DELETE FROM sessions WHERE id = 'sess-del'")
             conn.commit()
 
             row = conn.execute(
@@ -175,17 +175,17 @@ class BriefRecordsFKMigrationTests(unittest.TestCase):
             ).fetchone()
             self.assertIsNone(row["related_plan_item_id"])
             self.assertIsNone(row["related_quest_id"])
-            self.assertEqual(row["related_session_id"], "sess-del")
+            self.assertIsNone(row["related_session_id"])
         finally:
             conn.close()
 
-    def test_init_db_idempotent_for_v6(self) -> None:
+    def test_init_db_idempotent_for_v8(self) -> None:
         db_base.init_db()
         db_base.init_db()
         conn = self._connect()
         try:
             count = conn.execute(
-                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 6"
+                "SELECT COUNT(*) as cnt FROM schema_migrations WHERE version = 8"
             ).fetchone()
             self.assertEqual(count["cnt"], 1)
         finally:
