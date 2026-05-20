@@ -8,3 +8,4 @@ Home for command-line utilities.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
 - `scripts/cli/db_integrity_cli.py` keeps `scripts/db_integrity_cli.py` as a compatibility wrapper.
 - `scripts/cli/validate_contract.py` keeps `scripts/validate_contract.py` as a compatibility wrapper.
+- `scripts/cli/telegram_cli_main.py` keeps the old path as a compatibility wrapper.
