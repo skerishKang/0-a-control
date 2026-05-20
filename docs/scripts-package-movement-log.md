@@ -8,6 +8,8 @@ This log records completed small package movement slices.
 - `scripts/checks/frontend_safety.py` keeps `scripts/check_frontend_safety.py` as the stable command wrapper.
 - `scripts/checks/server_smoke.py` keeps `scripts/smoke_server.py` as the stable command wrapper.
 - `scripts/db/workdiary.py` keeps `scripts/db_workdiary_helpers.py` as a compatibility wrapper.
+- `scripts/db/state.py` keeps `scripts/db_state.py` as a compatibility wrapper.
+- `scripts/db/inbox.py` keeps `scripts/db_inbox.py` as a compatibility wrapper.
 - `scripts/db/seed.py` keeps `scripts/db_seed.py` as a compatibility wrapper.
 - `scripts/db/briefing.py` keeps `scripts/db_briefing.py` as a compatibility wrapper.
 - `scripts/services/starting_point.py` keeps `scripts/confirmed_starting_point.py` as a compatibility wrapper.
