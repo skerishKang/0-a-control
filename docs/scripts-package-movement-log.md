@@ -12,6 +12,8 @@ This log records completed small package movement slices.
 - `scripts/db/inbox.py` keeps `scripts/db_inbox.py` as a compatibility wrapper.
 - `scripts/db/seed.py` keeps `scripts/db_seed.py` as a compatibility wrapper.
 - `scripts/db/briefing.py` keeps `scripts/db_briefing.py` as a compatibility wrapper.
+- `scripts/db/session_view.py` keeps `scripts/db_session_view.py` as a compatibility wrapper.
+- `scripts/db/session_resume.py` keeps `scripts/db_session_resume.py` as a compatibility wrapper.
 - `scripts/services/starting_point.py` keeps `scripts/confirmed_starting_point.py` as a compatibility wrapper.
 - `scripts/services/settings_guardrails.py` keeps `scripts/settings_guardrails.py` as a compatibility wrapper.
 - `scripts/services/operations_summary.py` keeps `scripts/operations_summary.py` as a compatibility wrapper.
