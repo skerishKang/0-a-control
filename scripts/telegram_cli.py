@@ -21,7 +21,7 @@ from scripts.telegram_helpers import (
     _format_bytes,
     _metadata_file_size,
 )
-from scripts.telegram_progress import AttachmentProgressReporter
+from scripts.integrations.telegram_progress import AttachmentProgressReporter
 
 
 def _insert_telegram_message(conn, source: dict, msg: dict, source_id: str, now_iso: str) -> None:
@@ -479,5 +479,5 @@ def show_attachment_status(source_id: str, max_file_size_mb: float | None = None
 
 
 if __name__ == "__main__":
-    from scripts.telegram_cli_main import run_cli
+    from scripts.cli.telegram_cli_main import run_cli
     run_cli()
