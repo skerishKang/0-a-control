@@ -32,6 +32,7 @@ class SchemaMigrationTests(unittest.TestCase):
             db_base.DECISION_RECORDS_SESSION_FK_VERSION,
             db_base.BRIEF_RECORDS_SESSION_FK_VERSION,
             db_base.PLAN_ITEMS_SESSION_FK_VERSION,
+            db_base.EXTERNAL_INBOX_SESSION_FK_VERSION,
         ]
 
     def test_init_db_records_schema_versions(self) -> None:
@@ -74,6 +75,10 @@ class SchemaMigrationTests(unittest.TestCase):
         self.assertEqual(
             names[db_base.PLAN_ITEMS_SESSION_FK_VERSION],
             db_base.PLAN_ITEMS_SESSION_FK_NAME,
+        )
+        self.assertEqual(
+            names[db_base.EXTERNAL_INBOX_SESSION_FK_VERSION],
+            db_base.EXTERNAL_INBOX_SESSION_FK_NAME,
         )
 
     def test_init_db_is_idempotent_for_baseline_migration(self) -> None:
