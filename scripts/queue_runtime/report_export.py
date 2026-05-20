@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from scripts.file_queue import REPORTS_DIR, generate_report_id, generate_filename, save_json
+from scripts.queue_runtime.file_queue import REPORTS_DIR, generate_report_id, generate_filename, save_json
 from scripts.db_base import connect
 
 
