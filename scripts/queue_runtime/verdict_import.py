@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from scripts.db_ops import apply_verdict, clear_current_state_cache, DuplicateVerdict
-from scripts.file_queue import (
+from scripts.queue_runtime.file_queue import (
     REPORTS_DIR,
     VERDICTS_DIR,
     move_to_processed,
