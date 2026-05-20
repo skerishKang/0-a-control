@@ -36,7 +36,7 @@ _LAZY_EXPORTS: dict[str, tuple[str, str]] = {
     "get_workdiary_priority_candidates": ("scripts.db_workdiary_helpers", "get_workdiary_priority_candidates"),
     "get_workdiary_top_level": ("scripts.db_workdiary_helpers", "get_workdiary_top_level"),
     "report_quest_progress": ("scripts.verdict_ops", "report_quest_progress"),
-    "refresh_current_state": ("scripts.db_state", "refresh_current_state"),
+    "refresh_current_state": ("scripts.db.state", "refresh_current_state"),
     "defer_current_quest_to_short_term": ("scripts.current_quest_ops", "defer_current_quest_to_short_term"),
     "promote_confirmed_starting_point_to_quest": ("scripts.current_quest_ops", "promote_confirmed_starting_point_to_quest"),
     "start_session": ("scripts.db_sessions", "start_session"),
