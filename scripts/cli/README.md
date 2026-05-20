@@ -1,5 +1,8 @@
 # CLI Package
 
-Future home of command-line interface utilities.
+Home for command-line utilities.
 
-Runtime migration pending. Import paths and behavior remain unchanged.
+## Completed moves
+
+- `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
+- `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
