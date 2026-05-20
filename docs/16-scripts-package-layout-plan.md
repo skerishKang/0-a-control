@@ -1,8 +1,8 @@
 # 16. scripts package layout plan
 
-This document defines the proposed package split for `scripts/` before any files are moved.
+This document defines the proposed package split for `scripts/` before broad file movement.
 
-Issue #250 should be implemented in small batches. The first goal is not to reorganize everything at once, but to make the target boundaries explicit so later PRs can move one responsibility group at a time.
+Issue #250 should be implemented in small batches. The goal is not to reorganize everything at once, but to keep target boundaries explicit and move one responsibility group at a time.
 
 ## Current problem
 
@@ -22,17 +22,17 @@ This is workable for the current prototype, but it makes ownership unclear. The 
 
 The proposed target is a gradual subpackage layout under `scripts/`:
 
-| Target package | Responsibility | Example current files |
-| --- | --- | --- |
-| `scripts/db/` | SQLite schema, migrations, DB helpers, integrity checks, seed helpers | `db_base.py`, `db_schema.py`, `db_fk_migrations.py`, `db_integrity.py`, `db_seed.py` |
-| `scripts/server/` | HTTP server entrypoint, route registration, handler utilities | `server.py`, `server_handlers/*` |
-| `scripts/services/` | Business logic used by server handlers and CLIs | `plan_ops.py`, `quest_ops.py`, `verdict_ops.py`, `briefing` helpers |
-| `scripts/queue/` | File queue, report/verdict pipeline, worker utilities | queue/report/verdict processing scripts |
-| `scripts/telegram/` | Telegram sync, source registry, attachment handling | `telegram_cli.py`, `telegram_db.py`, Telegram sync helpers |
-| `scripts/external/` | External inbox adapters that are not Telegram-specific | inbox/import helpers |
-| `scripts/agents/` | Agent registry, session wrapper coordination, launcher support | `agent_registry.py`, `agent-work.sh` related helpers |
-| `scripts/cli/` | User-facing command entrypoints and compatibility wrappers | small command modules and CLI entrypoints |
-| `scripts/checks/` | CI/static/smoke validation utilities | `check_repo_hygiene.py`, `check_frontend_safety.py`, `smoke_server.py` |
+| Target package | Responsibility | Example current files | Status |
+| --- | --- | --- | --- |
+| `scripts/db/` | SQLite schema, migrations, DB helpers, integrity checks, seed helpers | `db_base.py`, `db_schema.py`, `db_fk_migrations.py`, `db_integrity.py`, `db_seed.py` | Planned |
+| `scripts/server/` | HTTP server entrypoint, route registration, handler utilities | `server.py`, `server_handlers/*` | Planned |
+| `scripts/services/` | Business logic used by server handlers and CLIs | `plan_ops.py`, `quest_ops.py`, `verdict_ops.py`, briefing helpers | Planned |
+| `scripts/queue/` | File queue, report/verdict pipeline, worker utilities | queue/report/verdict processing scripts | Planned |
+| `scripts/telegram/` | Telegram sync, source registry, attachment handling | `telegram_cli.py`, `telegram_db.py`, Telegram sync helpers | Planned |
+| `scripts/external/` | External inbox adapters that are not Telegram-specific | inbox/import helpers | Planned |
+| `scripts/agents/` | Agent registry, session wrapper coordination, launcher support | `agent_registry.py`, `agent-work.sh` related helpers | Planned |
+| `scripts/cli/` | User-facing command entrypoints and compatibility wrappers | small command modules and CLI entrypoints | Planned |
+| `scripts/checks/` | CI/static/smoke validation utilities | `check_repo_hygiene.py`, `check_frontend_safety.py`, `smoke_server.py` | Implemented with wrappers |
 
 The target package names are intentionally conservative. They describe responsibility boundaries without forcing a framework rewrite.
 
@@ -47,11 +47,29 @@ Each movement PR should follow these rules:
 5. Run the full CI workflow before merge.
 6. Prefer compatibility wrappers during the transition.
 
-## Suggested PR order
+## Completed movement slices
+
+### PR B: Static and smoke checks
+
+Status: completed.
+
+Implementation modules now live under `scripts/checks/`:
+
+- `scripts/checks/repo_hygiene.py`
+- `scripts/checks/frontend_safety.py`
+- `scripts/checks/server_smoke.py`
+
+Compatibility wrappers remain at the old paths so existing workflow commands and direct local commands continue to work:
+
+- `scripts/check_repo_hygiene.py`
+- `scripts/check_frontend_safety.py`
+- `scripts/smoke_server.py`
+
+## Remaining suggested PR order
 
 ### PR A: DB package foundation
 
-Move database-only modules first because they already share naming conventions.
+Move database-only modules because they already share naming conventions.
 
 Candidate files:
 
@@ -69,21 +87,7 @@ Recommended approach:
 - Create `scripts/db/` with moved modules.
 - Leave old module wrappers that re-export from the new package for one or more releases.
 - Update direct imports gradually after wrappers are in place.
-
-### PR B: Static and smoke checks
-
-Move CI utility scripts into `scripts/checks/` while keeping root-level wrappers.
-
-Candidate files:
-
-- `scripts/check_repo_hygiene.py`
-- `scripts/check_frontend_safety.py`
-- `scripts/smoke_server.py`
-
-Recommended approach:
-
-- Move implementation to `scripts/checks/`.
-- Keep existing filenames as wrappers so GitHub Actions does not need to change in the first PR.
+- Start with one or two low-risk DB modules before moving the central `db_base.py` import hub.
 
 ### PR C: Telegram package
 
@@ -120,4 +124,4 @@ Recommended approach:
 
 ## Current recommendation
 
-Start with a DB package foundation PR only after this plan is merged. Keep the first code movement extremely small and wrapper-based so imports, launchers, and CI remain stable.
+The first code movement slice is complete for `scripts/checks/`. Continue with another small wrapper-based movement. The safest next options are either a minimal DB helper subpackage foundation or a Telegram implementation move that keeps `scripts/telegram_cli.py` as the stable CLI wrapper.
