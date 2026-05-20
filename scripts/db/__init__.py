@@ -28,7 +28,7 @@ _LAZY_EXPORTS: dict[str, tuple[str, str]] = {
     "get_plans": ("scripts.plan_ops", "get_plans"),
     "get_quests": ("scripts.db_ops", "get_quests"),
     "get_recent_sessions": ("scripts.db_ops", "get_recent_sessions"),
-    "get_session_view_model": ("scripts.db_session_view", "get_session_view_model"),
+    "get_session_view_model": ("scripts.db.session_view", "get_session_view_model"),
     "get_source_records": ("scripts.db_sessions", "get_source_records"),
     "get_work_queue_raw": ("scripts.db_ops", "get_work_queue_raw"),
     "generate_executor_prompt": ("scripts.executor_prompt", "generate_executor_prompt"),
