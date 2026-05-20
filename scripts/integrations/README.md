@@ -5,6 +5,7 @@ Home of third-party service integrations.
 ## Completed moves
 
 - `scripts/integrations/telegram_progress.py` keeps `scripts/telegram_progress.py` as a compatibility wrapper.
+- `scripts/integrations/telegram_session_lock.py` keeps `scripts/telegram_session_lock.py` as a compatibility wrapper.
 
 ## Migration rules
 
