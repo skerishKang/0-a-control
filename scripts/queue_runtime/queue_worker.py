@@ -10,7 +10,7 @@ if _root not in sys.path:
 import logging
 import time
 
-from scripts.verdict_import import import_verdicts
+from scripts.queue_runtime.verdict_import import import_verdicts
 
 
 logging.basicConfig(
