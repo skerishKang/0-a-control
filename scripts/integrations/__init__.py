@@ -1,1 +1,1 @@
-"""External integration package for future scripts split."""
+# Integrations package scaffold
