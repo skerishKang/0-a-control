@@ -36,7 +36,7 @@ except ModuleNotFoundError:
 
 
 try:
-    from scripts.db_briefing import (
+    from scripts.db.briefing import (
         build_today_done_quests,
         build_tomorrow_first_quest,
         generate_morning_brief,
