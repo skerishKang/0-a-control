@@ -70,6 +70,25 @@ def _source_records_columns() -> list[str]:
     ]
 
 
+def _plan_items_columns() -> list[str]:
+    return [
+        "id",
+        "bucket",
+        "title",
+        "description",
+        "status",
+        "priority_score",
+        "priority_reason",
+        "due_at",
+        "project_key",
+        "related_session_id",
+        "related_source_id",
+        "created_at",
+        "updated_at",
+        "metadata_json",
+    ]
+
+
 def _quests_columns() -> list[str]:
     return [
         "id",
@@ -164,6 +183,68 @@ def apply_source_records_session_fk(conn: sqlite3.Connection) -> None:
     if fk_errors:
         raise sqlite3.IntegrityError(
             f"foreign_key_check failed after source_records rebuild: {fk_errors}"
+        )
+
+
+def apply_plan_items_session_fk(conn: sqlite3.Connection) -> None:
+    """Rebuild plan_items with ``related_session_id -> sessions(id) ON DELETE SET NULL``."""
+    if not _table_exists(conn, "plan_items") or not _table_exists(conn, "sessions"):
+        return
+
+    if _has_fk_on_column(conn, "plan_items", "related_session_id", "sessions"):
+        return
+
+    columns = _plan_items_columns()
+    col_sql = ", ".join(columns)
+
+    _drop_index_if_exists(conn, "idx_plan_items_bucket_status")
+    conn.execute("ALTER TABLE plan_items RENAME TO plan_items_old")
+    _normalize_session_column(
+        conn,
+        "plan_items_old",
+        "id",
+        "related_session_id",
+    )
+
+    conn.execute(
+        """
+        CREATE TABLE plan_items (
+            id TEXT PRIMARY KEY,
+            bucket TEXT NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT,
+            status TEXT NOT NULL,
+            priority_score INTEGER,
+            priority_reason TEXT,
+            due_at TEXT,
+            project_key TEXT,
+            related_session_id TEXT
+                REFERENCES sessions(id) ON DELETE SET NULL,
+            related_source_id TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            metadata_json TEXT
+        )
+        """
+    )
+
+    conn.execute(f"INSERT INTO plan_items ({col_sql}) SELECT {col_sql} FROM plan_items_old")
+    conn.execute("DROP TABLE plan_items_old")
+    conn.executescript(INDEXES)
+
+    # SQLite rewrites child-table FK metadata to the temporary name during an
+    # ALTER TABLE RENAME. Rebuild dependent FK tables immediately so no schema
+    # entry keeps referencing plan_items_old after this migration.
+    apply_quests_plan_parent_fks(conn)
+    apply_decision_records_reference_fks(conn)
+    apply_decision_records_session_fk(conn)
+    apply_brief_records_reference_fks(conn)
+    apply_brief_records_session_fk(conn)
+
+    fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if fk_errors:
+        raise sqlite3.IntegrityError(
+            f"foreign_key_check failed after plan_items session rebuild: {fk_errors}"
         )
 
 

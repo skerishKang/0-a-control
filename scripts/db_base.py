@@ -36,6 +36,8 @@ DECISION_RECORDS_SESSION_FK_VERSION = 7
 DECISION_RECORDS_SESSION_FK_NAME = "decision-records-session-fk"
 BRIEF_RECORDS_SESSION_FK_VERSION = 8
 BRIEF_RECORDS_SESSION_FK_NAME = "brief-records-session-fk"
+PLAN_ITEMS_SESSION_FK_VERSION = 9
+PLAN_ITEMS_SESSION_FK_NAME = "plan-items-session-fk"
 
 
 def configure_connection(conn: sqlite3.Connection) -> None:
@@ -175,6 +177,15 @@ def apply_schema_migrations(conn: sqlite3.Connection) -> None:
             conn,
             BRIEF_RECORDS_SESSION_FK_VERSION,
             BRIEF_RECORDS_SESSION_FK_NAME,
+        )
+    if not schema_migration_applied(conn, PLAN_ITEMS_SESSION_FK_VERSION):
+        from scripts.db_fk_migrations import apply_plan_items_session_fk
+
+        apply_plan_items_session_fk(conn)
+        record_schema_migration(
+            conn,
+            PLAN_ITEMS_SESSION_FK_VERSION,
+            PLAN_ITEMS_SESSION_FK_NAME,
         )
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 
-from scripts.db_base import connect, now_iso, record_event, row_to_dict, rows_to_dicts
+from scripts.db_base import connect, normalize_existing_session_id, now_iso, record_event, row_to_dict, rows_to_dicts
 from scripts.db_sessions import append_source_record
 from scripts.db_state import refresh_current_state
 
@@ -11,7 +11,8 @@ def get_plans() -> list[dict]:
     with connect() as conn:
         rows = conn.execute(
             """
-            SELECT * FROM plan_items
+            SELECT *
+            FROM plan_items
             ORDER BY
                 CASE bucket
                     WHEN 'today' THEN 1
@@ -31,8 +32,11 @@ def get_plans() -> list[dict]:
 def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> list[dict]:
     created_items = []
     updated_at = now_iso()
+    related_session_id: str | None = None
+    log_lines: list[str] = []
 
     with connect() as conn:
+        related_session_id = normalize_existing_session_id(conn, session_id)
         for cand in candidates:
             item_id = str(uuid.uuid4())
             bucket = cand.get("bucket", "short_term")
@@ -57,7 +61,7 @@ def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> lis
                     description,
                     status,
                     priority_score,
-                    session_id or None,
+                    related_session_id,
                     related_source_id,
                     updated_at,
                     updated_at,
@@ -86,20 +90,21 @@ def approve_plan_candidates(candidates: list[dict], session_id: str = "") -> lis
                 created_at=updated_at,
             )
 
-        if session_id:
+        if related_session_id:
             log_lines = [f"Approved {len(created_items)} plan items:"]
             for item in created_items:
                 log_lines.append(f"- [{item['bucket']}] {item['title']}")
 
-            append_source_record(
-                session_id=session_id,
-                source_name="inbox_cli",
-                source_type="plan_update",
-                content="\n".join(log_lines),
-                role="system",
-            )
-
         refresh_current_state(conn)
+
+    if related_session_id and log_lines:
+        append_source_record(
+            session_id=related_session_id,
+            source_name="inbox_cli",
+            source_type="plan_update",
+            content="\n".join(log_lines),
+            role="system",
+        )
 
     return created_items
 
