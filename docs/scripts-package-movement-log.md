@@ -31,6 +31,7 @@ This log records completed small package movement slices.
 - `scripts/queue_runtime/queue_worker.py` keeps `scripts/queue_worker.py` as a compatibility wrapper.
 - `scripts/queue_runtime/report_export.py` keeps `scripts/report_export.py` as a compatibility wrapper.
 - `scripts/queue_runtime/verdict_import.py` keeps `scripts/verdict_import.py` as a compatibility wrapper.
+- `scripts/queue_runtime/file_queue.py` keeps `scripts/file_queue.py` as a compatibility wrapper.
 
 ## Follow-up notes
 
