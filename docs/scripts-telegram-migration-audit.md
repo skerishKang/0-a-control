@@ -12,6 +12,7 @@ This audit records the current canonical package locations for Telegram-related 
 | `scripts/telegram_missing_attachment_count.py` | `scripts/cli/telegram_missing_attachment_count.py` | CLI entrypoint helper. Do not move to integrations without a separate deliberate cleanup. |
 | `scripts/telegram_backfill_priority.py` | `scripts/cli/telegram_backfill_priority.py` | CLI entrypoint helper. |
 | `scripts/telegram_cli_main.py` | `scripts/cli/telegram_cli_main.py` | CLI main entrypoint. |
+| `scripts/telegram_service_helpers.py` | `scripts/integrations/telegram_service_helpers.py` | Integration service helper. |
 
 ## Still flat in `scripts/`
 
@@ -21,7 +22,6 @@ These files remain in the flat `scripts/` namespace and need separate review bef
 - `scripts/telegram_cli.py`
 - `scripts/telegram_helpers.py`
 - `scripts/telegram_service.py`
-- `scripts/telegram_service_helpers.py`
 
 ## Guardrails
 
