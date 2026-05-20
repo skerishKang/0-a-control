@@ -232,6 +232,15 @@ def apply_plan_items_session_fk(conn: sqlite3.Connection) -> None:
     conn.execute("DROP TABLE plan_items_old")
     conn.executescript(INDEXES)
 
+    # SQLite rewrites child-table FK metadata to the temporary name during an
+    # ALTER TABLE RENAME. Rebuild dependent FK tables immediately so no schema
+    # entry keeps referencing plan_items_old after this migration.
+    apply_quests_plan_parent_fks(conn)
+    apply_decision_records_reference_fks(conn)
+    apply_decision_records_session_fk(conn)
+    apply_brief_records_reference_fks(conn)
+    apply_brief_records_session_fk(conn)
+
     fk_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
     if fk_errors:
         raise sqlite3.IntegrityError(
