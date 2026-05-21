@@ -23,6 +23,18 @@ These files remain in the flat `scripts/` namespace and need separate review bef
 - `scripts/telegram_db.py`
 - `scripts/telegram_service.py`
 
+## Deferred movement notes
+
+### `scripts/telegram_db.py`
+
+`telegram_db.py` should not be moved to `scripts/db/` in the current layout because `scripts/db.py` already exists as the public database facade. Creating a `scripts/db/` package would therefore require a broader database-layer restructuring and is outside the safe Telegram migration slice.
+
+Keep `scripts/telegram_db.py` flat until one of these is true:
+
+- the database facade is deliberately renamed or split so a `scripts/db/` package can exist safely;
+- a separate canonical location is approved for Telegram-specific DB storage helpers;
+- tests that import and mutate `scripts.telegram_db.DB_PATH` are updated or a compatibility wrapper explicitly preserves that patching behavior.
+
 ## Guardrails
 
 - Keep old paths as compatibility wrappers.
