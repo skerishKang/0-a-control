@@ -71,7 +71,7 @@ def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
         ROOT_DIR,
-        get_latest_briefs, get_recent_sessions, get_active_session_runtime,
+        get_active_session_runtime,
         get_source_records, get_work_queue_raw, get_session_view_model, get_workdiary_top_level,
         get_workdiary_priority_candidates, get_external_inbox_overview,
         get_external_inbox_source_messages, get_agent_statuses,
@@ -100,12 +100,12 @@ def handle_get_quests(handler, query):
 
 def handle_get_briefs_latest(handler, query):
     limit = _get_db()["parse_limit"](query, "limit", 10, 200)
-    handler.send_json({"briefs": _get_db()["get_latest_briefs"](limit)})
+    handler.send_json(control_state_service.get_latest_briefs_payload(limit))
 
 
 def handle_get_sessions_recent(handler, query):
     limit = _get_db()["parse_limit"](query, "limit", 10, 200)
-    handler.send_json({"sessions": _get_db()["get_recent_sessions"](limit)})
+    handler.send_json(control_state_service.get_recent_sessions_payload(limit))
 
 
 def handle_get_sessions_active(handler, query):
