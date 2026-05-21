@@ -32,6 +32,7 @@ This log records completed small package movement slices.
 - `scripts/services/current_quest_ops.py` keeps `scripts/current_quest_ops.py` as a compatibility wrapper.
 - `scripts/services/ai_verdict.py` keeps `scripts/ai_verdict.py` as a compatibility wrapper.
 - `scripts/services/verdict_ops.py` keeps `scripts/verdict_ops.py` as a compatibility wrapper.
+- `scripts/services/server_request_guard.py` keeps `scripts/server_request_guard.py` as a compatibility wrapper.
 - `scripts/cli/gemini_verdict.py` keeps `scripts/gemini_verdict.py` as a compatibility wrapper.
 - `scripts/cli/generate_session_html.py` keeps `scripts/generate_session_html.py` as a compatibility wrapper.
 - `scripts/cli/import_gemini_cli_session.py` keeps `scripts/import_gemini_cli_session.py` as a compatibility wrapper.
