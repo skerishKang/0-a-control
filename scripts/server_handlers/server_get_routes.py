@@ -3,7 +3,7 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
-from scripts.services import control_state_service, session_read_service
+from scripts.services import control_state_service, session_read_service, workdiary_service
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -71,8 +71,8 @@ def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
         ROOT_DIR,
-        get_work_queue_raw, get_workdiary_top_level,
-        get_workdiary_priority_candidates, get_external_inbox_overview,
+        get_work_queue_raw,
+        get_external_inbox_overview,
         get_external_inbox_source_messages, get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
         fetch_chats, fetch_messages, parse_limit,
@@ -129,12 +129,12 @@ def handle_get_sessions_view(handler, path, query):
 
 def handle_get_workdiary_top_level(handler, query):
     limit = _get_db()["parse_limit"](query, "limit", 30, 200)
-    handler.send_json({"items": _get_db()["get_workdiary_top_level"](limit)})
+    handler.send_json(workdiary_service.get_top_level_payload(limit))
 
 
 def handle_get_workdiary_priority_candidates(handler, query):
     limit = _get_db()["parse_limit"](query, "limit", 8, 200)
-    handler.send_json({"items": _get_db()["get_workdiary_priority_candidates"](limit)})
+    handler.send_json(workdiary_service.get_priority_candidates_payload(limit))
 
 
 def handle_get_external_inbox(handler, query):
