@@ -3,7 +3,7 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
-from scripts.services import control_state_service
+from scripts.services import control_state_service, session_read_service
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -71,8 +71,7 @@ def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
         ROOT_DIR,
-        get_active_session_runtime,
-        get_source_records, get_work_queue_raw, get_session_view_model, get_workdiary_top_level,
+        get_work_queue_raw, get_workdiary_top_level,
         get_workdiary_priority_candidates, get_external_inbox_overview,
         get_external_inbox_source_messages, get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
@@ -109,26 +108,23 @@ def handle_get_sessions_recent(handler, query):
 
 
 def handle_get_sessions_active(handler, query):
-    db = _get_db()
     session_id = query.get("session_id", [None])[0]
-    handler.send_json({"session": db["get_active_session_runtime"](session_id)})
+    handler.send_json(session_read_service.get_active_session_payload(session_id))
 
 
 def handle_get_sessions_records(handler, query):
-    db = _get_db()
     session_id = query.get("session_id", [""])[0]
-    limit = db["parse_limit"](query, "limit", 200, 200)
-    handler.send_json({"records": db["get_source_records"](session_id, limit)})
+    limit = _get_db()["parse_limit"](query, "limit", 200, 200)
+    handler.send_json(session_read_service.get_session_records_payload(session_id, limit))
 
 
 def handle_get_sessions_view(handler, path, query):
-    db = _get_db()
     session_id = path.rsplit("/", 1)[-1]
     if not session_id:
         handler.send_json({"error": "session_id is required"}, status=HTTPStatus.BAD_REQUEST)
         return
-    record_limit = db["parse_limit"](query, "limit", 500, 2000)
-    handler.send_json({"view": db["get_session_view_model"](session_id, record_limit)})
+    record_limit = _get_db()["parse_limit"](query, "limit", 500, 2000)
+    handler.send_json(session_read_service.get_session_view_payload(session_id, record_limit))
 
 
 def handle_get_workdiary_top_level(handler, query):
