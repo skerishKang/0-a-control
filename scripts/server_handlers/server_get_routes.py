@@ -14,6 +14,7 @@ from scripts.services import (
 )
 from scripts.telegram_cli import get_core_sources_sync_status
 from scripts.telegram_service import get_telegram_status
+from scripts.validation_checklist import list_checklists
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -85,8 +86,6 @@ def _get_db():
         get_agent_statuses,
         fetch_chats, fetch_messages, parse_limit,
         generate_executor_prompt,
-        get_executor_prompt_templates,
-        list_checklists,
     )
     return locals()
 
@@ -270,8 +269,8 @@ def handle_get_work_queue(handler, query):
 
 
 def handle_get_executor_prompt_templates(handler, query):
-    handler.send_json(_get_db()["get_executor_prompt_templates"]())
+    handler.send_json(control_state_service.get_executor_prompt_templates_payload())
 
 
 def handle_get_validation_checklists(handler, query):
-    handler.send_json({"checklists": _get_db()["list_checklists"]()})
+    handler.send_json({"checklists": list_checklists()})

@@ -23,3 +23,7 @@ def get_latest_briefs_payload(limit: int) -> dict:
 
 def get_recent_sessions_payload(limit: int) -> dict:
     return {"sessions": _db.get_recent_sessions(limit)}
+
+
+def get_executor_prompt_templates_payload() -> dict:
+    return _db.get_executor_prompt_templates()
