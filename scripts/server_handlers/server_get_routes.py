@@ -12,6 +12,8 @@ from scripts.services import (
     settings_guardrails,
     workdiary_service,
 )
+from scripts.telegram_cli import get_core_sources_sync_status
+from scripts.telegram_service import get_telegram_status
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -81,7 +83,6 @@ def _get_db():
         ROOT_DIR,
         get_work_queue_raw,
         get_agent_statuses,
-        get_core_sources_sync_status, get_telegram_status,
         fetch_chats, fetch_messages, parse_limit,
         generate_executor_prompt,
         get_executor_prompt_templates,
@@ -169,11 +170,11 @@ def handle_get_agents_status(handler, query):
 
 
 def handle_get_telegram_sync_status(handler, query):
-    handler.send_json({"sources": _get_db()["get_core_sources_sync_status"]()})
+    handler.send_json({"sources": get_core_sources_sync_status()})
 
 
 def handle_get_telegram_status(handler, query):
-    handler.send_json(_get_db()["get_telegram_status"]())
+    handler.send_json(get_telegram_status())
 
 
 def handle_get_telegram_chats(handler, query):
