@@ -12,21 +12,15 @@ from zoneinfo import ZoneInfo
 
 if __package__ in (None, ""):
     from scripts.telegram_db import DATA_DIR
-    from scripts.telegram_helpers import (
-        _mask_phone,
-        _safe_path_part,
-        _classify_message_type,
-        _message_sender_label,
-    )
 else:
     from .telegram_db import DATA_DIR
-    from .telegram_helpers import (
-        _mask_phone,
-        _safe_path_part,
-        _classify_message_type,
-        _message_sender_label,
-    )
 
+from scripts.integrations.telegram_helpers import (
+    _mask_phone,
+    _safe_path_part,
+    _classify_message_type,
+    _message_sender_label,
+)
 from scripts.integrations.telegram_service_helpers import (
     _runtime_dir,
     _write_status,
