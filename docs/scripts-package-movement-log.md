@@ -23,6 +23,7 @@ This log records completed small package movement slices.
 - `scripts/services/github_service.py` keeps `scripts/github_service.py` as a compatibility wrapper.
 - `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
+- `scripts/cli/cleanup_import_verification_sessions.py` keeps `scripts/cleanup_import_verification_sessions.py` as a compatibility wrapper.
 - `scripts/cli/db_integrity_cli.py` keeps `scripts/db_integrity_cli.py` as a compatibility wrapper.
 - `scripts/cli/validate_contract.py` keeps `scripts/validate_contract.py` as a compatibility wrapper.
 - `scripts/cli/telegram_cli_main.py` keeps `scripts/telegram_cli_main.py` as a compatibility wrapper.
