@@ -15,3 +15,11 @@ def get_plans_payload() -> dict:
 
 def get_quests_payload() -> dict:
     return {"quests": _db.get_quests()}
+
+
+def get_latest_briefs_payload(limit: int) -> dict:
+    return {"briefs": _db.get_latest_briefs(limit)}
+
+
+def get_recent_sessions_payload(limit: int) -> dict:
+    return {"sessions": _db.get_recent_sessions(limit)}
