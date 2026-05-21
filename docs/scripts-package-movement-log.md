@@ -25,7 +25,8 @@ This log records completed small package movement slices.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
 - `scripts/cli/db_integrity_cli.py` keeps `scripts/db_integrity_cli.py` as a compatibility wrapper.
 - `scripts/cli/validate_contract.py` keeps `scripts/validate_contract.py` as a compatibility wrapper.
-- `scripts/cli/telegram_cli_main.py` keeps the old path as a compatibility wrapper.
+- `scripts/cli/telegram_cli_main.py` keeps `scripts/telegram_cli_main.py` as a compatibility wrapper.
+- `scripts/cli/telegram_cli.py` keeps `scripts/telegram_cli.py` as a compatibility wrapper.
 - `scripts/cli/session_cli.py` keeps `scripts/session_cli.py` as a compatibility wrapper.
 - `scripts/cli/inbox_cli.py` keeps `scripts/inbox_cli.py` as a compatibility wrapper.
 - `scripts/queue_runtime/queue_worker.py` keeps `scripts/queue_worker.py` as a compatibility wrapper.
@@ -34,11 +35,12 @@ This log records completed small package movement slices.
 - `scripts/queue_runtime/file_queue.py` keeps `scripts/file_queue.py` as a compatibility wrapper.
 - `scripts/integrations/telegram_progress.py` keeps `scripts/telegram_progress.py` as a compatibility wrapper.
 - `scripts/integrations/telegram_session_lock.py` keeps `scripts/telegram_session_lock.py` as a compatibility wrapper.
-- `scripts/integrations/telegram_attachment_status.py` keeps `scripts/telegram_attachment_status.py` as a compatibility wrapper.
+- `scripts/integrations/telegram_attachment_status.py` remains a historical intermediate command helper path; the current canonical command path is `scripts/cli/telegram_attachment_status.py`.
 - `scripts/cli/telegram_attachment_status.py` keeps `scripts/telegram_attachment_status.py` as a compatibility wrapper.
 - `scripts/cli/telegram_missing_attachment_count.py` keeps `scripts/telegram_missing_attachment_count.py` as a compatibility wrapper.
 - `scripts/cli/telegram_backfill_priority.py` keeps `scripts/telegram_backfill_priority.py` as a compatibility wrapper.
 - `scripts/integrations/telegram_service_helpers.py` keeps `scripts/telegram_service_helpers.py` as a compatibility wrapper.
+- `scripts/integrations/telegram_helpers.py` keeps `scripts/telegram_helpers.py` as a compatibility wrapper.
 
 ## Follow-up notes
 
@@ -46,3 +48,4 @@ This log records completed small package movement slices.
 - Preserve public constants and module-level handles used by tests.
 - Move central DB files only after smaller helpers are stable.
 - Do not mix behavior, schema, or route changes into package movement PRs.
+- For Telegram command helpers, prefer `scripts/cli/`; use `scripts/integrations/` for reusable service helpers only.
