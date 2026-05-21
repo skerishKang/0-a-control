@@ -14,7 +14,7 @@ from scripts.services import (
     workdiary_service,
 )
 from scripts.telegram_cli import get_core_sources_sync_status
-from scripts.telegram_service import get_telegram_status
+from scripts.telegram_service import fetch_chats, fetch_messages, get_telegram_status
 from scripts.validation_checklist import list_checklists
 
 
@@ -83,7 +83,7 @@ def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
         get_agent_statuses,
-        fetch_chats, fetch_messages, parse_limit,
+        parse_limit,
         generate_executor_prompt,
     )
     return locals()
@@ -176,19 +176,17 @@ def handle_get_telegram_status(handler, query):
 
 
 def handle_get_telegram_chats(handler, query):
-    db = _get_db()
-    limit = db["parse_limit"](query, "limit", 50, 200)
-    handler.send_json({"status": "ok", "chats": db["fetch_chats"](limit=limit)})
+    limit = _get_db()["parse_limit"](query, "limit", 50, 200)
+    handler.send_json({"status": "ok", "chats": fetch_chats(limit=limit)})
 
 
 def handle_get_telegram_messages(handler, query):
-    db = _get_db()
     chat_id = query.get("chat_id", [""])[0]
     if not chat_id:
         handler.send_json({"error": "chat_id is required"}, status=HTTPStatus.BAD_REQUEST)
         return
-    limit = db["parse_limit"](query, "limit", 200, 500)
-    handler.send_json({"status": "ok", "chat_id": chat_id, "messages": db["fetch_messages"](chat_id, limit=limit, download_attachments=False)})
+    limit = _get_db()["parse_limit"](query, "limit", 200, 500)
+    handler.send_json({"status": "ok", "chat_id": chat_id, "messages": fetch_messages(chat_id, limit=limit, download_attachments=False)})
 
 
 def handle_get_suggestions(handler, query):
