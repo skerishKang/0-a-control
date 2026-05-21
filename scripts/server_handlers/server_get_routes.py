@@ -3,7 +3,14 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
-from scripts.services import control_state_service, external_inbox_service, session_read_service, workdiary_service
+from scripts.services import (
+    control_state_service,
+    external_inbox_service,
+    operations_summary as operations_summary_service,
+    session_read_service,
+    settings_guardrails,
+    workdiary_service,
+)
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -75,7 +82,6 @@ def _get_db():
         get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
         fetch_chats, fetch_messages, parse_limit,
-        build_operations_summary, build_settings_status, build_guardrails_status,
         list_manual_overrides,
         generate_executor_prompt,
         get_executor_prompt_templates,
@@ -205,15 +211,15 @@ def handle_get_suggestions(handler, query):
 
 
 def handle_get_operations_summary(handler, query):
-    handler.send_json(_get_db()["build_operations_summary"]())
+    handler.send_json(operations_summary_service.build_operations_summary())
 
 
 def handle_get_settings_status(handler, query):
-    handler.send_json(_get_db()["build_settings_status"]())
+    handler.send_json(settings_guardrails.build_settings_status())
 
 
 def handle_get_guardrails_status(handler, query):
-    handler.send_json(_get_db()["build_guardrails_status"]())
+    handler.send_json(settings_guardrails.build_guardrails_status())
 
 
 def handle_get_ops_overrides(handler, query):
