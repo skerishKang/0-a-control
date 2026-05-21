@@ -25,6 +25,7 @@ This log records completed small package movement slices.
 - `scripts/services/executor_prompt.py` keeps `scripts/executor_prompt.py` as a compatibility wrapper.
 - `scripts/services/request_validation.py` keeps `scripts/request_validation.py` as a compatibility wrapper.
 - `scripts/services/agent_registry.py` keeps `scripts/agent_registry.py` as a compatibility wrapper.
+- `scripts/services/validation_checklist.py` keeps `scripts/validation_checklist.py` as a compatibility wrapper.
 - `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
 - `scripts/cli/cleanup_import_verification_sessions.py` keeps `scripts/cleanup_import_verification_sessions.py` as a compatibility wrapper.
