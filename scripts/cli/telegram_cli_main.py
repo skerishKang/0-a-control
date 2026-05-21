@@ -9,7 +9,7 @@ if _root not in sys.path:
 
 import argparse
 import json
-from scripts.telegram_cli import (
+from scripts.cli.telegram_cli import (
     init_db,
     list_sources,
     sync_core,
