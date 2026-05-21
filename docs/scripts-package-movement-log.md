@@ -30,6 +30,7 @@ This log records completed small package movement slices.
 - `scripts/services/planning_input.py` keeps `scripts/planning_input.py` as a compatibility wrapper.
 - `scripts/services/plan_ops.py` keeps `scripts/plan_ops.py` as a compatibility wrapper.
 - `scripts/services/current_quest_ops.py` keeps `scripts/current_quest_ops.py` as a compatibility wrapper.
+- `scripts/services/ai_verdict.py` keeps `scripts/ai_verdict.py` as a compatibility wrapper.
 - `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
 - `scripts/cli/cleanup_import_verification_sessions.py` keeps `scripts/cleanup_import_verification_sessions.py` as a compatibility wrapper.
