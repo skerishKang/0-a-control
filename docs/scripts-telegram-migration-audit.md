@@ -35,6 +35,16 @@ Keep `scripts/telegram_db.py` flat until one of these is true:
 - a separate canonical location is approved for Telegram-specific DB storage helpers;
 - tests that import and mutate `scripts.telegram_db.DB_PATH` are updated or a compatibility wrapper explicitly preserves that patching behavior.
 
+### `scripts/telegram_service.py`
+
+`telegram_service.py` is still the public runtime service module for Telethon connection, status, session-lock integration, chat discovery, message fetch, and attachment download orchestration. It should not be moved in the current slice because callers and tests import `scripts.telegram_service` directly and mutate module-level runtime constants such as `STATUS_FILE`.
+
+Keep `scripts/telegram_service.py` flat until one of these is true:
+
+- a smaller canonical service module is introduced behind the current public wrapper;
+- tests and runtime callers are updated to target the new canonical module;
+- the old wrapper explicitly preserves patching and module-state mutation behavior for public constants and runtime helpers.
+
 ## Guardrails
 
 - Keep old paths as compatibility wrappers.
