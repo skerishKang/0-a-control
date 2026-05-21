@@ -3,6 +3,7 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
+from scripts.manual_overrides import list_manual_overrides
 from scripts.services import (
     control_state_service,
     external_inbox_service,
@@ -82,7 +83,6 @@ def _get_db():
         get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
         fetch_chats, fetch_messages, parse_limit,
-        list_manual_overrides,
         generate_executor_prompt,
         get_executor_prompt_templates,
         list_checklists,
@@ -223,11 +223,10 @@ def handle_get_guardrails_status(handler, query):
 
 
 def handle_get_ops_overrides(handler, query):
-    db = _get_db()
     include_inactive = query.get("include_inactive", ["false"])[0].lower() in {"1", "true", "yes"}
     target_type = query.get("target_type", [None])[0]
     target_id = query.get("target_id", [None])[0]
-    overrides = db["list_manual_overrides"](
+    overrides = list_manual_overrides(
         include_inactive=include_inactive,
         target_type=target_type,
         target_id=target_id,
