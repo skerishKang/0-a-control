@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 PUBLIC_DIR = Path(__file__).resolve().parents[2] / "public"
 DEFAULT_INLINE_EVENT_BASELINE = int(os.getenv("CONTROL_TOWER_FRONTEND_INLINE_EVENT_BASELINE", "0"))
+DEFAULT_INNER_HTML_BASELINE = int(os.getenv("CONTROL_TOWER_FRONTEND_INNER_HTML_BASELINE", "49"))
 
 INLINE_EVENT_RE = re.compile(
     r"\bon(click|change|submit|load|mouseover|mouseout|focus|blur|dblclick|keydown|keyup|keypress|input|scroll|resize|drag|drop|error|unload)\s*=",
@@ -39,21 +40,23 @@ class SafetyReport:
         self.missing_asset_versions: list[tuple[str, int, str]] = []
         self.errors: list[str] = []
 
-    def should_fail(self, inline_event_baseline: int) -> bool:
+    def should_fail(self, inline_event_baseline: int, inner_html_baseline: int) -> bool:
         return bool(
             self.errors
             or self.script_urls
             or self.missing_asset_versions
             or len(self.inline_handlers) > inline_event_baseline
+            or len(self.inner_html_uses) > inner_html_baseline
         )
 
-    def print_summary(self, inline_event_baseline: int, verbose: bool = False) -> None:
+    def print_summary(self, inline_event_baseline: int, inner_html_baseline: int, verbose: bool = False) -> None:
         inline_count = len(self.inline_handlers)
+        inner_html_count = len(self.inner_html_uses)
         print("Frontend static safety check")
         print(f"inline-event count: {inline_count} / baseline {inline_event_baseline}")
         print(f"script-url count: {len(self.script_urls)}")
         print(f"asset-version errors: {len(self.missing_asset_versions)}")
-        print(f"innerHTML warnings: {len(self.inner_html_uses)}")
+        print(f"innerHTML warnings: {inner_html_count} / baseline {inner_html_baseline}")
 
         if self.errors:
             print("\nErrors:")
@@ -75,12 +78,12 @@ class SafetyReport:
             for path, lineno, line in sorted(self.inline_handlers):
                 print(f"  {path}:{lineno}  {line.strip()[:120]}")
 
-        if verbose and self.inner_html_uses:
-            print("\ninnerHTML assignments [report-only]:")
+        if (inner_html_count > inner_html_baseline or verbose) and self.inner_html_uses:
+            print("\ninnerHTML assignments:")
             for path, lineno, line in sorted(self.inner_html_uses):
                 print(f"  {path}:{lineno}  {line.strip()[:120]}")
 
-        verdict = "FAIL" if self.should_fail(inline_event_baseline) else "PASS"
+        verdict = "FAIL" if self.should_fail(inline_event_baseline, inner_html_baseline) else "PASS"
         print(f"\nRESULT: {verdict}")
 
 
@@ -161,13 +164,14 @@ def main() -> int:
     parser.add_argument("--verbose", "-v", action="store_true")
     parser.add_argument("--dir", type=str, default=None)
     parser.add_argument("--inline-event-baseline", type=int, default=DEFAULT_INLINE_EVENT_BASELINE)
+    parser.add_argument("--inner-html-baseline", type=int, default=DEFAULT_INNER_HTML_BASELINE)
     args = parser.parse_args()
 
     report = SafetyReport()
     target_dir = Path(args.dir) if args.dir else PUBLIC_DIR
     scan_directory(target_dir.resolve(), report)
-    report.print_summary(args.inline_event_baseline, verbose=args.verbose)
-    return 1 if report.should_fail(args.inline_event_baseline) else 0
+    report.print_summary(args.inline_event_baseline, args.inner_html_baseline, verbose=args.verbose)
+    return 1 if report.should_fail(args.inline_event_baseline, args.inner_html_baseline) else 0
 
 
 if __name__ == "__main__":
