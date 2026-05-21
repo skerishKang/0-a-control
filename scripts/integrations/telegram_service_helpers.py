@@ -6,7 +6,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from scripts.telegram_db import DATA_DIR
-from scripts.telegram_helpers import (
+from scripts.integrations.telegram_helpers import (
     _mask_phone,
     _safe_path_part,
     _classify_message_type,
