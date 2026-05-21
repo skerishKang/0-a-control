@@ -1,7 +1,6 @@
 # server_handlers package — lazy imports to avoid circular dependency with scripts.server
 from __future__ import annotations
 from http import HTTPStatus
-import logging
 
 from scripts.manual_overrides import list_manual_overrides
 from scripts.services import (
@@ -10,6 +9,7 @@ from scripts.services import (
     operations_summary as operations_summary_service,
     session_read_service,
     settings_guardrails,
+    suggestions_service,
     workdiary_service,
 )
 from scripts.telegram_cli import get_core_sources_sync_status
@@ -81,7 +81,6 @@ def handle_get_dispatch(handler, path: str, query: dict) -> None:
 def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
-        ROOT_DIR,
         get_work_queue_raw,
         get_agent_statuses,
         fetch_chats, fetch_messages, parse_limit,
@@ -193,21 +192,8 @@ def handle_get_telegram_messages(handler, query):
 
 
 def handle_get_suggestions(handler, query):
-    db = _get_db()
-    suggestions_path = db["ROOT_DIR"] / "data" / "runtime" / "quest_suggestions.json"
-    limit = db["parse_limit"](query, "limit", 3, 20)
-    if not suggestions_path.exists():
-        handler.send_json({"suggestions": []})
-        return
-    try:
-        import json
-        with open(suggestions_path, encoding="utf-8") as f:
-            data = json.load(f)
-            suggestions = data.get("suggestions", [])[:limit]
-            handler.send_json({"suggestions": suggestions})
-    except json.JSONDecodeError as exc:
-        logging.warning("quest_suggestions.json is corrupted, returning empty: %s", exc)
-        handler.send_json({"suggestions": []})
+    limit = _get_db()["parse_limit"](query, "limit", 3, 20)
+    handler.send_json(suggestions_service.get_suggestions_payload(limit))
 
 
 def handle_get_operations_summary(handler, query):
