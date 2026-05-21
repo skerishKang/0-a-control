@@ -3,6 +3,8 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
+from scripts.services import control_state_service
+
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
 # Maps URL path → handler method name on the ControlTowerHandler instance.
@@ -68,7 +70,7 @@ def handle_get_dispatch(handler, path: str, query: dict) -> None:
 def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
-        ROOT_DIR, get_current_state, get_plans, get_quests,
+        ROOT_DIR,
         get_latest_briefs, get_recent_sessions, get_active_session_runtime,
         get_source_records, get_work_queue_raw, get_session_view_model, get_workdiary_top_level,
         get_workdiary_priority_candidates, get_external_inbox_overview,
@@ -85,15 +87,15 @@ def _get_db():
 
 
 def handle_get_current_state(handler, query):
-    handler.send_json({"current_state": _get_db()["get_current_state"](refresh=False)})
+    handler.send_json(control_state_service.get_current_state_payload())
 
 
 def handle_get_plans(handler, query):
-    handler.send_json({"plans": _get_db()["get_plans"]()})
+    handler.send_json(control_state_service.get_plans_payload())
 
 
 def handle_get_quests(handler, query):
-    handler.send_json({"quests": _get_db()["get_quests"]()})
+    handler.send_json(control_state_service.get_quests_payload())
 
 
 def handle_get_briefs_latest(handler, query):
