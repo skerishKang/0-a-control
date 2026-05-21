@@ -1,10 +1,12 @@
 # scripts runtime migration plan
 
-This document records the planning direction for migrating `scripts/` modules into structured subpackages. It does not describe started runtime work — the actual runtime file migration has not begun.
+This document records the planning direction and current status for migrating `scripts/` modules into structured subpackages.
 
 ## Current scripts structure
 
-`scripts/` is a flat directory mixing several responsibilities:
+`scripts/` is being split by responsibility while preserving old command and import paths through compatibility wrappers. The directory still contains some flat runtime modules, but several responsibility groups now have canonical package locations.
+
+Current responsibility groups include:
 
 - database schema, migrations, integrity checks, and query helpers
 - work queue and report/verdict pipeline helpers
@@ -13,49 +15,49 @@ This document records the planning direction for migrating `scripts/` modules in
 - agent launcher registry and session wrappers
 - CI, smoke, and static safety utilities
 
-This structure works for the current prototype but makes ownership boundaries unclear.
+## Current package direction
 
-## Target package direction
+### `scripts.cli`
 
-Three new subpackage scaffolds have been added to define future boundaries:
+Canonical home of command-line interface utilities and user-facing entrypoints.
 
-### scripts.cli
+Current completed moves include DB integrity, contract validation, Telegram CLI main/command helpers, session CLI, inbox CLI, and Telegram attachment/backfill helper entrypoints. Old flat paths remain compatibility wrappers unless explicitly removed in a later cleanup.
 
-Future home of command-line interface utilities and user-facing entrypoints.
+### `scripts.queue_runtime`
 
-Current candidate files: `operating_loop_cli.py`, `session_cli.py`, `inbox_cli.py`, `db_integrity_cli.py`, and similar user-facing CLI modules.
+Canonical home of file queue and pipeline runtime components.
 
-### scripts.queue_runtime
+Current completed moves include queue worker, report export, verdict import, and file queue helpers. The package name intentionally avoids `scripts.queue` because that would shadow Python's standard library `queue` module.
 
-Future home of queue processing and runtime execution components.
+### `scripts.integrations`
 
-Current candidate files: `queue_worker.py`, `work_queue.py`, `file_queue.py`, and related pipeline helpers.
+Canonical home of reusable third-party service integration helpers.
 
-### scripts.integrations
+Current completed moves include Telegram progress tracking, session lock, shared Telegram helpers, and Telegram service helper functions. Standalone Telegram command helpers should stay under `scripts.cli` rather than being moved here just because they are Telegram-related.
 
-Future home of third-party service integrations.
+### `scripts.db`, `scripts.services`, and `scripts.server_handlers`
 
-Current candidate files: `telegram_cli.py`, `telegram_db.py`, `telegram_service.py`, Telegram sync helpers, and external inbox adapters.
+These package areas hold DB helpers, service helpers shared by server handlers and CLIs, and HTTP route handler splits. Existing flat paths are kept as wrappers where compatibility is required.
 
 ## stdlib queue shadow risk
 
 The original plan referenced `scripts/queue/` as a target package name. This name shadows Python's standard library `queue` module. Any code that does `import queue` inside the `scripts/` package tree could resolve to the local subpackage instead of the stdlib, causing subtle breakage.
 
-The scaffold uses `scripts.queue_runtime/` instead to avoid this collision. This decision is documented here so future contributors do not reintroduce the `scripts/queue/` name.
+The project uses `scripts.queue_runtime/` instead to avoid this collision. Future contributors should not reintroduce the `scripts/queue/` package name.
 
 ## Migration principles
 
 ### 1. Import compatibility is mandatory
 
-Every moved module must leave a thin compatibility wrapper at its old import path. Existing `from scripts.X import Y` statements must continue to work until explicit migration is completed.
+Every moved module must leave a thin compatibility wrapper at its old import path unless a separate deliberate cleanup removes that path. Existing `from scripts.X import Y` statements should continue to work during migration.
 
-### 2. Runtime move is a later phase
+### 2. Patch and module-state compatibility is part of the contract
 
-This document and the associated scaffolds define target boundaries only. The actual movement of runtime `.py` files into subpackages has not started. When it does, each move should be a separate PR.
+Some tests and callers patch functions or mutate public module-level constants on old flat paths. Wrappers must preserve that behavior when it is part of the observed contract. This is especially important for modules such as `scripts.telegram_cli`, `scripts.telegram_service`, and `scripts.telegram_db`.
 
 ### 3. No behavior change first
 
-Package movement PRs must not change runtime behavior. They move files and add wrappers. Behavior changes, if any, happen in separate PRs after the move is stable.
+Package movement PRs should not change runtime behavior. They should move files, add wrappers, update imports, and update tests/docs. Behavior, schema, or route changes belong in separate PRs after the move is stable.
 
 ### 4. Small PR strategy
 
@@ -70,23 +72,24 @@ This follows the pattern recorded in `docs/scripts-package-movement-log.md`: sma
 
 ## What has been done
 
-- `scripts/cli/` scaffold with `__init__.py` and README
-- `scripts/queue_runtime/` scaffold with `__init__.py` and README
-- `scripts/integrations/` scaffold with `__init__.py` and README
-- `scripts/checks/` movement completed with stable command wrappers
-- DB helper movement completed with compatibility wrappers
-- service helper movement completed with compatibility wrappers
+- `scripts/cli/` scaffold and multiple CLI canonical moves
+- `scripts/queue_runtime/` scaffold and queue/runtime canonical moves
+- `scripts/integrations/` scaffold and reusable Telegram integration helper moves
+- `scripts/checks/` movement with stable command wrappers
+- DB helper movement with compatibility wrappers
+- service helper movement with compatibility wrappers
+- Telegram migration audit documenting canonical paths and deferred flat modules
 
-## What has not been done
+## What remains deliberately flat for now
 
-- No runtime `.py` files have been moved into `scripts/cli/`
-- No runtime `.py` files have been moved into `scripts/queue_runtime/`
-- No runtime `.py` files have been moved into `scripts/integrations/`
-- No import paths have been changed for any active consumer
-- No behavior changes have been introduced as part of package scaffolding
+- `scripts/telegram_service.py`: public runtime service module with Telethon connection, status, session-lock integration, chat discovery, message fetch, and attachment download orchestration. Movement is deferred because callers/tests import `scripts.telegram_service` directly and mutate module-level runtime constants.
+- `scripts/telegram_db.py`: Telegram DB helper kept flat because `scripts/db.py` already exists as a public database facade and tests import/mutate `scripts.telegram_db.DB_PATH`.
+
+See `docs/scripts-telegram-migration-audit.md` for the exact guardrails before attempting those moves.
 
 ## Related documents
 
 - `docs/16-scripts-package-layout-plan.md` — full package layout plan
 - `docs/scripts-package-scaffolds.md` — scaffold notes
 - `docs/scripts-package-movement-log.md` — completed movement slices
+- `docs/scripts-telegram-migration-audit.md` — Telegram-specific canonical paths and deferred movement notes
