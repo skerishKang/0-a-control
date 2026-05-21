@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 PUBLIC_DIR = Path(__file__).resolve().parents[2] / "public"
-DEFAULT_INLINE_EVENT_BASELINE = int(os.getenv("CONTROL_TOWER_FRONTEND_INLINE_EVENT_BASELINE", "28"))
+DEFAULT_INLINE_EVENT_BASELINE = int(os.getenv("CONTROL_TOWER_FRONTEND_INLINE_EVENT_BASELINE", "0"))
 
 INLINE_EVENT_RE = re.compile(
     r"\bon(click|change|submit|load|mouseover|mouseout|focus|blur|dblclick|keydown|keyup|keypress|input|scroll|resize|drag|drop|error|unload)\s*=",
