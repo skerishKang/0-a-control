@@ -7,6 +7,7 @@ from scripts.services import (
     control_state_service,
     external_inbox_service,
     operations_summary as operations_summary_service,
+    queue_service,
     session_read_service,
     settings_guardrails,
     suggestions_service,
@@ -81,7 +82,6 @@ def handle_get_dispatch(handler, path: str, query: dict) -> None:
 def _get_db():
     """Lazy import to avoid circular dependency."""
     from scripts.server import (
-        get_work_queue_raw,
         get_agent_statuses,
         fetch_chats, fetch_messages, parse_limit,
         generate_executor_prompt,
@@ -221,37 +221,9 @@ def handle_get_ops_overrides(handler, query):
 
 
 def handle_get_work_queue(handler, query):
-    from scripts.work_queue import normalize_work_items, group_by_queue
-
     limit = _get_db()["parse_limit"](query, "limit", 50, 200)
     queue_filter = query.get("queue", [None])[0]
-
-    raw_items = _get_db()["get_work_queue_raw"](limit)
-    items = normalize_work_items(raw_items)
-
-    if queue_filter:
-        queue_filter = queue_filter.upper()
-        items = [i for i in items if i.queue.value == queue_filter]
-
-    grouped = group_by_queue(items)
-    queues = {}
-    for q in grouped:
-        queues[q.value] = [
-            {"id": i.id, "title": i.title, "source": i.source,
-             "priority": i.priority.value, "queue": i.queue.value,
-             "status": i.effective_status, "updated_at": i.updated_at}
-            for i in grouped[q]
-        ]
-
-    handler.send_json({
-        "queues": queues,
-        "items": [
-            {"id": i.id, "title": i.title, "source": i.source,
-             "priority": i.priority.value, "queue": i.queue.value,
-             "status": i.effective_status, "updated_at": i.updated_at}
-            for i in items
-        ],
-    })
+    handler.send_json(queue_service.get_queue_payload(limit, queue_filter))
 
 
 def handle_get_executor_prompt_templates(handler, query):
