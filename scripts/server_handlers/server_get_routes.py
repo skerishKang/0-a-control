@@ -3,7 +3,7 @@ from __future__ import annotations
 from http import HTTPStatus
 import logging
 
-from scripts.services import control_state_service, session_read_service, workdiary_service
+from scripts.services import control_state_service, external_inbox_service, session_read_service, workdiary_service
 
 
 # ---- route method name mapping (used by dispatcher via getattr) ----
@@ -72,8 +72,7 @@ def _get_db():
     from scripts.server import (
         ROOT_DIR,
         get_work_queue_raw,
-        get_external_inbox_overview,
-        get_external_inbox_source_messages, get_agent_statuses,
+        get_agent_statuses,
         get_core_sources_sync_status, get_telegram_status,
         fetch_chats, fetch_messages, parse_limit,
         build_operations_summary, build_settings_status, build_guardrails_status,
@@ -138,23 +137,21 @@ def handle_get_workdiary_priority_candidates(handler, query):
 
 
 def handle_get_external_inbox(handler, query):
-    db = _get_db()
-    limit = db["parse_limit"](query, "limit", 8, 1000)
+    limit = _get_db()["parse_limit"](query, "limit", 8, 1000)
     status = query.get("status", [None])[0]
     category = query.get("category", [None])[0]
-    handler.send_json(db["get_external_inbox_overview"](limit, status, category))
+    handler.send_json(external_inbox_service.get_overview_payload(limit, status, category))
 
 
 def handle_get_external_inbox_source(handler, query):
-    db = _get_db()
     source_id = query.get("source_id", [""])[0]
     if not source_id:
         handler.send_json({"error": "source_id is required"}, status=HTTPStatus.BAD_REQUEST)
         return
     day = query.get("day", ["today"])[0]
     before = query.get("before", [None])[0]
-    limit = db["parse_limit"](query, "limit", 500, 1000)
-    handler.send_json(db["get_external_inbox_source_messages"](source_id, day, limit, before))
+    limit = _get_db()["parse_limit"](query, "limit", 500, 1000)
+    handler.send_json(external_inbox_service.get_source_messages_payload(source_id, day, limit, before))
 
 
 def handle_get_health(handler, query):
