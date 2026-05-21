@@ -29,6 +29,45 @@ function normalizeExternalCount(value) {
   return Number.isFinite(count) && count >= 0 ? String(Math.floor(count)) : "0";
 }
 
+function renderExternalContextEmptyList(target, message) {
+  const empty = document.createElement("div");
+  empty.className = "list-item empty";
+  empty.textContent = message;
+  target.replaceChildren(empty);
+}
+
+function renderExternalContextListEntry(item, count, isActive) {
+  const node = document.createElement("div");
+  node.className = `list-item candidate-item external-context-list-item ${isActive ? "active" : ""}`;
+  node.dataset.id = String(item.id);
+
+  const row = document.createElement("div");
+  row.className = "external-context-inline-row";
+
+  const sourceLabel = item.source_name || item.source_id || item.source_type || "source";
+  const title = document.createElement("strong");
+  title.textContent = sourceLabel;
+
+  const countBadge = document.createElement("span");
+  countBadge.className = "count-badge source-count-badge";
+  countBadge.textContent = String(count);
+
+  const category = document.createElement("span");
+  category.className = "source-tag inline";
+  category.textContent = item.category || "기타";
+
+  const time = document.createElement("span");
+  time.className = "time-tag";
+  time.textContent = formatRecentLabel(getInboxDisplayTimestamp(item));
+
+  row.appendChild(title);
+  row.appendChild(countBadge);
+  row.appendChild(category);
+  row.appendChild(time);
+  node.appendChild(row);
+  return node;
+}
+
 const externalContextStatusOptions = [
   { value: "new", label: "새 항목" },
   { value: "reviewing", label: "검토중" },
@@ -262,7 +301,6 @@ function attachExternalContextThreadInteractions() {
 function renderExternalContextPanel(state) {
   renderTelegramSyncStatus();
   const payload = state.externalInbox || {};
-  const allItems = payload.items || [];
   const summary = payload.summary || {};
   const activeStatusItems = getExternalContextItemsForActiveStatus();
 
@@ -317,27 +355,16 @@ function renderExternalContextPanel(state) {
   if (!entries.length) {
     const activeStatus = externalContextStatusOptions.find((option) => option.value === state.externalContextStatus)?.label || "현재 상태";
     const activeSource = externalContextSourceOptions.find((option) => option.value === state.externalContextSource)?.label || "전체";
-    target.innerHTML = `<div class="list-item empty">${activeStatus} · ${activeSource} 조건에 맞는 항목이 아직 없습니다.</div>`;
+    renderExternalContextEmptyList(target, `${activeStatus} · ${activeSource} 조건에 맞는 항목이 아직 없습니다.`);
     renderExternalContextDetail(null);
     return;
   }
 
-  target.innerHTML = entries.map(({ item, count }) => {
+  const nodes = entries.map(({ item, count }) => {
     const isActive = String(item.id) === String(state.externalContextSelectedId);
-    const sourceLabel = item.source_name || item.source_id || item.source_type || "source";
-    const timeLabel = formatRecentLabel(getInboxDisplayTimestamp(item));
-    
-    return `
-      <div class="list-item candidate-item external-context-list-item ${isActive ? "active" : ""}" data-id="${escapeHtml(String(item.id))}">
-        <div class="external-context-inline-row">
-          <strong>${escapeHtml(sourceLabel)}</strong>
-          <span class="count-badge source-count-badge">${escapeHtml(String(count))}</span>
-          <span class="source-tag inline">${escapeHtml(item.category || "기타")}</span>
-          <span class="time-tag">${escapeHtml(timeLabel)}</span>
-        </div>
-      </div>
-    `;
-  }).join("");
+    return renderExternalContextListEntry(item, count, isActive);
+  });
+  target.replaceChildren(...nodes);
 
   // 6. Attach click events to list items
   target.querySelectorAll(".external-context-list-item").forEach((node) => {
