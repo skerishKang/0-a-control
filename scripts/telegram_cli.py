@@ -14,7 +14,7 @@ from scripts.telegram_service import (
     get_telegram_session_lock_status,
     get_telegram_status,
 )
-from scripts.telegram_helpers import (
+from scripts.integrations.telegram_helpers import (
     _get_core_sources_sync_status,
     _count_missing_attachments,
     _normalize_message_timestamp,
