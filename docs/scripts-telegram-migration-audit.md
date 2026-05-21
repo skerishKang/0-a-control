@@ -13,6 +13,7 @@ This audit records the current canonical package locations for Telegram-related 
 | `scripts/telegram_backfill_priority.py` | `scripts/cli/telegram_backfill_priority.py` | CLI entrypoint helper. |
 | `scripts/telegram_cli_main.py` | `scripts/cli/telegram_cli_main.py` | CLI main entrypoint. |
 | `scripts/telegram_service_helpers.py` | `scripts/integrations/telegram_service_helpers.py` | Integration service helper. |
+| `scripts/telegram_helpers.py` | `scripts/integrations/telegram_helpers.py` | Shared Telegram helper functions. |
 
 ## Still flat in `scripts/`
 
@@ -20,7 +21,6 @@ These files remain in the flat `scripts/` namespace and need separate review bef
 
 - `scripts/telegram_db.py`
 - `scripts/telegram_cli.py`
-- `scripts/telegram_helpers.py`
 - `scripts/telegram_service.py`
 
 ## Guardrails
