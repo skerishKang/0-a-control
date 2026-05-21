@@ -41,6 +41,7 @@ This log records completed small package movement slices.
 - `scripts/cli/import_codex_session.py` keeps `scripts/import_codex_session.py` as a compatibility wrapper.
 - `scripts/cli/import_windsurf_session.py` keeps `scripts/import_windsurf_session.py` as a compatibility wrapper.
 - `scripts/cli/import_opencode_session.py` keeps `scripts/import_opencode_session.py` as a compatibility wrapper.
+- `scripts/cli/import_kilo_session.py` keeps `scripts/import_kilo_session.py` as a compatibility wrapper.
 - `scripts/cli/export_sessions.py` keeps `scripts/export_sessions.py` as a compatibility wrapper.
 - `scripts/cli/operating_loop_cli.py` keeps `scripts/operating_loop_cli.py` as a compatibility wrapper.
 - `scripts/cli/import_agent_transcript.py` keeps `scripts/import_agent_transcript.py` as a compatibility wrapper.
